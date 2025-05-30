@@ -1,0 +1,6 @@
+@GreenCorner.EcommerceAPI_HostAddress = http://localhost:5197
+
+GET {{GreenCorner.EcommerceAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

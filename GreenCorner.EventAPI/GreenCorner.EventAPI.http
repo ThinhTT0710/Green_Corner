@@ -1,0 +1,6 @@
+@GreenCorner.EventAPI_HostAddress = http://localhost:5063
+
+GET {{GreenCorner.EventAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
