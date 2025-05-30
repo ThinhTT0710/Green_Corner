@@ -50,6 +50,15 @@ namespace GreenCorner.AuthAPI.Controllers
                 _response.Message = "Email or password is incorrect";
                 return BadRequest(_response);
             }
+            var user = await _userManager.FindByEmailAsync(loginRequest.Email);
+
+            bool isEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
+            if (!isEmailConfirmed)
+            {
+                _response.Message = "Please confirm your email before logging in.";
+                _response.IsSuccess = false;
+                return BadRequest(_response);
+            }
             _response.Result = loginResponse;
             return Ok(_response);
         }
