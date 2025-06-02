@@ -8,5 +8,7 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> RegisterAsync(RegisterationRequestDTO registerationRequest);
         Task<ResponseDTO?> AssignRoleAsync(RegisterationRequestDTO registerationRequest);
         Task<ResponseDTO?> ConfirmEmailAsync(string userID, string token);
+        Task<ResponseDTO?> EmailForgotPasswordAsync(string email);
+        Task<ResponseDTO?> ForgotPasswordAsync(ForgotPasswordRequestDTO forgotPasswordRequest);
     }
 }
