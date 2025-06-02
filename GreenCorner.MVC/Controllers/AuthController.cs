@@ -3,6 +3,7 @@ using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
@@ -96,6 +97,53 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpGet]
+        public IActionResult EmailForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EmailForgotPassword(IFormCollection form) 
+        {
+            var email = form["email-forgot"];
+            var response = await _authService.EmailForgotPasswordAsync(email);
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = response.Message;
+                return RedirectToAction("Login");
+            }
+            return View(form);
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPassword(string userId, string token) 
+        {
+            var forgotpasswordRequest = new ForgotPasswordRequestDTO
+            {
+                UserId = userId,
+                Token = token
+            };
+            return View(forgotpasswordRequest);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequestDTO forgotPasswordRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(forgotPasswordRequest);
+            }
+            var response = await _authService.ForgotPasswordAsync(forgotPasswordRequest);
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = response.Message;
+                return RedirectToAction("Login");
+            }
+            TempData["error"] = response.Message;
+            return View(forgotPasswordRequest);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Logout() 
         {
             await HttpContext.SignOutAsync();
@@ -103,6 +151,7 @@ namespace GreenCorner.MVC.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        
         private async Task SignInUser(LoginResponseDTO loginResponse) 
         {
             var handler = new JwtSecurityTokenHandler();
