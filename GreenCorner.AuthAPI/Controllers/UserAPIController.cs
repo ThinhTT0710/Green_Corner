@@ -38,7 +38,7 @@ namespace GreenCorner.AuthAPI.Controllers
         public async Task<ResponseDTO> UpdateProfie([FromBody] UserDTO userDTO) 
         {
             var checkPhoneNumber =  await _userService.CheckPhoneNumber(userDTO.PhoneNumber, userDTO.ID);
-            if (checkPhoneNumber)
+            if (!checkPhoneNumber)
             {
                 _response.Message = "Phone number already exists";
                 _response.IsSuccess = false;

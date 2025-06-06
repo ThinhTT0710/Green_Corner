@@ -26,5 +26,15 @@ namespace GreenCorner.AuthAPI.Services
         {
             return await _authRepository.Register(registrationRequestDto);
         }
+
+        public async Task<LoginResponseDTO> LoginWithGoogle(GoogleLoginRequestDTO googleLoginRequest)
+        {
+            return await _authRepository.LoginWithGoogle(googleLoginRequest);
+        }
+
+        public async Task<LoginResponseDTO> LoginWithFacebook(FacebookLoginRequestDTO facebookLoginRequest)
+        {
+            return await _authRepository.LoginWithFacebook(facebookLoginRequest);
+        }
     }
 }

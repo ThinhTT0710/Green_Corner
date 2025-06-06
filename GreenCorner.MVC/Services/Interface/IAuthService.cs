@@ -10,5 +10,8 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> ConfirmEmailAsync(string userID, string token);
         Task<ResponseDTO?> EmailForgotPasswordAsync(string email);
         Task<ResponseDTO?> ForgotPasswordAsync(ForgotPasswordRequestDTO forgotPasswordRequest);
+        Task<ResponseDTO?> ResendConfirmEmailAsync(string email);
+        Task<ResponseDTO?> LoginWithGoogleAsync(GoogleLoginRequestDTO googleLoginRequest);
+        Task<ResponseDTO?> LoginWithFacebookAsync(FacebookLoginRequestDTO facebookLoginRequest);
     }
 }

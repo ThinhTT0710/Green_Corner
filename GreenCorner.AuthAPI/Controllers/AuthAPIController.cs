@@ -63,6 +63,38 @@ namespace GreenCorner.AuthAPI.Controllers
             _response.Result = loginResponse;
             return Ok(_response);
         }
+
+        [HttpPost("google-login")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDTO googleLoginRequest)
+        {
+            var loginResponse = await _authService.LoginWithGoogle(googleLoginRequest);
+            if (loginResponse.User == null)
+            {
+                _response.IsSuccess = false;
+                _response.Message = "Google login failed.";
+                return BadRequest(_response);
+            }
+
+            _response.Result = loginResponse;
+            return Ok(_response);
+
+        }
+
+        [HttpPost("facebook-login")]
+        public async Task<IActionResult> FacebookLogin([FromBody] FacebookLoginRequestDTO facebookLoginRequest)
+        {
+            var loginResponse = await _authService.LoginWithFacebook(facebookLoginRequest);
+            if (loginResponse.User == null)
+            {
+                _response.IsSuccess = false;
+                _response.Message = "Facebook login failed.";
+                return BadRequest(_response);
+            }
+
+            _response.Result = loginResponse;
+            return Ok(_response);
+        }
+
         [HttpPost("assign-role")]
         public async Task<IActionResult> AssignRole([FromBody] RegisterationRequestDTO model)
         {
