@@ -1,0 +1,42 @@
+﻿@if (TempData["success"] != null)
+{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        Swal.fire({
+            title: "@TempData["success"]",
+            icon: "success",
+            draggable: true
+        });
+    </script>
+    @TempData.Remove("success");
+}
+@if (TempData["error"] != null)
+{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        Swal.fire({
+            icon: "error",
+            title: "@TempData["error"]",
+        });
+    </script>
+    @TempData.Remove("error");
+}
+@* notification for login error *@
+@if (TempData["loginError"] != null)
+{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        Swal.fire({
+            title: "@TempData["loginError"]",
+            showDenyButton: true,
+            confirmButtonText: "Login",
+            denyButtonText: `Continue shopping`
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                window.location.href = "/Auth/Login";
+            }
+        });
+    </script>
+    @TempData.Remove("loginError");
+}

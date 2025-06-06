@@ -1,0 +1,79 @@
+﻿@model TrashEventDTO
+
+<form asp-controller="TrashEvent" asp-action="DeleteTrashEvent" enctype="multipart/form-data">
+    <br />
+    <div class="container border p-3">
+        <h1 class="text-dark text-center">Delete Product</h1>
+        <input hidden asp-for="TrashReportId" />
+        <hr />
+        <div class="row">
+            <div class="col-2">
+                <label class="control-label pt-2" style="font-size:20px;"> Location</label>
+            </div>
+            <div class="col-10 pb-3">
+                <input asp-for="Location" disabled class="form-control" />
+            </div>
+            <div class="col-2">
+                <label class="control-label pt-2" style="font-size:20px;">Stastuc</label>
+            </div>
+            <div class="col-10 pb-3">
+                <input asp-for="Status" disabled class="form-control" />
+            </div>
+            <div class="col-2">
+                <label class="control-label pt-2" style="font-size:20px;">Description</label>
+            </div>
+            <div class="col-10 pb-3">
+                <textarea asp-for="Description" disabled class="form-control" rows="5"></textarea>
+            </div>
+
+            <div class="col-2">
+                <label class="control-label pt-2" style="font-size:20px;">ImageUrl</label>
+            </div>
+            <div class="col-10 pb-3">
+                <input asp-for="ImageUrl" disabled class="form-control" />
+            </div>
+
+            <div class="col-5 offset-2">
+
+                <a asp-controller="Product" asp-action="Index" class="btn-primary btn form-control ">Back to List</a>
+            </div>
+            <div class="col-5">
+                <input type="submit" value="Delete" class="btn btn-danger form-control" />
+
+            </div>
+        </div>
+        <div>
+        </div>
+    </div>
+</form>
+<div id="map" style="height: 400px; width: 100%;"></div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCiGqAY3IagwecyXc4-etRoWJHzV7LyfFU"></script>
+    <script>
+        window.onload = function () {
+            // Lấy chuỗi tọa độ từ Razor
+            const locationString = "@Model.Location";
+
+            // Tách thành latitude và longitude
+            const parts = locationString.split(',');
+            const lat = parseFloat(parts[0]);
+            const lng = parseFloat(parts[1]);
+
+            const location = { lat: lat, lng: lng };
+
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 15,
+                center: location
+            });
+
+            const marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                title: "Điểm rác được báo cáo"
+            });
+        };
+    </script>
+}

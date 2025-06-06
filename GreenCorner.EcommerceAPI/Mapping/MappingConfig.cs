@@ -12,6 +12,7 @@ namespace GreenCorner.EcommerceAPI.Mapping
             {
                 config.CreateMap<ProductDTO, Product>().ReverseMap();
             });
+            
             return mappingConfig;
         }
     }

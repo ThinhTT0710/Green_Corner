@@ -72,5 +72,34 @@ namespace GreenCorner.MVC.Services
                 Data = forgotPasswordRequest
             });
         }
+
+        public async Task<ResponseDTO?> ResendConfirmEmailAsync(string email)
+        {
+            return await _baseService.SendAsync(new RequestDTO()
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.AuthAPIBase + "/api/auth/resend-confirm-email?email=" + email
+            });
+        }
+
+        public async Task<ResponseDTO?> LoginWithGoogleAsync(GoogleLoginRequestDTO googleLoginRequest)
+        {
+            return await _baseService.SendAsync(new RequestDTO()
+            {
+                APIType = SD.APIType.POST,
+                Url = SD.AuthAPIBase + "/api/auth/google-login",
+                Data = googleLoginRequest
+            }, withBearer: false);
+        }
+
+        public async Task<ResponseDTO?> LoginWithFacebookAsync(FacebookLoginRequestDTO facebookLoginRequest)
+        {
+            return await _baseService.SendAsync(new RequestDTO()
+            {
+                APIType = SD.APIType.POST,
+                Url = SD.AuthAPIBase + "/api/auth/facebook-login",
+                Data = facebookLoginRequest
+            }, withBearer: false);
+        }
     }
 }
