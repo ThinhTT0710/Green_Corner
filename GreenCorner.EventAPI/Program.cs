@@ -15,10 +15,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddDbContext<GreenCornerEventContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-IMapper mapper = MappingConfig.EventMaps().CreateMapper();
-builder.Services.AddSingleton(mapper);
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -62,8 +58,7 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ILeaderReviewRepository, LeaderReviewRepository>();
 builder.Services.AddScoped<ILeaderReviewService, LeaderReviewService>();
 builder.Services.AddScoped<IEventReviewRepository, EventReviewRepository>();
-builder.Services.AddScoped<IEventReviewService, EventReviewService>()
-
+builder.Services.AddScoped<IEventReviewService, EventReviewService>();
 builder.Services.AddScoped<ITrashEventRepository, TrashEventRepository>();
 builder.Services.AddScoped<ITrashEventService, TrashEventService>();
 

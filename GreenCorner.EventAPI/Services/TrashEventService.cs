@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using GreenCorner.EventAPI.DTOs;
 using GreenCorner.EventAPI.Models;
+using GreenCorner.EventAPI.Models.DTO;
 using GreenCorner.EventAPI.Repositories.Interface;
 using GreenCorner.EventAPI.Services.Interface;
 

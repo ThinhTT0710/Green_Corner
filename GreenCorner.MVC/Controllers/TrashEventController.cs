@@ -107,7 +107,8 @@ namespace GreenCorner.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateTrashEvent(TrashEventDTO trashEventDTO)
         {
-            ResponseDTO response = await _trashEventService.UpdateTrashEvent(trashEventDTO);
+			trashEventDTO.UserId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
+			ResponseDTO response = await _trashEventService.UpdateTrashEvent(trashEventDTO);
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Trash event updated successfully!";

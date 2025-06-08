@@ -2,6 +2,7 @@
 using GreenCorner.MVC.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace GreenCorner.MVC.Controllers
 {
@@ -26,6 +27,22 @@ namespace GreenCorner.MVC.Controllers
             }
             return View(listEvent);
         }
+        public async Task<IActionResult> GetEventById(int eventId)
+        {
+            
+                ResponseDTO response = await _eventService.GetByEventId(eventId);
+                if (response != null && response.IsSuccess)
+                {
+                    EventDTO eventDTO = JsonConvert.DeserializeObject<EventDTO>(response.Result.ToString());
+                    return View(eventDTO);
+                }
+                else
+                {
+                    TempData["error"] = response?.Message;
+                }
+                return NotFound();
+            
+        }
         public async Task<IActionResult> RateEvent()
         {
             return View();
@@ -34,6 +51,16 @@ namespace GreenCorner.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> RateEvent(EventReviewDTO eventReviewDTO)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["loginError"] = "You need to log in to view your profile.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
+            eventReviewDTO.CleanEventId = 2;
+            eventReviewDTO.UserId = userId;
+            eventReviewDTO.CreatedAt = DateTime.Now;
             if (ModelState.IsValid)
             {
                 ResponseDTO response = await _eventService.RateEvent(eventReviewDTO);
@@ -52,7 +79,14 @@ namespace GreenCorner.MVC.Controllers
         public async Task<IActionResult> EventReviewHistory(string id)
         {
             List<EventReviewDTO> listEventReview = new();
-            ResponseDTO? response = await _eventService.ViewEventReviewHistory("2");
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["loginError"] = "You need to log in to view your profile.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
+            ResponseDTO? response = await _eventService.ViewEventReviewHistory(userId);
             if (response != null && response.IsSuccess)
             {
                 listEventReview = JsonConvert.DeserializeObject<List<EventReviewDTO>>(response.Result.ToString());
@@ -133,6 +167,18 @@ namespace GreenCorner.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> LeaderReview(LeaderReviewDTO leaderReviewDTO)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["loginError"] = "You need to log in to view your profile.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
+            leaderReviewDTO.CreatedAt = DateTime.Now;
+            leaderReviewDTO.CleanEventId = 2;
+            leaderReviewDTO.LeaderId = "2";
+            leaderReviewDTO.ReviewerId = userId;
+
             if (ModelState.IsValid)
             {
                 ResponseDTO response = await _eventService.LeaderReview(leaderReviewDTO);
@@ -150,8 +196,16 @@ namespace GreenCorner.MVC.Controllers
         }
         public async Task<IActionResult> LeaderReviewHistory(string id)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["loginError"] = "You need to log in to view your profile.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
             List<LeaderReviewDTO> listLeaderReview = new();
-            ResponseDTO? response = await _eventService.ViewLeaderReviewHistory("2");
+            ResponseDTO? response = await _eventService.ViewLeaderReviewHistory(userId);
+
             if (response != null && response.IsSuccess)
             {
                 listLeaderReview = JsonConvert.DeserializeObject<List<LeaderReviewDTO>>(response.Result.ToString());

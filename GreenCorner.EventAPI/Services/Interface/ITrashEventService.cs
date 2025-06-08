@@ -1,4 +1,5 @@
-﻿using GreenCorner.EventAPI.DTOs;
+﻿
+using GreenCorner.EventAPI.Models.DTO;
 
 namespace GreenCorner.EventAPI.Services.Interface
 {
