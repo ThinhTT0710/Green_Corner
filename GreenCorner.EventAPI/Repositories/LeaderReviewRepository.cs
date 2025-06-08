@@ -14,7 +14,6 @@ namespace GreenCorner.EventAPI.Repositories
         }
         public async Task LeaderReview(LeaderReview item)
         {
-            item.CreatedAt = DateTime.Now;
             await _context.LeaderReviews.AddAsync(item);
             await _context.SaveChangesAsync();
         }

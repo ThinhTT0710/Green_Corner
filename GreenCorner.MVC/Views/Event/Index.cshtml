@@ -9,14 +9,7 @@
 		</div>
 	</div>
 	<div class="card-body p-4">
-		<div class="row pb-3">
-			<div class="col-6">
-			</div>
-			<div class="col-6 text-end">
-				<a asp-action="CreateNewProduct" class="btn btn-outline-primary"><i class="bi bi-plus-square"></i> Create New Product</a>
-
-			</div>
-		</div>
+		
 		<table class="table">
 			<thead>
 				<tr>
@@ -45,7 +38,12 @@
 						<td>
 							@item.Status
 						</td>
-						
+						<td>
+							<a class="btn btn-success" asp-action="GetEventById" asp-route-eventId="@item.CleanEventId">
+								<i class="bi bi-pencil-square"></i>
+							</a>
+							
+						</td>
 					</tr>
 				}
 			</tbody>

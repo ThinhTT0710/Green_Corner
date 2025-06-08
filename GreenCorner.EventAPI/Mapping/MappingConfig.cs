@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
 using GreenCorner.EventAPI.Models;
 using GreenCorner.EventAPI.Models.DTO;
-using GreenCorner.EventAPI.DTOs;
 
 namespace GreenCorner.EventAPI.Mapping
 {
     public class MappingConfig
     {
-        public static MapperConfiguration EventMaps()
+        public static MapperConfiguration RegisterMaps()
         {
             var mappingConfig = new MapperConfiguration(config =>
             {

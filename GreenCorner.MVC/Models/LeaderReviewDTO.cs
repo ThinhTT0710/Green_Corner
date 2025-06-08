@@ -6,9 +6,9 @@
 
         public int CleanEventId { get; set; }
 
-        public string LeaderId { get; set; } = null!;
+        public string? LeaderId { get; set; } = null!;
 
-        public string ReviewerId { get; set; } = null!;
+        public string? ReviewerId { get; set; } = null!;
 
         public int? Rating { get; set; }
 

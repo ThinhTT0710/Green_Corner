@@ -14,9 +14,6 @@ namespace GreenCorner.EventAPI.Repositories
         }
         public async Task RateEvent(EventReview item)
         {
-            item.CleanEventId = 2;
-            item.UserId = "2";
-            item.CreatedAt = DateTime.Now;
             await _context.EventReviews.AddAsync(item);
             await _context.SaveChangesAsync();
         }
