@@ -15,6 +15,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddDbContext<GreenCornerEventContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+IMapper mapper = MappingConfig.EventMaps().CreateMapper();
+builder.Services.AddSingleton(mapper);
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
@@ -27,35 +30,42 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.AddSecurityDefinition(name: JwtBearerDefaults.AuthenticationScheme, securityScheme: new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Description = " Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = JwtBearerDefaults.AuthenticationScheme
-                }
-            },
-            new string[] {}
-        }
-    });
+	options.AddSecurityDefinition(name: JwtBearerDefaults.AuthenticationScheme, securityScheme: new OpenApiSecurityScheme
+	{
+		Name = "Authorization",
+		Description = " Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
+		In = ParameterLocation.Header,
+		Type = SecuritySchemeType.ApiKey,
+		Scheme = "Bearer"
+	});
+	options.AddSecurityRequirement(new OpenApiSecurityRequirement
+	{
+		{
+			new OpenApiSecurityScheme
+			{
+				Reference = new OpenApiReference
+				{
+					Type = ReferenceType.SecurityScheme,
+					Id = JwtBearerDefaults.AuthenticationScheme
+				}
+			},
+			new string[] {}
+		}
+	});
 });
-
-builder.Services.AddScoped<ITrashEventRepository, TrashEventRepository>();
-builder.Services.AddScoped<ITrashEventService, TrashEventService>();
 
 builder.AddAppAuthetication();
 builder.Services.AddAuthorization();
+
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<ILeaderReviewRepository, LeaderReviewRepository>();
+builder.Services.AddScoped<ILeaderReviewService, LeaderReviewService>();
+builder.Services.AddScoped<IEventReviewRepository, EventReviewRepository>();
+builder.Services.AddScoped<IEventReviewService, EventReviewService>()
+
+builder.Services.AddScoped<ITrashEventRepository, TrashEventRepository>();
+builder.Services.AddScoped<ITrashEventService, TrashEventService>();
 
 var app = builder.Build();
 

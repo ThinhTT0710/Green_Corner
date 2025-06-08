@@ -1,0 +1,68 @@
+﻿@model IEnumerable<LeaderReviewDTO>
+<div class="card shadow border-0 mt-4">
+	<div class="card-header bg-secondary bg-gradient ml-0 py-3">
+		<div class="row">
+			<div class="col-12 text-center">
+				<h1 class="text-white">Leader Review List</h1>
+			</div>
+		</div>
+	</div>
+	<div class="card-body p-4">
+		<div class="row pb-3">
+			<div class="col-6">
+			</div>
+			<div class="col-6 text-end">
+				<a asp-action="LeaderReview" class="btn btn-outline-primary"><i class="bi bi-plus-square"></i> Leader Review</a>
+
+			</div>
+		</div>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>
+						CleanEvent
+					</th>
+					<th>
+						Leader
+					</th>
+					<th>
+						Rating
+					</th>
+					<th>
+						Comment
+					</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model)
+				{
+					<tr>
+						<td>
+							@item.CleanEventId
+						</td>
+						<td>
+							@item.LeaderId
+						</td>
+						<td>
+							@item.Rating
+						</td>
+						<td>
+							@item.Comment
+						</td>
+						<td>
+							<a class="btn btn-success" asp-action="EditLeaderReview" asp-route-leaderReviewId="@item.LeaderReviewId">
+								<i class="bi bi-pencil-square"></i>
+							</a>
+							<a class="btn btn-danger" asp-action="DeleteLeaderReview" asp-route-leaderReviewId="@item.LeaderReviewId">
+								<i class="bi bi-trash"></i>
+							</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+	</div>
+
+</div>

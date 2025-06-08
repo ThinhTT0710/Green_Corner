@@ -14,8 +14,8 @@ builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IUserService, UserService>();
 builder.Services.AddHttpClient<IProductService, ProductService>();
+builder.Services.AddHttpClient<IEventService, EventService>();
 builder.Services.AddHttpClient<ITrashEventService, TrashEventService>();
-
 SD.AuthAPIBase = builder.Configuration["ServiceUrls:AuthAPI"];
 SD.ProductAPIBase = builder.Configuration["ServiceUrls:ProductAPI"];
 SD.EventAPIBase = builder.Configuration["ServiceUrls:EventAPI"];
@@ -25,6 +25,8 @@ builder.Services.AddScoped<ITokenProvider, TokenProvider>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IEventService, EventService>();
+
 builder.Services.AddScoped<ITrashEventService, TrashEventService>();
 
 // Add authentication
