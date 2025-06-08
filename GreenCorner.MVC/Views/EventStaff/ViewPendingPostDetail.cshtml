@@ -1,0 +1,46 @@
+﻿@model GreenCorner.MVC.Models.BlogPostDTO
+
+@{
+    ViewData["Title"] = "Chi tiết bài viết";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h4>@Model.Title</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Tác giả:</dt>
+            <dd class="col-sm-9">@Model.AuthorId</dd>
+
+            <dt class="col-sm-3">Trạng thái:</dt>
+            <dd class="col-sm-9">@Model.Status</dd>
+
+            <dt class="col-sm-3">Ngày tạo:</dt>
+            <dd class="col-sm-9">@Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</dd>
+
+            <dt class="col-sm-3">Hình ảnh:</dt>
+            <dd class="col-sm-9">
+                @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
+                {
+                    <img src="@Model.ThumbnailUrl" alt="Ảnh bìa" class="img-fluid" style="max-height: 300px;" />
+                }
+                else
+                {
+                    <span class="text-muted">Không có ảnh</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Nội dung:</dt>
+            <dd class="col-sm-9">@Html.Raw(Model.Content)</dd>
+        </dl>
+    </div>
+    <div class="card-footer">
+        <a asp-action="ViewBlogReports" asp-route-blogId="@Model.BlogId" class="btn btn-warning">
+            Xem báo cáo
+        </a>
+        <a asp-action="ViewPendingPosts" class="btn btn-secondary">← Quay lại danh sách</a>
+    </div>
+</div>

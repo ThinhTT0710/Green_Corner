@@ -1,0 +1,110 @@
+﻿@model List<GreenCorner.MVC.Models.BlogPostDTO>
+
+@{
+    ViewData["Title"] = "Danh sách bài viết";
+    var favoriteBlogIds = ViewBag.FavoriteBlogIds as List<int> ?? new();
+}
+
+<a asp-controller="BlogPost" asp-action="ViewFeedbacks" class="btn btn-dark ">Xem Feedback</a>
+
+<a asp-controller="BlogPost" asp-action="ViewReports" class="btn btn-dark " >Xem Report</a>
+
+
+<h2 class="mb-4 d-flex justify-content-between align-items-center">
+    @ViewData["Title"]
+    <a asp-action="CreateBlog" class="btn btn-success">+ Tạo bài viết</a>
+</h2>
+
+
+<table class="table table-bordered table-hover align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>#</th>
+            <th>Tiêu đề</th>
+            <th>Tác giả</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th>Yêu thích</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            int index = 1;
+            foreach (var blog in Model)
+            {
+                bool isFavorited = favoriteBlogIds.Contains(blog.BlogId);
+                        <tr>
+                            <td>@index</td>
+                            <td>@blog.Title</td>
+                            <td>@blog.AuthorId</td>
+                            <td>@blog.Status</td>
+                            <td>@blog.CreatedAt?.ToString("dd/MM/yyyy")</td>
+                            <td class="text-center">
+                                <button class="btn btn-link btn-favorite @(isFavorited ? "favorited" : "")"
+                                        data-blogid="@blog.BlogId"
+                                        title="Yêu thích">
+                                    <i class="bi @(isFavorited ? "bi-heart-fill text-danger" : "bi-heart text-dark")"
+                                       id="fav-icon-@blog.BlogId"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <a asp-action="ViewBlogDetail"
+                                   asp-route-id="@blog.BlogId"
+                                   class="btn btn-sm btn-primary">
+                                    Xem chi tiết
+                                </a>
+
+                                <a asp-action="UpdateBlog" asp-route-blogId="@blog.BlogId" class="btn btn-sm btn-success">
+                                Update
+                                </a>
+                                <a asp-action="DeleteBlog" asp-route-blogId="@blog.BlogId" class="btn btn-sm btn-danger">
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                index++;
+            }
+        }
+        else
+        {
+                <tr>
+                    <td colspan="7" class="text-center text-muted">Không có bài viết nào.</td>
+                </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+        <script>
+            $(document).ready(function () {
+                $(".btn-favorite").click(function (e) {
+                    e.preventDefault();
+                    var button = $(this);
+                    var blogId = button.data("blogid");
+
+                    $.ajax({
+                        url: '/BlogPost/ToggleFavorite',
+                        type: 'POST',
+                        data: { blogId: blogId },
+                        success: function (response) {
+                            if (response.isSuccess) {
+                                var icon = button.find("i");
+                                if (icon.hasClass("bi-heart")) {
+                                    icon.removeClass("bi-heart text-dark").addClass("bi-heart-fill text-danger");
+                                } else {
+                                    icon.removeClass("bi-heart-fill text-danger").addClass("bi-heart text-dark");
+                                }
+                            } else {
+                                alert("Thao tác thất bại: " + response.message);
+                            }
+                        },
+                        error: function () {
+                            alert("Đã xảy ra lỗi.");
+                        }
+                    });
+                });
+            });
+        </script>
+}
