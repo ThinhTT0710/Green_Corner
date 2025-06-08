@@ -3,6 +3,8 @@ using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
@@ -96,6 +98,72 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpGet]
+        public IActionResult ResendConfirmEmail()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResendConfirmEmail(IFormCollection form) 
+        {
+            var email = form["email-forgot"];
+            var response = await _authService.ResendConfirmEmailAsync(email);
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = response.Message;
+                return RedirectToAction("Login");
+            }
+            return View(form);
+        }
+
+        [HttpGet]
+        public IActionResult EmailForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EmailForgotPassword(IFormCollection form) 
+        {
+            var email = form["email-forgot"];
+            var response = await _authService.EmailForgotPasswordAsync(email);
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = response.Message;
+                return RedirectToAction("Login");
+            }
+            return View(form);
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPassword(string userId, string token) 
+        {
+            var forgotpasswordRequest = new ForgotPasswordRequestDTO
+            {
+                UserId = userId,
+                Token = token
+            };
+            return View(forgotpasswordRequest);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequestDTO forgotPasswordRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(forgotPasswordRequest);
+            }
+            var response = await _authService.ForgotPasswordAsync(forgotPasswordRequest);
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = response.Message;
+                return RedirectToAction("Login");
+            }
+            TempData["error"] = response.Message;
+            return View(forgotPasswordRequest);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Logout() 
         {
             await HttpContext.SignOutAsync();
@@ -103,7 +171,87 @@ namespace GreenCorner.MVC.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        private async Task SignInUser(LoginResponseDTO loginResponse) 
+        public IActionResult GoogleLogin()
+        {
+                var properties = new AuthenticationProperties
+                {
+                    RedirectUri = Url.Action("GoogleResponse")
+                };
+                return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var claims = result.Principal?.Identities?.FirstOrDefault()?.Claims;
+
+            var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var name = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+            var picture = claims?.FirstOrDefault(c => c.Type == "picture")?.Value;
+
+            // Tạo request gửi về API
+            var response = await _authService.LoginWithGoogleAsync(new GoogleLoginRequestDTO
+            {
+                Email = email,
+                FullName = name,
+                Avatar = picture
+            });
+
+            if (response != null && response.IsSuccess)
+            {
+                var loginResponse = JsonConvert.DeserializeObject<LoginResponseDTO>(response.Result.ToString());
+                await SignInUser(loginResponse);
+                _tokenProvider.SetToken(loginResponse.Token);
+                TempData["success"] = "Login with Google successfully.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            TempData["error"] = response?.Message ?? "Login failed.";
+            return RedirectToAction("Login", "Auth");
+        }
+
+
+        public IActionResult LoginFacebook(string returnUrl = "/")
+        {
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("FacebookCallback", new { returnUrl })
+            };
+
+            return Challenge(properties, "Facebook");
+        }
+        public async Task<IActionResult> FacebookCallback(string returnUrl = "/")
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            if (!result.Succeeded)
+                return RedirectToAction("Login");
+
+            var claims = result.Principal.Identities.FirstOrDefault()?.Claims;
+            var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var fullName = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+            var avatar = claims?.FirstOrDefault(c => c.Type == "picture")?.Value ?? "";
+
+            var loginRequest = new FacebookLoginRequestDTO
+            {
+                Email = email,
+                FullName = fullName,
+                Avatar = avatar
+            };
+
+            var response = await _authService.LoginWithFacebookAsync(loginRequest);
+            if (response != null && response.IsSuccess)
+            {
+                var loginResponse = JsonConvert.DeserializeObject<LoginResponseDTO>(response.Result.ToString());
+                await SignInUser(loginResponse);
+                _tokenProvider.SetToken(loginResponse.Token);
+                return Redirect(returnUrl);
+            }
+
+            TempData["error"] = response?.Message ?? "Login failed.";
+            return RedirectToAction("Login");
+        }
+        private async Task SignInUser(LoginResponseDTO loginResponse)
         {
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(loginResponse.Token);
@@ -123,7 +271,7 @@ namespace GreenCorner.MVC.Controllers
                 jwt.Claims.FirstOrDefault(u => u.Type == "role").Value));
 
             var principal = new ClaimsPrincipal(identity);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);       
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
         }
     }
 }

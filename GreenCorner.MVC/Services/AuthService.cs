@@ -1,6 +1,7 @@
 ﻿using GreenCorner.MVC.Models;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
+using Newtonsoft.Json.Linq;
 
 namespace GreenCorner.MVC.Services
 {
@@ -14,11 +15,11 @@ namespace GreenCorner.MVC.Services
         public async Task<ResponseDTO?> AssignRoleAsync(RegisterationRequestDTO registerationRequest)
         {
             return await _baseService.SendAsync(new RequestDTO()
-                {
-                    APIType = SD.APIType.POST,
-                    Url = SD.AuthAPIBase + "/api/auth/assign-role",
-                    Data = registerationRequest
-                    
+            {
+                APIType = SD.APIType.POST,
+                Url = SD.AuthAPIBase + "/api/auth/assign-role",
+                Data = registerationRequest
+
             });
         }
 
@@ -51,6 +52,54 @@ namespace GreenCorner.MVC.Services
                 APIType = SD.APIType.GET,
                 Url = SD.AuthAPIBase + "/api/auth/confirm-email?userId=" + userID + "&token=" + token
             });
+        }
+
+        public async Task<ResponseDTO?> EmailForgotPasswordAsync(string email)
+        {
+            return await _baseService.SendAsync(new RequestDTO()
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.AuthAPIBase + "/api/auth/email-forgot-password?email=" + email
+            });
+        }
+
+        public async Task<ResponseDTO?> ForgotPasswordAsync(ForgotPasswordRequestDTO forgotPasswordRequest)
+        {
+            return await _baseService.SendAsync(new RequestDTO()
+            {
+                APIType = SD.APIType.POST,
+                Url = SD.AuthAPIBase + "/api/auth/fotgot-password",
+                Data = forgotPasswordRequest
+            });
+        }
+
+        public async Task<ResponseDTO?> ResendConfirmEmailAsync(string email)
+        {
+            return await _baseService.SendAsync(new RequestDTO()
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.AuthAPIBase + "/api/auth/resend-confirm-email?email=" + email
+            });
+        }
+
+        public async Task<ResponseDTO?> LoginWithGoogleAsync(GoogleLoginRequestDTO googleLoginRequest)
+        {
+            return await _baseService.SendAsync(new RequestDTO()
+            {
+                APIType = SD.APIType.POST,
+                Url = SD.AuthAPIBase + "/api/auth/google-login",
+                Data = googleLoginRequest
+            }, withBearer: false);
+        }
+
+        public async Task<ResponseDTO?> LoginWithFacebookAsync(FacebookLoginRequestDTO facebookLoginRequest)
+        {
+            return await _baseService.SendAsync(new RequestDTO()
+            {
+                APIType = SD.APIType.POST,
+                Url = SD.AuthAPIBase + "/api/auth/facebook-login",
+                Data = facebookLoginRequest
+            }, withBearer: false);
         }
     }
 }

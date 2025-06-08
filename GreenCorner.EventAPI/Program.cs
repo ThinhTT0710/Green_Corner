@@ -19,6 +19,12 @@ IMapper mapper = MappingConfig.EventMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
+builder.Services.AddSingleton(mapper);
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -56,7 +62,10 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ILeaderReviewRepository, LeaderReviewRepository>();
 builder.Services.AddScoped<ILeaderReviewService, LeaderReviewService>();
 builder.Services.AddScoped<IEventReviewRepository, EventReviewRepository>();
-builder.Services.AddScoped<IEventReviewService, EventReviewService>();
+builder.Services.AddScoped<IEventReviewService, EventReviewService>()
+
+builder.Services.AddScoped<ITrashEventRepository, TrashEventRepository>();
+builder.Services.AddScoped<ITrashEventService, TrashEventService>();
 
 var app = builder.Build();
 

@@ -27,9 +27,6 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Product</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Event" asp-action="Index">Event</a>
                         </li>
                         <li class="nav-item">
@@ -37,6 +34,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Event" asp-action="LeaderReviewHistory">Leader Review History</a>
+                        </li>
+                       <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="TrashEvent" asp-action="Index">ReportTrash</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav">
@@ -52,7 +52,7 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" href="#">Hello, @User.Identity.Name</a>
+                                <a class="nav-link text-dark" asp-controller="User" asp-action="Profile">Hello, @User.Identity.Name</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Auth" asp-action="Logout">Logout</a>
@@ -66,6 +66,7 @@
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
+            <partial name="_Notification" />
         </main>
     </div>
 
