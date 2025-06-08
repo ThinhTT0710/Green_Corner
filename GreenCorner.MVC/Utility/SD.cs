@@ -4,6 +4,7 @@
     {
         public static string AuthAPIBase { get; set; }
         public static string ProductAPIBase { get; set; }
+        public static string BlogAPIBase { get; set; }
         public const string RoleCustomer = "CUSTOMER";
 
         public static string TokenCookie = "JWTToken";

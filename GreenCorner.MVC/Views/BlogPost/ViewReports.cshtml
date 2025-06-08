@@ -1,0 +1,40 @@
+﻿@model IEnumerable<GreenCorner.MVC.Models.ReportDTO>
+
+@{
+    ViewData["Title"] = "Danh sách báo cáo";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Report ID</th>
+            <th>Leader ID</th>
+            <th>Tiêu đề</th>
+            <th>Nội dung</th>
+            <th>Ngày tạo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="5" class="text-center">Không có báo cáo nào</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var report in Model)
+            {
+                <tr>
+                    <td>@report.ReportId</td>
+                    <td>@report.LeaderId</td>
+                    <td>@report.Title</td>
+                    <td>@report.Content</td>
+                    <td>@(report.CreatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

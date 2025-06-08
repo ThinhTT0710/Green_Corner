@@ -1,0 +1,66 @@
+﻿@model List<GreenCorner.MVC.Models.BlogPostDTO>
+
+@{
+    ViewData["Title"] = "Danh sách bài viết";
+    var favoriteBlogIds = ViewBag.FavoriteBlogIds as List<int> ?? new();
+}
+
+<a asp-controller="BlogPost" asp-action="ViewFeedbacks" class="btn btn-dark ">Xem Feedback</a>
+
+<a asp-controller="BlogPost" asp-action="ViewReports" class="btn btn-dark ">Xem Report</a>
+
+
+<table class="table table-bordered table-hover align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>#</th>
+            <th>Tiêu đề</th>
+            <th>Tác giả</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            int index = 1;
+            foreach (var blog in Model)
+            {
+                bool isFavorited = favoriteBlogIds.Contains(blog.BlogId);
+                <tr>
+                    <td>@index</td>
+                    <td>@blog.Title</td>
+                    <td>@blog.AuthorId</td>
+                    <td>@blog.Status</td>
+                    <td>@blog.CreatedAt?.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <a asp-action="ViewPendingPostDetail"
+                           asp-route-id="@blog.BlogId"
+                           class="btn btn-sm btn-primary">
+                            Xem chi tiết
+                        </a>
+
+                        <form asp-controller="EventStaff" asp-action="BlogApprove" asp-route-id="@blog.BlogId" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-success btn-sm"
+                                    onclick="return confirm('Bạn có chắc muốn phê duyệt bài viết này không?')">
+                                Phê duyệt
+                            </button>
+                        </form>
+
+                       
+                    </td>
+                </tr>
+                index++;
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7" class="text-center text-muted">Không có bài viết nào.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
