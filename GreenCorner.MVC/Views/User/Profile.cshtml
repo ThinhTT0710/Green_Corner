@@ -1,0 +1,45 @@
+﻿@model UserDTO
+
+    <div class="container border p-3">
+        <h1 class="text-dark text-center">User Profile</h1>
+        <input hidden asp-for="ID" />
+        <hr />
+        <div class="row">
+            <div class="col-2">
+                <label class="control-label pt-2" style="font-size:20px;">Full Name</label>
+            </div>
+            <div class="col-10 pb-3">
+                <input asp-for="FullName" disabled class="form-control" />
+            </div>
+            <div class="col-2">
+                <label class="control-label pt-2" style="font-size:20px;">Email</label>
+            </div>
+            <div class="col-10 pb-3">
+                <input asp-for="Email" disabled class="form-control" />
+            </div>
+            <div class="col-2">
+                <label class="control-label pt-2" style="font-size:20px;">Address</label>
+            </div>
+            <div class="col-10 pb-3">
+                <input asp-for="Address" disabled class="form-control" />
+            </div>
+            <div class="col-2">
+                <label class="control-label pt-2" style="font-size:20px;">Phone Number</label>
+            </div>
+            <div class="col-10 pb-3">
+            <input asp-for="PhoneNumber" disabled class="form-control" />
+            </div>
+            <div class="col-5 offset-2">
+                <a asp-controller="User" asp-action="UpdateProfile" class="btn-primary btn form-control ">Update Profile</a>
+            </div>
+        <div class="col-5">
+            <a asp-controller="User" asp-action="ChangePassword" class="btn-primary btn form-control ">ChangePassword</a>
+        </div>
+        </div>
+        <div>
+        </div>
+    </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

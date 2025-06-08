@@ -2,6 +2,7 @@
 using GreenCorner.AuthAPI.Models.DTO;
 using GreenCorner.AuthAPI.Services.Interface;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -62,6 +63,38 @@ namespace GreenCorner.AuthAPI.Controllers
             _response.Result = loginResponse;
             return Ok(_response);
         }
+
+        [HttpPost("google-login")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDTO googleLoginRequest)
+        {
+            var loginResponse = await _authService.LoginWithGoogle(googleLoginRequest);
+            if (loginResponse.User == null)
+            {
+                _response.IsSuccess = false;
+                _response.Message = "Google login failed.";
+                return BadRequest(_response);
+            }
+
+            _response.Result = loginResponse;
+            return Ok(_response);
+
+        }
+
+        [HttpPost("facebook-login")]
+        public async Task<IActionResult> FacebookLogin([FromBody] FacebookLoginRequestDTO facebookLoginRequest)
+        {
+            var loginResponse = await _authService.LoginWithFacebook(facebookLoginRequest);
+            if (loginResponse.User == null)
+            {
+                _response.IsSuccess = false;
+                _response.Message = "Facebook login failed.";
+                return BadRequest(_response);
+            }
+
+            _response.Result = loginResponse;
+            return Ok(_response);
+        }
+
         [HttpPost("assign-role")]
         public async Task<IActionResult> AssignRole([FromBody] RegisterationRequestDTO model)
         {
@@ -103,6 +136,70 @@ namespace GreenCorner.AuthAPI.Controllers
             {
                 _response.IsSuccess = false;
                 _response.Message = "Invalid confirmation request.";
+                return BadRequest(_response);
+            }
+        }
+
+        [HttpGet("resend-confirm-email")]
+        public async Task<IActionResult> ResendConfirmEmail(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                _response.IsSuccess = false;
+                _response.Message = "User not found.";
+                return NotFound(_response);
+            }
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var encodeToken = Base64UrlEncoder.Encode(token);
+            var confirmationLink = $"https://localhost:7000/Auth/ConfirmEmail?userId={user.Id}&token={encodeToken}";
+
+            await _emailService.SendEmailAsync(email, "Confirm your email", $"<h1>Welcome to GreenCorner</h1><p>Please confirm your email by <a href='{confirmationLink}'>clicking here</a></p>");
+            _response.Message = "Email sent successfully, please check email.";
+            return Ok(_response);
+        }
+
+        [HttpGet("email-forgot-password")]
+        public async Task<IActionResult> EmailForgotPassword(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                _response.IsSuccess = false;
+                _response.Message = "User not found.";
+                return NotFound(_response);
+            }
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var encodeToken = Base64UrlEncoder.Encode(token);
+            var forgotPasswordLink = $"https://localhost:7000/Auth/ForgotPassword?userId={user.Id}&token={encodeToken}";
+
+            await _emailService.SendEmailAsync(email, "Reset your password", $"<h1>Welcome to GreenCorner</h1><p>Please reset your password by <a href='{forgotPasswordLink}'>clicking here</a></p>");
+            _response.Message = "Email sent successfully, please check email.";
+            return Ok(_response);
+        }
+
+        [HttpPost("fotgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequestDTO forgotPasswordRequest)
+        {
+            var user = await _userManager.FindByIdAsync(forgotPasswordRequest.UserId);
+            if (user == null)
+            {
+                _response.IsSuccess = false;
+                _response.Message = "User not found.";
+                return NotFound(_response);
+            }
+            var decodedToken = Base64UrlEncoder.Decode(forgotPasswordRequest.Token);
+            var result = await _userManager.ResetPasswordAsync(user, decodedToken, forgotPasswordRequest.Password);
+            if (result.Succeeded)
+            {
+                _response.IsSuccess = true;
+                _response.Message = "Password reset successfully.";
+                return Ok(_response);
+            }
+            else
+            {
+                _response.IsSuccess = false;
+                _response.Message = "Failed to reset password.";
                 return BadRequest(_response);
             }
         }

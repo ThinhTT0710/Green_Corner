@@ -1,4 +1,5 @@
-﻿using GreenCorner.AuthAPI.Data;
+﻿using Azure;
+using GreenCorner.AuthAPI.Data;
 using GreenCorner.AuthAPI.Models;
 using GreenCorner.AuthAPI.Models.DTO;
 using GreenCorner.AuthAPI.Repositories.Interface;
@@ -72,6 +73,117 @@ namespace GreenCorner.AuthAPI.Repositories
             return loginResponseDto;
         }
 
+        public async Task<LoginResponseDTO> LoginWithFacebook(FacebookLoginRequestDTO facebookLoginRequest)
+        {
+            var loginInfo = new UserLoginInfo("Facebook", facebookLoginRequest.Email, "Facebook");
+
+            var user = await _userManager.FindByLoginAsync(loginInfo.LoginProvider, loginInfo.ProviderKey);
+
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(facebookLoginRequest.Email);
+
+                if (user == null)
+                {
+                    user = new User()
+                    {
+                        Email = facebookLoginRequest.Email,
+                        UserName = facebookLoginRequest.Email,
+                        FullName = facebookLoginRequest.FullName,
+                        NormalizedEmail = facebookLoginRequest.Email.ToUpper(),
+                        Avatar = "default.png",
+                        Address = "Unknown",
+                        PhoneNumber = "Unknown",
+                        EmailConfirmed = true
+                    };
+
+                    var result = await _userManager.CreateAsync(user);
+                    if (!result.Succeeded)
+                        return new LoginResponseDTO();
+
+                    await _userManager.AddToRoleAsync(user, "CUSTOMER");
+                }
+
+                var addLoginResult = await _userManager.AddLoginAsync(user, loginInfo);
+                if (!addLoginResult.Succeeded)
+                    return new LoginResponseDTO();
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var token = _jwtTokenGenerator.GenerateToken(user, roles);
+
+            return new LoginResponseDTO
+            {
+                User = new UserDTO
+                {
+                    ID = user.Id,
+                    Email = user.Email,
+                    FullName = user.FullName,
+                    Avatar = user.Avatar,
+                    Address = user.Address,
+                    PhoneNumber = user.PhoneNumber
+                },
+                Token = token
+            };
+
+        }
+
+        public async Task<LoginResponseDTO> LoginWithGoogle(GoogleLoginRequestDTO googleLoginRequest)
+        {
+            var loginInfo = new UserLoginInfo("Google", googleLoginRequest.Email, "Google");
+
+            var user = await _userManager.FindByLoginAsync(loginInfo.LoginProvider, loginInfo.ProviderKey);
+
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(googleLoginRequest.Email);
+
+                if (user == null)
+                {
+                    user = new User
+                    {
+                        Email = googleLoginRequest.Email,
+                        UserName = googleLoginRequest.Email,
+                        FullName = googleLoginRequest.FullName,
+                        NormalizedEmail = googleLoginRequest.Email.ToUpper(),
+                        Avatar = googleLoginRequest.Avatar ?? "default.png",
+                        Address = "Unknown",
+                        PhoneNumber = "Unknown",
+                        EmailConfirmed = true
+                    };
+
+                    var createResult = await _userManager.CreateAsync(user);
+                    if (!createResult.Succeeded)
+                        return new LoginResponseDTO();
+
+                    await _userManager.AddToRoleAsync(user, "CUSTOMER");
+                }
+
+                var addLoginResult = await _userManager.AddLoginAsync(user, loginInfo);
+                if (!addLoginResult.Succeeded)
+                    return new LoginResponseDTO();
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var token = _jwtTokenGenerator.GenerateToken(user, roles);
+
+            var userDto = new UserDTO
+            {
+                ID = user.Id,
+                Email = user.Email,
+                FullName = user.FullName,
+                Address = user.Address,
+                Avatar = user.Avatar,
+                PhoneNumber = user.PhoneNumber
+            };
+
+            return new LoginResponseDTO()
+            {
+                User = userDto,
+                Token = token
+            };
+        }
+
         public async Task<string> Register(RegisterationRequestDTO registrationRequestDto)
         {
             User user = new User()
@@ -81,12 +193,12 @@ namespace GreenCorner.AuthAPI.Repositories
                 NormalizedEmail = registrationRequestDto.Email.ToUpper(),
                 FullName = registrationRequestDto.FullName,
                 Address = registrationRequestDto.Address,
-                Avatar =  registrationRequestDto.Avatar,
+                Avatar = registrationRequestDto.Avatar,
                 PhoneNumber = registrationRequestDto.PhoneNumber
             };
 
-            try 
-            { 
+            try
+            {
                 var result = await _userManager.CreateAsync(user, registrationRequestDto.Password);
                 if (result.Succeeded)
                 {
@@ -102,12 +214,12 @@ namespace GreenCorner.AuthAPI.Repositories
                     };
                     return "";
                 }
-                else 
-                { 
+                else
+                {
                     return result.Errors.FirstOrDefault().Description;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("Error creating user: " + ex.Message);
             }

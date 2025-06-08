@@ -1,0 +1,113 @@
+﻿@model TrashEventDTO
+
+<form asp-controller="TrashEvent" asp-action="UpdateTrashEvent" enctype="multipart/form-data">
+    <br />
+    <div class="container border p-3">
+        <h1 class="text-dark text-center">Report New Event</h1>
+        <input type="hidden" asp-for="TrashReportId">
+        <input type="hidden" asp-for="Status">
+        <hr />
+        <div class="row">
+            <div class="col-2">
+                <label class="control-label pt-2" style="font-size:20px;"> Location</label>
+            </div>
+            <div class="col-10 pb-3">
+                <input type="text" id="locationInput" readonly asp-for="Location" class="form-control" />
+                <button class="btn btn-success" type="button" onclick="getLocation()">Get Your Loction</button>
+            </div>
+            <div class="col-2">
+                <label class="control-label pt-2" style="font-size:20px;">Description</label>
+            </div>
+            <div class="col-10 pb-3">
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="col-2">
+                <label class="control-label pt-2" style="font-size:20px;">ImageUrl</label>
+            </div>
+            <div class="col-10 pb-3">
+                <input asp-for="ImageUrl" class="form-control" />
+                <input asp-for="ImageUrl" hidden class="form-control" />
+                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+            </div>
+            <div class="col-5 offset-2">
+                <a asp-controller="TrashEvent" asp-action="Index" class="btn-primary btn form-control ">Back to List</a>
+            </div>
+            <div class="col-5">
+                <input type="submit" value="Update" class="btn btn-success form-control" />
+            </div>
+        </div>
+        <div>
+        </div>
+    </div>
+</form>
+<div id="map" style="height:500px;"></div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCiGqAY3IagwecyXc4-etRoWJHzV7LyfFU"></script>
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        const loc = `${lat},${lng}`;
+                        document.getElementById("locationInput").value = loc;
+                        showMap(lat, lng);
+                    },
+                    function (error) {
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED:
+                                alert("Bạn đã từ chối quyền truy cập vị trí.");
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                alert("Không thể xác định vị trí.");
+                                break;
+                            case error.TIMEOUT:
+                                alert("Yêu cầu vị trí quá thời gian cho phép.");
+                                break;
+                            default:
+                                alert("Lỗi không xác định: " + error.message);
+                        }
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                alert("Trình duyệt không hỗ trợ định vị.");
+            }
+        }
+
+        function showMap(lat, lng) {
+            const map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat, lng },
+                zoom: 15
+            });
+
+            new google.maps.Marker({
+                position: { lat, lng },
+                map: map,
+                title: "Vị trí của bạn"
+            });
+        }
+
+        // ✅ Khi trang vừa load: nếu đã có giá trị location, hiển thị bản đồ luôn
+        window.onload = function () {
+            const locationValue = document.getElementById("locationInput").value;
+            if (locationValue) {
+                const [latStr, lngStr] = locationValue.split(',');
+                const lat = parseFloat(latStr);
+                const lng = parseFloat(lngStr);
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    showMap(lat, lng);
+                }
+            }
+        };
+    </script>
+}
+    
