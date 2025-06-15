@@ -33,6 +33,7 @@ builder.Services.AddScoped<IFeedbackService,FeedbackService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ITrashEventService, TrashEventService>();
+builder.Services.AddScoped<IVolunteerService, VolunteerService>();
 
 // Add authentication
 builder.Services.AddAuthentication(options =>

@@ -35,8 +35,8 @@ namespace GreenCorner.MVC.Controllers
             }
             else
             {
-                TempData["error"] = response?.Message ?? "Không tìm thấy bài viết.";
-                return RedirectToAction("Index");
+                TempData["error"] = "Không tìm thấy bài viết.";
+                return RedirectToAction("ViewPendingPosts");
             }
             
             return View(blogPost);

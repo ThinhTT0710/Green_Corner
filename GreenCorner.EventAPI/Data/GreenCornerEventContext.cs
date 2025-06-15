@@ -94,13 +94,14 @@ public partial class GreenCornerEventContext : DbContext
 
         modelBuilder.Entity<Volunteer>(entity =>
         {
-            entity.HasKey(e => e.VolunteerId).HasName("PK__Voluntee__716F6F2CEE64CC8D");
+            entity.HasKey(e => e.VolunteerId).HasName("PK__Voluntee__716F6F2CFE61F34A");
 
             entity.Property(e => e.ApplicationType).HasMaxLength(50);
+            entity.Property(e => e.Assignment).HasMaxLength(100);
+            entity.Property(e => e.CarryItems).HasMaxLength(100);
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.UserId).HasMaxLength(450);
-
             entity.HasOne(d => d.CleanEvent).WithMany(p => p.Volunteers)
                 .HasForeignKey(d => d.CleanEventId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
