@@ -38,9 +38,12 @@
         </dl>
     </div>
     <div class="card-footer">
-        <a asp-action="ViewBlogReports" asp-route-blogId="@Model.BlogId" class="btn btn-warning">
-            Xem báo cáo
-        </a>
+        <form asp-controller="EventStaff" asp-action="BlogApprove" asp-route-id="@Model.BlogId" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-success btn-sm"
+                    onclick="return confirm('Bạn có chắc muốn phê duyệt bài viết này không?')">
+                Phê duyệt
+            </button>
+        </form>
         <a asp-action="ViewPendingPosts" class="btn btn-secondary">← Quay lại danh sách</a>
     </div>
 </div>

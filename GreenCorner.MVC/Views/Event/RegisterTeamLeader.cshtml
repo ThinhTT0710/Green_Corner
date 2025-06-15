@@ -1,0 +1,21 @@
+﻿@model GreenCorner.MVC.Models.VolunteerDTO
+
+<h3>Đăng ký Team Leader</h3>
+
+<form asp-action="RegisterTeamLeader" method="post">
+    <input type="hidden" asp-for="CleanEventId" />
+    <input type="hidden" asp-for="UserId" />
+    <input type="hidden" asp-for="ApplicationType" value="TeamLeader" />
+
+    <div class="mb-3">
+        <label asp-for="Assignment" class="form-label">Nhiệm vụ sẽ phụ trách</label>
+        <input asp-for="Assignment" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CarryItems" class="form-label">Vật dụng mang theo</label>
+        <input asp-for="CarryItems" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Xác nhận đăng ký TeamLeader</button>
+</form>
