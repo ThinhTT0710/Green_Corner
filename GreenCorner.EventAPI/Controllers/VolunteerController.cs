@@ -118,5 +118,25 @@ namespace GreenCorner.EventAPI.Controllers
                 return _responseDTO;
             }
         }
+
+        [HttpPut("updateregister")]
+        public async Task<ResponseDTO> UpdateRegister([FromBody] VolunteerDTO volunteerDto)
+        {
+            try
+            {
+                await _volunteerService.UpdateRegister(volunteerDto);
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = "Cập nhật đăng ký thành công.";
+                _responseDTO.Result = true;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.Message;
+                _responseDTO.Result = false;
+            }
+            return _responseDTO;
+        }
+
     }
 }

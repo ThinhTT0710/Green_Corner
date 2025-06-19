@@ -48,5 +48,15 @@ namespace GreenCorner.MVC.Services
                 Url = $"{SD.EventAPIBase}/api/Volunteer/unregister?eventId={eventId}&userId={userId}&role={role}"
             });
         }
+
+        public async Task<ResponseDTO?> UpdateRegister(VolunteerDTO volunteer)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.PUT,
+                Data = volunteer,
+                Url = SD.EventAPIBase + "/api/Volunteer/updateregister"
+            });
+        }
     }
 }

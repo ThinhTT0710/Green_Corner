@@ -67,6 +67,14 @@
         {
             <!-- Đã đăng ký tình nguyện viên -->
             <div class="col-5 pb-2">
+                <a asp-controller="Event"
+                   asp-action="UpdateRegister"
+                   asp-route-eventId="@Model.CleanEventId"
+                   class="btn btn-info form-control">
+                    Cập nhật đăng ký Volunteer
+                </a>
+            </div>
+            <div class="col-5 pb-2">
                 <form asp-controller="Event"
                       asp-action="UnregisterVolunteer"
                       method="post" class="d-inline">
@@ -81,6 +89,14 @@
         else if (isTeamLeader)
         {
             <!-- Đã đăng ký đội trưởng -->
+            <div class="col-5 offset-2 pb-2">
+                <a asp-controller="Event"
+                   asp-action="UpdateRegister"
+                   asp-route-eventId="@Model.CleanEventId"
+                   class="btn btn-info form-control">
+                    Cập nhật đăng ký Team Leader
+                </a>
+            </div>
             <div class="col-5 offset-2 pb-2">
                 <form asp-controller="Event"
                       asp-action="UnregisterTeamLeader"

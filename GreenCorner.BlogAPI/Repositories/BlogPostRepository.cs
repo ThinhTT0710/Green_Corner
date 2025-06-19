@@ -77,9 +77,13 @@ namespace GreenCorner.BlogAPI.Repositories
             if (product == null)
             {
                 throw new KeyNotFoundException($"Blog with ID {item.BlogId} not found.");
+            }else if(product.Status != "Pending")
+            {
+                throw new InvalidOperationException("Bài viết không thể chỉnh sửa.");
             }
             _context.Entry(product).CurrentValues.SetValues(item);
             product.CreatedAt = DateTime.Now;
+            product.Status = "Pending";
             await _context.SaveChangesAsync();
         }
     }

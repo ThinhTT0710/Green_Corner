@@ -2,6 +2,7 @@
 using GreenCorner.EventAPI.Models;
 using GreenCorner.EventAPI.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace GreenCorner.EventAPI.Repositories
 {
@@ -50,6 +51,26 @@ namespace GreenCorner.EventAPI.Repositories
         {
             return await _context.Volunteers
                 .AnyAsync(v => v.CleanEventId == eventId && v.UserId == userId && v.ApplicationType == role && v.Status == "Pending");
+        }
+
+        public async Task UpdateRegister(Volunteer volunteer)
+        {
+            var volunteers = await _context.Volunteers.FirstOrDefaultAsync(v => v.CleanEventId == volunteer.CleanEventId && v.UserId == volunteer.UserId);
+
+            if (volunteers == null)
+            {
+                throw new KeyNotFoundException($"Volunteer with ID {volunteers.VolunteerId} not found.");
+            }
+            else if (volunteers.Status != "Pending")
+            {
+                throw new InvalidOperationException("Không thể chỉnh sửa đăng ký.");
+            }
+            //_context.Entry(volunteers).CurrentValues.SetValues(volunteer);
+            volunteers.Assignment = volunteer.Assignment;
+            volunteers.CarryItems = volunteer.CarryItems;
+            volunteers.CreatedAt = DateTime.Now;
+            volunteers.Status = "Pending";
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -408,5 +408,64 @@ namespace GreenCorner.MVC.Controllers
 
             return RedirectToAction(nameof(GetEventById), new { eventId });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> UpdateRegister(int eventId)
+        {
+            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            // Kiểm xem người dùng đã đăng ký chưa
+            var volunteerResponse = await _volunteerService.IsVolunteer(eventId, userId);
+            var teamLeaderResponse = await _volunteerService.IsTeamLeader(eventId, userId);
+
+            bool isVolunteer = volunteerResponse?.IsSuccess == true &&
+                               volunteerResponse?.Result is bool v && v;
+
+            bool isTeamLeader = teamLeaderResponse?.IsSuccess == true &&
+                                teamLeaderResponse?.Result is bool t && t;
+
+            var dto = new VolunteerDTO
+            {
+                CleanEventId = eventId,
+                UserId = userId,
+            };
+
+            if (isVolunteer)
+            {
+                dto.ApplicationType = "Volunteer";
+            }
+            else if (isTeamLeader)
+            {
+                dto.ApplicationType = "TeamLeader";
+            }           
+            return View(dto);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateRegister(VolunteerDTO volunteerDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(volunteerDto);
+            }
+            try
+            {
+                await _volunteerService.UpdateRegister(volunteerDto);
+                TempData["Success"] = "Cập nhật đăng ký thành công.";
+                return RedirectToAction("GetEventById", "Event", new { eventId = volunteerDto.CleanEventId });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(volunteerDto);
+            }
+        }
+
+
     }
 }

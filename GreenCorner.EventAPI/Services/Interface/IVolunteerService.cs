@@ -1,4 +1,5 @@
-﻿using GreenCorner.EventAPI.Models.DTO;
+﻿using GreenCorner.EventAPI.Models;
+using GreenCorner.EventAPI.Models.DTO;
 
 namespace GreenCorner.EventAPI.Services.Interface
 {
@@ -9,5 +10,6 @@ namespace GreenCorner.EventAPI.Services.Interface
         Task<bool> CheckRegisteredAsync(int eventId, string userId, string applicationType);
         Task<bool> IsVolunteer(int eventId, string userId);
         Task<bool> IsTeamLeader(int eventId, string userId);
+        Task UpdateRegister(VolunteerDTO volunteer);
     }
 }
