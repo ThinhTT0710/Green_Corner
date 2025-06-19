@@ -40,7 +40,9 @@
                            class="btn btn-sm btn-primary">
                             Xem chi tiết
                         </a>
-
+                        <a asp-controller="BlogPost" asp-action="UpdateBlog" asp-route-blogId="@blog.BlogId" class="btn btn-sm btn-success">
+                            Update
+                        </a>
                         <form asp-controller="EventStaff" asp-action="BlogApprove" asp-route-id="@blog.BlogId" method="post" style="display:inline;">
                             <button type="submit" class="btn btn-success btn-sm"
                                     onclick="return confirm('Bạn có chắc muốn phê duyệt bài viết này không?')">

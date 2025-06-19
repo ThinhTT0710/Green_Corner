@@ -8,5 +8,6 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> UnregisterAsync(int eventId, string userId, string role);
         Task<ResponseDTO?> IsVolunteer(int eventId, string userId);
         Task<ResponseDTO?> IsTeamLeader(int eventId, string userId);
+        Task<ResponseDTO?> UpdateRegister(VolunteerDTO volunteer);
     }
 }

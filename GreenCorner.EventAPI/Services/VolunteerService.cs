@@ -75,5 +75,11 @@ namespace GreenCorner.EventAPI.Services
 
             return "Vai trò không hợp lệ.";
         }
+
+        public async Task UpdateRegister(VolunteerDTO volunteerDto)
+        {
+            Volunteer volunteer = _mapper.Map<Volunteer>(volunteerDto);
+            await _volunteerRepository.UpdateRegister(volunteer);
+        }
     }
 }
