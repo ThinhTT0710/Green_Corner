@@ -16,9 +16,43 @@ namespace GreenCorner.EventAPI.Services
             _mapper = mapper;
         }
 
+        public async Task ApproveTeamLeaderRegistration(int id)
+        {
+            await _volunteerRepository.ApproveTeamLeaderRegistration(id);
+        }
+
+        public async Task ApproveVolunteerRegistration(int id)
+        {
+            await _volunteerRepository.ApproveVolunteerRegistration(id);
+        }
+
         public async Task<bool> CheckRegisteredAsync(int eventId, string userId, string applicationType)
         {
             return await _volunteerRepository.CheckRegister(eventId, userId, applicationType);
+        }
+
+        public async Task<IEnumerable<VolunteerDTO>> GetAllTeamLeaderRegistrations()
+        {
+            var leaders = await _volunteerRepository.GetAllTeamLeaderRegistrations();
+            return _mapper.Map<List<VolunteerDTO>>(leaders);
+        }
+
+        public async Task<IEnumerable<VolunteerDTO>> GetAllVolunteerRegistrations()
+        {
+            var volunteers = await _volunteerRepository.GetAllVolunteerRegistrations();
+            return _mapper.Map<List<VolunteerDTO>>(volunteers);
+        }
+
+        public async Task<VolunteerDTO> GetTeamLeaderRegistrationById(int id)
+        {
+            var leader = await _volunteerRepository.GetTeamLeaderRegistrationById(id);
+            return _mapper.Map<VolunteerDTO>(leader);
+        }
+
+        public async Task<VolunteerDTO> GetVolunteerRegistrationById(int id)
+        {
+            var volunteer = await _volunteerRepository.GetVolunteerRegistrationById(id);
+            return _mapper.Map<VolunteerDTO>(volunteer);
         }
 
         public async Task<bool> IsTeamLeader(int eventId, string userId)

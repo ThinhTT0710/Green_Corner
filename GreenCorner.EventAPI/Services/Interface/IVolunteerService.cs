@@ -11,5 +11,12 @@ namespace GreenCorner.EventAPI.Services.Interface
         Task<bool> IsVolunteer(int eventId, string userId);
         Task<bool> IsTeamLeader(int eventId, string userId);
         Task UpdateRegister(VolunteerDTO volunteer);
+        Task<IEnumerable<VolunteerDTO>> GetAllVolunteerRegistrations();
+        Task<VolunteerDTO> GetVolunteerRegistrationById(int id);
+        Task ApproveVolunteerRegistration(int id);
+
+        Task<IEnumerable<VolunteerDTO>> GetAllTeamLeaderRegistrations();
+        Task<VolunteerDTO> GetTeamLeaderRegistrationById(int id);
+        Task ApproveTeamLeaderRegistration(int id);
     }
 }

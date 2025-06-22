@@ -55,6 +55,13 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="EventStaff" asp-action="ViewPendingPosts">Pending Post</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="EventStaff" asp-action="ViewVolunteerRegistrations">Tình nguyện viên chờ duyệt</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="EventStaff" asp-action="ViewTeamLeaderRegistrations">Trưởng nhóm chờ duyệt</a>
+                        </li>
+
                     </ul>
                     <ul class="navbar-nav">
                         @if (!User.Identity.IsAuthenticated)

@@ -10,7 +10,6 @@ namespace GreenCorner.BlogAPI.Repositories.Interface
         Task AddBlog(BlogPost item);
         Task UpdateBlog(BlogPost item);
         Task DeleteBlog(int id);
-
         Task BlogApproval(int id);
     }
 }
