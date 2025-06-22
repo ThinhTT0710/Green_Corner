@@ -9,5 +9,11 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> IsVolunteer(int eventId, string userId);
         Task<ResponseDTO?> IsTeamLeader(int eventId, string userId);
         Task<ResponseDTO?> UpdateRegister(VolunteerDTO volunteer);
+        Task<ResponseDTO?>  GetAllVolunteerRegistrations();
+        Task<ResponseDTO?>  GetVolunteerRegistrationById(int id);
+        Task<ResponseDTO?> ApproveVolunteerRegistration(int id);
+        Task<ResponseDTO?>  GetAllTeamLeaderRegistrations();
+        Task<ResponseDTO?>  GetTeamLeaderRegistrationById(int id);
+        Task<ResponseDTO?>  ApproveTeamLeaderRegistration(int id);
     }
 }

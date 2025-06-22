@@ -138,5 +138,112 @@ namespace GreenCorner.EventAPI.Controllers
             return _responseDTO;
         }
 
+        [HttpGet("volunteer-registrations")]
+        public async Task<ResponseDTO> GetAllVolunteerRegistrations()
+        {
+            try
+            {
+                var result = await _volunteerService.GetAllVolunteerRegistrations();
+                _responseDTO.Result = result;
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = "Lấy danh sách tình nguyện viên thành công.";
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.Message;
+            }
+            return _responseDTO;
+        }
+
+        [HttpGet("volunteer-registration/{id}")]
+        public async Task<ResponseDTO> GetVolunteerRegistrationById(int id)
+        {
+            try
+            {
+                var result = await _volunteerService.GetVolunteerRegistrationById(id);
+                _responseDTO.Result = result;
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = "Lấy chi tiết tình nguyện viên thành công.";
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.Message;
+            }
+            return _responseDTO;
+        }
+
+        [HttpPost("approve-volunteer/{id}")]
+        public async Task<ResponseDTO> ApproveVolunteer(int id)
+        {
+            try
+            {
+                await _volunteerService.ApproveVolunteerRegistration(id);
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = "Phê duyệt tình nguyện viên thành công.";
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.Message;
+            }
+            return _responseDTO;
+        }
+
+        [HttpGet("teamleader-registrations")]
+        public async Task<ResponseDTO> GetAllTeamLeaderRegistrations()
+        {
+            try
+            {
+                var result = await _volunteerService.GetAllTeamLeaderRegistrations();
+                _responseDTO.Result = result;
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = "Lấy danh sách trưởng nhóm thành công.";
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.Message;
+            }
+            return _responseDTO;
+        }
+
+        [HttpGet("teamleader-registration/{id}")]
+        public async Task<ResponseDTO> GetTeamLeaderRegistrationById(int id)
+        {
+            try
+            {
+                var result = await _volunteerService.GetTeamLeaderRegistrationById(id);
+                _responseDTO.Result = result;
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = "Lấy chi tiết trưởng nhóm thành công.";
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.Message;
+            }
+            return _responseDTO;
+        }
+
+        [HttpPost("approve-teamleader/{id}")]
+        public async Task<ResponseDTO> ApproveTeamLeader(int id)
+        {
+            try
+            {
+                await _volunteerService.ApproveTeamLeaderRegistration(id);
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = "Phê duyệt trưởng nhóm thành công.";
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.Message;
+            }
+            return _responseDTO;
+        }
+
+
     }
 }

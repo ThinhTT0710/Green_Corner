@@ -72,5 +72,81 @@ namespace GreenCorner.EventAPI.Repositories
             volunteers.Status = "Pending";
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<Volunteer>> GetAllVolunteerRegistrations()
+        {
+            return await _context.Volunteers.Where(v => v.ApplicationType != null && v.ApplicationType == "Volunteer" && v.Status == "Pending").ToListAsync();
+        }
+
+        public async Task<Volunteer> GetVolunteerRegistrationById(int id)
+        {
+            return await _context.Volunteers
+                        .FirstOrDefaultAsync(v => v.VolunteerId == id && v.ApplicationType == "Volunteer")
+                        ?? throw new KeyNotFoundException($"Không tìm thấy đơn đăng ký tình nguyện viên với ID = {id}");
+        }
+
+        public async Task ApproveVolunteerRegistration(int id)
+        {
+            var volunteer = await _context.Volunteers.FindAsync(id);
+            if (volunteer == null)
+            {
+                throw new KeyNotFoundException($"Volunteer with ID {id} not found.");
+            }
+            volunteer.Status = "Approved";
+
+            var eventVolunteer = new EventVolunteer
+            {
+                CleanEventId = volunteer.CleanEventId,
+                UserId = volunteer.UserId,
+                IsTeamLeader = false,
+                AttendanceStatus = "Not Yet", 
+                PointsAwarded = 0,
+                JoinDate = DateTime.Now,
+                Note = string.IsNullOrWhiteSpace(volunteer.Assignment) && string.IsNullOrWhiteSpace(volunteer.CarryItems)
+                    ? null
+                    : string.Join(" - ", new[] { volunteer.Assignment, volunteer.CarryItems }.Where(s => !string.IsNullOrWhiteSpace(s)))
+            };
+            _context.EventVolunteers.Add(eventVolunteer);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Volunteer>> GetAllTeamLeaderRegistrations()
+        {
+            return await _context.Volunteers.Where(v => v.ApplicationType != null && v.ApplicationType == "TeamLeader" && v.Status == "Pending").ToListAsync();
+        }
+
+        public async Task<Volunteer> GetTeamLeaderRegistrationById(int id)
+        {
+            return await _context.Volunteers
+                        .FirstOrDefaultAsync(v => v.VolunteerId == id && v.ApplicationType == "TeamLeader")
+                        ?? throw new KeyNotFoundException($"Không tìm thấy đơn đăng ký trưởng nhóm với ID = {id}");
+        }
+
+        public async Task ApproveTeamLeaderRegistration(int id)
+        {
+            var volunteer = await _context.Volunteers.FindAsync(id);
+            if (volunteer == null)
+            {
+                throw new KeyNotFoundException($"TeamLeader with ID {id} not found.");
+            }
+            volunteer.Status = "Approved";
+
+            var eventVolunteer = new EventVolunteer
+            {
+                CleanEventId = volunteer.CleanEventId,
+                UserId = volunteer.UserId,
+                IsTeamLeader = true,
+                AttendanceStatus = "Not Yet",
+                PointsAwarded = 0,
+                JoinDate = DateTime.Now,
+                Note = string.IsNullOrWhiteSpace(volunteer.Assignment) && string.IsNullOrWhiteSpace(volunteer.CarryItems)
+                    ? null
+                    : string.Join(" - ", new[] { volunteer.Assignment, volunteer.CarryItems }.Where(s => !string.IsNullOrWhiteSpace(s)))
+            };
+            _context.EventVolunteers.Add(eventVolunteer);
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

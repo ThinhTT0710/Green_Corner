@@ -12,6 +12,60 @@ namespace GreenCorner.MVC.Services
             _baseService = baseService;
         }
 
+        public async Task<ResponseDTO?> ApproveTeamLeaderRegistration(int id)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.POST,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/approve-teamleader/{id}"
+            });
+        }
+
+        public async Task<ResponseDTO?> ApproveVolunteerRegistration(int id)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.POST,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/approve-volunteer/{id}"
+            });
+        }
+
+        public async Task<ResponseDTO?> GetAllTeamLeaderRegistrations()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/teamleader-registrations"
+            });
+        }
+
+        public async Task<ResponseDTO?> GetAllVolunteerRegistrations()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/volunteer-registrations"
+            });
+        }
+
+        public async Task<ResponseDTO?> GetTeamLeaderRegistrationById(int id)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/teamleader-registration/{id}"
+            });
+        }
+
+        public async Task<ResponseDTO?> GetVolunteerRegistrationById(int id)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/volunteer-registration/{id}"
+            });
+        }
+
         public async Task<ResponseDTO?> IsTeamLeader(int eventId, string userId)
         {
             return await _baseService.SendAsync(new RequestDTO

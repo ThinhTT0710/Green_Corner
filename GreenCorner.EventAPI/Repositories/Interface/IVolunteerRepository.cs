@@ -10,5 +10,12 @@ namespace GreenCorner.EventAPI.Repositories.Interface
         Task UnRegisteVolunteer(int eventId, string userId, string role);
         Task<bool> CheckRegister(int eventId, string userId, string role);
         Task UpdateRegister(Volunteer volunteer);
+        Task<IEnumerable<Volunteer>> GetAllVolunteerRegistrations();
+        Task<Volunteer> GetVolunteerRegistrationById(int id);
+        Task ApproveVolunteerRegistration(int id);
+
+        Task<IEnumerable<Volunteer>> GetAllTeamLeaderRegistrations();
+        Task<Volunteer> GetTeamLeaderRegistrationById(int id);
+        Task ApproveTeamLeaderRegistration(int id);
     }
 }

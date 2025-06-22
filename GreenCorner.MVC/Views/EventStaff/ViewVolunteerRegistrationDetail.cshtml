@@ -1,0 +1,52 @@
+﻿@model GreenCorner.MVC.ViewModels.VolunteerWithUserViewModel
+
+@{
+    ViewData["Title"] = "Chi tiết đăng ký tình nguyện viên";
+}
+
+<h2 class="mb-4 text-primary">@ViewData["Title"]</h2>
+
+<div class="card shadow-sm p-4">
+    <h5 class="text-secondary">Thông tin người dùng</h5>
+    <dl class="row">
+        <dt class="col-sm-4 fw-bold">ID người dùng:</dt>
+        <dd class="col-sm-8">@Model.User.ID</dd>
+
+        <dt class="col-sm-4 fw-bold">Họ tên:</dt>
+        <dd class="col-sm-8">@Model.User.FullName</dd>
+
+        <dt class="col-sm-4 fw-bold">Email:</dt>
+        <dd class="col-sm-8">@Model.User.Email</dd>
+    </dl>
+
+    <hr />
+
+    <h5 class="text-secondary">Thông tin đơn đăng ký</h5>
+    <dl class="row">
+        <dt class="col-sm-4 fw-bold">Mã đăng ký:</dt>
+        <dd class="col-sm-8">@Model.Volunteer.VolunteerId</dd>
+
+        <dt class="col-sm-4 fw-bold">Sự kiện:</dt>
+        <dd class="col-sm-8">@Model.Volunteer.CleanEventId</dd>
+
+        <dt class="col-sm-4 fw-bold">Loại đơn:</dt>
+        <dd class="col-sm-8">@Model.Volunteer.ApplicationType </dd>
+
+        <dt class="col-sm-4 fw-bold">Trạng thái:</dt>
+        <dd class="col-sm-8">@Model.Volunteer.Status </dd>
+
+        <dt class="col-sm-4 fw-bold">Phân công:</dt>
+        <dd class="col-sm-8">@Model.Volunteer.Assignment </dd>
+
+        <dt class="col-sm-4 fw-bold">Vật dụng mang theo:</dt>
+        <dd class="col-sm-8">@Model.Volunteer.CarryItems </dd>
+
+        <dt class="col-sm-4 fw-bold">Ngày tạo:</dt>
+        <dd class="col-sm-8">@Model.Volunteer.CreatedAt?.ToString("dd/MM/yyyy HH:mm") </dd>
+    </dl>
+
+    <form asp-action="ApproveVolunteer" asp-route-id="@Model.Volunteer.VolunteerId" method="post">
+        <button type="submit" class="btn btn-success">Phê duyệt</button>
+        <a asp-action="ViewVolunteerRegistrations" class="btn btn-secondary ms-2">Quay lại</a>
+    </form>
+</div>
