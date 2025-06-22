@@ -29,9 +29,12 @@ builder.Services.AddHttpClient<IProductService, ProductService>();
 builder.Services.AddHttpClient<ICartService, CartService>();
 builder.Services.AddHttpClient<ITrashEventService, TrashEventService>();
 builder.Services.AddHttpClient<IOrderService, OrderService>();
+builder.Services.AddHttpClient<IEventService, EventService>();
+builder.Services.AddHttpClient<ITrashEventService, TrashEventService>();
 
 SD.AuthAPIBase = builder.Configuration["ServiceUrls:AuthAPI"];
 SD.EcommerceAPIBase = builder.Configuration["ServiceUrls:EcommerceAPI"];
+SD.BlogAPIBase = builder.Configuration["ServiceUrls:BlogAPI"];
 SD.EventAPIBase = builder.Configuration["ServiceUrls:EventAPI"];
 
 builder.Services.AddScoped<IBaseService, BaseService>();
@@ -43,6 +46,14 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ITrashEventService, TrashEventService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
+builder.Services.AddScoped<IBlogFavoriteService, BlogFavoriteService>();
+builder.Services.AddScoped<IBlogPostService, BlogPostService>();
+builder.Services.AddScoped<IBlogReportService, BlogReportService>();
+builder.Services.AddScoped<IFeedbackService,FeedbackService>();
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<ITrashEventService, TrashEventService>();
+builder.Services.AddScoped<IVolunteerService, VolunteerService>();
 
 // Add authentication
 builder.Services.AddAuthentication(options =>

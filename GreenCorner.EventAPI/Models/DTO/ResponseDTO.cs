@@ -1,4 +1,4 @@
-﻿namespace GreenCorner.EventAPI.DTOs
+﻿namespace GreenCorner.EventAPI.Models.DTO
 {
     public class ResponseDTO
     {

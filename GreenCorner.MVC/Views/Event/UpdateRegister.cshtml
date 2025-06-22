@@ -1,0 +1,26 @@
+﻿@model VolunteerDTO
+
+<h2>Cập nhật đăng ký</h2>
+
+<form asp-action="UpdateRegister" method="post">
+    <input asp-for="CleanEventId" type="hidden" />
+    <input asp-for="UserId" type="hidden" />
+    <input asp-for="ApplicationType" type="hidden" />
+    <div>
+        <label>Application Type</label>
+        <input value="@Model.ApplicationType" disabled />
+    </div>
+
+    <div>
+        <label for="Assignment">Nhiệm vụ</label>
+        <input asp-for="Assignment" />
+    </div>
+
+    <div>
+        <label for="CarryItems">Dụng cụ</label>
+        <input asp-for="CarryItems" />
+    </div>
+
+    <br />
+    <input type="submit" value="Cập nhật" />
+</form>
