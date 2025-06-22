@@ -49,9 +49,13 @@ namespace GreenCorner.AuthAPI.Repositories
                     Avatar = user.Avatar,
                     PhoneNumber = user.PhoneNumber,
                     Address = user.Address,
-                    IsBan = user.LockoutEnabled,
                 };
-                return Task.FromResult(userDTO);
+
+				if (user.LockoutEnd.HasValue)
+				{
+					userDTO.IsBan = true;
+				}
+				return Task.FromResult(userDTO);
             }
             return null;
         }
@@ -84,5 +88,76 @@ namespace GreenCorner.AuthAPI.Repositories
                 return false;
             }
         }
-    }
+
+		public async Task<UserDTO> BanUser(string id)
+		{
+			var user = await _dbContext.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+			if (user != null)
+			{
+				user.LockoutEnd = DateTimeOffset.UtcNow.AddDays(30);
+				_dbContext.SaveChanges();
+				UserDTO userDTO = new UserDTO
+				{
+					ID = user.Id,
+					FullName = user.FullName,
+					Email = user.Email,
+					Address = user.Address,
+					Avatar = user.Avatar,
+					PhoneNumber = user.PhoneNumber
+				};
+				return userDTO;
+			}
+			throw new System.Exception("User not found");
+		}
+
+		public async Task<UserDTO> UnBanUser(string id)
+		{
+			var user = _dbContext.Users.Where(u => u.Id == id).FirstOrDefault();
+			if (user != null)
+			{
+				user.LockoutEnd = null;
+				_dbContext.SaveChanges();
+				UserDTO userDTO = new UserDTO
+				{
+					ID = user.Id,
+					FullName = user.FullName,
+					Email = user.Email,
+					Address = user.Address,
+					Avatar = user.Avatar,
+					PhoneNumber = user.PhoneNumber
+				};
+				return userDTO;
+			}
+			throw new System.Exception("User not found");
+		}
+
+		public async Task<List<UserDTO>> GetAllUser()
+		{
+			var users = await _dbContext.Users.ToListAsync();
+			List<UserDTO> userDTOs = new List<UserDTO>();
+			foreach (var user in users)
+			{
+				var roles = await _userManager.GetRolesAsync(user);
+				if (roles.Contains("CUSTOMER"))
+				{
+					UserDTO userDTO = new UserDTO
+					{
+						ID = user.Id,
+						FullName = user.FullName,
+						Email = user.Email,
+						Address = user.Address,
+						Avatar = user.Avatar,
+						PhoneNumber = user.PhoneNumber
+					};
+
+					if (user.LockoutEnd.HasValue)
+					{
+						userDTO.IsBan = true;
+					}
+					userDTOs.Add(userDTO);
+				}
+			}
+			return userDTOs;
+		}
+	}
 }
