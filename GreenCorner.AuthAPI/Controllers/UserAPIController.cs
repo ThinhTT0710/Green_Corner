@@ -66,5 +66,67 @@ namespace GreenCorner.AuthAPI.Controllers
             }
             return Ok(_response);
         }
-    }
+
+		[HttpGet("get-all-user")]
+		public async Task<ResponseDTO> GetAllUser()
+		{
+			var users = await _userService.GetAllUser();
+			if (users == null)
+			{
+				_response.Message = "No user found";
+				_response.IsSuccess = false;
+				return _response;
+			}
+			_response.Result = users;
+			return _response;
+		}
+
+		[HttpGet("ban-user/{id}")]
+		public async Task<ResponseDTO> BanUser(string id)
+		{
+			try
+			{
+				var user = await _userService.BanUser(id);
+				if (user == null)
+				{
+					_response.Message = "User not found";
+					_response.IsSuccess = false;
+					return _response;
+				}
+				_response.Message = "User has been locked for 30 days";
+				_response.Result = user;
+				return _response;
+			}
+			catch (Exception ex)
+			{
+				_response.Message = ex.Message;
+				_response.IsSuccess = false;
+				return _response;
+			}
+		}
+
+		[HttpGet("unban-user/{id}")]
+		public async Task<ResponseDTO> UnBanUser(string id)
+		{
+			try
+			{
+				var user = await _userService.UnBanUser(id);
+				if (user == null)
+				{
+					_response.Message = "User not found";
+					_response.IsSuccess = false;
+					return _response;
+				}
+				_response.Message = "User has been unlocked";
+				_response.Result = user;
+				return _response;
+			}
+			catch (Exception ex)
+			{
+				_response.Message = ex.Message;
+				_response.IsSuccess = false;
+				return _response;
+			}
+		}
+	}
 }

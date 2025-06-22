@@ -52,8 +52,10 @@ namespace GreenCorner.AuthAPI.Repositories
                 };
             }
 
-            // Generate JWT token
-            var roles = await _userManager.GetRolesAsync(user);
+            CheckUserLocked(user);
+
+			// Generate JWT token
+			var roles = await _userManager.GetRolesAsync(user);
             var token = _jwtTokenGenerator.GenerateToken(user, roles);
 
             UserDTO userDto = new()
@@ -103,13 +105,13 @@ namespace GreenCorner.AuthAPI.Repositories
 
                     await _userManager.AddToRoleAsync(user, "CUSTOMER");
                 }
-
-                var addLoginResult = await _userManager.AddLoginAsync(user, loginInfo);
+                
+				var addLoginResult = await _userManager.AddLoginAsync(user, loginInfo);
                 if (!addLoginResult.Succeeded)
                     return new LoginResponseDTO();
             }
-
-            var roles = await _userManager.GetRolesAsync(user);
+			CheckUserLocked(user);
+			var roles = await _userManager.GetRolesAsync(user);
             var token = _jwtTokenGenerator.GenerateToken(user, roles);
 
             return new LoginResponseDTO
@@ -158,13 +160,13 @@ namespace GreenCorner.AuthAPI.Repositories
 
                     await _userManager.AddToRoleAsync(user, "CUSTOMER");
                 }
-
-                var addLoginResult = await _userManager.AddLoginAsync(user, loginInfo);
+				
+				var addLoginResult = await _userManager.AddLoginAsync(user, loginInfo);
                 if (!addLoginResult.Succeeded)
                     return new LoginResponseDTO();
             }
-
-            var roles = await _userManager.GetRolesAsync(user);
+			CheckUserLocked(user);
+			var roles = await _userManager.GetRolesAsync(user);
             var token = _jwtTokenGenerator.GenerateToken(user, roles);
 
             var userDto = new UserDTO
@@ -225,5 +227,16 @@ namespace GreenCorner.AuthAPI.Repositories
             }
             return "Error Encountered";
         }
-    }
+
+		private void CheckUserLocked(User user)
+		{
+			if (user.LockoutEnd != null && user.LockoutEnd > DateTimeOffset.UtcNow)
+			{
+				DateTime lockUntil = user.LockoutEnd.Value.DateTime;
+				var remaining = lockUntil - DateTime.Now;
+				throw new Exception($"Your account is locked for {remaining.Days} days {remaining.Hours} hours {remaining.Minutes} minutes");
+			}
+		}
+
+	}
 }

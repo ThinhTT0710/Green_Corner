@@ -24,7 +24,7 @@ namespace GreenCorner.EcommerceAPI.Repositories
             var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
-                throw new KeyNotFoundException($"Product with ID {id} not found.");
+                throw new Exception($"Product with ID {id} not found.");
             }
             //product.IsDeleted = true;
             _context.Products.Remove(product);
@@ -40,7 +40,7 @@ namespace GreenCorner.EcommerceAPI.Repositories
         {
             return await _context.Products
                 .FirstOrDefaultAsync(p => p.ProductId == id)
-                ?? throw new KeyNotFoundException($"Product with ID {id} not found.");
+                ?? throw new Exception($"Product with ID {id} not found.");
         }
 
         public async Task UpdateProduct(Product item)
@@ -48,7 +48,7 @@ namespace GreenCorner.EcommerceAPI.Repositories
             var product = await _context.Products.FindAsync(item.ProductId);
             if (product == null)
             {
-                throw new KeyNotFoundException($"Product with ID {item.ProductId} not found.");
+                throw new Exception($"Product with ID {item.ProductId} not found.");
             }
             _context.Entry(product).CurrentValues.SetValues(item);
             product.UpdatedAt = DateTime.Now;

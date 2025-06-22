@@ -8,5 +8,8 @@ namespace GreenCorner.AuthAPI.Repositories.Interface
         Task<UserDTO> UpdateUser(UserDTO user);
         Task<bool> ChangePassword(ChangePasswordRequestDTO changePasswordRequest);
         Task<bool> CheckPhoneNumber(string phoneNumber, string userId);
-    }
+		Task<UserDTO> BanUser(string id);
+		Task<UserDTO> UnBanUser(string id);
+		Task<List<UserDTO>> GetAllUser();
+	}
 }
