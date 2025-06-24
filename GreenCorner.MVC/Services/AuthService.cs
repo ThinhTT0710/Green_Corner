@@ -41,7 +41,6 @@ namespace GreenCorner.MVC.Services
                 APIType = SD.APIType.POST,
                 Url = SD.AuthAPIBase + "/api/auth/register",
                 Data = registerationRequest
-
             }, withBearer: false);
         }
 
@@ -101,5 +100,54 @@ namespace GreenCorner.MVC.Services
                 Data = facebookLoginRequest
             }, withBearer: false);
         }
-    }
+
+		public async Task<ResponseDTO?> GetAllStaff()
+		{
+			return await _baseService.SendAsync(new RequestDTO
+			{
+				APIType = SD.APIType.GET,
+				Url = SD.AuthAPIBase + "/api/Admin"
+			});
+		}
+
+		public async Task<ResponseDTO?> GetStaffById(string id)
+		{
+			return await _baseService.SendAsync(new RequestDTO
+			{
+				APIType = SD.APIType.GET,
+				Url = SD.AuthAPIBase + "/api/Admin/"+id
+			});
+		}
+
+		public async Task<ResponseDTO?> CreateStaff(StaffDTO staff)
+		{
+			return await _baseService.SendAsync(new RequestDTO
+			{
+				APIType = SD.APIType.POST,
+				Data = staff,
+				Url = SD.AuthAPIBase + "/api/Admin"
+			});
+		}
+
+	
+		
+
+		public async Task<ResponseDTO?> BlockStaffAccount(string id)
+		{
+			return await _baseService.SendAsync(new RequestDTO
+			{
+				APIType = SD.APIType.GET,
+				Url = SD.AuthAPIBase + "/api/Admin/block-staff/" + id
+			});
+		}
+
+		public async Task<ResponseDTO?> UnBlockStaffAccount(string id)
+		{
+			return await _baseService.SendAsync(new RequestDTO
+			{
+				APIType = SD.APIType.GET,
+				Url = SD.AuthAPIBase + "/api/Admin/unblock-staff/" + id
+			});
+		}
+	}
 }

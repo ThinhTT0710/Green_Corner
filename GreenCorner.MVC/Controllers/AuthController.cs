@@ -273,5 +273,81 @@ namespace GreenCorner.MVC.Controllers
             var principal = new ClaimsPrincipal(identity);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
         }
-    }
+
+		public async Task<IActionResult> GetStaffList()
+		{
+			List<UserDTO> listStaff = new();
+			ResponseDTO? response = await _authService.GetAllStaff();
+			if (response != null && response.IsSuccess)
+			{
+				listStaff = JsonConvert.DeserializeObject<List<UserDTO>>(response.Result.ToString());
+			}
+			else
+			{
+				TempData["error"] = response?.Message;
+			}
+			return View(listStaff);
+		}
+        
+		public async Task<IActionResult> CreateStaff()
+		{
+			return View();
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> CreateStaff(StaffDTO staffDTO)
+		{
+			if (!User.Identity.IsAuthenticated)
+			{
+				TempData["loginError"] = "You need to log in to view your profile.";
+				return RedirectToAction("Login", "Auth");
+			}
+
+			var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
+            staffDTO.ID = userId;
+			if (ModelState.IsValid)
+			{
+				ResponseDTO response = await _authService.CreateStaff(staffDTO);
+				if (response != null && response.IsSuccess)
+				{
+					TempData["success"] = "Create Staff successfully!";
+					return RedirectToAction(nameof(GetStaffList));
+				}
+				else
+				{
+					TempData["error"] = response?.Message;
+				}
+			}
+			return View(staffDTO);
+		}
+		public async Task<IActionResult> BlockStaff(string staffID)
+		{
+            ResponseDTO response = await _authService.BlockStaffAccount(staffID);
+            if (response != null && response.IsSuccess)
+            {
+                return RedirectToAction(nameof(GetStaffList));
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+            return NotFound();
+        }
+
+		public async Task<IActionResult> UnBlockStaff(string staffID)
+		{
+			ResponseDTO response = await _authService.UnBlockStaffAccount(staffID);
+			if (response != null && response.IsSuccess)
+			{
+				return RedirectToAction(nameof(GetStaffList));
+			}
+			else
+			{
+				TempData["error"] = response?.Message;
+			}
+			return NotFound();
+		}
+
+
+	}
 }
