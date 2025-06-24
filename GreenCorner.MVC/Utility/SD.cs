@@ -5,7 +5,10 @@
         public static string AuthAPIBase { get; set; }
         public static string ProductAPIBase { get; set; }
         public static string EventAPIBase { get; set; }
+
         public const string RoleCustomer = "CUSTOMER";
+
+        public const string RoleStaff = "STAFF";
 
         public static string TokenCookie = "JWTToken";
         public enum APIType

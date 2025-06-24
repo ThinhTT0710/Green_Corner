@@ -38,6 +38,12 @@
                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="TrashEvent" asp-action="Index">ReportTrash</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="GetStaffList">GetStaffList</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Event" asp-action="ViewEventVolunteerList">Leader</a>
+                        </li>
                     </ul>
                     <ul class="navbar-nav">
                         @if (!User.Identity.IsAuthenticated)

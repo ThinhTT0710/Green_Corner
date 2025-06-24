@@ -19,9 +19,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GreenCorner.EcommerceAPI", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GreenCorner.EventAPI", "GreenCorner.EventAPI\GreenCorner.EventAPI.csproj", "{29A813F8-6274-45EE-B801-52F595D0FF03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GreenCorner.RewardAPI", "GreenCorner.RewardAPI\GreenCorner.RewardAPI.csproj", "{FC13417E-D056-4009-A5CC-EFA7E2DDBF36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GreenCorner.RewardAPI", "GreenCorner.RewardAPI\GreenCorner.RewardAPI.csproj", "{FC13417E-D056-4009-A5CC-EFA7E2DDBF36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GreenCorner.BlogAPI", "GreenCorner.BlogAPI\GreenCorner.BlogAPI.csproj", "{0968F185-4F4C-4AD0-A5C0-CE8875AEC02C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GreenCorner.BlogAPI", "GreenCorner.BlogAPI\GreenCorner.BlogAPI.csproj", "{0968F185-4F4C-4AD0-A5C0-CE8875AEC02C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{91D4568E-96E0-45BC-AFE7-2D2EFFC3DC5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GreenCorner_Test", "GreenCorner_Test\GreenCorner_Test.csproj", "{DD4508B1-30DE-4853-A657-5B1F374B8A12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +57,10 @@ Global
 		{0968F185-4F4C-4AD0-A5C0-CE8875AEC02C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0968F185-4F4C-4AD0-A5C0-CE8875AEC02C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0968F185-4F4C-4AD0-A5C0-CE8875AEC02C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD4508B1-30DE-4853-A657-5B1F374B8A12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD4508B1-30DE-4853-A657-5B1F374B8A12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD4508B1-30DE-4853-A657-5B1F374B8A12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD4508B1-30DE-4853-A657-5B1F374B8A12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +72,7 @@ Global
 		{29A813F8-6274-45EE-B801-52F595D0FF03} = {3D258449-AE09-48C2-8906-2388B8F48DED}
 		{FC13417E-D056-4009-A5CC-EFA7E2DDBF36} = {3D258449-AE09-48C2-8906-2388B8F48DED}
 		{0968F185-4F4C-4AD0-A5C0-CE8875AEC02C} = {3D258449-AE09-48C2-8906-2388B8F48DED}
+		{DD4508B1-30DE-4853-A657-5B1F374B8A12} = {91D4568E-96E0-45BC-AFE7-2D2EFFC3DC5A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23C91D87-0E44-411B-9357-25554137A54F}
