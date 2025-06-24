@@ -1,0 +1,29 @@
+﻿@model GreenCorner.MVC.Models.ReportDTO
+
+@{
+    ViewData["Title"] = "Gửi phản hồi";
+}
+
+<h2 class="mb-4">Gửi báo cáo</h2>
+
+<form asp-action="SubmitReport" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" placeholder="Nhập tiêu đề phản hồi" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Content" class="form-label"></label>
+        <textarea asp-for="Content" class="form-control" rows="5" placeholder="Nhập nội dung phản hồi..."></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Gửi phản hồi</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

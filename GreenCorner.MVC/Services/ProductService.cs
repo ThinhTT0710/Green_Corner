@@ -17,7 +17,7 @@ namespace GreenCorner.MVC.Services
             {
                 APIType = SD.APIType.POST,
                 Data = productDto,
-                Url = SD.ProductAPIBase + "/api/Product"
+                Url = SD.EcommerceAPIBase + "/api/Product"
             });
         }
 
@@ -26,7 +26,7 @@ namespace GreenCorner.MVC.Services
             return await _baseService.SendAsync(new RequestDTO
             {
                 APIType = SD.APIType.DELETE,
-                Url = SD.ProductAPIBase + "/api/Product/" + id
+                Url = SD.EcommerceAPIBase + "/api/Product/" + id
             });
         }
 
@@ -35,7 +35,7 @@ namespace GreenCorner.MVC.Services
             return await _baseService.SendAsync(new RequestDTO
             {
                 APIType = SD.APIType.GET,
-                Url = SD.ProductAPIBase + "/api/Product"
+                Url = SD.EcommerceAPIBase + "/api/Product"
             });
         }
 
@@ -44,7 +44,7 @@ namespace GreenCorner.MVC.Services
             return await _baseService.SendAsync(new RequestDTO
             {
                 APIType = SD.APIType.GET,
-                Url = SD.ProductAPIBase + "/api/Product/" + id
+                Url = SD.EcommerceAPIBase + "/api/Product/" + id
             });
         }
 
@@ -54,7 +54,7 @@ namespace GreenCorner.MVC.Services
             {
                 APIType = SD.APIType.PUT,
                 Data = productDto,
-                Url = SD.ProductAPIBase + "/api/Product"
+                Url = SD.EcommerceAPIBase + "/api/Product"
             });
         }
     }

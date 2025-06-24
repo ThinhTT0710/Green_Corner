@@ -11,6 +11,9 @@ namespace GreenCorner.EcommerceAPI.Mapping
             var mappingConfig = new MapperConfiguration( config =>
             {
                 config.CreateMap<ProductDTO, Product>().ReverseMap();
+                config.CreateMap<CartDTO, Cart>().ReverseMap();
+                config.CreateMap<OrderDTO, Order>().ReverseMap();
+                config.CreateMap<OrderDetailDTO, OrderDetail>().ReverseMap();
             });
             
             return mappingConfig;

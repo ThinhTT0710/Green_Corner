@@ -4,15 +4,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace GreenCorner.MVC.Controllers
 {
     public class EventController : Controller
     {
         private readonly IEventService _eventService;
-        public EventController(IEventService eventService)
+        private readonly IVolunteerService _volunteerService;
+        public EventController(IEventService eventService, IVolunteerService volunteerService)
         {
             _eventService = eventService;
+            _volunteerService = volunteerService;
         }
         public async Task<IActionResult> Index()
         {
@@ -31,11 +34,32 @@ namespace GreenCorner.MVC.Controllers
         public async Task<IActionResult> GetEventById(int eventId)
         {
             
-                ResponseDTO response = await _eventService.GetByEventId(eventId);
+            ResponseDTO response = await _eventService.GetByEventId(eventId);
                 if (response != null && response.IsSuccess)
                 {
                     EventDTO eventDTO = JsonConvert.DeserializeObject<EventDTO>(response.Result.ToString());
-                    return View(eventDTO);
+                var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
+
+                bool isVolunteer = false;
+                bool isTeamLeader = false;
+
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    // Gọi API kiểm tra vai trò
+                    var volunteerResponse = await _volunteerService.IsVolunteer(eventId, userId);
+                    var teamLeaderResponse = await _volunteerService.IsTeamLeader(eventId, userId);
+
+                    if (volunteerResponse?.IsSuccess == true && volunteerResponse.Result is bool v)
+                        isVolunteer = v;
+
+                    if (teamLeaderResponse?.IsSuccess == true && teamLeaderResponse.Result is bool t)
+                        isTeamLeader = t;
+                }
+
+                // Truyền xuống View
+                ViewBag.IsVolunteer = isVolunteer;
+                ViewBag.IsTeamLeader = isTeamLeader;
+                return View(eventDTO);
                 }
                 else
                 {
@@ -278,6 +302,7 @@ namespace GreenCorner.MVC.Controllers
             }
             return View(leaderReviewDTO);
         }
+
 		public async Task<IActionResult> ViewEventVolunteerList(int id)
 		{
 			List<EventVolunteerDTO> listEventVolunteer = new();
@@ -307,5 +332,169 @@ namespace GreenCorner.MVC.Controllers
 			}
 			return NotFound();
 		}
+
+
+        //Dangky Volunteer
+        [HttpGet]
+        public IActionResult RegisterVolunteer(int eventId)
+        {
+            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+
+            var dto = new VolunteerDTO
+            {
+                CleanEventId = eventId,
+                UserId = userId,
+                ApplicationType = "Volunteer"
+            };
+
+            return View(dto);
+        }
+        [HttpPost]
+        public async Task<IActionResult> RegisterVolunteer(VolunteerDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["error"] = "Form không hợp lệ.";
+                return View(dto);
+            }
+            var response = await _volunteerService.RegisterVolunteer(dto);
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = response.Message;
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+
+            return RedirectToAction("GetEventById", "Event", new { eventId = dto.CleanEventId });
+        }
+
+        //Dangky TeamLeader
+        [HttpGet]
+        public IActionResult RegisterTeamLeader(int eventId)
+        {
+            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+
+            var dto = new VolunteerDTO
+            {
+                CleanEventId = eventId,
+                UserId = userId,
+                ApplicationType = "TeamLeader"
+            };
+
+            return View(dto);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> RegisterTeamLeader(VolunteerDTO dto)
+        {
+            var response = await _volunteerService.RegisterVolunteer(dto);
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = response.Message;
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+
+            return RedirectToAction("GetEventById", "Event", new { eventId = dto.CleanEventId });
+        }
+
+        //Huydangky
+        [HttpPost]
+        public async Task<IActionResult> UnregisterVolunteer(int eventId)
+        {
+            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+            string role = "Volunteer";
+            var response = await _volunteerService.UnregisterAsync(eventId, userId, role);
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = response.Message;
+            }
+            else
+            {
+                TempData["error"] = response?.Message ?? "Có lỗi xảy ra.";
+            }
+
+            return RedirectToAction(nameof(GetEventById), new { eventId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UnregisterTeamLeader(int eventId)
+        {
+            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+            string role = "TeamLeader";
+            var response = await _volunteerService.UnregisterAsync(eventId, userId, role);
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = response.Message;
+            }
+            else
+            {
+                TempData["error"] = response?.Message ?? "Có lỗi xảy ra.";
+            }
+
+            return RedirectToAction(nameof(GetEventById), new { eventId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> UpdateRegister(int eventId)
+        {
+            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            // Kiểm xem người dùng đã đăng ký chưa
+            var volunteerResponse = await _volunteerService.IsVolunteer(eventId, userId);
+            var teamLeaderResponse = await _volunteerService.IsTeamLeader(eventId, userId);
+
+            bool isVolunteer = volunteerResponse?.IsSuccess == true &&
+                               volunteerResponse?.Result is bool v && v;
+
+            bool isTeamLeader = teamLeaderResponse?.IsSuccess == true &&
+                                teamLeaderResponse?.Result is bool t && t;
+
+            var dto = new VolunteerDTO
+            {
+                CleanEventId = eventId,
+                UserId = userId,
+            };
+
+            if (isVolunteer)
+            {
+                dto.ApplicationType = "Volunteer";
+            }
+            else if (isTeamLeader)
+            {
+                dto.ApplicationType = "TeamLeader";
+            }           
+            return View(dto);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateRegister(VolunteerDTO volunteerDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(volunteerDto);
+            }
+            try
+            {
+                await _volunteerService.UpdateRegister(volunteerDto);
+                TempData["Success"] = "Cập nhật đăng ký thành công.";
+                return RedirectToAction("GetEventById", "Event", new { eventId = volunteerDto.CleanEventId });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(volunteerDto);
+            }
+        }
     }
 }

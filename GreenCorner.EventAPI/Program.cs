@@ -62,6 +62,8 @@ builder.Services.AddScoped<IEventReviewRepository, EventReviewRepository>();
 builder.Services.AddScoped<IEventReviewService, EventReviewService>();
 builder.Services.AddScoped<ITrashEventRepository, TrashEventRepository>();
 builder.Services.AddScoped<ITrashEventService, TrashEventService>();
+builder.Services.AddScoped<IVolunteerRepository, VolunteerRepository>();
+builder.Services.AddScoped<IVolunteerService, VolunteerService>();
 
 var app = builder.Build();
 

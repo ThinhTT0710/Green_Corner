@@ -9,5 +9,5 @@ namespace GreenCorner.AuthAPI.Repositories.Interface
         Task<LoginResponseDTO> LoginWithGoogle(GoogleLoginRequestDTO googleLoginRequest);
         Task<LoginResponseDTO> LoginWithFacebook(FacebookLoginRequestDTO facebookLoginRequest);
         Task<bool> AssignRole(string email, string roleName);
-    }
+	}
 }

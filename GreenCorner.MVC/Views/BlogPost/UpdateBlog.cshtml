@@ -1,0 +1,49 @@
+﻿@model GreenCorner.MVC.Models.BlogPostDTO
+
+@{
+    ViewData["Title"] = "Cập nhật bài viết mới";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+
+<form asp-action="UpdateBlog" method="post">
+    <input type="hidden" asp-for="BlogId" />
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label">Tiêu đề</label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Content" class="form-label">Nội dung</label>
+        <textarea asp-for="Content" class="form-control" rows="6"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ThumbnailUrl" class="form-label">Ảnh thumbnail (URL)</label>
+        <input asp-for="ThumbnailUrl" class="form-control" />
+        <span asp-validation-for="ThumbnailUrl" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Status" class="form-label">Trạng thái</label>
+        <select asp-for="Status" class="form-select">
+            <option value="Draft">Nháp</option>
+            <option value="Published">Công khai</option>
+        </select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+
+    <input type="hidden" asp-for="AuthorId" value="@User.Identity.Name" />
+
+    <button type="submit" class="btn btn-success">Cap nhat</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Hủy</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

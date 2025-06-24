@@ -32,7 +32,7 @@ public partial class GreenCornerRewardContext : DbContext
     {
         modelBuilder.Entity<PointTransaction>(entity =>
         {
-            entity.HasKey(e => e.PointTransactionsId).HasName("PK__PointTra__BBA48425C3636417");
+            entity.HasKey(e => e.PointTransactionsId).HasName("PK__PointTra__BBA48425F1272BE3");
 
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.Type).HasMaxLength(50);

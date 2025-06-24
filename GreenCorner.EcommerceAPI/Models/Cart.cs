@@ -7,11 +7,11 @@ public partial class Cart
 {
     public int CartId { get; set; }
 
-    public string UserId { get; set; } = null!;
+    public string UserId { get; set; }
 
     public int ProductId { get; set; }
 
     public int Quantity { get; set; }
 
-    public virtual Product Product { get; set; } = null!;
+    public Product? Product { get; set; } 
 }
