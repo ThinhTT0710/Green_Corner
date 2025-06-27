@@ -1,0 +1,26 @@
+﻿@model List<RewardPointDTO>
+<h2>Reward Point List</h2>
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Reward Points</th>
+            <th>User Id</th>
+            <th>Total Points</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.RewardPointsId</td>
+                <td>@item.UserId</td>
+                <td>@item.TotalPoints</td>
+                <td>
+                    <a asp-action="AwardPoints" asp-route-userId="@item.UserId" class="btn btn-warning">Award Points</a>
+                    <a asp-action="GetTotalRewardPoints" asp-route-userId="@item.UserId" class="btn btn-warning">View Detail</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,14 @@
+﻿@model RewardPointDTO
+
+<h2>Award Point</h2>
+
+<form asp-action="AwardPoints" method="post">
+    
+    <div class="form-group">
+        <input type="hidden" asp-for="UserId" />
+        <label>TotalPoints</label>
+        <textarea asp-for="TotalPoints" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Award</button>
+    <a asp-action="ViewRewardPoints" class="btn btn-secondary">Cancel</a>
+</form>
