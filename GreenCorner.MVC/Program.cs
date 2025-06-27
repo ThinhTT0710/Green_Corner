@@ -8,16 +8,27 @@ using Microsoft.AspNetCore.Authentication.Google;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider();
+
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSession(options =>
+{
+	options.IdleTimeout = TimeSpan.FromMinutes(30);
+	options.Cookie.HttpOnly = true;
+	options.Cookie.IsEssential = true; // Make the session cookie essential
+});
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IUserService, UserService>();
 builder.Services.AddHttpClient<IProductService, ProductService>();
+builder.Services.AddHttpClient<ICartService, CartService>();
+builder.Services.AddHttpClient<ITrashEventService, TrashEventService>();
+builder.Services.AddHttpClient<IOrderService, OrderService>();
 builder.Services.AddHttpClient<IEventService, EventService>();
 builder.Services.AddHttpClient<ITrashEventService, TrashEventService>();
+
 SD.AuthAPIBase = builder.Configuration["ServiceUrls:AuthAPI"];
-SD.ProductAPIBase = builder.Configuration["ServiceUrls:ProductAPI"];
+SD.EcommerceAPIBase = builder.Configuration["ServiceUrls:EcommerceAPI"];
 SD.BlogAPIBase = builder.Configuration["ServiceUrls:BlogAPI"];
 SD.EventAPIBase = builder.Configuration["ServiceUrls:EventAPI"];
 
@@ -26,6 +37,10 @@ builder.Services.AddScoped<ITokenProvider, TokenProvider>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<ITrashEventService, TrashEventService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddScoped<IBlogFavoriteService, BlogFavoriteService>();
 builder.Services.AddScoped<IBlogPostService, BlogPostService>();
 builder.Services.AddScoped<IBlogReportService, BlogReportService>();
@@ -44,7 +59,7 @@ builder.Services.AddAuthentication(options =>
     {
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
         options.LoginPath = "/Auth/Login";
-        options.AccessDeniedPath = "/Auth/AccessDenied";
+        options.AccessDeniedPath = "/Auth/Login";
     }).AddGoogle(options =>
     {
         options.ClientId = builder.Configuration["Google:ClientId"];
@@ -59,6 +74,8 @@ builder.Services.AddAuthentication(options =>
         facebookOptions.SaveTokens = true;
     }); ;
 
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -71,8 +88,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 

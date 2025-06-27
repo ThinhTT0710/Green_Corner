@@ -36,5 +36,5 @@ namespace GreenCorner.AuthAPI.Services
         {
             return await _authRepository.LoginWithFacebook(facebookLoginRequest);
         }
-    }
+	}
 }

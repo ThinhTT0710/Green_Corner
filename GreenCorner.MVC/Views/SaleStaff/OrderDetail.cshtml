@@ -1,0 +1,101 @@
+﻿@model OrderDTO
+@using System.Globalization
+@{
+    ViewData["Title"] = "Order Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container mt-5">
+    <h2 class="mb-4">Order #@Model.OrderId</h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Order Items
+                </div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var item in Model.OrderDetailsDTO)
+                    {
+                        var images = item.ProductDTO.ImageUrl.Split('&').ToList() ?? new List<string> { "no-image.jpg" };
+                        <li class="list-group-item">
+                            <div class="d-flex">
+                                <img src="~/img/product/@images[0]" alt="Image" class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                                <div>
+                                    <h6 class="mb-1">@item.ProductDTO.Name</h6>
+                                    <p class="mb-1">Quantity: @item.Quantity</p>
+                                    <p class="mb-0">
+                                        Price:@item.ProductDTO.Price.ToString("C", CultureInfo.GetCultureInfo("vi-VN"))
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <!-- Thông tin đơn hàng & người dùng -->
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Order Summary
+                </div>
+                <div class="card-body">
+                    <p><strong>Date:</strong> @Model.CreatedAt</p>
+                    <p><strong>Status:</strong> @Model.Status</p>
+                    <p><strong>Total:</strong> @Model.TotalMoney.ToString("C", CultureInfo.GetCultureInfo("vi-VN"))</p>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">
+                    Customer Info
+                </div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> @Model.Name</p>
+                    <p><strong>Email:</strong> @Model.Email</p>
+                    <p><strong>Phone:</strong> @Model.PhoneNumber</p>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">
+                    Shipping & Payment
+                </div>
+                <div class="card-body">
+                    <p><strong>Address:</strong> @Model.ShippingAddress</p>
+                    <p><strong>Payment:</strong> @Model.PaymentMethod</p>
+                    <p><strong>Note:</strong> @Model.Note</p>
+                </div>
+            </div>
+
+            <!-- Cập nhật trạng thái đơn hàng -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    Update Order Status
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="UpdateOrderStatus" asp-controller="SaleStaff">
+                        <input type="hidden" asp-for="OrderId" />
+                        <div class="mb-3">
+                            <select asp-for="Status" class="form-select">
+                                <option value="" disabled selected>-- Select Status --</option>
+                                    <option value="Từ chối đơn hàng">Từ chối đơn hàng</option>
+                                    <option value="Xác nhận đơn hàng">Xác nhận đơn hàng</option>
+                                    <option value="Đang chuẩn bị hàng">Đang chuẩn bị hàng</option>
+                                    <option value="Đang giao hàng">Đang giao hàng</option>
+                                    <option value="Hoàn thành đơn hàng">Hoàn thành đơn hàng</option>
+                            </select>
+                        </div>
+                            <button type="submit" class="btn btn-primary w-100">Update</button>
+                    </form>
+                </div>
+            </div>
+
+            <a asp-action="OrderList" asp-controller="SaleStaff" class="btn btn-secondary w-100">Back to List</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+}

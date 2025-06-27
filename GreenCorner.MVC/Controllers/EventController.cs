@@ -1,6 +1,7 @@
 ﻿using GreenCorner.MVC.Models;
 using GreenCorner.MVC.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -91,7 +92,6 @@ namespace GreenCorner.MVC.Controllers
                 TempData["loginError"] = "You need to log in to view your profile.";
                 return RedirectToAction("Login", "Auth");
             }
-
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
             eventReviewDTO.CleanEventId = 2;
             eventReviewDTO.UserId = userId;
@@ -314,6 +314,37 @@ namespace GreenCorner.MVC.Controllers
             return View(leaderReviewDTO);
         }
 
+		public async Task<IActionResult> ViewEventVolunteerList(int id)
+		{
+			List<EventVolunteerDTO> listEventVolunteer = new();
+			ResponseDTO? response = await _eventService.ViewEventVolunteerList(1);
+			if (response != null && response.IsSuccess)
+			{
+				listEventVolunteer = JsonConvert.DeserializeObject<List<EventVolunteerDTO>>(response.Result.ToString());
+			}
+			else
+			{
+				TempData["error"] = response?.Message;
+			}
+			return View(listEventVolunteer);
+		}
+
+        public async Task<IActionResult> AttendanceCheck(string userId,int eventId, bool check)
+        {
+
+			ResponseDTO response = await _eventService.AttendanceCheck(userId, eventId, check);
+			if (response != null && response.IsSuccess)
+			{
+				return RedirectToAction(nameof(ViewEventVolunteerList));
+			}
+			else
+			{
+				TempData["error"] = response?.Message;
+			}
+			return NotFound();
+		}
+
+
         //Dangky Volunteer
         [HttpGet]
         public IActionResult RegisterVolunteer(int eventId)
@@ -476,7 +507,7 @@ namespace GreenCorner.MVC.Controllers
                 return View(volunteerDto);
             }
         }
-
+        
         [HttpGet]
         public async Task<IActionResult> HasApprovedTeamLeader(int eventId)
         {
@@ -517,6 +548,5 @@ namespace GreenCorner.MVC.Controllers
 
             return RedirectToAction(nameof(GetEventById), new { eventId });
         }
-
     }
 }

@@ -16,5 +16,7 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> EditLeaderReview(LeaderReviewDTO leaderReviewDTO);
         Task<ResponseDTO?> DeleteLeaderReview(int id);
         Task<ResponseDTO?> ViewLeaderReviewHistory(string id);
+		Task<ResponseDTO?> ViewEventVolunteerList(int id);
+        Task<ResponseDTO?> AttendanceCheck(string userId, int eventId, bool check);
     }
 }
