@@ -17,5 +17,13 @@ namespace GreenCorner.EventAPI.Repositories.Interface
         Task<IEnumerable<Volunteer>> GetAllTeamLeaderRegistrations();
         Task<Volunteer> GetTeamLeaderRegistrationById(int id);
         Task ApproveTeamLeaderRegistration(int id);
+        Task RejectVolunteerRegistration(int id);
+        Task RejectTeamLeaderRegistration(int id);
+
+        Task<IEnumerable<Volunteer>> GetParticipatedActivitiesByUserId(string userId);
+
+        Task<string> GetApprovedRoleAsync(int eventId, string userId);
+        Task<bool> HasApprovedTeamLeaderAsync(int eventId);
+
     }
 }

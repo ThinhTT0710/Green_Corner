@@ -1,5 +1,6 @@
 ﻿using GreenCorner.MVC.Models;
 using GreenCorner.MVC.Services.Interface;
+using GreenCorner.MVC.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -10,9 +11,13 @@ namespace GreenCorner.MVC.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
-        public UserController(IUserService userService)
+        private readonly IVolunteerService _volunteerService;
+        private readonly IEventService _eventService;
+        public UserController(IUserService userService, IVolunteerService volunteerService, IEventService eventService)
         {
             _userService = userService;
+            _volunteerService = volunteerService;
+            _eventService = eventService;
         }
 
         [HttpGet]
@@ -109,6 +114,44 @@ namespace GreenCorner.MVC.Controllers
                 }
             }
             return View();
+        }
+
+        public async Task<IActionResult> ViewParticipatedActivities()
+        {
+            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["error"] = "Bạn cần đăng nhập để xem các hoạt động đã tham gia.";
+                return RedirectToAction("Login", "Auth"); 
+            }
+            var response = await _volunteerService.GetParticipatedActivitiesByUserId(userId);
+            List<VolunteerWithEventViewModel> list = new();
+
+            if (response != null && response.IsSuccess)
+            {
+                var volunteers = JsonConvert.DeserializeObject<List<VolunteerDTO>>(response.Result.ToString());
+
+                foreach (var v in volunteers)
+                {
+                    var eventResponse = await _eventService.GetByEventId(v.CleanEventId);
+                    if (eventResponse != null && eventResponse.IsSuccess)
+                    {
+                        var evt = JsonConvert.DeserializeObject<EventDTO>(eventResponse.Result.ToString());
+                        list.Add(new VolunteerWithEventViewModel
+                        {
+                            Volunteer = v,
+                            Event = evt
+                        });
+                    }
+                }
+            }
+
+            var vm = new VolunteerEventListViewModel
+            {
+                Participations = list
+            };
+
+            return View(vm);
         }
     }
 }

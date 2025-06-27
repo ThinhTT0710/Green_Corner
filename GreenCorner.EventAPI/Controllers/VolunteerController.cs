@@ -244,6 +244,97 @@ namespace GreenCorner.EventAPI.Controllers
             return _responseDTO;
         }
 
+        [HttpPost("reject-teamleader/{id}")]
+        public async Task<ResponseDTO> RejectTeamLeader(int id)
+        {
+            try
+            {
+                await _volunteerService.RejectTeamLeaderRegistration(id);
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = "Từ chối yêu cầu thành công.";
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.Message;
+            }
+            return _responseDTO;
+        }
+
+        [HttpPost("reject-volunteer/{id}")]
+        public async Task<ResponseDTO> RejectVolunteer(int id)
+        {
+            try
+            {
+                await _volunteerService.RejectVolunteerRegistration(id);
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = "Từ chối yêu cầu thành công.";
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.Message;
+            }
+            return _responseDTO;
+        }
+
+        [HttpGet("parti-activities")]
+        public async Task<ResponseDTO> GetParticipatedActivities(string userId)
+        {
+            try
+            {
+                var result = await _volunteerService.GetParticipatedActivitiesByUserId(userId);
+                _responseDTO.Result = result;
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = "Lấy hoạt động đã tham gia thành công.";
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.Message;
+            }
+            return _responseDTO;
+        }
+
+        [HttpGet("approved-role")]
+        public async Task<ResponseDTO> GetApprovedRole([FromQuery] int eventId, [FromQuery] string userId)
+        {
+            try
+            {
+                var result = await _volunteerService.GetApprovedRoleAsync(eventId, userId);
+                _responseDTO.Result = result;
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = result != null
+                    ? $"Vai trò đã được duyệt: {result}"
+                    : "Người dùng chưa được phê duyệt trong sự kiện này.";
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.Message;
+            }
+            return _responseDTO;
+        }
+
+        [HttpGet("has-teamleader")]
+        public async Task<ResponseDTO> HasApprovedTeamLeader([FromQuery] int eventId)
+        {
+            try
+            {
+                var result = await _volunteerService.HasApprovedTeamLeaderAsync(eventId);
+                _responseDTO.Result = result;
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = result
+                    ? "Đã có trưởng nhóm được phê duyệt cho sự kiện này."
+                    : "Chưa có trưởng nhóm nào được phê duyệt.";
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.Message;
+            }
+            return _responseDTO;
+        }
 
     }
 }
