@@ -12,12 +12,12 @@ namespace GreenCorner.EcommerceAPI.Repositories
         {
             _context = context;
         }
-        public async Task AddProduct(Product item)
+        public async Task<Product> AddProduct(Product item)
         {
-            item.CreatedAt = DateTime.Now;
             await _context.Products.AddAsync(item);
             await _context.SaveChangesAsync();
-        }
+			return item;
+		}
 
         public async Task DeleteProduct(int id)
         {

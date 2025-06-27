@@ -44,5 +44,14 @@ namespace GreenCorner.EventAPI.Services
             TrashEvent trashEvent = _mapper.Map<TrashEvent>(TrashEventDTO);
             return _trashEventRepository.UpdateTrashEvent(trashEvent);
         }
+
+        public async Task ApproveTrashEvent(int id)
+        {
+            await _trashEventRepository.ApproveTrashEvent(id);
+        }
+        public async Task RejectTrashEvent(int id)
+        {
+            await _trashEventRepository.RejectTrashEvent(id);
+        }
     }
 }

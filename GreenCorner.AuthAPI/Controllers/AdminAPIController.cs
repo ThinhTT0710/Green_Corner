@@ -1,7 +1,5 @@
-﻿using Azure;
-using GreenCorner.AuthAPI.Models.DTO;
+﻿using GreenCorner.AuthAPI.Models.DTO;
 using GreenCorner.AuthAPI.Services.Interface;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GreenCorner.AuthAPI.Controllers
@@ -16,7 +14,7 @@ namespace GreenCorner.AuthAPI.Controllers
 		public AdminAPIController(IAdminService adminService)
 		{
 			_adminService = adminService;
-			_responseDTO = new ResponseDTO();
+			this._responseDTO = new ResponseDTO();
 		}
 		[HttpGet]
 		public async Task<ResponseDTO> GetStaffs()
@@ -107,6 +105,39 @@ namespace GreenCorner.AuthAPI.Controllers
 				}
 				_responseDTO.Message = "Staff has been unban";
 				_responseDTO.Result = user;
+				return _responseDTO;
+			}
+			catch (Exception ex)
+			{
+				_responseDTO.Message = ex.Message;
+				_responseDTO.IsSuccess = false;
+				return _responseDTO;
+			}
+		}
+
+		[HttpGet("get-all-log")]
+		public async Task<ResponseDTO> GetAllLogs()
+		{
+			try
+			{
+				var logs = await _adminService.GetAllLogs();
+				_responseDTO.Result = logs;
+				return _responseDTO;
+			}
+			catch (Exception ex)
+			{
+				_responseDTO.Message = ex.Message;
+				_responseDTO.IsSuccess = false;
+				return _responseDTO;
+			}
+		}
+
+		[HttpPost("add-log-staff")]
+		public async Task<ResponseDTO> AddLogStaff([FromBody] SystemLogDTO log)
+		{
+			try
+			{
+				await _adminService.AddLogStaff(log);
 				return _responseDTO;
 			}
 			catch (Exception ex)
