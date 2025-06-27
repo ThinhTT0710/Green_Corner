@@ -1,4 +1,3 @@
-using GreenCorner.MVC.Models.Momo;
 using GreenCorner.MVC.Services;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
@@ -8,12 +7,6 @@ using Microsoft.AspNetCore.Authentication.Google;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// connect MomoAPI
-builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("Momo"));
-builder.Services.AddScoped<IMomoService, MomoService>();
-
-// Add services to the container.
-builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
@@ -24,6 +17,7 @@ builder.Services.AddSession(options =>
 });
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<IAuthService, AuthService>();
+builder.Services.AddHttpClient<IAdminService, AdminService>();
 builder.Services.AddHttpClient<IUserService, UserService>();
 builder.Services.AddHttpClient<IProductService, ProductService>();
 builder.Services.AddHttpClient<ICartService, CartService>();
@@ -54,6 +48,7 @@ builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ITrashEventService, TrashEventService>();
 builder.Services.AddScoped<IVolunteerService, VolunteerService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 // Add authentication
 builder.Services.AddAuthentication(options =>
@@ -79,7 +74,8 @@ builder.Services.AddAuthentication(options =>
         facebookOptions.SaveTokens = true;
     }); ;
 
-
+// Add services to the container.
+builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider();
 
 var app = builder.Build();
 

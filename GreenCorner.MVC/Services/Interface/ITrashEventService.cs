@@ -9,5 +9,7 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> AddTrashEvent(TrashEventDTO trashEventDTO);
         Task<ResponseDTO?> UpdateTrashEvent(TrashEventDTO trashEventDTO);
         Task<ResponseDTO?> DeleteTrashEvent(int id);
-    }
+        Task<ResponseDTO?> ApproveTrashEvent(int id);
+		Task<ResponseDTO?> RejectTrashEvent(int id);
+	}
 }

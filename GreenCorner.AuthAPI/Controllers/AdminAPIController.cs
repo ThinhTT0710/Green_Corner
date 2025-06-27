@@ -1,5 +1,4 @@
-﻿using Azure;
-using GreenCorner.AuthAPI.Models.DTO;
+﻿using GreenCorner.AuthAPI.Models.DTO;
 using GreenCorner.AuthAPI.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
@@ -17,11 +16,11 @@ namespace GreenCorner.AuthAPI.Controllers
 
 		private readonly IAdminService _adminService;
 		private readonly ResponseDTO _responseDTO;
-        private readonly UserManager<User> _userManager;
-        private readonly IEmailService _emailService;
-
-        protected ResponseDTO _response;
-        public AdminAPIController(IAdminService adminService, UserManager<User> userManager, IEmailService emailService)
+    private readonly UserManager<User> _userManager;
+    private readonly IEmailService _emailService;
+    protected ResponseDTO _response;
+    
+    public AdminAPIController(IAdminService adminService, UserManager<User> userManager, IEmailService emailService)
         {
             _adminService = adminService;
             _responseDTO = new ResponseDTO();
@@ -29,7 +28,8 @@ namespace GreenCorner.AuthAPI.Controllers
             _emailService = emailService;
 			this._response = new ResponseDTO();
         }
-        [HttpGet]
+        
+		[HttpGet]
 		public async Task<ResponseDTO> GetStaffs()
 		{
 			try
@@ -149,6 +149,39 @@ namespace GreenCorner.AuthAPI.Controllers
 				}
 				_responseDTO.Message = "Staff has been unban";
 				_responseDTO.Result = user;
+				return _responseDTO;
+			}
+			catch (Exception ex)
+			{
+				_responseDTO.Message = ex.Message;
+				_responseDTO.IsSuccess = false;
+				return _responseDTO;
+			}
+		}
+
+		[HttpGet("get-all-log")]
+		public async Task<ResponseDTO> GetAllLogs()
+		{
+			try
+			{
+				var logs = await _adminService.GetAllLogs();
+				_responseDTO.Result = logs;
+				return _responseDTO;
+			}
+			catch (Exception ex)
+			{
+				_responseDTO.Message = ex.Message;
+				_responseDTO.IsSuccess = false;
+				return _responseDTO;
+			}
+		}
+
+		[HttpPost("add-log-staff")]
+		public async Task<ResponseDTO> AddLogStaff([FromBody] SystemLogDTO log)
+		{
+			try
+			{
+				await _adminService.AddLogStaff(log);
 				return _responseDTO;
 			}
 			catch (Exception ex)

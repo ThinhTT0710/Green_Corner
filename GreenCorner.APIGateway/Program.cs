@@ -6,6 +6,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseUrls("http://*:80");
+
 builder.Services.AddCors(options =>
 {
 	options.AddPolicy("AllowSpecificOrigin",
@@ -42,13 +44,12 @@ builder.Services.AddAuthentication(x =>
 		ValidateAudience = true
 	};
 });
-
 builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
+
 builder.Services.AddOcelot(builder.Configuration);
 
 var app = builder.Build();
 app.UseCors("AllowSpecificOrigin");
-app.MapGet("/", () => "GreenCorner!");
 app.UseOcelot().GetAwaiter().GetResult();
 app.Run();
 

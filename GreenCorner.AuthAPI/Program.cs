@@ -1,13 +1,20 @@
+using AutoMapper;
 using GreenCorner.AuthAPI.Data;
 using GreenCorner.AuthAPI.Models;
 using GreenCorner.AuthAPI.Repositories;
 using GreenCorner.AuthAPI.Repositories.Interface;
 using GreenCorner.AuthAPI.Services;
 using GreenCorner.AuthAPI.Services.Interface;
+using GreenCorner.EcommerceAPI.Mapping;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
+builder.Services.AddSingleton(mapper);
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Add services to the container.
 

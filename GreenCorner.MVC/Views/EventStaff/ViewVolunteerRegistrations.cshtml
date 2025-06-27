@@ -29,6 +29,9 @@
                     <form asp-action="ApproveVolunteer" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
                         <button type="submit" class="btn btn-success btn-sm">Phê duyệt</button>
                     </form>
+                    <form asp-action="RejectVolunteer" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Từ chối</button>
+                    </form>
                 </td>
             </tr>
         }

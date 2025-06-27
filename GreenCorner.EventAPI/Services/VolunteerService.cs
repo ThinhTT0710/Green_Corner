@@ -43,6 +43,17 @@ namespace GreenCorner.EventAPI.Services
             return _mapper.Map<List<VolunteerDTO>>(volunteers);
         }
 
+        public async Task<string> GetApprovedRoleAsync(int eventId, string userId)
+        {
+            return await _volunteerRepository.GetApprovedRoleAsync(eventId, userId);
+        }
+
+        public async Task<IEnumerable<VolunteerDTO>> GetParticipatedActivitiesByUserId(string userId)
+        {
+            var volunteers = await _volunteerRepository.GetParticipatedActivitiesByUserId(userId);
+            return _mapper.Map<List<VolunteerDTO>>(volunteers);
+        }
+
         public async Task<VolunteerDTO> GetTeamLeaderRegistrationById(int id)
         {
             var leader = await _volunteerRepository.GetTeamLeaderRegistrationById(id);
@@ -53,6 +64,11 @@ namespace GreenCorner.EventAPI.Services
         {
             var volunteer = await _volunteerRepository.GetVolunteerRegistrationById(id);
             return _mapper.Map<VolunteerDTO>(volunteer);
+        }
+
+        public async Task<bool> HasApprovedTeamLeaderAsync(int eventId)
+        {
+            return await _volunteerRepository.HasApprovedTeamLeaderAsync(eventId);
         }
 
         public async Task<bool> IsTeamLeader(int eventId, string userId)
@@ -83,6 +99,16 @@ namespace GreenCorner.EventAPI.Services
             Volunteer volunteer = _mapper.Map<Volunteer>(volunteerDto);
             await _volunteerRepository.RegisteredVolunteer(volunteer);
             return "Đăng ký thành công!";
+        }
+
+        public async Task RejectTeamLeaderRegistration(int id)
+        {
+            await _volunteerRepository.RejectTeamLeaderRegistration(id);
+        }
+
+        public async Task RejectVolunteerRegistration(int id)
+        {
+            await _volunteerRepository.RejectVolunteerRegistration(id);
         }
 
         public async Task<string> UnregisterAsync(int eventId, string userId, string role)

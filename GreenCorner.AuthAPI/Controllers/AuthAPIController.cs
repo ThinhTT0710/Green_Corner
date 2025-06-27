@@ -23,6 +23,13 @@ namespace GreenCorner.AuthAPI.Controllers
             _userManager = userManager;
             _emailService = emailService;
         }
+
+        [HttpGet("ping")]
+        public IActionResult Ping()
+        {
+            return Ok("pong from AuthAPI");
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterationRequestDTO registerRequest) 
         {

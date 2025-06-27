@@ -43,6 +43,7 @@ namespace GreenCorner.MVC.Controllers
             {
                 trashEventDTO.UserId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
                 trashEventDTO.CreatedAt = DateTime.Now;
+                trashEventDTO.Status = "Chờ xác nhận";
                 ResponseDTO response = await _trashEventService.AddTrashEvent(trashEventDTO);
                 if (response != null && response.IsSuccess)
                 {
@@ -120,5 +121,37 @@ namespace GreenCorner.MVC.Controllers
             }
             return View(trashEventDTO);
         }
-    }
+
+        [HttpGet]
+        public async Task<IActionResult> ApproveTrashEvent(int trashReportId)
+        {
+            ResponseDTO response = await _trashEventService.ApproveTrashEvent(trashReportId);
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = response?.Message;
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+		[HttpGet]
+		public async Task<IActionResult> RejectrashEvent(int trashReportId)
+		{
+			ResponseDTO response = await _trashEventService.RejectTrashEvent(trashReportId);
+			if (response != null && response.IsSuccess)
+			{
+				TempData["success"] = response?.Message;
+				return RedirectToAction(nameof(Index));
+			}
+			else
+			{
+				TempData["error"] = response?.Message;
+			}
+			return RedirectToAction(nameof(Index));
+		}
+	}
 }

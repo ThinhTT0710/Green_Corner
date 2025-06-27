@@ -1,0 +1,42 @@
+﻿@model GreenCorner.MVC.ViewModels.VolunteerEventListViewModel
+
+<h2>Hoạt động đã đăng ký</h2>
+
+@if (!Model.Participations.Any())
+{
+    <p>Bạn chưa tham gia hoạt động nào.</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Tên sự kiện</th>
+                <th>Ngày bắt đầu</th>
+                <th>Ngày kết thúc</th>
+                <th>Trạng thái sự kiện</th>
+                <th>Loại đơn</th>
+                <th>Phân công</th>
+                <th>Vật dụng mang theo</th>
+                <th>Trạng thái đăng ký</th>
+                <th>Ngày đăng ký</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Participations)
+            {
+                <tr>
+                    <td>@item.Event.Title</td>
+                    <td>@item.Event.StartDate?.ToString("dd/MM/yyyy")</td>
+                    <td>@item.Event.EndDate?.ToString("dd/MM/yyyy")</td>
+                    <td>@item.Event.Status</td>
+                    <td>@item.Volunteer.ApplicationType</td>
+                    <td>@item.Volunteer.Assignment</td>
+                    <td>@item.Volunteer.CarryItems</td>
+                    <td>@item.Volunteer.Status</td>
+                    <td>@item.Volunteer.CreatedAt?.ToString("dd/MM/yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

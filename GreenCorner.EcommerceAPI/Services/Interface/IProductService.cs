@@ -6,7 +6,7 @@ namespace GreenCorner.EcommerceAPI.Services.Interface
     {
         Task<IEnumerable<ProductDTO>> GetAllProduct();
         Task<ProductDTO> GetByProductId(int id);
-        Task AddProduct(ProductDTO product);
+        Task<ProductDTO> AddProduct(ProductDTO product);
         Task UpdateProduct(ProductDTO product);
         Task DeleteProduct(int id);
     }

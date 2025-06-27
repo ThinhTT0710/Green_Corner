@@ -16,11 +16,12 @@ namespace GreenCorner.EcommerceAPI.Services
             _productRepository = productRepository;
             _mapper = mapper;
         }
-        public async Task AddProduct(ProductDTO productDto)
+        public async Task<ProductDTO> AddProduct(ProductDTO productDto)
         {
-            Product product = _mapper.Map<Product>(productDto);
-            await _productRepository.AddProduct(product);
-        }
+			var product = _mapper.Map<Product>(productDto);
+			var addedProduct = await _productRepository.AddProduct(product);
+			return _mapper.Map<ProductDTO>(addedProduct);
+		}
 
         public async Task DeleteProduct(int id)
         {
