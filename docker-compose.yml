@@ -1,0 +1,58 @@
+version: '3.9'
+services:
+  mvc:
+    build:
+      context: ./GreenCorner.MVC
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - gateway
+
+  gateway:
+    build:
+      context: ./GreenCorner.APIGateway
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    depends_on:
+      - authapi
+      - blogapi
+      - ecommerceapi
+      - eventapi
+      - rewardapi
+
+  authapi:
+    build:
+      context: ./GreenCorner.AuthAPI
+      dockerfile: Dockerfile
+    ports:
+      - "5001:80"
+
+  blogapi:
+    build:
+      context: ./GreenCorner.BlogAPI
+      dockerfile: Dockerfile
+    ports:
+      - "5002:80"
+
+  ecommerceapi:
+    build:
+      context: ./GreenCorner.EcommerceAPI
+      dockerfile: Dockerfile
+    ports:
+      - "5003:80"
+
+  eventapi:
+    build:
+      context: ./GreenCorner.EventAPI
+      dockerfile: Dockerfile
+    ports:
+      - "5004:80"
+
+  rewardapi:
+    build:
+      context: ./GreenCorner.RewardAPI
+      dockerfile: Dockerfile
+    ports:
+      - "5005:80"

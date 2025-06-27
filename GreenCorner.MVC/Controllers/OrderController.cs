@@ -1,5 +1,4 @@
 ﻿using GreenCorner.MVC.Models;
-using GreenCorner.MVC.Models.Momo;
 using GreenCorner.MVC.Models.VNPay;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.ViewModels;
@@ -15,15 +14,13 @@ namespace GreenCorner.MVC.Controllers
         private readonly ICartService _cartService;
         private readonly IUserService _userService;
         private readonly IVnPayService _vnPayService;
-        private readonly IMomoService _momoService;
 
-        public OrderController(IOrderService orderService, ICartService cartService, IUserService userService, IVnPayService vnPayService, IMomoService momoService)
+        public OrderController(IOrderService orderService, ICartService cartService, IUserService userService, IVnPayService vnPayService)
         {
             _orderService = orderService;
             _cartService = cartService;
             _userService = userService;
             _vnPayService = vnPayService;
-            _momoService = momoService;
         }
 
         public async Task<IActionResult> Index()
@@ -118,21 +115,6 @@ namespace GreenCorner.MVC.Controllers
 
                     var paymentURL = _vnPayService.CreatePaymentUrl(paymentInfo, HttpContext);
                     return Redirect(paymentURL);
-                }
-                else if (orderDTO.PaymentMethod == "Thanh toán bằng Momo")
-                {
-                    TempData["OrderDTO"] = JsonConvert.SerializeObject(orderDTO);
-
-                    OrderInfoModel paymentInfo = new OrderInfoModel
-                    {
-                        FullName = userName,
-                        OrderId = Guid.NewGuid().ToString(),
-                        OrderInfo = "Thanh toán đơn hàng tại GreenCorner",
-                        Amount =(double) total,
-                    };
-
-                    var response = await _momoService.CreatePaymentAsync(paymentInfo);
-                    return Redirect(response.PayUrl);
                 }
                 else
                 {
