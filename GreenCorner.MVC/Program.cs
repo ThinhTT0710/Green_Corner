@@ -1,3 +1,4 @@
+using GreenCorner.MVC.Controllers;
 using GreenCorner.MVC.Services;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
@@ -25,19 +26,28 @@ builder.Services.AddHttpClient<ITrashEventService, TrashEventService>();
 builder.Services.AddHttpClient<IOrderService, OrderService>();
 builder.Services.AddHttpClient<IEventService, EventService>();
 builder.Services.AddHttpClient<ITrashEventService, TrashEventService>();
+builder.Services.AddHttpClient<IRewardService, RewardService>();
+builder.Services.AddHttpClient<IRewardPointService, RewardPointService>();
+
 
 SD.AuthAPIBase = builder.Configuration["ServiceUrls:AuthAPI"];
 SD.EcommerceAPIBase = builder.Configuration["ServiceUrls:EcommerceAPI"];
 SD.BlogAPIBase = builder.Configuration["ServiceUrls:BlogAPI"];
 SD.EventAPIBase = builder.Configuration["ServiceUrls:EventAPI"];
+SD.RewardAPIBase = builder.Configuration["ServiceUrls:RewardAPI"];
 
-builder.Services.AddScoped<IBaseService, BaseService>();
+
 builder.Services.AddScoped<ITokenProvider, TokenProvider>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ITrashEventService, TrashEventService>();
+builder.Services.AddScoped<IRewardService, RewardService>();
+builder.Services.AddScoped<IVoucherService, VoucherService>();
+builder.Services.AddScoped<IPointTransactionService, PointTransactionService>();
+builder.Services.AddScoped<IRewardPointService, RewardPointService>();
+builder.Services.AddScoped<IRewardRedemptionHistoryService, RewardRedemptionHistoryService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddScoped<IBlogFavoriteService, BlogFavoriteService>();

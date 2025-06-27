@@ -1,0 +1,31 @@
+﻿@model List<VoucherDTO>
+
+<h2>Voucher List</h2>
+<a asp-action="Create" class="btn btn-success">Add Voucher</a>
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Points Required</th>
+            <th>Expiration Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Description</td>
+                <td>@item.PointsRequired</td>
+                <td>@item.ExpirationDate.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Edit" asp-route-voucherId="@item.VoucherId" class="btn btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-voucherId="@item.VoucherId" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

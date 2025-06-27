@@ -1,0 +1,65 @@
+﻿﻿
+@model IEnumerable<VoucherDTO>
+<div class="card shadow border-0 mt-4">
+	<div class="card-header bg-secondary bg-gradient ml-0 py-3">
+		<div class="row">
+			<div class="col-12 text-center">
+				<h1 class="text-white">Reward List</h1>
+			</div>
+		</div>
+	</div>
+	<div class="card-body p-4">
+		<div class="row pb-3">
+			<div class="col-6">
+			</div>
+		</div>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>
+						Title
+					</th>
+					<th>
+						Description
+					</th>
+					<th>
+						PointsRequired
+					</th>
+					<th>
+						StartDate
+					</th>
+					<th>
+						ExpirationDate
+					</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model)
+				{
+					<tr>
+						<td>
+							@item.Title
+						</td>
+						<td>
+							@item.Description
+						</td>
+						<td>
+							@item.PointsRequired
+						</td>
+						<td>
+							@item.StartDate
+						</td>
+						<td>
+							@item.ExpirationDate
+						</td>
+						<td>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+	</div>
+
+</div>

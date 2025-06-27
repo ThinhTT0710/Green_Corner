@@ -1,0 +1,21 @@
+﻿@model PointTransactionDTO
+
+@{
+    ViewData["Title"] = "Exchange Points";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post" asp-controller="PointTransaction" asp-action="PointTransaction">
+    <div class="form-group">
+        <label>User ID</label>
+        <input type="text" name="UserId" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label>Points</label>
+        <input type="number" name="exchangePoint" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Send</button>
+</form>

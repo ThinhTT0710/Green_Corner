@@ -1,0 +1,39 @@
+﻿@model List<GreenCorner.MVC.Models.PointTransactionDTO>
+
+@{
+    ViewData["Title"] = "Reward Redemption History";
+}
+
+<h2>Reward Redemption History</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Transaction ID</th>
+            <th>User ID</th>
+            <th>Type</th>
+            <th>Created At</th>
+            <th>Point</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.PointTransactionsId</td>
+                    <td>@item.UserId</td>
+                    <td>@item.Type</td>
+                    <td>@item.CreatedAt?.ToString("yyyy-MM-dd HH:mm")</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="text-center">No redemption history found.</td>
+            </tr>
+        }
+    </tbody>
+</table>

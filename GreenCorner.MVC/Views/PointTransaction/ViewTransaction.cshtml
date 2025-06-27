@@ -1,0 +1,33 @@
+﻿@model PointTransactionDTO
+
+@{
+    ViewData["Title"] = "Transaction Details";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model != null)
+{
+    <table class="table table-bordered">
+        <tr>
+            <th>Transaction ID</th>
+            <td>@Model.PointTransactionsId</td>
+        </tr>
+        <tr>
+            <th>User ID</th>
+            <td>@Model.UserId</td>
+        </tr>
+        <tr>
+            <th>Type</th>
+            <td>@Model.Type</td>
+        </tr>
+        <tr>
+            <th>Created At</th>
+            <td>@(Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "—")</td>
+        </tr>
+    </table>
+}
+else
+{
+    <p>No transaction data available.</p>
+}

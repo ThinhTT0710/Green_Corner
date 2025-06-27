@@ -1,0 +1,124 @@
+﻿using GreenCorner.RewardAPI.Models.DTO;
+using GreenCorner.RewardAPI.Services.Interface;
+using Microsoft.AspNetCore.Mvc;
+
+namespace GreenCorner.RewardAPI.Controllers
+{
+    [Route("api/Voucher")]
+    [ApiController]
+    public class VoucherController : ControllerBase
+    {
+        private readonly IVoucherService _voucherService;
+        private readonly ResponseDTO _responseDTO;
+
+        public VoucherController(IVoucherService voucherService)
+        {
+            _voucherService = voucherService;
+            _responseDTO = new ResponseDTO();
+        }
+
+        [HttpGet]
+        public async Task<ResponseDTO> GetAllVouchers()
+        {
+            try
+            {
+                var vouchers = await _voucherService.GetAllVouchers();
+                _responseDTO.Result = vouchers;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<ResponseDTO> GetVoucherById(int id)
+        {
+            try
+            {
+                var voucher = await _voucherService.GetRewardDetail(id);
+                _responseDTO.Result = voucher;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+        
+
+        [HttpPost]
+        public async Task<ResponseDTO> CreateVoucher([FromBody] VoucherDTO voucher)
+        {
+            try
+            {
+                await _voucherService.CreateVoucher(voucher);
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
+        [HttpPut]
+        public async Task<ResponseDTO> UpdateVoucher([FromBody] VoucherDTO voucher)
+        {
+            try
+            {
+                await _voucherService.UpdateVoucher(voucher);
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
+      
+
+        [HttpDelete("{id}")]
+        public async Task<ResponseDTO> DeleteVoucher(int id)
+        {
+            try
+            {
+                await _voucherService.DeleteVoucher(id);
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
+        [HttpGet("/getAllRewards")]
+        public async Task<ResponseDTO> GetAllRewards()
+        {
+            try
+            {
+                var vouchers = await _voucherService.GetAllVouchers();
+                _responseDTO.Result = vouchers;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
+    }
+    }
