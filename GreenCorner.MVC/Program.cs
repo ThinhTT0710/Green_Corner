@@ -25,7 +25,6 @@ builder.Services.AddHttpClient<ICartService, CartService>();
 builder.Services.AddHttpClient<ITrashEventService, TrashEventService>();
 builder.Services.AddHttpClient<IOrderService, OrderService>();
 builder.Services.AddHttpClient<IEventService, EventService>();
-builder.Services.AddHttpClient<ITrashEventService, TrashEventService>();
 builder.Services.AddHttpClient<IRewardService, RewardService>();
 builder.Services.AddHttpClient<IRewardPointService, RewardPointService>();
 
@@ -36,7 +35,7 @@ SD.BlogAPIBase = builder.Configuration["ServiceUrls:BlogAPI"];
 SD.EventAPIBase = builder.Configuration["ServiceUrls:EventAPI"];
 SD.RewardAPIBase = builder.Configuration["ServiceUrls:RewardAPI"];
 
-
+builder.Services.AddScoped<IBaseService, BaseService>();
 builder.Services.AddScoped<ITokenProvider, TokenProvider>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -56,7 +55,6 @@ builder.Services.AddScoped<IBlogReportService, BlogReportService>();
 builder.Services.AddScoped<IFeedbackService,FeedbackService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IEventService, EventService>();
-builder.Services.AddScoped<ITrashEventService, TrashEventService>();
 builder.Services.AddScoped<IVolunteerService, VolunteerService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 
