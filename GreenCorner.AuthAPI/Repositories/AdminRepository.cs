@@ -161,8 +161,25 @@ namespace GreenCorner.AuthAPI.Repositories
 			throw new System.Exception("User not found");
 		}
 
-		
+		public async Task<IEnumerable<SystemLog>> GetAllLogs()
+		{
+			return await _dbcontext.SystemLogs
+			.Include(l => l.User)
+			.OrderByDescending(l => l.CreatedAt)
+			.ToListAsync();
+		}
 
-	
+		public async Task AddLogStaff(SystemLog log) 
+		{
+			try
+			{
+				await _dbcontext.SystemLogs.AddAsync(log);
+				await _dbcontext.SaveChangesAsync();
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Error adding log: " + ex.Message);
+			}
+		}
 	}
 }

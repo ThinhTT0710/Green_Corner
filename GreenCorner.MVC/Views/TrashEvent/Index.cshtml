@@ -47,12 +47,26 @@
 						</td>
 						<td>
 							<a class="btn btn-success" asp-action="UpdateTrashEvent" asp-route-trashReportId="@item.TrashReportId">
-								<i class="bi bi-pencil-square"></i>
+								Update
 							</a>
 							<a class="btn btn-danger" asp-action="DeleteTrashEvent" asp-route-trashReportId="@item.TrashReportId">
-								<i class="bi bi-trash"></i>
+								Delete
 							</a>
-							
+							@if (item.Status == "Chờ xác nhận")
+							{
+								<a class="btn btn-danger" asp-action="ApproveTrashEvent" asp-route-trashReportId="@item.TrashReportId">
+									Approve
+								</a>
+								<a class="btn btn-danger" asp-action="RejectrashEvent" asp-route-trashReportId="@item.TrashReportId">
+									Reject
+								</a>
+							}
+							@if(item.Status == "Đã xác nhận")
+                            {
+                                <a class="btn btn-primary" href="#">
+                                    Tạo envent
+                                </a>
+                            }
 						</td>
 					</tr>
 				}

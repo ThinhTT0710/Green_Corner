@@ -8,8 +8,9 @@ namespace GreenCorner.AuthAPI.Repositories.Interface
 		Task<IEnumerable<UserDTO>> GetAllStaff();
 		Task<UserDTO> GetStaffById(string id);
 		Task CreateStaff(StaffDTO staff);
-		
 		Task<UserDTO> BlockStaffAccount(string id);
 		Task<UserDTO> UnBlockStaffAccount(string id);
+		Task<IEnumerable<SystemLog>> GetAllLogs();
+		Task AddLogStaff(SystemLog log);
 	}
 }

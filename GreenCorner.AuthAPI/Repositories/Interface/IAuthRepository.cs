@@ -1,4 +1,5 @@
-﻿using GreenCorner.AuthAPI.Models.DTO;
+﻿using GreenCorner.AuthAPI.Models;
+using GreenCorner.AuthAPI.Models.DTO;
 
 namespace GreenCorner.AuthAPI.Repositories.Interface
 {

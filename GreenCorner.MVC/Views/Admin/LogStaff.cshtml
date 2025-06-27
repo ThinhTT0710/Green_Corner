@@ -1,0 +1,48 @@
+﻿@model List<SystemLogViewModel>
+
+@{
+    ViewData["Title"] = "Nhật ký hệ thống";
+}
+
+<h2 class="mb-4">Nhật ký hoạt động của nhân viên</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Hành động</th>
+            <th>Loại đối tượng</th>
+            <th>Mô tả</th>
+            <th>Thời gian</th>
+            <th>Người thực hiện</th>
+            <th>Email</th>
+            <th>Trạng thái</th>
+            <th>Avatar</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var log in Model)
+        {
+            <tr>
+                <td>@log.ActionType</td>
+                <td>@log.ObjectType (#@log.ObjectId)</td>
+                <td>@log.Description</td>
+                <td>@log.CreatedAt.ToString("HH:mm dd/MM/yyyy")</td>
+                <td>@log.FullName (@log.UserName)</td>
+                <td>@log.Email</td>
+                <td>
+                    @if (log.IsBanned)
+                    {
+                        <span class="badge bg-danger">Bị khóa</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Hoạt động</span>
+                    }
+                </td>
+                <td>
+                    <img src="~/images/avatar/@log.Avatar" alt="Avatar" width="50" height="50" style="border-radius: 50%;" />
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
