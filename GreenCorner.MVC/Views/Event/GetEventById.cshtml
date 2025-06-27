@@ -2,11 +2,15 @@
 @{
     bool isVolunteer = ViewBag.IsVolunteer as bool? ?? false;
     bool isTeamLeader = ViewBag.IsTeamLeader as bool? ?? false;
+    bool hasApprovedTeamLeader = ViewBag.HasApprovedTeamLeader as bool? ?? false;
+    string approvedRole = ViewBag.ApprovedRole as string ?? "";
 }
 
 
     <div class="container border p-3">
         <h1 class="text-dark text-center">View Event Detail</h1>
+        
+
         <hr />
         <div class="row">
             <div class="col-2">
@@ -43,73 +47,98 @@
                 <a asp-controller="Event" asp-action="Index" class="btn-primary btn form-control ">Back to List</a>
             </div>
 
-        @if (!isVolunteer && !isTeamLeader)
+        @if (string.IsNullOrEmpty(approvedRole))
         {
-            <!-- Chưa đăng ký vai trò nào => hiển thị cả hai nút đăng ký -->
-            <div class="col-5 pb-2">
-                <a asp-controller="Event"
-                   asp-action="RegisterVolunteer"
-                   asp-route-eventId="@Model.CleanEventId"
-                   class="btn btn-success form-control">
-                    Đăng ký Volunteer
-                </a>
-            </div>
-            <div class="col-5 offset-2 pb-2">
-                <a asp-controller="Event"
-                   asp-action="RegisterTeamLeader"
-                   asp-route-eventId="@Model.CleanEventId"
-                   class="btn btn-warning form-control">
-                    Đăng ký Team Leader
-                </a>
-            </div>
+            @if (!isVolunteer && !isTeamLeader)
+            {
+                <div class="col-5 pb-2">
+                    <a asp-controller="Event"
+                       asp-action="RegisterVolunteer"
+                       asp-route-eventId="@Model.CleanEventId"
+                       class="btn btn-success form-control">
+                        Đăng ký Volunteer
+                    </a>
+                </div>
+
+                @if (!hasApprovedTeamLeader)
+                {
+                    <div class="col-5 offset-2 pb-2">
+                        <a asp-controller="Event"
+                           asp-action="RegisterTeamLeader"
+                           asp-route-eventId="@Model.CleanEventId"
+                           class="btn btn-warning form-control">
+                            Đăng ký Team Leader
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-5 offset-2 pb-2">
+                        <button class="btn btn-secondary form-control" disabled>
+                            Đã có Team Leader được duyệt
+                        </button>
+                    </div>
+                }
+            }
+            else if (isVolunteer)
+            {
+                <div class="col-5 pb-2">
+                    <a asp-controller="Event"
+                       asp-action="UpdateRegister"
+                       asp-route-eventId="@Model.CleanEventId"
+                       class="btn btn-info form-control">
+                        Cập nhật đăng ký Volunteer
+                    </a>
+                </div>
+                <div class="col-5 pb-2">
+                    <form asp-controller="Event"
+                          asp-action="UnregisterVolunteer"
+                          method="post" class="d-inline">
+                        <input type="hidden" name="eventId" value="@Model.CleanEventId" />
+                        <button type="submit" class="btn btn-outline-danger form-control"
+                                onclick="return confirm('Bạn có chắc chắn muốn hủy đăng ký Volunteer không?');">
+                            Hủy đăng ký Volunteer
+                        </button>
+                    </form>
+                </div>
+            }
+            else if (isTeamLeader)
+            {
+                <div class="col-5 offset-2 pb-2">
+                    <a asp-controller="Event"
+                       asp-action="UpdateRegister"
+                       asp-route-eventId="@Model.CleanEventId"
+                       class="btn btn-info form-control">
+                        Cập nhật đăng ký Team Leader
+                    </a>
+                </div>
+                <div class="col-5 offset-2 pb-2">
+                    <form asp-controller="Event"
+                          asp-action="UnregisterTeamLeader"
+                          method="post" class="d-inline">
+                        <input type="hidden" name="eventId" value="@Model.CleanEventId" />
+                        <button type="submit" class="btn btn-outline-warning form-control"
+                                onclick="return confirm('Bạn có chắc chắn muốn hủy đăng ký Team Leader không?');">
+                            Hủy đăng ký Team Leader
+                        </button>
+                    </form>
+                </div>
+            }
         }
-        else if (isVolunteer)
+        
+        @if (!string.IsNullOrEmpty(approvedRole))
         {
-            <!-- Đã đăng ký tình nguyện viên -->
-            <div class="col-5 pb-2">
-                <a asp-controller="Event"
-                   asp-action="UpdateRegister"
-                   asp-route-eventId="@Model.CleanEventId"
-                   class="btn btn-info form-control">
-                    Cập nhật đăng ký Volunteer
-                </a>
-            </div>
-            <div class="col-5 pb-2">
-                <form asp-controller="Event"
-                      asp-action="UnregisterVolunteer"
-                      method="post" class="d-inline">
-                    <input type="hidden" name="eventId" value="@Model.CleanEventId" />
-                    <button type="submit" class="btn btn-outline-danger form-control"
-                            onclick="return confirm('Bạn có chắc chắn muốn hủy đăng ký Volunteer không?');">
-                        Hủy đăng ký Volunteer
-                    </button>
-                </form>
-            </div>
-        }
-        else if (isTeamLeader)
-        {
-            <!-- Đã đăng ký đội trưởng -->
-            <div class="col-5 offset-2 pb-2">
-                <a asp-controller="Event"
-                   asp-action="UpdateRegister"
-                   asp-route-eventId="@Model.CleanEventId"
-                   class="btn btn-info form-control">
-                    Cập nhật đăng ký Team Leader
-                </a>
-            </div>
-            <div class="col-5 offset-2 pb-2">
-                <form asp-controller="Event"
-                      asp-action="UnregisterTeamLeader"
-                      method="post" class="d-inline">
-                    <input type="hidden" name="eventId" value="@Model.CleanEventId" />
-                    <button type="submit" class="btn btn-outline-warning form-control"
-                            onclick="return confirm('Bạn có chắc chắn muốn hủy đăng ký Team Leader không?');">
-                        Hủy đăng ký Team Leader
-                    </button>
-                </form>
-            </div>
+                <div class="alert alert-success text-center">
+                    Bạn đã được phê duyệt làm: <strong>@approvedRole</strong>
+                </div>
         }
 
+        @if (hasApprovedTeamLeader && isTeamLeader)
+        {
+            <div class="alert alert-info text-center mt-3">
+                Sự kiện này đã có đội trưởng được duyệt. Bạn chỉ có thể đăng ký làm tình nguyện viên.
+            </div>
+        }
 
 
         </div>

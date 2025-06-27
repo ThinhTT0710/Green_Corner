@@ -48,6 +48,24 @@ namespace GreenCorner.MVC.Services
             });
         }
 
+        public async Task<ResponseDTO?> GetApprovedRoleAsync(int eventId, string userId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/approved-role?eventId={eventId}&userId={userId}"
+            });
+        }
+
+        public async Task<ResponseDTO?> GetParticipatedActivitiesByUserId(string userId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/parti-activities?userId={userId}"
+            });
+        }
+
         public async Task<ResponseDTO?> GetTeamLeaderRegistrationById(int id)
         {
             return await _baseService.SendAsync(new RequestDTO
@@ -63,6 +81,15 @@ namespace GreenCorner.MVC.Services
             {
                 APIType = SD.APIType.GET,
                 Url = $"{SD.EventAPIBase}/api/Volunteer/volunteer-registration/{id}"
+            });
+        }
+
+        public async Task<ResponseDTO?> HasApprovedTeamLeaderAsync(int eventId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/has-teamleader?eventId={eventId}"
             });
         }
 
@@ -91,6 +118,24 @@ namespace GreenCorner.MVC.Services
                 APIType = SD.APIType.POST,
                 Data = dto,
                 Url = SD.EventAPIBase + "/api/Volunteer/register"
+            });
+        }
+
+        public async Task<ResponseDTO?> RejectTeamLeaderRegistration(int id)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.POST,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/reject-teamleader/{id}"
+            });
+        }
+
+        public async Task<ResponseDTO?> RejectVolunteerRegistration(int id)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.POST,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/reject-volunteer/{id}"
             });
         }
 

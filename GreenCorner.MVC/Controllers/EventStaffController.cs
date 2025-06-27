@@ -3,6 +3,7 @@ using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace GreenCorner.MVC.Controllers
 {
@@ -286,5 +287,38 @@ namespace GreenCorner.MVC.Controllers
             return RedirectToAction("ViewTeamLeaderRegistrations");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> RejectVolunteer(int id)
+        {
+            var response = await _volunteerService.RejectVolunteerRegistration(id);
+
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = "Từ chối thành công.";
+            }
+            else
+            {
+                TempData["error"] = response?.Message ?? "Từ chối thất bại.";
+            }
+
+            return RedirectToAction("ViewVolunteerRegistrations");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RejectTeamLeader(int id)
+        {
+            var response = await _volunteerService.RejectTeamLeaderRegistration(id);
+
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = "Từ chối thành công.";
+            }
+            else
+            {
+                TempData["error"] = response?.Message ?? "Từ chối thất bại.";
+            }
+
+            return RedirectToAction("ViewTeamLeaderRegistrations");
+        }
     }
 }

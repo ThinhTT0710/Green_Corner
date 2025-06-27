@@ -148,5 +148,55 @@ namespace GreenCorner.EventAPI.Repositories
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task RejectVolunteerRegistration(int id)
+        {
+            var volunteer = await _context.Volunteers.FindAsync(id);
+            if (volunteer == null)
+            {
+                throw new KeyNotFoundException($"Volunteer with ID {id} not found.");
+            }
+            volunteer.Status = "Rejected";
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RejectTeamLeaderRegistration(int id)
+        {
+            var volunteer = await _context.Volunteers.FindAsync(id);
+            if (volunteer == null)
+            {
+                throw new KeyNotFoundException($"TeamLeader with ID {id} not found.");
+            }
+            volunteer.Status = "Rejected";
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Volunteer>> GetParticipatedActivitiesByUserId(string userId)
+        {
+            return await _context.Volunteers
+                        .Include(v => v.CleanEvent)
+                        .Where(v => v.UserId == userId)
+                        .ToListAsync();
+        }
+
+        public async Task<string> GetApprovedRoleAsync(int eventId, string userId)
+        {
+            var record = await _context.Volunteers
+            .FirstOrDefaultAsync(v =>
+                v.CleanEventId == eventId &&
+                v.UserId == userId &&
+                v.Status == "Approved");
+
+            return record == null ? null : record.ApplicationType;
+        }
+
+        public async Task<bool> HasApprovedTeamLeaderAsync(int eventId)
+        {
+            return await _context.Volunteers
+            .AnyAsync(v =>
+                v.CleanEventId == eventId &&
+                v.ApplicationType == "TeamLeader" &&
+                v.Status == "Approved");
+        }
     }
 }

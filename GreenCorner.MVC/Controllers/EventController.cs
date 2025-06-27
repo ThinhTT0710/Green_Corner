@@ -33,41 +33,52 @@ namespace GreenCorner.MVC.Controllers
         }
         public async Task<IActionResult> GetEventById(int eventId)
         {
-            
             ResponseDTO response = await _eventService.GetByEventId(eventId);
-                if (response != null && response.IsSuccess)
-                {
-                    EventDTO eventDTO = JsonConvert.DeserializeObject<EventDTO>(response.Result.ToString());
-                var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
+            if (response != null && response.IsSuccess)
+            {
+                EventDTO eventDTO = JsonConvert.DeserializeObject<EventDTO>(response.Result.ToString());
+
+                var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
 
                 bool isVolunteer = false;
                 bool isTeamLeader = false;
+                string? approvedRole = null;
+                bool hasApprovedTeamLeader = false;
 
                 if (!string.IsNullOrEmpty(userId))
                 {
-                    // Gọi API kiểm tra vai trò
+                    // Gọi các API kiểm tra trạng thái
                     var volunteerResponse = await _volunteerService.IsVolunteer(eventId, userId);
                     var teamLeaderResponse = await _volunteerService.IsTeamLeader(eventId, userId);
+                    var roleResponse = await _volunteerService.GetApprovedRoleAsync(eventId, userId);
+                    var hasTLResponse = await _volunteerService.HasApprovedTeamLeaderAsync(eventId);
 
                     if (volunteerResponse?.IsSuccess == true && volunteerResponse.Result is bool v)
                         isVolunteer = v;
 
                     if (teamLeaderResponse?.IsSuccess == true && teamLeaderResponse.Result is bool t)
                         isTeamLeader = t;
+
+                    if (roleResponse?.IsSuccess == true)
+                        approvedRole = roleResponse.Result?.ToString();
+
+                    if (hasTLResponse?.IsSuccess == true && hasTLResponse.Result is bool h)
+                        hasApprovedTeamLeader = h;
                 }
 
-                // Truyền xuống View
+                // Truyền ViewBag cho view
                 ViewBag.IsVolunteer = isVolunteer;
                 ViewBag.IsTeamLeader = isTeamLeader;
+                ViewBag.ApprovedRole = approvedRole;
+                ViewBag.HasApprovedTeamLeader = hasApprovedTeamLeader;
+
                 return View(eventDTO);
-                }
-                else
-                {
-                    TempData["error"] = response?.Message;
-                }
-                return NotFound();
-            
+            }
+
+            TempData["error"] = response?.Message;
+            return NotFound();
         }
+
         public async Task<IActionResult> RateEvent()
         {
             return View();
@@ -495,6 +506,47 @@ namespace GreenCorner.MVC.Controllers
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(volunteerDto);
             }
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> HasApprovedTeamLeader(int eventId)
+        {
+            var response = await _volunteerService.HasApprovedTeamLeaderAsync(eventId);
+            if (response != null && response.IsSuccess)
+            {
+                ViewBag.HasApprovedTeamLeader = response.Result;
+            }
+            else
+            {
+                TempData["error"] = response?.Message ?? "Lỗi khi kiểm tra TeamLeader đã được duyệt.";
+                ViewBag.HasApprovedTeamLeader = false;
+            }
+
+            return RedirectToAction(nameof(GetEventById), new { eventId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetApprovedRole(int eventId)
+        {
+            var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["loginError"] = "Bạn cần đăng nhập để thực hiện chức năng này.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var response = await _volunteerService.GetApprovedRoleAsync(eventId, userId);
+            if (response != null && response.IsSuccess)
+            {
+                ViewBag.ApprovedRole = response.Result?.ToString();
+            }
+            else
+            {
+                TempData["error"] = response?.Message ?? "Không thể kiểm tra vai trò đã được duyệt.";
+            }
+
+            return RedirectToAction(nameof(GetEventById), new { eventId });
         }
     }
 }

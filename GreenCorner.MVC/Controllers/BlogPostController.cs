@@ -85,7 +85,7 @@ namespace GreenCorner.MVC.Controllers
                 ResponseDTO response = await _blogPostService.AddBlog(blogDTO);
                 if (response != null && response.IsSuccess)
                 {
-                    TempData["success"] = "Product created successfully!";
+                    TempData["success"] = "Tạo Blog thành công!";
                     return RedirectToAction(nameof(Index));
                 }
                 else
@@ -117,7 +117,7 @@ namespace GreenCorner.MVC.Controllers
             ResponseDTO response = await _blogPostService.UpdateBlog(blogDto);
             if (response != null && response.IsSuccess)
             {
-                TempData["success"] = "Blog updated successfully!";
+                TempData["success"] = "Cập nhật Blog thành công!";
                 return RedirectToAction(nameof(Index));
             }
             else
@@ -148,7 +148,7 @@ namespace GreenCorner.MVC.Controllers
             ResponseDTO response = await _blogPostService.DeleteBlog(blogDto.BlogId);
             if (response != null && response.IsSuccess)
             {
-                TempData["success"] = "Blog deleted successfully!";
+                TempData["success"] = "Xóa Blog thành công!";
                 return RedirectToAction(nameof(Index));
             }
             else
