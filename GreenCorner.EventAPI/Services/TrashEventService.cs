@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using GreenCorner.EventAPI.DTOs;
 using GreenCorner.EventAPI.Models;
+using GreenCorner.EventAPI.Models.DTO;
 using GreenCorner.EventAPI.Repositories.Interface;
 using GreenCorner.EventAPI.Services.Interface;
 
@@ -43,6 +43,15 @@ namespace GreenCorner.EventAPI.Services
         {
             TrashEvent trashEvent = _mapper.Map<TrashEvent>(TrashEventDTO);
             return _trashEventRepository.UpdateTrashEvent(trashEvent);
+        }
+
+        public async Task ApproveTrashEvent(int id)
+        {
+            await _trashEventRepository.ApproveTrashEvent(id);
+        }
+        public async Task RejectTrashEvent(int id)
+        {
+            await _trashEventRepository.RejectTrashEvent(id);
         }
     }
 }

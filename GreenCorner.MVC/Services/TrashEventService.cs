@@ -59,5 +59,23 @@ namespace GreenCorner.MVC.Services
                 Url = SD.EventAPIBase + "/api/trashevent"
             });
         }
-    }
+
+        public async Task<ResponseDTO?> ApproveTrashEvent(int id)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.PUT,
+                Url = SD.EventAPIBase + "/api/trashevent/approve/" + id,
+            });
+        }
+
+		public async Task<ResponseDTO?> RejectTrashEvent(int id)
+		{
+			return await _baseService.SendAsync(new RequestDTO
+			{
+				APIType = SD.APIType.PUT,
+				Url = SD.EventAPIBase + "/api/trashevent/reject/" + id,
+			});
+		}
+	}
 }

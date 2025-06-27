@@ -1,0 +1,69 @@
+﻿@model IEnumerable<OrderDTO>
+<div class="card shadow border-0 mt-4">
+	<div class="card-header bg-secondary bg-gradient ml-0 py-3">
+		<div class="row">
+			<div class="col-12 text-center">
+				<h1 class="text-white">Order History</h1>
+			</div>
+		</div>
+	</div>
+	<div class="card-body p-4">
+		<div class="row pb-3">
+			<div class="col-6">
+			</div>
+		</div>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>
+						Order #
+					</th>
+					<th>
+						Date purchased
+					</th>
+					<th>
+						Status
+					</th>
+					<th>
+						Total
+					</th>
+					<th>
+                        Actions	
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model)
+				{
+					<tr>
+						<td>
+							@item.OrderId
+						</td>
+						<td>
+							@item.CreatedAt.ToString("MMMM dd, yyyy")
+						</td>
+						<td>
+							@item.Status
+						</td>
+						<td>
+							@((item.TotalMoney).ToString("c"))
+						</td>
+						<td>
+							@if(item.Status == "Chờ xác nhận")
+							{
+								<form method="post" asp-action="CancelOrder" asp-controller="Order">
+									<input type="hidden" name="orderId" value="@item.OrderId" />
+									<button type="submit" class="btn btn-danger"><i class="bi bi-x-circle"></i> Cancel Order</button>
+								</form>
+							}
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+	</div>
+
+</div>
+
+

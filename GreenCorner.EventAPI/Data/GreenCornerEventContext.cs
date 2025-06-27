@@ -28,10 +28,7 @@ public partial class GreenCornerEventContext : DbContext
 
     public virtual DbSet<Volunteer> Volunteers { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=MSI;Initial Catalog=GreenCorner_Event;User ID=sa;Password=123;Trust Server Certificate=True");
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<CleanupEvent>(entity =>
@@ -97,13 +94,14 @@ public partial class GreenCornerEventContext : DbContext
 
         modelBuilder.Entity<Volunteer>(entity =>
         {
-            entity.HasKey(e => e.VolunteerId).HasName("PK__Voluntee__716F6F2CEE64CC8D");
+            entity.HasKey(e => e.VolunteerId).HasName("PK__Voluntee__716F6F2CFE61F34A");
 
             entity.Property(e => e.ApplicationType).HasMaxLength(50);
+            entity.Property(e => e.Assignment).HasMaxLength(100);
+            entity.Property(e => e.CarryItems).HasMaxLength(100);
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.UserId).HasMaxLength(450);
-
             entity.HasOne(d => d.CleanEvent).WithMany(p => p.Volunteers)
                 .HasForeignKey(d => d.CleanEventId)
                 .OnDelete(DeleteBehavior.ClientSetNull)

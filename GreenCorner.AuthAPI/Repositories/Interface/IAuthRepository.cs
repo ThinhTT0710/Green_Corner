@@ -1,4 +1,5 @@
-﻿using GreenCorner.AuthAPI.Models.DTO;
+﻿using GreenCorner.AuthAPI.Models;
+using GreenCorner.AuthAPI.Models.DTO;
 
 namespace GreenCorner.AuthAPI.Repositories.Interface
 {
@@ -9,5 +10,5 @@ namespace GreenCorner.AuthAPI.Repositories.Interface
         Task<LoginResponseDTO> LoginWithGoogle(GoogleLoginRequestDTO googleLoginRequest);
         Task<LoginResponseDTO> LoginWithFacebook(FacebookLoginRequestDTO facebookLoginRequest);
         Task<bool> AssignRole(string email, string roleName);
-    }
+	}
 }

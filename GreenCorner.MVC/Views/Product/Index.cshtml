@@ -46,6 +46,9 @@
 							@((item.Price).ToString("c"))
 						</td>
 						<td>
+							<a class="btn btn-primary" asp-controller="Cart" asp-action="AddToCart" asp-route-productId="@item.ProductId">
+								<i class="bi bi-cart"></i>
+							</a>
 							<a class="btn btn-success" asp-action="UpdateProduct" asp-route-productId="@item.ProductId">
 								<i class="bi bi-pencil-square"></i>
 							</a>

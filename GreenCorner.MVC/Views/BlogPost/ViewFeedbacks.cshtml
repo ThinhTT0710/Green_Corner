@@ -1,0 +1,35 @@
+﻿@model List<GreenCorner.MVC.Models.FeedbackDTO>
+
+@{
+    ViewData["Title"] = "Danh sách phản hồi";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+
+@if (Model == null || !Model.Any())
+{
+    <p>Chưa có phản hồi nào.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Tiêu đề</th>
+                <th>Nội dung</th>
+                <th>Thời gian tạo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var feedback in Model)
+            {
+                <tr>
+                    <td>@feedback.Title</td>
+                    <td>@feedback.Content</td>
+                    <td>@(feedback.CreatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,4 +1,5 @@
-﻿using GreenCorner.EventAPI.DTOs;
+﻿
+using GreenCorner.EventAPI.Models.DTO;
 
 namespace GreenCorner.EventAPI.Services.Interface
 {
@@ -9,6 +10,9 @@ namespace GreenCorner.EventAPI.Services.Interface
         Task AddTrashEvent(TrashEventDTO TrashEventDTO);
         Task UpdateTrashEvent(TrashEventDTO TrashEventDTO);
         Task DeleteTrashEvent(int id);
-    }
+        Task ApproveTrashEvent(int id);
+		Task RejectTrashEvent(int id);
+
+	}
 }
 

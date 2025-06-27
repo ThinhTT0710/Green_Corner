@@ -1,11 +1,11 @@
 ﻿@model TrashEventDTO
 
-<form asp-controller="TrashEvent" asp-action="ReportTrashEvent" enctype="multipart/form-data">
+<form asp-controller="TrashEvent" asp-action="UpdateTrashEvent" enctype="multipart/form-data">
     <br />
     <div class="container border p-3">
         <h1 class="text-dark text-center">Report New Event</h1>
-        <input type="hidden" value="Pending" asp-for="TrashReportId">
-        <input type="hidden" value="Pending" asp-for="Status">
+        <input type="hidden" asp-for="TrashReportId">
+        <input type="hidden" asp-for="Status">
         <hr />
         <div class="row">
             <div class="col-2">
@@ -34,7 +34,7 @@
                 <a asp-controller="TrashEvent" asp-action="Index" class="btn-primary btn form-control ">Back to List</a>
             </div>
             <div class="col-5">
-                <input type="submit" value="Create" class="btn btn-success form-control" />
+                <input type="submit" value="Update" class="btn btn-success form-control" />
             </div>
         </div>
         <div>
@@ -96,7 +96,6 @@
             });
         }
 
-        // ✅ Khi trang vừa load: nếu đã có giá trị location, hiển thị bản đồ luôn
         window.onload = function () {
             const locationValue = document.getElementById("locationInput").value;
             if (locationValue) {

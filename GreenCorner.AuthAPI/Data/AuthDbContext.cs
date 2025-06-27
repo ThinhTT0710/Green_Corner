@@ -10,8 +10,9 @@ namespace GreenCorner.AuthAPI.Data
         {
         }
         public DbSet<User> Users { get; set; }
+		public DbSet<SystemLog> SystemLogs { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+		protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
         }

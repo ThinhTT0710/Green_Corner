@@ -23,6 +23,13 @@ namespace GreenCorner.AuthAPI.Controllers
             _userManager = userManager;
             _emailService = emailService;
         }
+
+        [HttpGet("ping")]
+        public IActionResult Ping()
+        {
+            return Ok("pong from AuthAPI");
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterationRequestDTO registerRequest) 
         {
@@ -45,55 +52,83 @@ namespace GreenCorner.AuthAPI.Controllers
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginRequest)
-        {   var loginResponse = await _authService.Login(loginRequest);
-            if(loginResponse.User == null)
-            { _response.IsSuccess = false;
-                _response.Message = "Email or password is incorrect";
-                return BadRequest(_response);
-            }
-            var user = await _userManager.FindByEmailAsync(loginRequest.Email);
-
-            bool isEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
-            if (!isEmailConfirmed)
+        {
+            try
             {
-                _response.Message = "Please confirm your email before logging in.";
-                _response.IsSuccess = false;
-                return BadRequest(_response);
-            }
-            _response.Result = loginResponse;
-            return Ok(_response);
-        }
+                var loginResponse = await _authService.Login(loginRequest);
+                if (loginResponse.User == null)
+                {
+                    _response.IsSuccess = false;
+                    _response.Message = "Email or password is incorrect";
+                    return BadRequest(_response);
+                }
+                var user = await _userManager.FindByEmailAsync(loginRequest.Email);
+
+                bool isEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
+                if (!isEmailConfirmed)
+                {
+                    _response.Message = "Please confirm your email before logging in.";
+                    _response.IsSuccess = false;
+                    return BadRequest(_response);
+                }
+                _response.Result = loginResponse;
+                return Ok(_response);
+			}
+			catch (Exception ex)
+			{
+				_response.IsSuccess = false;
+				_response.Message = ex.Message;
+				return BadRequest(_response);
+			}
+		}
 
         [HttpPost("google-login")]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDTO googleLoginRequest)
         {
-            var loginResponse = await _authService.LoginWithGoogle(googleLoginRequest);
-            if (loginResponse.User == null)
+            try
             {
-                _response.IsSuccess = false;
-                _response.Message = "Google login failed.";
-                return BadRequest(_response);
-            }
+                var loginResponse = await _authService.LoginWithGoogle(googleLoginRequest);
+                if (loginResponse.User == null)
+                {
+                    _response.IsSuccess = false;
+                    _response.Message = "Google login failed.";
+                    return BadRequest(_response);
+                }
+                _response.Result = loginResponse;
+                return Ok(_response);
+			}
+			catch (Exception ex)
+			{
+				_response.IsSuccess = false;
+				_response.Message = ex.Message;
+				return BadRequest(_response);
+			}
 
-            _response.Result = loginResponse;
-            return Ok(_response);
-
-        }
+		}
 
         [HttpPost("facebook-login")]
         public async Task<IActionResult> FacebookLogin([FromBody] FacebookLoginRequestDTO facebookLoginRequest)
         {
-            var loginResponse = await _authService.LoginWithFacebook(facebookLoginRequest);
-            if (loginResponse.User == null)
+            try
             {
-                _response.IsSuccess = false;
-                _response.Message = "Facebook login failed.";
-                return BadRequest(_response);
-            }
+                var loginResponse = await _authService.LoginWithFacebook(facebookLoginRequest);
+                if (loginResponse.User == null)
+                {
+                    _response.IsSuccess = false;
+                    _response.Message = "Facebook login failed.";
+                    return BadRequest(_response);
+                }
 
-            _response.Result = loginResponse;
-            return Ok(_response);
-        }
+                _response.Result = loginResponse;
+                return Ok(_response);
+            }
+			catch (Exception ex)
+			{
+				_response.IsSuccess = false;
+				_response.Message = ex.Message;
+				return BadRequest(_response);
+			}
+		}
 
         [HttpPost("assign-role")]
         public async Task<IActionResult> AssignRole([FromBody] RegisterationRequestDTO model)

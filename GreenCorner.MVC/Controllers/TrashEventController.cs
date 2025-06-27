@@ -43,6 +43,7 @@ namespace GreenCorner.MVC.Controllers
             {
                 trashEventDTO.UserId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
                 trashEventDTO.CreatedAt = DateTime.Now;
+                trashEventDTO.Status = "Chờ xác nhận";
                 ResponseDTO response = await _trashEventService.AddTrashEvent(trashEventDTO);
                 if (response != null && response.IsSuccess)
                 {
@@ -107,7 +108,8 @@ namespace GreenCorner.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateTrashEvent(TrashEventDTO trashEventDTO)
         {
-            ResponseDTO response = await _trashEventService.UpdateTrashEvent(trashEventDTO);
+			trashEventDTO.UserId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
+			ResponseDTO response = await _trashEventService.UpdateTrashEvent(trashEventDTO);
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Trash event updated successfully!";
@@ -119,5 +121,37 @@ namespace GreenCorner.MVC.Controllers
             }
             return View(trashEventDTO);
         }
-    }
+
+        [HttpGet]
+        public async Task<IActionResult> ApproveTrashEvent(int trashReportId)
+        {
+            ResponseDTO response = await _trashEventService.ApproveTrashEvent(trashReportId);
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = response?.Message;
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+		[HttpGet]
+		public async Task<IActionResult> RejectrashEvent(int trashReportId)
+		{
+			ResponseDTO response = await _trashEventService.RejectTrashEvent(trashReportId);
+			if (response != null && response.IsSuccess)
+			{
+				TempData["success"] = response?.Message;
+				return RedirectToAction(nameof(Index));
+			}
+			else
+			{
+				TempData["error"] = response?.Message;
+			}
+			return RedirectToAction(nameof(Index));
+		}
+	}
 }

@@ -57,8 +57,9 @@ namespace GreenCorner.EcommerceAPI.Controllers
         {
             try
             {
-                await _productService.AddProduct(product);
-                return _responseDTO;
+				var createdProduct = await _productService.AddProduct(product);
+				_responseDTO.Result = createdProduct;
+				return _responseDTO;
             }
             catch (Exception ex)
             {

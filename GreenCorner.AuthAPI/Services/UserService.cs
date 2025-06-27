@@ -31,5 +31,20 @@ namespace GreenCorner.AuthAPI.Services
         {
             return await _userRepository.CheckPhoneNumber(phoneNumber, userId);
         }
-    }
+
+		public async Task<UserDTO> BanUser(string id)
+		{
+            return await _userRepository.BanUser(id);
+		}
+
+		public async Task<UserDTO> UnBanUser(string id)
+		{
+			return await _userRepository.UnBanUser(id);
+	}
+
+		public async Task<List<UserDTO>> GetAllUser()
+		{
+            return await _userRepository.GetAllUser();
+		}
+	}
 }

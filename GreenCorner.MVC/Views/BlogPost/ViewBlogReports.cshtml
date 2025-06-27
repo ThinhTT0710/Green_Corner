@@ -1,0 +1,44 @@
+﻿@model List<GreenCorner.MVC.Models.BlogReportDTO>
+
+@{
+    ViewData["Title"] = "Danh sách báo cáo";
+    int blogId = ViewBag.BlogId;
+}
+
+<h2>Danh sách báo cáo cho Blog ID: @blogId</h2>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Lý do</th>
+                <th>Ngày tạo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var report in Model)
+            {
+                <tr>
+                    <td>@report.BlogReportId</td>
+                    <td>@report.Reason</td>
+                    <td>@report.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">
+        Không có báo cáo nào cho bài viết này.
+    </div>
+}
+
+<div class="mt-3">
+    <a asp-action="CreateReport" asp-controller="BlogPost" asp-route-blogId="@blogId" class="btn btn-danger me-2">
+        + Thêm báo cáo
+    </a>
+    <a asp-action="Index" asp-controller="BlogPost" class="btn btn-secondary">Quay lại danh sách bài viết</a>
+</div>

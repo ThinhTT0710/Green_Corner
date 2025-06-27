@@ -1,4 +1,5 @@
-﻿using GreenCorner.EventAPI.DTOs;
+﻿
+using GreenCorner.EventAPI.Models.DTO;
 using GreenCorner.EventAPI.Services.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -98,5 +99,39 @@ namespace GreenCorner.EventAPI.Controllers
                 return _responseDTO;
             }
         }
-    }
+
+        [HttpPut("approve/{id}")]
+        public async Task<ResponseDTO> ApproveTrashEvent(int id)
+        {
+            try
+            {
+                await _trashEventService.ApproveTrashEvent(id);
+                _responseDTO.Message = "Xác nhận sự kiện thành công.";
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
+		[HttpPut("reject/{id}")]
+		public async Task<ResponseDTO> RejectTrashEvent(int id)
+		{
+			try
+			{
+				await _trashEventService.RejectTrashEvent(id);
+				_responseDTO.Message = "Từ chối sự kiện thành công.";
+				return _responseDTO;
+			}
+			catch (Exception ex)
+			{
+				_responseDTO.Message = ex.Message;
+				_responseDTO.IsSuccess = false;
+				return _responseDTO;
+			}
+		}
+	}
 }
