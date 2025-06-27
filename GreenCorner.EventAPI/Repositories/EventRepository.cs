@@ -26,6 +26,44 @@ namespace GreenCorner.EventAPI.Repositories
                 ?? throw new KeyNotFoundException($"Event with ID {id} not found.");
         }
 
-        
+        public async Task CreateCleanupEvent(CleanupEvent item)
+        {
+            await _context.CleanupEvents.AddAsync(item);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task CloseCleanupEvent(int id)
+        {
+            var cleanupEvent = await _context.CleanupEvents.FindAsync(id);
+            if (cleanupEvent == null)
+            {
+                throw new KeyNotFoundException($"Event review with ID {id} not found.");
+            }
+            cleanupEvent.EndDate= DateTime.Now;
+            cleanupEvent.Status = "Close";
+            await _context.SaveChangesAsync();
+        }
+        public async Task UpdateCleanupEvent(CleanupEvent item)
+        {
+            var cleanupEvent = await _context.CleanupEvents.FindAsync(item.CleanEventId);
+            if (cleanupEvent == null)
+            {
+                throw new KeyNotFoundException($"Cleanup Event with ID {item.CleanEventId} not found.");
+            }
+            _context.Entry(cleanupEvent).CurrentValues.SetValues(item);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateCleanupEventStatus(CleanupEvent item)
+        {
+            var cleanupEvent = await _context.CleanupEvents.FindAsync(item.CleanEventId);
+            if (cleanupEvent == null)
+            {
+                throw new KeyNotFoundException($"Cleanup Event with ID {item.CleanEventId} not found.");
+            }
+            _context.Entry(cleanupEvent).CurrentValues.SetValues(item);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

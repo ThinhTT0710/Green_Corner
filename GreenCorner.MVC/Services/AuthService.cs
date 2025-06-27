@@ -128,11 +128,18 @@ namespace GreenCorner.MVC.Services
 				Url = SD.AuthAPIBase + "/api/Admin"
 			});
 		}
+        public async Task<ResponseDTO?> UpdateStaff(StaffDTO staff)
+        {
+             
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.PUT,
+                Data = staff,
+                Url = SD.AuthAPIBase + "/api/Admin/update-staff"
+			});
+        }
 
-	
-		
-
-		public async Task<ResponseDTO?> BlockStaffAccount(string id)
+        public async Task<ResponseDTO?> BlockStaffAccount(string id)
 		{
 			return await _baseService.SendAsync(new RequestDTO
 			{

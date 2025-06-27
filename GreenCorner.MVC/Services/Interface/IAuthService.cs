@@ -16,7 +16,8 @@ namespace GreenCorner.MVC.Services.Interface
 		Task<ResponseDTO?> GetAllStaff();
 		Task<ResponseDTO?> GetStaffById(string id);
 		Task<ResponseDTO?> CreateStaff(StaffDTO staff);
-		Task<ResponseDTO?> BlockStaffAccount(string id);
+        Task<ResponseDTO?> UpdateStaff(StaffDTO staff);
+        Task<ResponseDTO?> BlockStaffAccount(string id);
 		Task<ResponseDTO?> UnBlockStaffAccount(string id);
 
 

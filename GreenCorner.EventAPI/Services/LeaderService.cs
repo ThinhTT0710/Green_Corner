@@ -27,5 +27,9 @@ namespace GreenCorner.EventAPI.Services
         {
             await _leaderRepository.AttendanceCheck(userId, eventId, check);
         }
+        public async Task KickVolunteer(string userId, int eventId)
+        {
+            await _leaderRepository.KickVolunteer(userId, eventId);
+        }
     }
 }

@@ -9,6 +9,7 @@
 		public string Avatar { get; set; }
 		public string PhoneNumber { get; set; }
 		public bool IsBan { get; set; } = false;
-		public string Role { get; set; }
+		public string? Role { get; set; }
+		public string? Password { get; set; }
 	}
 }

@@ -5,11 +5,14 @@ namespace GreenCorner.AuthAPI.Repositories.Interface
 {
 	public interface IAdminRepository
 	{
-		Task<IEnumerable<UserDTO>> GetAllStaff();
-		Task<UserDTO> GetStaffById(string id);
-		Task CreateStaff(StaffDTO staff);
+		Task<IEnumerable<StaffDTO>> GetAllStaff();
+		Task<StaffDTO> GetStaffById(string id);
+		Task<string> CreateStaff(StaffDTO staff);
 		
-		Task<UserDTO> BlockStaffAccount(string id);
-		Task<UserDTO> UnBlockStaffAccount(string id);
-	}
+		Task<StaffDTO> BlockStaffAccount(string id);
+		Task<StaffDTO> UnBlockStaffAccount(string id);
+
+        Task UpdateStaff(StaffDTO item);
+
+    }
 }

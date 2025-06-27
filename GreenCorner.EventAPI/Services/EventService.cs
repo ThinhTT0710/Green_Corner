@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using GreenCorner.EventAPI.Models;
 using GreenCorner.EventAPI.Models.DTO;
+using GreenCorner.EventAPI.Repositories;
 using GreenCorner.EventAPI.Repositories.Interface;
 using GreenCorner.EventAPI.Services.Interface;
 
@@ -28,6 +29,26 @@ namespace GreenCorner.EventAPI.Services
             return _mapper.Map<EventDTO>(cleanupEvent);
         }
 
+        public async Task CreateCleanupEvent(EventDTO eventDTO)
+        {
+            CleanupEvent cleanupEvent = _mapper.Map<CleanupEvent>(eventDTO);
+            await _eventRepository.CreateCleanupEvent(cleanupEvent);
+        }
+
+        public async Task CloseCleanupEvent(int id)
+        {
+            await _eventRepository.CloseCleanupEvent(id);
+        }
+        public async Task UpdateCleanupEvent(EventDTO eventDTO)
+        {
+            CleanupEvent cleanup = _mapper.Map<CleanupEvent>(eventDTO);
+            await _eventRepository.UpdateCleanupEvent(cleanup);
+        }
+        public async Task UpdateCleanupEventStatus(EventDTO eventDTO)
+        {
+            CleanupEvent cleanup = _mapper.Map<CleanupEvent>(eventDTO);
+            await _eventRepository.UpdateCleanupEventStatus(cleanup);
+        }
        
     }
 }

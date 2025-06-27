@@ -9,7 +9,10 @@
 		</div>
 	</div>
 	<div class="card-body p-4">
-		
+		<div class="col-6 text-end">
+			<a asp-action="CreateCleanupEvent" class="btn btn-outline-primary"><i class="bi bi-plus-square"></i> Create New Event</a>
+
+		</div>
 		<table class="table">
 			<thead>
 				<tr>
@@ -42,7 +45,21 @@
 							<a class="btn btn-success" asp-action="GetEventById" asp-route-eventId="@item.CleanEventId">
 								<i class="bi bi-pencil-square"></i>
 							</a>
-							
+							<a class="btn btn-success" asp-action="ViewEventVolunteerList" asp-route-eventId="@item.CleanEventId">
+								<i class="bi bi-pencil-square">Volunteer List</i>
+							</a>
+							<a class="btn btn-success" asp-action="UpdateCleanupEvent" asp-route-eventId="@item.CleanEventId">
+								<i class="bi bi-pencil-square">Update</i>
+							</a>
+							<a class="btn btn-success" asp-action="UpdateCleanupEventStatus" asp-route-eventId="@item.CleanEventId">
+								<i class="bi bi-pencil-square">Update Status</i>
+							</a>
+							<a class="btn btn-success" asp-action="ViewEventVolunteerListCheck" asp-route-eventId="@item.CleanEventId">
+								<i class="bi bi-pencil-square">Attendance</i>
+							</a>
+							<a class="btn btn-danger" asp-action="CloseCleanupEvent" asp-route-eventId="@item.CleanEventId">
+								<i class="bi bi-x">Close Event</i>
+							</a>
 						</td>
 					</tr>
 				}
