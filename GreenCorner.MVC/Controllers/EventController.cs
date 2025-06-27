@@ -647,7 +647,8 @@ namespace GreenCorner.MVC.Controllers
                 TempData["error"] = response?.Message;
             }
             return NotFound();
-        
+        }
+
         [HttpGet]
         public async Task<IActionResult> HasApprovedTeamLeader(int eventId)
         {
