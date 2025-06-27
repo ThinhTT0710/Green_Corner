@@ -122,5 +122,21 @@ namespace GreenCorner.MVC.Services
                 Url = SD.EventAPIBase + "/api/LeaderReview/" + id
             });
         }
+		public async Task<ResponseDTO?> ViewEventVolunteerList(int id)
+		{
+			return await _baseService.SendAsync(new RequestDTO
+			{
+				APIType = SD.APIType.GET,
+				Url = SD.EventAPIBase + "/api/Leader/" + id
+			});
+		}
+        public async Task<ResponseDTO?> AttendanceCheck(string userId, int eventId, bool check)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.EventAPIBase + "/api/Leader/" + userId+","+eventId+","+check
+            });
+        }
     }
 }

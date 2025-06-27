@@ -52,7 +52,8 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.AddAppAuthetication();
 builder.Services.AddAuthorization();
-
+builder.Services.AddScoped<ILeaderRepository, LeaderRepository>();
+builder.Services.AddScoped<ILeaderService, LeaderService>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ILeaderReviewRepository, LeaderReviewRepository>();
