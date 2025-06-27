@@ -1,4 +1,3 @@
-using GreenCorner.MVC.Models.Momo;
 using GreenCorner.MVC.Services;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
@@ -7,10 +6,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// connect MomoAPI
-builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("Momo"));
-builder.Services.AddScoped<IMomoService, MomoService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider();

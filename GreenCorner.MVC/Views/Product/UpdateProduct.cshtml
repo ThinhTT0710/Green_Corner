@@ -69,9 +69,23 @@
                 <label class="control-label pt-2" style="font-size:20px;">ImageUrl</label>
             </div>
             <div class="col-10 pb-3">
-                <input asp-for="ImageUrl" class="form-control" />
-                <input asp-for="ImageUrl" hidden class="form-control" />
-                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                <input type="file" name="images" multiple class="form-control" />
+                <span class="text-danger">@Html.ValidationMessage("Images")</span>
+
+                <input type="hidden" asp-for="ImageUrl" />
+
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <div class="mt-2">
+                        <label>Ảnh hiện tại:</label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            @foreach (var img in Model.ImageUrl.Split("&"))
+                            {
+                                <img src="@img" style="height: 100px; border: 1px solid #ccc; padding: 2px;" />
+                            }
+                        </div>
+                    </div>
+                }
             </div>
 
             <div class="col-5 offset-2">
