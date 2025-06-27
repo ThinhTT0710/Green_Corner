@@ -320,7 +320,40 @@ namespace GreenCorner.MVC.Controllers
 			}
 			return View(staffDTO);
 		}
-		public async Task<IActionResult> BlockStaff(string staffID)
+        public async Task<IActionResult> UpdateStaff(string userId)
+        {
+            ResponseDTO response = await _authService.GetStaffById(userId);
+            if (response != null && response.IsSuccess)
+            {
+                StaffDTO staffDTO = JsonConvert.DeserializeObject<StaffDTO>(response.Result.ToString());
+                return View(staffDTO);
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+            return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateStaff(StaffDTO staffDTO)
+        {
+            staffDTO.Password = "Thinh@123";
+            staffDTO.Role = "EventStaff";
+            ResponseDTO response = await _authService.UpdateStaff(staffDTO);
+            if (response != null && response.IsSuccess)
+            {
+                
+                TempData["success"] = "Staff updated successfully!";
+                return RedirectToAction(nameof(GetStaffList));
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+            return View(staffDTO);
+        }
+        public async Task<IActionResult> BlockStaff(string staffID)
 		{
             ResponseDTO response = await _authService.BlockStaffAccount(staffID);
             if (response != null && response.IsSuccess)

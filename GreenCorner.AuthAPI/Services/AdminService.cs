@@ -18,28 +18,31 @@ namespace GreenCorner.AuthAPI.Services
 			_mapper = mapper;
 			_userService = userService;
 		}
-		public async Task<IEnumerable<UserDTO>> GetAllStaff()
+		public async Task<IEnumerable<StaffDTO>> GetAllStaff()
 		{
 			var users = await _adminRepository.GetAllStaff();
 			return users;
 		}
-		public async Task<UserDTO> GetStaffById(String id)
+		public async Task<StaffDTO> GetStaffById(String id)
 		{
 			var users = await _adminRepository.GetStaffById(id);
 			return users;
 		}
-		public async Task CreateStaff(StaffDTO staff)
+		public async Task<string> CreateStaff(StaffDTO staff)
 		{
-			await _adminRepository.CreateStaff(staff);
+			return await _adminRepository.CreateStaff(staff);
 		}
-
-		public async Task<UserDTO> BlockStaffAccount(string id)
+    public async Task UpdateStaff(StaffDTO staff)
+    {
+       await _adminRepository.UpdateStaff(staff);
+    }
+    public async Task<StaffDTO> BlockStaffAccount(string id)
 		{
 			var users = await _adminRepository.BlockStaffAccount(id);
 			return users;
 		}
 
-		public async Task<UserDTO> UnBlockStaffAccount(string id)
+		public async Task<StaffDTO> UnBlockStaffAccount(string id)
 		{
 			var users = await _adminRepository.UnBlockStaffAccount(id);
 			return users;

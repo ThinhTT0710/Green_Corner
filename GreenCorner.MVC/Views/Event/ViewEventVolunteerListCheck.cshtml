@@ -44,12 +44,20 @@
 							@item.AttendanceStatus
 						</td>
 						<td>
-							
+							@{
+								if (@item.AttendanceStatus == "Present" || @item.AttendanceStatus == "Absent")
+								{
+									<i class="bi bi-check"></i>
 
-									<a class="btn btn-danger" asp-action="KickVolunteer" asp-route-userId="@item.UserId" asp-route-eventId="@item.CleanEventId">
+						}else {
+
+									<a class="btn btn-danger" asp-action="AttendanceCheck" asp-route-userId="@item.UserId" asp-route-eventId="@item.CleanEventId" asp-route-check="False">
 										<i class="bi bi-x"></i>
+								</a>
+									<a class="btn btn-danger" asp-action="AttendanceCheck" asp-route-userId="@item.UserId" asp-route-eventId="@item.CleanEventId" asp-route-check="True">
+										<i class="bi bi-check"></i>
 									</a>
-									
+							}
 							}
 						</td>
 					</tr>

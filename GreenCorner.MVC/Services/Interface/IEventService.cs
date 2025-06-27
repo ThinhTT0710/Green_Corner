@@ -18,5 +18,10 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> ViewLeaderReviewHistory(string id);
 		Task<ResponseDTO?> ViewEventVolunteerList(int id);
         Task<ResponseDTO?> AttendanceCheck(string userId, int eventId, bool check);
+        Task<ResponseDTO?> CreateCleanupEvent(EventDTO item);
+        Task<ResponseDTO?> UpdateCleanupEvent(EventDTO item);
+        Task<ResponseDTO?> UpdateCleanupEventStatus(EventDTO item);
+        Task<ResponseDTO?> CloseCleanupEvent(int id);
+        Task<ResponseDTO?> KickVolunteer(string userId, int eventId);
     }
 }

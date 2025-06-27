@@ -21,28 +21,28 @@ namespace GreenCorner.AuthAPI.Repositories
 			_roleManager = roleManager;
 			
 		}
-		public async Task<UserDTO> BlockStaffAccount(string id)
+		public async Task<StaffDTO> BlockStaffAccount(string id)
 		{
-			var user = await _dbcontext.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
-			if (user != null)
+			var staff = await _dbcontext.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+			if (staff != null)
 			{
-				user.LockoutEnd = DateTimeOffset.UtcNow.AddDays(100000);
+                staff.LockoutEnd = DateTimeOffset.UtcNow.AddDays(100000);
 				_dbcontext.SaveChanges();
-				UserDTO userDTO = new UserDTO
-				{
-					ID = user.Id,
-					FullName = user.FullName,
-					Email = user.Email,
-					Address = user.Address,
-					Avatar = user.Avatar,
-					PhoneNumber = user.PhoneNumber
+                StaffDTO staffDTO = new StaffDTO
+                {
+					ID = staff.Id,
+					FullName = staff.FullName,
+					Email = staff.Email,
+					Address = staff.Address,
+					Avatar = staff.Avatar,
+					PhoneNumber = staff.PhoneNumber
 				};
-				return userDTO;
+				return staffDTO;
 			}
 			throw new System.Exception("User not found");
 		}
 
-		public async Task CreateStaff(StaffDTO staff)
+		public async Task<string> CreateStaff(StaffDTO staff)
 		{
 			var user = new User
 			{
@@ -53,12 +53,11 @@ namespace GreenCorner.AuthAPI.Repositories
 				Address = staff.Address,
 				Avatar = "default.png",
 				PhoneNumber = staff.PhoneNumber,
-				EmailConfirmed = true
 				
 			};
 			try
 			{
-				var result = await _userManager.CreateAsync(user);
+				var result = await _userManager.CreateAsync(user, staff.Password);
 				if (result.Succeeded)
 				{
 					if (staff.Role == "EVENTSTAFF")
@@ -69,39 +68,77 @@ namespace GreenCorner.AuthAPI.Repositories
 					{
 						await _userManager.AddToRoleAsync(user, "SALESTAFF");
 					}
-					return;
+					return "";
 				}
 				else
 				{
-					throw new Exception(result.Errors.FirstOrDefault().Description);
-				}
+                    return result.Errors.FirstOrDefault().Description;
+                }
 			}
 			catch (Exception ex)
-			{
-				throw new Exception(ex.Message);
-			}
+            {
+                throw new Exception("Error creating staff: " + ex.Message);
+            }
 		}
 
+        public async Task UpdateStaff(StaffDTO staffDTO)
+        {
+            var staff = await _userManager.FindByEmailAsync(staffDTO.Email);
+            if (staff == null)
+            {
+                throw new Exception("Staff not found.");
+            }
+			staff.FullName = staffDTO.FullName;
+			staff.Address = staffDTO.Address;
+            staff.Avatar = staffDTO.Avatar;
+            staff.PhoneNumber = staffDTO.PhoneNumber;
+            try
+            {
+                var result = await _userManager.UpdateAsync(staff);
+                 await _dbcontext.SaveChangesAsync();
+                if (result.Succeeded)
+                {
+                    if (staffDTO.Role == "EVENTSTAFF")
+                    {
+                        await _userManager.AddToRoleAsync(staff, "EVENTSTAFF");
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(staff, "SALESTAFF");
+                    }
+                    return;
+                }
+                else
+                {
+                    throw new Exception(result.Errors.FirstOrDefault().Description);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
-		public async Task<IEnumerable<UserDTO>> GetAllStaff()
+
+        public async Task<IEnumerable<StaffDTO>> GetAllStaff()
 		{
-			var users = await _dbcontext.Users.ToListAsync();
-			List<UserDTO> userDTOs = new List<UserDTO>();
-			foreach (var user in users)
+			var staff = await _dbcontext.Users.ToListAsync();
+			List<StaffDTO> userDTOs = new List<StaffDTO>();
+			foreach (var user in staff)
 			{
 				// get role
 				var roles = await _userManager.GetRolesAsync(user);
 				if (roles.Contains("EVENTSTAFF") || roles.Contains("SALESTAFF"))
 				{
-					UserDTO userDTO = new UserDTO
+					StaffDTO userDTO = new StaffDTO
 					{
 						ID = user.Id,
 						FullName = user.FullName,
 						Email = user.Email,
 						Address = user.Address,
 						Avatar = user.Avatar,
-						PhoneNumber = user.PhoneNumber
-					};
+						PhoneNumber = user.PhoneNumber,
+                    };
 
 					if (user.LockoutEnd.HasValue)
 					{
@@ -114,14 +151,14 @@ namespace GreenCorner.AuthAPI.Repositories
 			return userDTOs;
 		}
 
-		public Task<UserDTO> GetStaffById(string id)
+		public Task<StaffDTO> GetStaffById(string id)
 		{
 			
 				var user = _dbcontext.Users.Where(u => u.Id == id).FirstOrDefault();
 				if (user != null)
 				{
-					UserDTO userDTO = new UserDTO
-					{
+                StaffDTO userDTO = new StaffDTO
+                {
 						ID = user.Id,
 						FullName = user.FullName,
 						Email = user.Email,
@@ -140,15 +177,15 @@ namespace GreenCorner.AuthAPI.Repositories
 			
 		}
 
-		public Task<UserDTO> UnBlockStaffAccount(string id)
+		public Task<StaffDTO> UnBlockStaffAccount(string id)
 		{
 			var user = _dbcontext.Users.Where(u => u.Id == id).FirstOrDefault();
 			if (user != null)
 			{
 				user.LockoutEnd = null;
 				_dbcontext.SaveChanges();
-				UserDTO userDTO = new UserDTO
-				{
+                StaffDTO userDTO = new StaffDTO
+                {
 					ID = user.Id,
 					FullName = user.FullName,
 					Email = user.Email,
