@@ -25,8 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GreenCorner.BlogAPI", "Gree
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{91D4568E-96E0-45BC-AFE7-2D2EFFC3DC5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GreenCorner_Test", "GreenCorner_Test\GreenCorner_Test.csproj", "{DD4508B1-30DE-4853-A657-5B1F374B8A12}"
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GreenCorner.APIGateway", "GreenCorner.APIGateway\GreenCorner.APIGateway.csproj", "{57BB5C93-2A4D-4729-BCF6-D8E3FB3D9E5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GreenCorner_Test", "GreenCorner_Test\GreenCorner_Test.csproj", "{DD4508B1-30DE-4853-A657-5B1F374B8A12}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GreenCorner.APIGateway", "GreenCorner.APIGateway\GreenCorner.APIGateway.csproj", "{57BB5C93-2A4D-4729-BCF6-D8E3FB3D9E5D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

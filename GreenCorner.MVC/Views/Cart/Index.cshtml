@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "My Cart";
+    Layout = "_LayoutCart";
     int total = 0;
 }
 
@@ -32,11 +33,13 @@ else
             <div class="col-lg-8 mb-40">
                 <h1 class="heading-2 mb-10">Giỏ hàng</h1>
                 <div class="d-flex justify-content-between">
-                    <h6 class="text-body">Có <span class="text-brand">
-                            @Model.Count();
+                    <h6 class="text-body">
+                        Có <span class="text-brand">
+                            @Model.Count()
                         </span> sản phẩm trong giỏ hàng của bạn
                     </h6>
-                    <h6 class="text-body"><a href="#" class="text-muted"><i class="fi-rs-trash mr-5"></i>Xóa giỏ hàng</a>
+                    <h6 class="text-body">
+                        <a href="#" class="text-muted"><i class="fi-rs-trash mr-5"></i>Xóa giỏ hàng</a>
                     </h6>
                 </div>
             </div>
@@ -49,7 +52,7 @@ else
                             <tr class="main-heading">
                                 <th class="custome-checkbox start pl-30">
                                     <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox11"
-                                        value="">
+                                           value="">
                                 </th>
                                 <th scope="col" colspan="2">Sản phẩm</th>
                                 <th scope="col">Đơn Giá</th>
@@ -63,18 +66,20 @@ else
                             {
                                 var productImg = item.Product.ImageUrl.Split('&')[0];
                                 int price = (int)item.Product.Price;
-                                int priceDiscount = price - (price * item.Product.Discount.Value / 100);
-                                var totalPrice = (price - (price * item.Product.Discount.Value / 100)) * item.Quantity;
+                                int priceDiscount = price - (item.Product.Discount.HasValue ? (price * item.Product.Discount.Value / 100) : 0);
+                                var totalPrice = priceDiscount * item.Quantity;
                                 total += priceDiscount * item.Quantity;
                                 <tr class="pt-30">
                                     <td class="custome-checkbox pl-30">
                                         <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox1"
-                                            value="">
+                                               value="">
                                     </td>
                                     <td class="image product-thumbnail pt-40"><img src="@productImg" alt="#"></td>
                                     <td class="product-des product-name">
-                                        <h6 class="mb-5"><a class="product-name mb-10 text-heading"
-                                                href="shop-product-right.html">@item.Product.Name</a></h6>
+                                        <h6 class="mb-5">
+                                            <a class="product-name mb-10 text-heading"
+                                               href="shop-product-right.html">@item.Product.Name</a>
+                                        </h6>
                                     </td>
                                     <td class="price" data-title="Price">
                                         <h4 class="text-body">@priceDiscount.ToString("N0", new CultureInfo("vi-VN"))đ</h4>
@@ -82,10 +87,11 @@ else
                                     <td class="text-center detail-info" data-title="Stock">
                                         <div class="detail-extralink mr-15">
                                             <div class="detail-qty border radius">
-                                                <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
+                                                @* Thêm data-cart-id và data-product-id vào các nút và input *@
+                                                <a href="#" class="qty-down" data-cart-id="@item.CartId" data-product-id="@item.ProductId"><i class="fi-rs-angle-small-down"></i></a>
                                                 <input type="text" name="quantity" class="qty-val" value="@item.Quantity"
-                                                       min="1">
-                                                <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
+                                                       min="1" data-cart-id="@item.CartId" data-product-id="@item.ProductId">
+                                                <a href="#" class="qty-up" data-cart-id="@item.CartId" data-product-id="@item.ProductId"><i class="fi-rs-angle-small-up"></i></a>
                                             </div>
                                         </div>
                                     </td>
@@ -93,7 +99,7 @@ else
                                         <h4 class="text-brand full-price">@totalPrice.ToString("N0", new CultureInfo("vi-VN"))đ</h4>
                                     </td>
                                     <td class="action text-center" data-title="Remove">
-                                        <a asp-controller="Cart" asp-action="Remove" class="remove-cart-item text-body" asp-route-cartId="@item.CartId"><i class="fi-rs-trash"></i></a>
+                                        <a href="#" class="remove-cart-item text-body" data-cart-id="@item.CartId"><i class="fi-rs-trash"></i></a>
                                     </td>
                                 </tr>
                             }
@@ -102,7 +108,7 @@ else
                 </div>
                 <div class="divider-2 mb-30"></div>
                 <div class="cart-action d-flex justify-content-between">
-                    <a class="btn "><i class="fi-rs-arrow-left mr-10"></i>Tiếp tục mua sắm</a>
+                    <a href="/Product" class="btn "><i class="fi-rs-arrow-left mr-10"></i>Tiếp tục mua sắm</a>
                 </div>
                 <div class="row mt-50">
                     <div class="col-lg-7">
@@ -121,7 +127,8 @@ else
                                         <h6 class="text-muted">Tổng tiền hàng</h6>
                                     </td>
                                     <td class="cart_total_amount">
-                                        <h4 class="text-brand text-end">@total.ToString("N0", new CultureInfo("vi-VN"))đ
+                                        <h4 class="text-brand text-end">
+                                            @total.ToString("N0", new CultureInfo("vi-VN"))đ
                                         </h4>
                                     </td>
                                 </tr>
@@ -162,7 +169,158 @@ else
         </div>
     </div>
 }
-
-
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            function updateCartQuantity(cartId, productId, newQuantity) {
+                if (isNaN(newQuantity) || newQuantity < 1) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Số lượng không hợp lệ!',
+                        text: 'Vui lòng nhập số lượng lớn hơn hoặc bằng 1.',
+                    });
+                    return;
+                }
+
+                $.ajax({
+                    url: '/Cart/UpdateQuantity',
+                    type: 'POST',
+                    data: {
+                        cartId: cartId,
+                        productId: productId,
+                        quantity: newQuantity
+                    },
+                    success: function (response) {
+                        if (response.isSuccess) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công!',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi!',
+                                text: response.message || 'Có lỗi xảy ra khi cập nhật số lượng.',
+                            });
+                            var $targetInput = $(`.qty-val[data-cart-id="${cartId}"]`);
+                            var initialQuantity = parseInt($targetInput.attr('value'));
+                            if (!isNaN(initialQuantity)) {
+                                $targetInput.val(initialQuantity);
+                            }
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: 'Không thể kết nối đến máy chủ để cập nhật số lượng.',
+                        });
+                        var $targetInput = $(`.qty-val[data-cart-id="${cartId}"]`);
+                        var initialQuantity = parseInt($targetInput.attr('value'));
+                        if (!isNaN(initialQuantity)) {
+                            $targetInput.val(initialQuantity);
+                        }
+                    }
+                });
+            }
+
+            $('.qty-up').off('click').on('click', function (e) {
+                e.preventDefault();
+                var $qtyInput = $(this).siblings('.qty-val');
+                var currentVal = parseInt($qtyInput.val());
+                var cartId = $(this).data('cart-id');
+                var productId = $(this).data('product-id');
+
+                if (!isNaN(currentVal)) {
+                    var newQuantity = currentVal + 1;
+                    $qtyInput.val(newQuantity);
+                    updateCartQuantity(cartId, productId, newQuantity);
+                }
+            });
+
+            $('.qty-down').off('click').on('click', function (e) {
+                e.preventDefault();
+                var $qtyInput = $(this).siblings('.qty-val');
+                var currentVal = parseInt($qtyInput.val());
+                var cartId = $(this).data('cart-id');
+                var productId = $(this).data('product-id');
+
+                if (!isNaN(currentVal) && currentVal > 1) {
+                    var newQuantity = currentVal - 1;
+                    $qtyInput.val(newQuantity);
+                    updateCartQuantity(cartId, productId, newQuantity);
+                } else if (currentVal === 1) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Không thể giảm thêm!',
+                        text: 'Số lượng sản phẩm không thể nhỏ hơn 1. Bạn có thể xóa sản phẩm nếu không muốn mua nữa.',
+                    });
+                }
+            });
+
+            $('.qty-val').off('change').on('change', function () {
+                var newQuantity = parseInt($(this).val());
+                var cartId = $(this).data('cart-id');
+                var productId = $(this).data('product-id');
+
+                updateCartQuantity(cartId, productId, newQuantity);
+            });
+
+            $('.remove-cart-item').off('click').on('click', function (e) {
+                e.preventDefault();
+                var cartId = $(this).data('cart-id');
+
+                Swal.fire({
+                    title: 'Bạn có chắc chắn muốn xóa?',
+                    text: "Sản phẩm này sẽ bị xóa khỏi giỏ hàng của bạn!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Có, xóa nó đi!',
+                    cancelButtonText: 'Không, hủy bỏ!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/Cart/Remove',
+                            type: 'GET',
+                            data: { cartId: cartId },
+                            success: function (response) {
+                                if (response.isSuccess) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Đã xóa!',
+                                        text: response.message,
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Lỗi!',
+                                        text: response.message || 'Có lỗi xảy ra khi xóa sản phẩm.',
+                                    });
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Lỗi!',
+                                    text: 'Không thể kết nối đến máy chủ để xóa sản phẩm.',
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 }
