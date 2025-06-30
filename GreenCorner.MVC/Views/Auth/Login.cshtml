@@ -1,27 +1,71 @@
 ﻿@model LoginRequestDTO
-<form method="post">
-    <div class="container border p-4">
-        <div class="row text-center">
-                <h1>Login</h1>
-        </div>
-        <div class="row">
-            <div class="col-12 col-md-6 offset-md-3 pb-2">
-                <input asp-for="Email" class="form-control" placeholder="Email" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="col-12 col-md-6 offset-md-3 pb-2">
-                <input asp-for="Password" class="form-control" placeholder="Password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="col-12 col-md-6 offset-md-3 pb-2">
-                <button type="submit" class="form-control btn btn-success" value="Submit"> Login</button>
-            </div>
-            <a asp-controller="Auth" asp-action="LoginFacebook" class="col-12 col-md-6 offset-md-3 pb-2 text-center">Login with Facebook</a>
-            <a asp-controller="Auth" asp-action="GoogleLogin" class="col-12 col-md-6 offset-md-3 pb-2 text-center">Login with Google</a>
-            <a asp-controller="Auth" asp-action="EmailForgotPassword" class="col-12 col-md-6 offset-md-3 pb-2 text-center">Forgot Password?</a>
+<div class="page-header breadcrumb-wrap">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/Home" rel="nofollow"><i class="fi-rs-home mr-5"></i>Trang chủ</a>
+            <span></span> Đăng nhập
         </div>
     </div>
-</form>
+</div>
+<div class="page-content pt-40 pb-40">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-8 col-lg-10 col-md-12 m-auto">
+                <div class="row">
+                    <div class="col-lg-6 col-md-8">
+                        <div class="login_wrap widget-taber-content background-white">
+                            <div class="padding_eight_all bg-white">
+                                <div class="heading_s1">
+                                    <h1 class="mb-5">Đăng nhập</h1>
+                                    <p class="mb-30">Lần đầu đến với chúng tôi? <a href="/Auth/Register">Đăng ký ngay
+                                            tại đây</a></p>
+                                </div>
+                                <form method="post">
+                                    <div class="form-group">
+                                        <input asp-for="Email" type="text" placeholder="Địa chỉ Email" />
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <input asp-for="Password" type="password" placeholder="Mật khẩu" />
+                                        <span asp-validation-for="Password" class="text-danger"></span>
+                                    </div>
+                                    <div class="login_footer form-group mb-50">
+                                        <div class="chek-form">
+                                            <div class="custome-checkbox">
+                                                <input class="form-check-input" type="checkbox" name="checkbox"
+                                                    id="exampleCheckbox1" value="" />
+                                                <label class="form-check-label" for="exampleCheckbox1"><span>Ghi nhớ
+                                                        tôi</span></label>
+                                            </div>
+                                        </div>
+                                        <a class="text-muted" asp-controller="Auth"
+                                            asp-action="EmailForgotPassword">Quên mật khẩu?</a>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-heading btn-block hover-up"
+                                            name="login">Đăng nhập</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 pr-30 d-none d-lg-block">
+                        <div class="card-login mt-70">
+                            <a asp-controller="Auth" asp-action="LoginFacebook" class="social-login facebook-login">
+                                <img src="~/imgs/theme/icons/logo-facebook.svg" alt="" />
+                                <span>Đăng nhập bằng Facebook</span>
+                            </a>
+                            <a asp-controller="Auth" asp-action="GoogleLogin" class="social-login google-login">
+                                <img src="~/imgs/theme/icons/logo-google.svg" alt="" />
+                                <span>Đăng nhập bằng Google</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
