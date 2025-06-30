@@ -80,34 +80,52 @@ namespace GreenCorner.MVC.Controllers
             return RedirectToAction("Index", "Product");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> UpdateCart(CartDTO cartDTO)
+        public async Task<IActionResult> UpdateQuantity(int cartId, int productId, int quantity)
         {
             if (!User.Identity.IsAuthenticated)
             {
-                return Json(new { isSuccess = false, message = "Please login to update item to cart" });
+                return Json(new { isSuccess = false, message = "Vui lòng đăng nhập để cập nhật giỏ hàng." });
             }
+
+            if (quantity < 1)
+            {
+                return Json(new { isSuccess = false, message = "Số lượng sản phẩm phải lớn hơn hoặc bằng 1." });
+            }
+
             try
             {
-                cartDTO.UserId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+                var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Json(new { isSuccess = false, message = "Không thể xác định người dùng." });
+                }
+
+                var cartDTO = new CartDTO
+                {
+                    CartId = cartId,
+                    ProductId = productId, 
+                    Quantity = quantity,
+                    UserId = userId 
+                };
+
                 var response = await _cartService.UpdateCart(cartDTO);
+
                 if (response != null && response.IsSuccess)
                 {
-                    TempData["success"] = "Item Updated from cart";
+                    return Json(new { isSuccess = true, message = "Số lượng sản phẩm đã được cập nhật thành công." });
                 }
                 else
                 {
-                    TempData["error"] = response?.Message;
+                    return Json(new { isSuccess = false, message = response?.Message ?? "Không thể cập nhật số lượng sản phẩm." });
                 }
-                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                return Json(new { isSuccess = false, message = ex.Message });
+                return Json(new { isSuccess = false, message = $"Đã xảy ra lỗi: {ex.Message}" });
             }
         }
 
-        [HttpGet]
+        [HttpGet] 
         [Authorize(Roles = "CUSTOMER")]
         public async Task<IActionResult> Remove(int cartId)
         {
@@ -116,17 +134,16 @@ namespace GreenCorner.MVC.Controllers
                 var response = await _cartService.DeleteItemInCart(cartId);
                 if (response != null && response.IsSuccess)
                 {
-                    TempData["success"] = "Item removed from cart";
+                    return Json(new { isSuccess = true, message = "Sản phẩm đã được xóa khỏi giỏ hàng." });
                 }
-                else 
-                { 
-                    TempData["error"] = response?.Message;
+                else
+                {
+                    return Json(new { isSuccess = false, message = response?.Message ?? "Không thể xóa sản phẩm khỏi giỏ hàng." });
                 }
-                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                return Json(new { isSuccess = false, message = ex.Message });
+                return Json(new { isSuccess = false, message = $"Đã xảy ra lỗi: {ex.Message}" });
             }
         }
     }
