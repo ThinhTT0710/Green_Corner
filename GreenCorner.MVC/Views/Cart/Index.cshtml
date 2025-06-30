@@ -5,56 +5,164 @@
     int total = 0;
 }
 
-<h2>Your Shopping Cart</h2>
-
+<div class="page-header breadcrumb-wrap">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/Home" rel="nofollow"><i class="fi-rs-home mr-5"></i>Trang chủ</a>
+            <span></span> Giỏ hàng
+        </div>
+    </div>
+</div>
 @if (!Model.Any())
 {
-    <p>Your cart is empty.</p>
+    <div class="container mb-80 mt-50 text-center">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-20">Giỏ hàng của bạn hiện đang trống</h2>
+                <p class="text-muted mb-30">Có vẻ như bạn chưa thêm bất kỳ sản phẩm nào vào giỏ hàng.</p>
+                <a href="/Product" class="btn btn-fill-out"><i class="fi-rs-shopping-bag mr-10"></i>Bắt đầu mua sắm</a>
+            </div>
+        </div>
+    </div>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Image</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Subtotal</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                int price = (int) item.Product.Price;
-                int priceDiscount = price - (price * item.Product.Discount.Value / 100);
-                var totalPrice = (price - (price * item.Product.Discount.Value / 100)) * item.Quantity;
-                total += priceDiscount * item.Quantity;
-                <tr>
-                    <td>@item.Product.Name</td>
-                    <td><img src="@item.Product.ImageUrl" width="50" /></td>
-                    <td>@priceDiscount.ToString("C")</td>
-                    <td>
-                        <form asp-action="UpdateCart" method="post" style="display:flex;">
-                            <input type="hidden" name="ProductId" value="@item.ProductId" />
-                            <input type="hidden" name="CartId" value="@item.CartId" />
-                            <input type="number" name="Quantity" value="@item.Quantity" min="1" class="form-control" style="width: 60px;" />
-                            <button type="submit" class="btn btn-sm btn-primary ml-2">Update</button>
-                        </form>
-                    </td>
-                    <td>@item.Quantity</td>
-                    <td>@totalPrice.ToString("C")</td>
-                    <td>
-                        <a class="btn btn-primary" asp-controller="Cart" asp-action="Remove" asp-route-cartId="@item.CartId">
-                            <i class="bi bi-dash"></i>
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="container mb-80 mt-50">
+        <div class="row">
+            <div class="col-lg-8 mb-40">
+                <h1 class="heading-2 mb-10">Giỏ hàng</h1>
+                <div class="d-flex justify-content-between">
+                    <h6 class="text-body">Có <span class="text-brand">
+                            @Model.Count();
+                        </span> sản phẩm trong giỏ hàng của bạn
+                    </h6>
+                    <h6 class="text-body"><a href="#" class="text-muted"><i class="fi-rs-trash mr-5"></i>Xóa giỏ hàng</a>
+                    </h6>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="table-responsive shopping-summery">
+                    <table class="table table-wishlist">
+                        <thead>
+                            <tr class="main-heading">
+                                <th class="custome-checkbox start pl-30">
+                                    <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox11"
+                                        value="">
+                                </th>
+                                <th scope="col" colspan="2">Sản phẩm</th>
+                                <th scope="col">Đơn Giá</th>
+                                <th scope="col">Số lượng</th>
+                                <th scope="col">Tổng cộng</th>
+                                <th scope="col" class="end">Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var productImg = item.Product.ImageUrl.Split('&')[0];
+                                int price = (int)item.Product.Price;
+                                int priceDiscount = price - (price * item.Product.Discount.Value / 100);
+                                var totalPrice = (price - (price * item.Product.Discount.Value / 100)) * item.Quantity;
+                                total += priceDiscount * item.Quantity;
+                                <tr class="pt-30">
+                                    <td class="custome-checkbox pl-30">
+                                        <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox1"
+                                            value="">
+                                    </td>
+                                    <td class="image product-thumbnail pt-40"><img src="@productImg" alt="#"></td>
+                                    <td class="product-des product-name">
+                                        <h6 class="mb-5"><a class="product-name mb-10 text-heading"
+                                                href="shop-product-right.html">@item.Product.Name</a></h6>
+                                    </td>
+                                    <td class="price" data-title="Price">
+                                        <h4 class="text-body">@priceDiscount.ToString("N0", new CultureInfo("vi-VN"))đ</h4>
+                                    </td>
+                                    <td class="text-center detail-info" data-title="Stock">
+                                        <div class="detail-extralink mr-15">
+                                            <div class="detail-qty border radius">
+                                                <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
+                                                <input type="text" name="quantity" class="qty-val" value="@item.Quantity"
+                                                       min="1">
+                                                <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="price" data-title="Price">
+                                        <h4 class="text-brand full-price">@totalPrice.ToString("N0", new CultureInfo("vi-VN"))đ</h4>
+                                    </td>
+                                    <td class="action text-center" data-title="Remove">
+                                        <a asp-controller="Cart" asp-action="Remove" class="remove-cart-item text-body" asp-route-cartId="@item.CartId"><i class="fi-rs-trash"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="divider-2 mb-30"></div>
+                <div class="cart-action d-flex justify-content-between">
+                    <a class="btn "><i class="fi-rs-arrow-left mr-10"></i>Tiếp tục mua sắm</a>
+                </div>
+                <div class="row mt-50">
+                    <div class="col-lg-7">
+                    </div>
+                    <div class="col-lg-5">
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="border p-md-4 cart-totals ml-30">
+                    <div class="table-responsive">
+                        <table class="table no-border">
+                            <tbody>
+                                <tr>
+                                    <td class="cart_total_label">
+                                        <h6 class="text-muted">Tổng tiền hàng</h6>
+                                    </td>
+                                    <td class="cart_total_amount">
+                                        <h4 class="text-brand text-end">@total.ToString("N0", new CultureInfo("vi-VN"))đ
+                                        </h4>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td scope="col" colspan="2">
+                                        <div class="divider-2 mt-10 mb-10"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="cart_total_label">
+                                        <h6 class="text-muted">Phí vận chuyển</h6>
+                                    </td>
+                                    <td class="cart_total_amount">
+                                        <h4 class="text-heading text-end">30.000đ</h4>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td scope="col" colspan="2">
+                                        <div class="divider-2 mt-10 mb-10"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="cart_total_label">
+                                        <h6 class="text-muted">Tổng thanh toán</h6>
+                                    </td>
+                                    <td class="cart_total_amount">
+                                        <h4 class="text-brand text-end">
+                                            @((total + 30000).ToString("N0", new CultureInfo("vi-VN")))đ
+                                        </h4>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <a href="/Order" class="btn mb-20 w-100">Tiến hành thanh toán<i class="fi-rs-sign-out ml-15"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
-    <h4>Total: @total.ToString("C")</h4>
-    <a asp-action="Index" asp-controller="Order" class="btn btn-success">Proceed to Checkout</a>
+
+@section Scripts {
 }

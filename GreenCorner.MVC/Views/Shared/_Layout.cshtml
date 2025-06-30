@@ -70,13 +70,6 @@
                                     </form>
                                 </div>
                                 <div class="header-action-icon-2">
-                                    <a href="shop-compare.html">
-                                        <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-compare.svg" />
-                                        <span class="pro-count blue">3</span>
-                                    </a>
-                                    <a href="shop-compare.html"><span class="lable ml-0">Compare</span></a>
-                                </div>
-                                <div class="header-action-icon-2">
                                     <a href="shop-wishlist.html">
                                         <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-heart.svg" />
                                         <span class="pro-count blue">6</span>
@@ -88,7 +81,7 @@
                                         <img alt="Nest" src="~/imgs/theme/icons/icon-cart.svg" />
                                         <span class="pro-count blue">2</span>
                                     </a>
-                                    <a href="shop-cart.html"><span class="lable">Cart</span></a>
+                                    <a href="/Cart"><span class="lable">Cart</span></a>
                                     <div class="cart-dropdown-wrap cart-dropdown-hm2">
                                         <ul>
                                             <li>
@@ -130,14 +123,29 @@
                                     </div>
                                 </div>
                                 <div class="header-action-icon-2">
-                                    <a href="page-account.html">
+                                    <a href="/User/Profile">
                                         <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-user.svg" />
                                     </a>
-                                    <a href="page-account.html"><span class="lable ml-0">Account</span></a>
+                                    <a href="/User/Profile"><span class="lable ml-0">Tài khoản</span></a>
                                     <div class="cart-dropdown-wrap cart-dropdown-hm2 account-dropdown">
                                         <ul>
+                                            @if (!User.Identity.IsAuthenticated)
+                                            {
+                                                <li>
+                                                    <a href="/Auth/Login">
+                                                        <i class="fi fi-rs-user mr-10"></i>Đăng nhập
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="/Auth/Register">
+                                                        <i class="fi fi-rs-location-alt mr-10"></i>Đăng ký
+                                                    </a>
+                                                </li>
+                                            }
+                                            else
+                                            {
                                             <li>
-                                                <a href="page-account.html"><i class="fi fi-rs-user mr-10"></i>My
+                                                <a href="/User/Profile"><i class="fi fi-rs-user mr-10"></i>My
                                                     Account</a>
                                             </li>
                                             <li>
@@ -157,9 +165,9 @@
                                                         class="fi fi-rs-settings-sliders mr-10"></i>Setting</a>
                                             </li>
                                             <li>
-                                                <a href="page-login.html"><i class="fi fi-rs-sign-out mr-10"></i>Sign
-                                                    out</a>
+                                                <a href="/Auth/Logout"><i class="fi fi-rs-sign-out mr-10"></i>Đăng xuất</a>
                                             </li>
+                                            }
                                         </ul>
                                     </div>
                                 </div>
@@ -263,28 +271,25 @@
                                     <li class="hot-deals"><img src="~/imgs/theme/icons/icon-hot.svg"
                                             alt="hot deals" /><a href="shop-grid-right.html">Deals</a></li>
                                     <li>
-                                        <a class="active" href="index.html">Home</a>
+                                        <a class="active" href="index.html">Trang chủ</a>
                                     </li>
                                     <li>
-                                        <a href="page-about.html">About</a>
+                                        <a href="page-about.html">Giới thiệu</a>
                                     </li>
                                     <li>
-                                        <a href="shop-grid-right.html">Shop</a>
+                                        <a href="shop-grid-right.html">Cửa hàng</a>
                                     </li>
                                     <li>
-                                        <a href="#">Vendors</a>
+                                        <a href="#">Sự kiện</a>
                                     </li>
                                     <li class="position-static">
-                                        <a href="#">Mega menu</i></a>
+                                        <a href="#">Về chúng tôi</a>
                                     </li>
                                     <li>
                                         <a href="blog-category-grid.html">Blog</a>
                                     </li>
                                     <li>
-                                        <a href="#">Pages</a>
-                                    </li>
-                                    <li>
-                                        <a href="page-contact.html">Contact</a>
+                                        <a href="page-contact.html">Liên  hệ</a>
                                     </li>
                                 </ul>
                             </nav>
@@ -292,7 +297,7 @@
                     </div>
                     <div class="hotline d-none d-lg-flex">
                         <img src="~/imgs/theme/icons/icon-headphone.svg" alt="hotline" />
-                        <p>1900 - 888<span>24/7 Support Center</span></p>
+                        <p>0945-583-554<span>24/7 Chăm sóc khách hàng</span></p>
                     </div>
                     <div class="header-action-icon-2 d-block d-lg-none">
                         <div class="burger-icon burger-icon-white">
@@ -430,7 +435,7 @@
         </div>
     </div>
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main" class="main pages">
             @RenderBody()
             <partial name="_Notification" />
         </main>

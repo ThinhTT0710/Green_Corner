@@ -21,7 +21,6 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> Profile()
         {
             if (!User.Identity.IsAuthenticated)
@@ -40,7 +39,7 @@ namespace GreenCorner.MVC.Controllers
             }
             else
             {
-                TempData["error"] = response.Message;
+                TempData["error"] = response?.Message;
                 return RedirectToAction("Index", "Home");
             }
         }
