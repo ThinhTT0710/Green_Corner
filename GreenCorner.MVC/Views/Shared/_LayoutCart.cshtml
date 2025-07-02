@@ -16,6 +16,8 @@
     <!-- Template CSS -->
     <link rel="stylesheet" href="~/css/plugins/animate.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/main.css?v=6.1" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/chatbox.css" asp-append-version="true" />
+
 </head>
 <body>
     <header class="header-area header-style-1 header-height-2">
@@ -488,6 +490,45 @@
             @RenderBody()
             <partial name="_Notification" />
         </main>
+        <div id="chatbot-container">
+            <div id="chat-window">
+                <div class="chat-header">
+                    <div class="chat-header-info">
+                        <img src="/imgs/theme/bot-avatar.jpg" alt="Bot Avatar" class="avatar">
+                        <span>Trợ lý ảo</span>
+                    </div>
+                    <button class="close-btn" onclick="toggleChat()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#FFFFFF" viewBox="0 0 16 16">
+                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="chat-body">
+                    <div class="message-container bot-message">
+                        <div class="message-bubble">
+                            Xin chào! Tôi có thể giúp gì cho bạn về sản phẩm hoặc sự kiện của chúng tôi?
+                        </div>
+                        <img src="/imgs/theme/bot-avatar.jpg" alt="Bot Avatar" class="avatar">
+                    </div>
+                </div>
+
+                <div class="chat-footer">
+                    <input type="text" id="chat-input" placeholder="Nhập tin nhắn..." onkeydown="handleEnter(event)">
+                    <button id="send-btn" onclick="sendMessage()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#FFFFFF" viewBox="0 0 16 16">
+                            <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button id="chat-toggle-btn" onclick="toggleChat()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.504 7-5.5S11.996 3 8 3 1 5.504 1 8.5c0 .642.07 1.254.196 1.822a1 1 0 0 1 .482.774zM8.5 5.5a.5.5 0 0 0 0 1h.5a.5.5 0 0 0 0-1h-.5zm-2 0a.5.5 0 0 0 0 1h.5a.5.5 0 0 0 0-1h-.5zm4 0a.5.5 0 0 0 0 1h.5a.5.5 0 0 0 0-1h-.5z" />
+                </svg>
+            </button>
+        </div>
     </div>
     <footer class="main">
         <section class="featured section-padding">
@@ -685,6 +726,10 @@
             </div>
         </div>
     </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/chatbot/chatbot.js"></script>
+    <script src="~/js/cart/carthandler.js"></script>
     <!-- Vendor JS-->
     <script src="~/js/vendor/modernizr-3.6.0.min.js"></script>
     <script src="~/js/vendor/jquery-3.7.1.min.js"></script>
