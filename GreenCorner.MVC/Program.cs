@@ -1,4 +1,5 @@
 using GreenCorner.MVC.Controllers;
+using GreenCorner.MVC.Hubs;
 using GreenCorner.MVC.Services;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
@@ -26,7 +27,10 @@ builder.Services.AddHttpClient<ITrashEventService, TrashEventService>();
 builder.Services.AddHttpClient<IOrderService, OrderService>();
 builder.Services.AddHttpClient<IEventService, EventService>();
 builder.Services.AddHttpClient<IRewardService, RewardService>();
-builder.Services.AddHttpClient<IRewardPointService, RewardPointService>();
+builder.Services.AddHttpClient<IRewardPointService, RewardPointService>(); 
+builder.Services.AddHttpClient<IChatService, ChatService>();
+
+builder.Services.AddSignalR();
 
 
 SD.AuthAPIBase = builder.Configuration["ServiceUrls:AuthAPI"];
@@ -105,5 +109,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();

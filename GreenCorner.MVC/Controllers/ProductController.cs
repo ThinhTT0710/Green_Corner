@@ -31,8 +31,30 @@ namespace GreenCorner.MVC.Controllers
             return View(listProduct);
         }
 
+        public async Task<IActionResult> Detail(int id)
+		{
+            try
+            {
+                ResponseDTO response = await _productService.GetByProductId(id);
+                if (response != null && response.IsSuccess)
+                {
+                    ProductDTO product = JsonConvert.DeserializeObject<ProductDTO>(response.Result.ToString());
+                    return View(product);
+                }
+                else
+                {
+                    TempData["error"] = response?.Message;
+					return RedirectToAction("Index", "Product");
+				}
+			}
+            catch(Exception ex)
+            {
+				TempData["error"] = ex.Message;
+				return RedirectToAction("Index", "Product");
+			}
+		}
 
-        public async Task<IActionResult> CreateNewProduct()
+		public async Task<IActionResult> CreateNewProduct()
         {
             return View();
         }

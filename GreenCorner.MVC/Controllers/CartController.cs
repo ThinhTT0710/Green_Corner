@@ -47,37 +47,90 @@ namespace GreenCorner.MVC.Controllers
         }
 
 
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> AddToCart(int productId)
         {
             try
             {
                 if (!User.Identity.IsAuthenticated)
                 {
-                    return Json(new { isSuccess = false, message = "Please login to add item to cart" });
+                    return Json(new { isSuccess = false, message = "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng." });
                 }
+
                 var userID = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+
+                if (string.IsNullOrEmpty(userID))
+                {
+                    return Json(new { isSuccess = false, message = "Không thể xác định người dùng. Vui lòng đăng nhập lại." });
+                }
+
                 var cartDto = new CartDTO
                 {
                     UserId = userID,
                     ProductId = productId,
                     Quantity = 1
                 };
+
                 var response = await _cartService.AddToCart(cartDto);
+
                 if (response != null && response.IsSuccess)
                 {
-                    TempData["success"] = "Added to cart!";
+                    return Json(new { isSuccess = true, message = "Sản phẩm đã được thêm vào giỏ hàng!", icon = "success" });
                 }
                 else
                 {
-                    TempData["error"] = response?.Message;
+                    return Json(new { isSuccess = false, message = response?.Message ?? "Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.", icon = "error" });
                 }
             }
             catch (Exception ex)
             {
-                return Json(new { isSuccess = false, message = ex.Message });
+                return Json(new { isSuccess = false, message = $"Đã xảy ra lỗi hệ thống: {ex.Message}", icon = "error" });
             }
-            return RedirectToAction("Index", "Product");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddToCartWithQuantity(int productId, int quantity)
+        {
+            try
+            {
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return Json(new { isSuccess = false, message = "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.", icon = "error" });
+                }
+
+                if (quantity < 1)
+                {
+                    return Json(new { isSuccess = false, message = "Số lượng sản phẩm phải lớn hơn hoặc bằng 1.", icon = "warning" });
+                }
+
+                var userID = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
+                if (string.IsNullOrEmpty(userID))
+                {
+                    return Json(new { isSuccess = false, message = "Không thể xác định người dùng. Vui lòng đăng nhập lại.", icon = "error" });
+                }
+
+                var cartDto = new CartDTO
+                {
+                    UserId = userID,
+                    ProductId = productId,
+                    Quantity = quantity
+                };
+
+                var response = await _cartService.AddToCart(cartDto); 
+
+                if (response != null && response.IsSuccess)
+                {
+                    return Json(new { isSuccess = true, message = "Sản phẩm đã được thêm vào giỏ hàng!", icon = "success"});
+                }
+                else
+                {
+                    return Json(new { isSuccess = false, message = response?.Message ?? "Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.", icon = "error" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isSuccess = false, message = $"Đã xảy ra lỗi hệ thống: {ex.Message}", icon = "error" });
+            }
         }
 
         public async Task<IActionResult> UpdateQuantity(int cartId, int productId, int quantity)
