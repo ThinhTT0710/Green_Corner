@@ -1,30 +1,28 @@
 ﻿using GreenCorner.EcommerceAPI.Models.DTO;
 using GreenCorner.EcommerceAPI.Services.Interface;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GreenCorner.EcommerceAPI.Controllers
 {
-    [Route("api/Product")]
+    [Route("api/wishlist")]
     [ApiController]
-    public class ProductController : ControllerBase
+    public class WishListController : ControllerBase
     {
-        private readonly IProductService _productService;
+        private readonly IWishListService _wishListService;
         private readonly ResponseDTO _responseDTO;
-        public ProductController(IProductService productService)
+        public WishListController(IWishListService wishListService)
         {
-            _productService = productService;
-            _responseDTO = new ResponseDTO();
+            _wishListService = wishListService;
+            this._responseDTO = new ResponseDTO();
         }
-
         [HttpGet]
-        public async Task<ResponseDTO> GetProducts()
+        public async Task<ResponseDTO> GetWishList()
         {
             try
             {
-                var products = await _productService.GetAllProduct();
-                _responseDTO.Result = products;
+                var wishlist = await _wishListService.GetAll();
+                _responseDTO.Result = wishlist;
                 return _responseDTO;
             }
             catch (Exception ex)
@@ -36,35 +34,12 @@ namespace GreenCorner.EcommerceAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ResponseDTO> GetProductById(int id)
+        public async Task<ResponseDTO> GetWishListById(int id)
         {
             try
             {
-                var product = await _productService.GetByProductId(id);
-                _responseDTO.Result = product;
-                return _responseDTO;
-            }
-            catch (Exception ex)
-            {
-                _responseDTO.Message = ex.Message;
-                _responseDTO.IsSuccess = false;
-                return _responseDTO;
-            }
-        }
-
-        [HttpPost("search")]
-        public async Task<ResponseDTO> Search([FromBody] string keyword)
-        {
-            try
-            {
-                var products = await _productService.Search(keyword);
-                _responseDTO.Result = products;
-                if (products.Count() == 0)
-                {
-                    _responseDTO.Message = "No product found";
-                    _responseDTO.IsSuccess = false;
-                    return _responseDTO;
-                }
+                var wishList = await _wishListService.GetById(id);
+                _responseDTO.Result = wishList;
                 return _responseDTO;
             }
             catch (Exception ex)
@@ -76,13 +51,27 @@ namespace GreenCorner.EcommerceAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ResponseDTO> CreateProduct([FromBody] ProductDTO product)
+        public async Task<ResponseDTO> AddToWishList([FromBody] WishListDTO wishListDTO)
         {
             try
             {
-				var createdProduct = await _productService.AddProduct(product);
-				_responseDTO.Result = createdProduct;
-				return _responseDTO;
+                await _wishListService.Add(wishListDTO);
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+            }
+            return _responseDTO;
+        }
+
+        [HttpPut]
+        public async Task<ResponseDTO> UpdateWishList([FromBody] WishListDTO wishListDTO)
+        {
+            try
+            {
+                await _wishListService.Update(wishListDTO);
+                return _responseDTO;
             }
             catch (Exception ex)
             {
@@ -92,12 +81,12 @@ namespace GreenCorner.EcommerceAPI.Controllers
             }
         }
 
-        [HttpPut]
-        public async Task<ResponseDTO> UpdateProduct([FromBody] ProductDTO productDto)
+        [HttpDelete("{id}")]
+        public async Task<ResponseDTO> DeleteWishList(int id)
         {
             try
             {
-                await _productService.UpdateProduct(productDto);
+                await _wishListService.Delete(id);
                 return _responseDTO;
             }
             catch (Exception ex)
@@ -107,12 +96,14 @@ namespace GreenCorner.EcommerceAPI.Controllers
                 return _responseDTO;
             }
         }
-        [HttpDelete("{id}")]
-        public async Task<ResponseDTO> DeleteProduct(int id)
+
+        [HttpGet("get-user-wishlist/{userId}")]
+        public async Task<ResponseDTO> GetUserWishList(string userId)
         {
             try
             {
-                await _productService.DeleteProduct(id);
+                var wishLists = await _wishListService.GetByUserId(userId);
+                _responseDTO.Result = wishLists;
                 return _responseDTO;
             }
             catch (Exception ex)

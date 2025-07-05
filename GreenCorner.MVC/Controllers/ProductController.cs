@@ -231,5 +231,18 @@ namespace GreenCorner.MVC.Controllers
             TempData["error"] = response?.Message;
             return View(productDto);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string keyword)
+        {
+            var res = await _productService.Search(keyword);
+
+            if (res != null && res.IsSuccess)
+            {
+                var products = JsonConvert.DeserializeObject<List<ProductDTO>>(res.Result.ToString());
+                return Json(new { success = true, products = products });
+            }
+            return Json(new { success = false, message = "No product found" });
+        }
     }
 }

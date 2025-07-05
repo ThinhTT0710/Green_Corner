@@ -47,6 +47,15 @@ namespace GreenCorner.MVC.Services
                 Url = SD.EcommerceAPIBase + "/api/Product/" + id
             });
         }
+        public async Task<ResponseDTO?> Search(string keyword)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.POST,
+                Url = SD.EcommerceAPIBase + "/api/Product/Search",
+                Data = keyword
+            });
+        }
 
         public async Task<ResponseDTO?> UpdateProduct(ProductDTO productDto)
         {

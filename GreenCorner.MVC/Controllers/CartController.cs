@@ -16,12 +16,12 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "CUSTOMER")]
         public async Task<IActionResult> Index()
         {
             if (!User.Identity.IsAuthenticated)
             {
-                return Json(new { isSuccess = false, message = "Please login to add item to cart" });
+                TempData["loginError"] = "Vui lòng đăng nhập để xem giỏ hàng của bạn";
+                return Redirect(Request.Headers["Referer"].ToString());
             }
             try
             {
