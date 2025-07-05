@@ -24,6 +24,9 @@ public partial class GreenCornerEcommerceContext : DbContext
 
     public virtual DbSet<Product> Products { get; set; }
 
+    public virtual DbSet<WishList> WishLists { get; set; }
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Cart>(entity =>
@@ -91,7 +94,14 @@ public partial class GreenCornerEcommerceContext : DbContext
                 .HasColumnType("datetime");
         });
 
-        OnModelCreatingPartial(modelBuilder);
+        modelBuilder.Entity<WishList>(entity =>
+        {
+            entity.HasKey(e => e.WishListId).HasName("PK__WishList__E41F8787F0D85534");
+
+            entity.ToTable("WishList");
+
+            entity.Property(e => e.UserId).HasMaxLength(450);
+        });
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

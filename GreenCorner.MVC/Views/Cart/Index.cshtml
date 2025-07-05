@@ -51,7 +51,7 @@ else
                             <tr class="main-heading">
                                 <th class="custome-checkbox start pl-30">
                                     <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox11"
-                                           value="">
+                                        value="">
                                 </th>
                                 <th scope="col" colspan="2">Sản phẩm</th>
                                 <th scope="col">Đơn Giá</th>
@@ -65,19 +65,20 @@ else
                             {
                                 var productImg = item.Product.ImageUrl.Split('&')[0];
                                 int price = (int)item.Product.Price;
-                                int priceDiscount = price - (item.Product.Discount.HasValue ? (price * item.Product.Discount.Value / 100) : 0);
+                                int priceDiscount = price - (item.Product.Discount.HasValue ? (price *
+                                item.Product.Discount.Value / 100) : 0);
                                 var totalPrice = priceDiscount * item.Quantity;
                                 total += priceDiscount * item.Quantity;
                                 <tr class="pt-30">
                                     <td class="custome-checkbox pl-30">
                                         <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox1"
-                                               value="">
+                                            value="">
                                     </td>
                                     <td class="image product-thumbnail pt-40"><img src="@productImg" alt="#"></td>
                                     <td class="product-des product-name">
                                         <h6 class="mb-5">
                                             <a class="product-name mb-10 text-heading"
-                                               href="shop-product-right.html">@item.Product.Name</a>
+                                                href="shop-product-right.html">@item.Product.Name</a>
                                         </h6>
                                     </td>
                                     <td class="price" data-title="Price">
@@ -87,18 +88,22 @@ else
                                         <div class="detail-extralink mr-15">
                                             <div class="detail-qty border radius">
                                                 @* Thêm data-cart-id và data-product-id vào các nút và input *@
-                                                <a href="#" class="qty-down" data-cart-id="@item.CartId" data-product-id="@item.ProductId"><i class="fi-rs-angle-small-down"></i></a>
+                                                <a href="#" class="qty-down" data-cart-id="@item.CartId"
+                                                    data-product-id="@item.ProductId"><i class="fi-rs-angle-small-down"></i></a>
                                                 <input type="text" name="quantity" class="qty-val" value="@item.Quantity"
-                                                       min="1" data-cart-id="@item.CartId" data-product-id="@item.ProductId">
-                                                <a href="#" class="qty-up" data-cart-id="@item.CartId" data-product-id="@item.ProductId"><i class="fi-rs-angle-small-up"></i></a>
+                                                    min="1" data-cart-id="@item.CartId" data-product-id="@item.ProductId">
+                                                <a href="#" class="qty-up" data-cart-id="@item.CartId"
+                                                    data-product-id="@item.ProductId"><i class="fi-rs-angle-small-up"></i></a>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="price" data-title="Price">
-                                        <h4 class="text-brand full-price">@totalPrice.ToString("N0", new CultureInfo("vi-VN"))đ</h4>
+                                        <h4 class="text-brand full-price">@totalPrice.ToString("N0", new CultureInfo("vi-VN"))đ
+                                        </h4>
                                     </td>
                                     <td class="action text-center" data-title="Remove">
-                                        <a href="#" class="remove-cart-item text-body" data-cart-id="@item.CartId"><i class="fi-rs-trash"></i></a>
+                                        <a href="#" class="remove-cart-item text-body" data-cart-id="@item.CartId"><i
+                                                class="fi-rs-trash"></i></a>
                                     </td>
                                 </tr>
                             }
@@ -167,7 +172,4 @@ else
             </div>
         </div>
     </div>
-}
-@section Scripts {
-    <script src="~/js/cart/carthandler.js"></script>
 }

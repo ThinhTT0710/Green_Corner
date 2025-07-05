@@ -31,55 +31,30 @@
                         <a href="index.html"><img src="~/imgs/theme/logo.svg" alt="logo" /></a>
                     </div>
                     <div class="header-right">
-                        <div class="search-style-2">
-                            <form action="#">
-                                <select class="select-active">
-                                    <option>All Categories</option>
-                                    <option>Milks and Dairies</option>
-                                    <option>Wines & Alcohol</option>
-                                    <option>Clothing & Beauty</option>
-                                    <option>Pet Foods & Toy</option>
-                                    <option>Fast food</option>
-                                    <option>Baking material</option>
-                                    <option>Vegetables</option>
-                                    <option>Fresh Seafood</option>
-                                    <option>Noodles & Rice</option>
-                                    <option>Ice cream</option>
-                                </select>
-                                <input type="text" placeholder="Search for items..." />
+                        <div class="search-style-2" style="
+                             align-items: center;
+                             display: flex;
+                             justify-content: center;">
+                            <form action="#" method="get" style="max-width: 500px;">
+                                <input type="text" placeholder="Search for items..." id="search-input-realtime" style="max-width: 500px;" />
+                                <ul id="search-results" class="dropdown-menu w-100">
+                                </ul>
                             </form>
                         </div>
                         <div class="header-action-right">
                             <div class="header-action-2">
-                                <div class="search-location">
-                                    <form action="#">
-                                        <select class="select-active">
-                                            <option>Your Location</option>
-                                            <option>Alabama</option>
-                                            <option>Alaska</option>
-                                            <option>Arizona</option>
-                                            <option>Delaware</option>
-                                            <option>Florida</option>
-                                            <option>Georgia</option>
-                                            <option>Hawaii</option>
-                                            <option>Indiana</option>
-                                            <option>Maryland</option>
-                                            <option>Nevada</option>
-                                            <option>New Jersey</option>
-                                            <option>New Mexico</option>
-                                            <option>New York</option>
-                                        </select>
-                                    </form>
+                                <div class="location">
+                                    <a href="/TrashEvent/ReportTrashEvent" class="btn btn-sm font-weight-bold text-white mr-10 border-radius-5 btn-shadow-brand hover-up"><i class="fi-rs-marker mr-5"></i>Báo cáo</a>
                                 </div>
                                 <div class="header-action-icon-2">
-                                    <a href="shop-wishlist.html">
+                                    <a href="/WishList">
                                         <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-heart.svg" />
                                         <span class="pro-count blue">6</span>
                                     </a>
-                                    <a href="shop-wishlist.html"><span class="lable">Wishlist</span></a>
+                                    <a href="/WishList"><span class="lable">Wishlist</span></a>
                                 </div>
                                 <div class="header-action-icon-2">
-                                    <a class="mini-cart-icon" href="shop-cart.html">
+                                    <a class="mini-cart-icon" href="/Cart">
                                         <img alt="Nest" src="~/imgs/theme/icons/icon-cart.svg" />
                                         <span class="pro-count blue">2</span>
                                     </a>
@@ -700,6 +675,7 @@
     <script src="~/js/main.js?v=6.1"></script>
     <script src="~/js/shop.js?v=6.1"></script>
     <script src="~/js/chatbot/chatbot.js"></script>
+    <script src="~/js/search/search.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

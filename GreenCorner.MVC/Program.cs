@@ -29,6 +29,7 @@ builder.Services.AddHttpClient<IEventService, EventService>();
 builder.Services.AddHttpClient<IRewardService, RewardService>();
 builder.Services.AddHttpClient<IRewardPointService, RewardPointService>(); 
 builder.Services.AddHttpClient<IChatService, ChatService>();
+builder.Services.AddHttpClient<IWishListService, WishListService>();
 
 builder.Services.AddSignalR();
 
@@ -61,17 +62,18 @@ builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IVolunteerService, VolunteerService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IWishListService, WishListService>();
 
 // Add authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 }).AddCookie(options =>
     {
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
         options.LoginPath = "/Auth/Login";
-        options.AccessDeniedPath = "/Auth/Login";
+        options.AccessDeniedPath = "/Auth/AccessDenied";
     }).AddGoogle(options =>
     {
         options.ClientId = builder.Configuration["Google:ClientId"];

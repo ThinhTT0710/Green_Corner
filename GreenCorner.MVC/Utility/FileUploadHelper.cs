@@ -3,15 +3,19 @@
     public class FileUploadHelper
     {
         public static async Task<(bool IsSuccess, List<string> Paths, string ErrorMessage)> UploadImagesStrictAsync(
-        IFormFileCollection files,
-        string folderName,
-        string filePrefix,
-        long maxFileSizeInBytes = 5 * 1024 * 1024)
+    IFormFileCollection files,
+    string folderName,
+    string filePrefix,
+    long maxFileSizeInBytes = 5 * 1024 * 1024,
+    bool onlyOneFile = false)
         {
             var resultPaths = new List<string>();
 
             if (files == null || files.Count == 0)
                 return (false, resultPaths, "Không có ảnh nào được chọn.");
+
+            if (onlyOneFile && files.Count > 1)
+                return (false, resultPaths, "Chỉ được phép tải lên 1 ảnh.");
 
             var allowedMimeTypes = new[] { "image/jpeg", "image/png", "image/webp", "image/gif" };
 
@@ -19,9 +23,6 @@
             {
                 if (file.Length == 0)
                     return (false, resultPaths, $"Ảnh {file.FileName} trống.");
-                // Thêm khi chỉ cho phép tải lên 1 ảnh
-                /*if (files.Count > 1)
-                    return (false, resultPaths, "Chỉ được phép tải lên 1 ảnh.");*/
                 if (file.Length > maxFileSizeInBytes)
                     return (false, resultPaths, $"Ảnh {file.FileName} vượt quá 5MB.");
                 if (!allowedMimeTypes.Contains(file.ContentType.ToLower()))
@@ -55,6 +56,9 @@
 
                 resultPaths.Add($"/{relativeFolder}/{fileName}");
                 index++;
+
+                if (onlyOneFile)
+                    break;
             }
 
             return (true, resultPaths, null);

@@ -258,3 +258,55 @@ $(document).ready(function () {
         addToCartAjax(productId, quantity);
     });
 });
+
+$(document).ready(function () {
+    $('.remove-wishlist-item').off('click').on('click', function (e) {
+        e.preventDefault();
+        var wishListId = $(this).data('wishlist-id');
+
+        Swal.fire({
+            title: 'Bạn có chắc chắn muốn xóa?',
+            text: "Sản phẩm này sẽ bị xóa khỏi danh sách yêu thích của bạn!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Có, xóa nó đi!',
+            cancelButtonText: 'Không, hủy bỏ!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/WishList/Remove',
+                    type: 'GET',
+                    data: { wishListId: wishListId },
+                    success: function (response) {
+                        if (response.isSuccess) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Đã xóa!',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi!',
+                                text: response.message || 'Có lỗi xảy ra khi xóa sản phẩm.',
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: 'Không thể kết nối đến máy chủ để xóa sản phẩm.',
+                        });
+                    }
+                });
+            }
+        });
+    });
+});
