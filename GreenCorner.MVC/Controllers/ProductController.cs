@@ -31,8 +31,30 @@ namespace GreenCorner.MVC.Controllers
             return View(listProduct);
         }
 
+        public async Task<IActionResult> Detail(int id)
+		{
+            try
+            {
+                ResponseDTO response = await _productService.GetByProductId(id);
+                if (response != null && response.IsSuccess)
+                {
+                    ProductDTO product = JsonConvert.DeserializeObject<ProductDTO>(response.Result.ToString());
+                    return View(product);
+                }
+                else
+                {
+                    TempData["error"] = response?.Message;
+					return RedirectToAction("Index", "Product");
+				}
+			}
+            catch(Exception ex)
+            {
+				TempData["error"] = ex.Message;
+				return RedirectToAction("Index", "Product");
+			}
+		}
 
-        public async Task<IActionResult> CreateNewProduct()
+		public async Task<IActionResult> CreateNewProduct()
         {
             return View();
         }
@@ -208,6 +230,19 @@ namespace GreenCorner.MVC.Controllers
 
             TempData["error"] = response?.Message;
             return View(productDto);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string keyword)
+        {
+            var res = await _productService.Search(keyword);
+
+            if (res != null && res.IsSuccess)
+            {
+                var products = JsonConvert.DeserializeObject<List<ProductDTO>>(res.Result.ToString());
+                return Json(new { success = true, products = products });
+            }
+            return Json(new { success = false, message = "No product found" });
         }
     }
 }

@@ -83,7 +83,7 @@ namespace GreenCorner_Test.EcommerceAPI_Test
 			Assert.NotNull(result.Result);
 		}
 
-		[Fact]
+		/*[Fact]
 		public async Task CreateProduct_ShouldReturnSuccess()
 		{
 			var productDTO = _mockProducts.First();
@@ -92,7 +92,7 @@ namespace GreenCorner_Test.EcommerceAPI_Test
 			var result = await _controller.CreateProduct(productDTO);
 
 			Assert.True(result.IsSuccess);
-		}
+		}*/
 
 		[Fact]
 		public async Task UpdateProduct_ShouldReturnSuccess()

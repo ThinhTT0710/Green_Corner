@@ -4,10 +4,10 @@
     {
         public static string AuthAPIBase { get; set; }
         public static string EcommerceAPIBase { get; set; }
-        public static string ProductAPIBase { get; set; }
         public static string BlogAPIBase { get; set; }
         public static string EventAPIBase { get; set; }
-
+        public static string RewardAPIBase { get; set; }
+      
         public const string RoleCustomer = "CUSTOMER";
 
         public const string RoleStaff = "STAFF";

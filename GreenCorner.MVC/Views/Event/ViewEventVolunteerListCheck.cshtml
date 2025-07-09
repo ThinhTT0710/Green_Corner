@@ -1,0 +1,70 @@
+﻿@model IEnumerable<EventVolunteerDTO>
+<div class="card shadow border-0 mt-4">
+	<div class="card-header bg-secondary bg-gradient ml-0 py-3">
+		<div class="row">
+			<div class="col-12 text-center">
+				<h1 class="text-white">Event Review List</h1>
+			</div>
+		</div>
+	</div>
+	<div class="card-body p-4">
+		<div class="row pb-3">
+			<div class="col-6">
+			</div>
+			<div class="col-6 text-end">
+				<a asp-action="AttendanceCheck" class="btn btn-outline-primary"><i class="bi bi-plus-square"></i> Điểm danh</a>
+			</div>
+		</div>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>
+						CleanEvent
+					</th>
+					<th>
+						Rating
+					</th>
+					<th>
+						Comment
+					</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model)
+				{
+					<tr>
+						<td>
+							@item.CleanEventId
+						</td>
+						<td>
+							@item.UserId
+						</td>
+						<td>
+							@item.AttendanceStatus
+						</td>
+						<td>
+							@{
+								if (@item.AttendanceStatus == "Present" || @item.AttendanceStatus == "Absent")
+								{
+									<i class="bi bi-check"></i>
+
+						}else {
+
+									<a class="btn btn-danger" asp-action="AttendanceCheck" asp-route-userId="@item.UserId" asp-route-eventId="@item.CleanEventId" asp-route-check="False">
+										<i class="bi bi-x"></i>
+								</a>
+									<a class="btn btn-danger" asp-action="AttendanceCheck" asp-route-userId="@item.UserId" asp-route-eventId="@item.CleanEventId" asp-route-check="True">
+										<i class="bi bi-check"></i>
+									</a>
+							}
+							}
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+	</div>
+
+</div>

@@ -314,10 +314,10 @@ namespace GreenCorner.MVC.Controllers
             return View(leaderReviewDTO);
         }
 
-		public async Task<IActionResult> ViewEventVolunteerList(int id)
+		public async Task<IActionResult> ViewEventVolunteerListCheck(int eventId)
 		{
 			List<EventVolunteerDTO> listEventVolunteer = new();
-			ResponseDTO? response = await _eventService.ViewEventVolunteerList(1);
+			ResponseDTO? response = await _eventService.ViewEventVolunteerList(eventId);
 			if (response != null && response.IsSuccess)
 			{
 				listEventVolunteer = JsonConvert.DeserializeObject<List<EventVolunteerDTO>>(response.Result.ToString());
@@ -335,7 +335,7 @@ namespace GreenCorner.MVC.Controllers
 			ResponseDTO response = await _eventService.AttendanceCheck(userId, eventId, check);
 			if (response != null && response.IsSuccess)
 			{
-				return RedirectToAction(nameof(ViewEventVolunteerList));
+				return RedirectToAction(nameof(ViewEventVolunteerListCheck));
 			}
 			else
 			{
@@ -515,7 +515,148 @@ namespace GreenCorner.MVC.Controllers
                 return View(volunteerDto);
             }
         }
-        
+        public async Task<IActionResult> CreateCleanupEvent()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateCleanupEvent(EventDTO eventDTO)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["loginError"] = "You need to log in to view your profile.";
+                return RedirectToAction("Login", "Auth");
+            }
+            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
+            eventDTO.CreatedAt = DateTime.Now;
+            eventDTO.Status = "Open";
+            if (ModelState.IsValid)
+            {
+                ResponseDTO response = await _eventService.CreateCleanupEvent(eventDTO);
+                if (response != null && response.IsSuccess)
+                {
+                    TempData["success"] = "Create Event successfully!";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    TempData["error"] = response?.Message;
+                }
+            }
+            return View(eventDTO);
+        }
+        public async Task<IActionResult> UpdateCleanupEvent(int eventId)
+        {
+            ResponseDTO response = await _eventService.GetByEventId(eventId);
+            if (response != null && response.IsSuccess)
+            {
+                EventDTO eventDTO = JsonConvert.DeserializeObject<EventDTO>(response.Result.ToString());
+                return View(eventDTO);
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+            return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateCleanupEvent(EventDTO eventDTO)
+        {
+            ResponseDTO response = await _eventService.UpdateCleanupEvent(eventDTO);
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = "Event updated successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+            return View(eventDTO);
+        }
+        public async Task<IActionResult> UpdateCleanupEventStatus(int eventId)
+        {
+            ResponseDTO response = await _eventService.GetByEventId(eventId);
+            if (response != null && response.IsSuccess)
+            {
+                EventDTO eventDTO = JsonConvert.DeserializeObject<EventDTO>(response.Result.ToString());
+                return View(eventDTO);
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+            return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateCleanupEventStatus(EventDTO eventDTO)
+        {
+            ResponseDTO response = await _eventService.UpdateCleanupEventStatus(eventDTO);
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = "Event updated successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+            return View(eventDTO);
+        }
+        public async Task<IActionResult> CloseCleanupEvent(int eventId)
+        {
+			try
+			{
+				var response = await _eventService.CloseCleanupEvent(eventId);
+				if (response != null && response.IsSuccess)
+				{
+					TempData["success"] = "Close event thành công";
+				}
+				else
+				{
+					TempData["error"] = response?.Message;
+				}
+				return RedirectToAction("Index", "Event");
+			}
+			catch (Exception ex)
+			{
+				TempData["error"] = ex.Message;
+				return RedirectToAction("Index", "Event");
+			}
+		}
+        public async Task<IActionResult> ViewEventVolunteerList(int eventId)
+        {
+            List<EventVolunteerDTO> listEventVolunteer = new();
+            ResponseDTO? response = await _eventService.ViewEventVolunteerList(eventId);
+            if (response != null && response.IsSuccess)
+            {
+                listEventVolunteer = JsonConvert.DeserializeObject<List<EventVolunteerDTO>>(response.Result.ToString());
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+            return View(listEventVolunteer);
+        }
+
+        public async Task<IActionResult> KickVolunteer(string userId, int eventId)
+        {
+
+            ResponseDTO response = await _eventService.KickVolunteer(userId, eventId);
+            if (response != null && response.IsSuccess)
+            {
+                return RedirectToAction(nameof(ViewEventVolunteerList));
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+            return NotFound();
+        }
+
         [HttpGet]
         public async Task<IActionResult> HasApprovedTeamLeader(int eventId)
         {

@@ -49,6 +49,20 @@ namespace GreenCorner.EventAPI.Controllers
             }
         }
 
-
+        [HttpDelete("{userID},{eventId}")]
+        public async Task<ResponseDTO> KickVolunteer(string userID, int eventId)
+        {
+            try
+            {
+                await _leaderService.KickVolunteer(userID, eventId);
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
     }
 }

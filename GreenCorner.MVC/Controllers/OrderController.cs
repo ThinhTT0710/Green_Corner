@@ -101,7 +101,7 @@ namespace GreenCorner.MVC.Controllers
                     orderDTO.Note = "";
                 }
 
-                if (orderDTO.PaymentMethod == "Thanh toán bằng VNPay")
+                if (orderDTO.PaymentMethod == "Chuyển khoản ngân hàng")
                 {
                     TempData["OrderDTO"] = JsonConvert.SerializeObject(orderDTO);
 
@@ -125,10 +125,6 @@ namespace GreenCorner.MVC.Controllers
                         foreach (var item in cartItems)
                         {
                             await _cartService.DeleteItemInCart(item.CartId);
-                        }
-                        if (orderDTO.PaymentMethod == "Chuyển khoản ngân hàng")
-                        {
-
                         }
                         return RedirectToAction("OrderComplete", "Order");
                     }

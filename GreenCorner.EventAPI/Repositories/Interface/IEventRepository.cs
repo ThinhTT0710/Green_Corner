@@ -7,5 +7,9 @@ namespace GreenCorner.EventAPI.Repositories.Interface
     {
         Task<IEnumerable<CleanupEvent>> GetAllEvent();
         Task<CleanupEvent> GetByEventId(int id);
+        Task CreateCleanupEvent(CleanupEvent item);
+        Task UpdateCleanupEvent(CleanupEvent item);
+        Task UpdateCleanupEventStatus(CleanupEvent item);
+        Task CloseCleanupEvent(int id);
     }
 }

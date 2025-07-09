@@ -5,11 +5,12 @@ namespace GreenCorner.AuthAPI.Services.Interface
 {
 	public interface IAdminService
 	{
-		Task<IEnumerable<UserDTO>> GetAllStaff();
-		Task<UserDTO> GetStaffById(string id);
-		Task CreateStaff(StaffDTO staff);
-		Task<UserDTO> BlockStaffAccount(string id);
-		Task<UserDTO> UnBlockStaffAccount(string id);
+		Task<IEnumerable<StaffDTO>> GetAllStaff();
+		Task<StaffDTO> GetStaffById(string id);
+		Task<string> CreateStaff(StaffDTO staff);
+		Task<StaffDTO> BlockStaffAccount(string id);
+		Task<StaffDTO> UnBlockStaffAccount(string id);
+    Task UpdateStaff(StaffDTO staff);
 		Task AddLogStaff(SystemLogDTO log);
 		Task<IEnumerable<SystemLogDTO>> GetAllLogs();
 	}

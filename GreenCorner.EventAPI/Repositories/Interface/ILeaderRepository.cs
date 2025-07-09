@@ -7,5 +7,7 @@ namespace GreenCorner.EventAPI.Repositories.Interface
 		Task<IEnumerable<EventVolunteer>> GetListVolunteer(int eventId);
 
 		Task AttendanceCheck (string userId, int eventId, bool check);
-	}
+
+        Task KickVolunteer(string userId, int eventId);
+    }
 }

@@ -1,0 +1,21 @@
+﻿@model VoucherDTO
+
+<h2>Delete Voucher</h2>
+<p>Are you sure you want to delete this voucher?</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="VoucherId" />
+
+    <div class="form-group">
+        <label>Title</label>
+        <input asp-for="Title" class="form-control" disabled />
+    </div>
+
+    <div class="form-group">
+        <label>Description</label>
+        <textarea asp-for="Description" class="form-control" disabled></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

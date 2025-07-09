@@ -1,5 +1,6 @@
 ﻿using GreenCorner.MVC.Models;
 using GreenCorner.MVC.Services.Interface;
+using GreenCorner.MVC.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
@@ -39,6 +40,25 @@ namespace GreenCorner.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> ReportTrashEvent(TrashEventDTO trashEventDTO)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["loginError"] = "Bạn cần đăng nhập để thực hiện được chức năng này";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var files = Request.Form.Files;
+
+            var (isSuccess, imagePaths, errorMessage) = await FileUploadHelper.UploadImagesStrictAsync(
+                files, folderName: "reporttrash", filePrefix: "reporttrash");
+
+            if (!isSuccess)
+            {
+                ModelState.AddModelError("Images", errorMessage);
+                return View(trashEventDTO);
+            }
+
+            trashEventDTO.ImageUrl = string.Join("&", imagePaths);
+
             if (!ModelState.IsValid)
             {
                 trashEventDTO.UserId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;

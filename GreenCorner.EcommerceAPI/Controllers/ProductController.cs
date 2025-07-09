@@ -52,6 +52,29 @@ namespace GreenCorner.EcommerceAPI.Controllers
             }
         }
 
+        [HttpPost("search")]
+        public async Task<ResponseDTO> Search([FromBody] string keyword)
+        {
+            try
+            {
+                var products = await _productService.Search(keyword);
+                _responseDTO.Result = products;
+                if (products.Count() == 0)
+                {
+                    _responseDTO.Message = "No product found";
+                    _responseDTO.IsSuccess = false;
+                    return _responseDTO;
+                }
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
         [HttpPost]
         public async Task<ResponseDTO> CreateProduct([FromBody] ProductDTO product)
         {

@@ -1,46 +1,112 @@
 ﻿@model UserDTO
-<form asp-controller="User" asp-action="UpdateProfile">
-<div class="container border p-3">
-    <h1 class="text-dark text-center">Update Profile</h1>
-    <input hidden asp-for="ID" />
-    <input hidden asp-for="Avatar" />
-    <hr />
-    <div class="row">
-        <div class="col-2">
-            <label class="control-label pt-2" style="font-size:20px;">Email</label>
+
+<div class="page-header breadcrumb-wrap">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/Home" rel="nofollow"><i class="fi-rs-home mr-5"></i>Trang chủ</a>
+            <span></span> Cập nhật hồ sơ
         </div>
-        <div class="col-10 pb-3">
-            <input asp-for="Email" readonly class="form-control" />
-        </div>
-        <div class="col-2">
-            <label class="control-label pt-2" style="font-size:20px;">Full Name</label>
-        </div>
-        <div class="col-10 pb-3">
-            <input asp-for="FullName" class="form-control" />
-            <span asp-validation-for="FullName" class="text-danger"></span>
-        </div>
-        <div class="col-2">
-            <label class="control-label pt-2" style="font-size:20px;">Address</label>
-        </div>
-        <div class="col-10 pb-3">
-            <input asp-for="Address" class="form-control" />
-            <span asp-validation-for="Address" class="text-danger"></span>
-        </div>
-        <div class="col-2">
-            <label class="control-label pt-2" style="font-size:20px;">Phone Number</label>
-        </div>
-        <div class="col-10 pb-3">
-            <input asp-for="PhoneNumber" class="form-control" />
-            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-        </div>
-            <div class="col-5">
-                <input type="submit" value="Update" class="btn btn-success form-control" />
-            </div>
-    </div>
-    <div>
     </div>
 </div>
-</form>
+<div class="page-content pt-50 pb-50">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 m-auto">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="dashboard-menu">
+                            <ul class="nav flex-column" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard"
+                                        role="tab" aria-controls="dashboard" aria-selected="false">
+                                        <i class="fi-rs-settings-sliders mr-10"></i>Dashboard
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab"
+                                        aria-controls="orders" aria-selected="false">
+                                        <i class="fi-rs-shopping-bag mr-10"></i>Đơn hàng
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#track-orders"
+                                        role="tab" aria-controls="track-orders" aria-selected="false">
+                                        <i class="fi-rs-shopping-cart-check mr-10"></i>Track Your Order
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="address-tab" data-bs-toggle="tab" href="#address" role="tab"
+                                        aria-controls="address" aria-selected="true">
+                                        <i class="fi-rs-marker mr-10"></i>My Address
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="account-detail-tab" data-bs-toggle="tab" href="#"
+                                        role="tab" aria-controls="account-detail" aria-selected="true">
+                                        <i class="fi-rs-user mr-10"></i>Thông tin tài khoản
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/Auth/Logout">
+                                        <i class="fi-rs-sign-out mr-10"></i>Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="tab-content account dashboard-content pl-50">
+                            <div class="tab-pane fade active show" id="account-detail" role="tabpanel"
+                                aria-labelledby="account-detail-tab">
+                                <div class="card">
+                                    <div class="card-header" style="padding:0px">
+                                        <h5>Cập nhật hồ sơ</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form asp-controller="User" asp-action="UpdateProfile" method="post" enctype="multipart/form-data">
+                                            <img src="@Model.Avatar" alt="" class="avatar-profile" />
+                                            <input hidden asp-for="ID" />
+                                            <input hidden asp-for="Email" />
+                                            <div class="row">
+                                                <div class="form-group col-md-12">
+                                                    <label>Avatar <span class="required">*</span></label>
+                                                    <input type ="file" name="images" class="form-control" style="height:auto;padding-left:5px;" />
+                                                    <span class="text-danger">@Html.ValidationMessage("Images")</span>
+                                                </div>
+                                                <div class="form-group col-md-12">
+                                                    <label>Họ và tên <span class="required">*</span></label>
+                                                    <input asp-for="FullName" class="form-control" />
+                                                    <span asp-validation-for="FullName" class="text-danger"></span>
+                                                </div>
+                                                <div class="form-group col-md-12">
+                                                    <label>Địa chỉ <span class="required">*</span></label>
+                                                    <input asp-for="Address" class="form-control" />
+                                                    <span asp-validation-for="Address" class="text-danger"></span>
+                                                </div>
+                                                <div class="form-group col-md-12">
+                                                    <label>Số điện thoại <span class="required">*</span></label>
+                                                    <input asp-for="PhoneNumber" class="form-control" />
+                                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <button type="submit"
+                                                        class="btn btn-fill-out submit font-weight-bold" name="submit"
+                                                        value="Submit">
+                                                        Lưu thay đổi
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

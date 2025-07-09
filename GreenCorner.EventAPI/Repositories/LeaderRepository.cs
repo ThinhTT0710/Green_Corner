@@ -47,5 +47,21 @@ namespace GreenCorner.EventAPI.Repositories
             _context.EventVolunteers.Update(volunteer);
             await _context.SaveChangesAsync();
         }
+
+        public async Task KickVolunteer(string userId, int eventId)
+        {
+            var volunteers = await _context.EventVolunteers
+     .Where(e => e.CleanEventId == eventId)
+     .ToListAsync();
+
+            var volunteer = volunteers.FirstOrDefault(e => e.UserId == userId);
+            if (volunteer == null)
+            {
+                throw new KeyNotFoundException($"Event Volunteer with ID {userId} not found.");
+            }
+            //product.IsDeleted = true;
+            _context.EventVolunteers.Remove(volunteer);
+            await _context.SaveChangesAsync();
+        }
     }
 }

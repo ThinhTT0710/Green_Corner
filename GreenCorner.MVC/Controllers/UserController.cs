@@ -1,5 +1,6 @@
 ﻿using GreenCorner.MVC.Models;
 using GreenCorner.MVC.Services.Interface;
+using GreenCorner.MVC.Utility;
 using GreenCorner.MVC.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,6 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> Profile()
         {
             if (!User.Identity.IsAuthenticated)
@@ -40,7 +40,7 @@ namespace GreenCorner.MVC.Controllers
             }
             else
             {
-                TempData["error"] = response.Message;
+                TempData["error"] = response?.Message;
                 return RedirectToAction("Index", "Home");
             }
         }
@@ -74,6 +74,31 @@ namespace GreenCorner.MVC.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateProfile(UserDTO user)
         {
+            var files = Request.Form.Files;
+            bool hasNewAvatar = files != null && files.Count > 0;
+
+            if (hasNewAvatar)
+            {
+                if (!string.IsNullOrEmpty(user.Avatar))
+                {
+                    var oldAvatarPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", user.Avatar.TrimStart('/'));
+                    if (System.IO.File.Exists(oldAvatarPath))
+                    {
+                        System.IO.File.Delete(oldAvatarPath);
+                    }
+                }
+
+                var (isSuccess, imagePaths, errorMessage) = await FileUploadHelper.UploadImagesStrictAsync(
+                    files, folderName: "avatars", filePrefix: "avatar", onlyOneFile: true);
+
+                if (!isSuccess)
+                {
+                    ModelState.AddModelError("Images", errorMessage);
+                    return View(user);
+                }
+
+                user.Avatar = imagePaths.FirstOrDefault();
+            }
 
             var response = await _userService.UpdateUser(user);
             if (response != null && response.IsSuccess)

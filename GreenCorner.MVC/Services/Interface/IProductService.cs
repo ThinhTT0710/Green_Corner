@@ -6,6 +6,7 @@ namespace GreenCorner.MVC.Services.Interface
     {
         Task<ResponseDTO?> GetAllProduct();
         Task<ResponseDTO?> GetByProductId(int id);
+        Task<ResponseDTO?> Search(string keyword);
         Task<ResponseDTO?> AddProduct(ProductDTO productDto);
         Task<ResponseDTO?> UpdateProduct(ProductDTO productDto);
         Task<ResponseDTO?> DeleteProduct(int id);

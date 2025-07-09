@@ -138,5 +138,49 @@ namespace GreenCorner.MVC.Services
                 Url = SD.EventAPIBase + "/api/Leader/" + userId+","+eventId+","+check
             });
         }
+        public async Task<ResponseDTO?> CreateCleanupEvent(EventDTO eventDTO)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.POST,
+                Data = eventDTO,
+                Url = SD.EventAPIBase + "/api/Event"
+            });
+        }
+        public async Task<ResponseDTO?> UpdateCleanupEvent(EventDTO eventDTO)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.PUT,
+                Data = eventDTO,
+                Url = SD.EventAPIBase + "/api/Event"
+            });
+        }
+        public async Task<ResponseDTO?> UpdateCleanupEventStatus(EventDTO eventDTO)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.PUT,
+                Data = eventDTO,
+                Url = SD.EventAPIBase + "/api/Event/status"
+            });
+        }
+        public async Task<ResponseDTO?> CloseCleanupEvent(int id)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.DELETE,
+                Url = SD.EventAPIBase + "/api/Event/" + id
+            });
+        }
+        public async Task<ResponseDTO?> KickVolunteer(string userId, int eventId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.DELETE,
+                Url = SD.EventAPIBase + "/api/Leader/" + userId + "," + eventId 
+            });
+        }
+
     }
 }
