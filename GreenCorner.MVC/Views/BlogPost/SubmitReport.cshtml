@@ -17,11 +17,11 @@
 
     <div class="form-group mb-3">
         <label asp-for="Content" class="form-label"></label>
-        <textarea asp-for="Content" class="form-control" rows="5" placeholder="Nhập nội dung phản hồi..."></textarea>
+        <textarea asp-for="Content" class="form-control" style="min-height: 300px;" placeholder="Nhập nội dung phản hồi..."></textarea>
         <span asp-validation-for="Content" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Gửi phản hồi</button>
+    <button type="submit" class="btn btn-primary">Gửi báo cáo</button>
 </form>
 
 @section Scripts {

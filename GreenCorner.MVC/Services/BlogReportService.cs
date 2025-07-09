@@ -25,16 +25,20 @@ namespace GreenCorner.MVC.Services
 
         public async Task<ResponseDTO?> EditReportAsync(int reportId, string newReason)
         {
-            var dto = new
-            {
-                Reason = newReason
-            };
-
             return await _baseService.SendAsync(new RequestDTO
             {
                 APIType = SD.APIType.PUT,
-                Data = dto,
+                Data = newReason,
                 Url = $"{SD.BlogAPIBase}/api/BlogReport/{reportId}"
+            });
+        }
+
+        public　async Task<ResponseDTO?> GetReportById(int id)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.BlogAPIBase + "/api/BlogReport/by-reportid/" + id
             });
         }
 

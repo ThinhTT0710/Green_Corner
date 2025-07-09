@@ -1,35 +1,14 @@
-﻿@model GreenCorner.MVC.ViewModels.VolunteerEventListViewModel
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@model GreenCorner.MVC.ViewModels.VolunteerEventListViewModel
 
 <section class="content-main">
     <div class="content-header">
-        <h2 class="content-title mb-4">Hoạt động đã đăng ký</h2>
+        <h2 class="content-title">Hoạt động đã đăng ký</h2>
     </div>
 
     <div class="card mb-4">
-        <header class="card-header">
-            <div class="row gx-3">
-                <div class="col-lg-4 col-md-6 me-auto">
-                    <input type="text" placeholder="Tìm kiếm sự kiện..." class="form-control" />
-                </div>
-                <div class="col-lg-2 col-md-3 col-6">
-                    <select class="form-select">
-                        <option>Trạng thái sự kiện</option>
-                        <option>Active</option>
-                        <option>Pending</option>
-                        <option>Completed</option>
-                        <option>Tất cả</option>
-                    </select>
-                </div>
-                <div class="col-lg-2 col-md-3 col-6">
-                    <select class="form-select">
-                        <option>Hiển thị 10</option>
-                        <option>Hiển thị 20</option>
-                        <option>Hiển thị 50</option>
-                    </select>
-                </div>
-            </div>
-        </header>
-
         <div class="card-body">
             @if (!Model.Participations.Any())
             {
@@ -124,22 +103,15 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="mt-4">
+                    <a asp-action="ViewUsersWithParticipation"
+                       asp-controller="EventStaff"
+                       class="btn btn-light rounded font-md">
+                        ← Quay lại danh sách người dùng
+                    </a>
+                </div>
             }
         </div>
-    </div>
-
-    <div class="pagination-area mt-15 mb-50">
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-start">
-                <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                <li class="page-item"><a class="page-link" href="#">02</a></li>
-                <li class="page-item"><a class="page-link" href="#">03</a></li>
-                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                <li class="page-item"><a class="page-link" href="#">10</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
-                </li>
-            </ul>
-        </nav>
     </div>
 </section>

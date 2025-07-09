@@ -336,5 +336,22 @@ namespace GreenCorner.EventAPI.Controllers
             return _responseDTO;
         }
 
+        [HttpGet("user-activities")]
+        public async Task<ResponseDTO> GetUserParticipatedActivities()
+        {
+            try
+            {
+                var result = await _volunteerService.GetUserWithParticipation();
+                _responseDTO.Result = result;
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = "Lấy hoạt động đã tham gia thành công.";
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.Message;
+            }
+            return _responseDTO;
+        }
     }
 }

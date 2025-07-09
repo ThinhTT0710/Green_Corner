@@ -12,5 +12,6 @@ namespace GreenCorner.BlogAPI.Services.Interface
         Task UpdateBlog(BlogPostDTO blog);
         Task DeleteBlog(int id);
         Task BlogApproval (int id);
+        Task<IEnumerable<BlogPostDTO>> GetBlogCreate(string userId);
     }
 }

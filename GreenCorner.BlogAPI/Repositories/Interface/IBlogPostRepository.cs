@@ -11,5 +11,6 @@ namespace GreenCorner.BlogAPI.Repositories.Interface
         Task UpdateBlog(BlogPost item);
         Task DeleteBlog(int id);
         Task BlogApproval(int id);
+        Task<IEnumerable<BlogPost>> GetBlogCreate(string userId);
     }
 }

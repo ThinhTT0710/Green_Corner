@@ -9,6 +9,7 @@
         public string? Reason { get; set; }
 
         public DateTime? CreatedAt { get; set; }
+        public string UserId { get; set; } = null!;
 
         //public BlogPostDTO Blog { get; set; } = null!;
     }

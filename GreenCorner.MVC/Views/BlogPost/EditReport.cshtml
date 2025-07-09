@@ -1,13 +1,13 @@
 ﻿@model GreenCorner.MVC.Models.BlogReportDTO
 
 @{
-    ViewData["Title"] = "Báo cáo bài viết";
+    ViewData["Title"] = "Chỉnh sửa báo cáo";
 }
 
 <h2 class="mb-4">@ViewData["Title"]</h2>
 
-
-<form asp-action="CreateReport" method="post">
+<form asp-action="EditReport" method="post">
+    <input type="hidden" asp-for="BlogReportId" />
     <input type="hidden" asp-for="BlogId" />
     <input type="hidden" asp-for="UserId" />
 
@@ -17,7 +17,7 @@
         <span asp-validation-for="Reason" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-danger">Gửi báo cáo</button>
+    <button type="submit" class="btn btn-primary">Cập nhật</button>
     <a asp-action="ViewBlogDetail" asp-controller="BlogPost" asp-route-id="@Model.BlogId" class="btn btn-secondary">Quay lại</a>
 </form>
 

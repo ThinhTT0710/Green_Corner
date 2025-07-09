@@ -1,48 +1,67 @@
 ﻿@model GreenCorner.MVC.Models.BlogPostDTO
-
 @{
     ViewData["Title"] = "Tạo bài viết mới";
 }
 
-<h2 class="mb-4">@ViewData["Title"]</h2>
+<form asp-action="CreateBlog" method="post" enctype="multipart/form-data">
+    <section class="content-main">
+        <div class="row">
+            <div class="col-9">
+                <div class="content-header">
+                    <h2 class="content-title mb-4">@ViewData["Title"]</h2>
+                </div>
+            </div>
 
+            <div class="col-lg-8">
+                <!-- Title -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <label asp-for="Title" class="form-label">Tiêu đề bài viết</label>
+                            <input asp-for="Title" class="form-control" placeholder="Nhập tiêu đề tại đây..." />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
 
-<form asp-action="CreateBlog" method="post">
-    <div class="mb-3">
-        <label asp-for="Title" class="form-label">Tiêu đề</label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
+                        <!-- Content -->
+                        <div class="mb-4">
+                            <label asp-for="Content" class="form-label">Nội dung</label>
+                            <textarea asp-for="Content" class="form-control" style="min-height: 300px;" placeholder="Viết nội dung bài viết..."></textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
 
-    <div class="mb-3">
-        <label asp-for="Content" class="form-label">Nội dung</label>
-        <textarea asp-for="Content" class="form-control" rows="6"></textarea>
-        <span asp-validation-for="Content" class="text-danger"></span>
-    </div>
+                <!-- Upload Thumbnail -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <label class="form-label">Ảnh Thumbnail</label>
+                        <input type="file" name="images" class="form-control" multiple />
+                        <span class="text-danger">@Html.ValidationMessage("Image")</span>
+                    </div>
+                </div>
+            </div>
 
-    <div class="mb-3">
-        <label asp-for="ThumbnailUrl" class="form-label">Ảnh thumbnail (URL)</label>
-        <input asp-for="ThumbnailUrl" class="form-control" />
-        <span asp-validation-for="ThumbnailUrl" class="text-danger"></span>
-    </div>
-    @*
-    <div class="mb-3">
-        <label asp-for="Status" class="form-label">Trạng thái</label>
-        <select asp-for="Status" class="form-select">
-            <option value="Draft">Nháp</option>
-            <option value="Published">Công khai</option>
-        </select>
-        <span asp-validation-for="Status" class="text-danger"></span>
-    </div>
-    *@
-    <input type="hidden" asp-for="AuthorId" value="@User.Identity.Name" />
-
-    <button type="submit" class="btn btn-success">Tạo bài viết</button>
-    <a asp-action="Index" class="btn btn-secondary ms-2">Hủy</a>
+            <div class="col-lg-4">
+                <!-- Metadata / Hidden fields -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5>Thông tin hệ thống</h5>
+                        <input type="hidden" asp-for="AuthorId" />
+                        <input type="hidden" asp-for="ThumbnailUrl" />
+                        <p class="text-muted mt-2">
+                            Bài viết sẽ được đăng dưới tên của bạn. Ảnh thumbnail sẽ được tự động lưu.
+                        </p>
+                        <div>
+                            <a asp-action="Index" class="btn btn-light rounded font-sm mr-2 text-body hover-up">Quay lại</a>
+                            <button type="submit" class="btn btn-md rounded font-sm hover-up btn-success">Đăng bài</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </form>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }

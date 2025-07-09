@@ -25,5 +25,7 @@ namespace GreenCorner.EventAPI.Services.Interface
 
         Task<string> GetApprovedRoleAsync(int eventId, string userId);
         Task<bool> HasApprovedTeamLeaderAsync(int eventId);
+
+        Task<IEnumerable<string>> GetUserWithParticipation();
     }
 }

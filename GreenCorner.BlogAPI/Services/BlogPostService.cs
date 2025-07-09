@@ -46,6 +46,12 @@ namespace GreenCorner.BlogAPI.Services
             return _mapper.Map<List<BlogPostDTO>>(blogPosts);
         }
 
+        public  async Task<IEnumerable<BlogPostDTO>> GetBlogCreate(string userId)
+        {
+            var blogPosts = await _blogPostRepository.GetBlogCreate(userId);
+            return _mapper.Map<List<BlogPostDTO>>(blogPosts);
+        }
+
         public async Task<BlogPostDTO> GetByBlogId(int id)
         {
             var blog = await _blogPostRepository.GetByBlogId(id);

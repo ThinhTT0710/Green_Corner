@@ -1,0 +1,169 @@
+﻿@model List<GreenCorner.MVC.ViewModels.BlogWithAuthorViewModel>
+
+@{
+    ViewData["Title"] = "Góc yêu thích";
+    var favoriteBlogIds = ViewBag.FavoriteBlogIds as List<int> ?? new();
+}
+
+<main class="main">
+    <div class="page-header mt-30 mb-75">
+        <div class="container">
+            <div class="archive-header">
+                <div class="row align-items-center">
+                    <div class="col-xl-4">
+                        <h1 class="mb-15">@ViewData["Title"]</h1>
+                        <div class="breadcrumb">
+                            <a href="index.html" rel="nofollow">
+                                <i class="fi-rs-home mr-5"></i>Home
+                            </a>
+                            <span></span> Blog Favorites
+                        </div>
+                    </div>
+                    <div class="col-xl-8 text-end d-none d-xl-block">
+                        <ul class="tags-list">
+                            <li class="hover-up"><a asp-action="Index"><i class="fi-rs-arrow-left mr-10"></i>Quay Lại</a></li>
+                            <li class="hover-up"><a asp-action="CreateBlog"><i class="fi-rs-edit mr-10"></i>Tạo Bài Viết</a></li>
+                            <li class="hover-up mr-0"><a asp-action="MyPendingBlogs"><i class="fi-rs-cross mr-10"></i>Bài Viết Chờ Duyệt</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-content mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="loop-grid loop-list pr-30 mb-50">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            var blog = item.Blog;
+                            var author = item.Author;
+                            bool isFavorited = favoriteBlogIds.Contains(blog.BlogId);
+                            <article class="wow fadeIn animated hover-up mb-30 animated">
+                                @{
+                                    var imagePaths = blog.ThumbnailUrl?.Split('&') ?? Array.Empty<string>();
+                                    var carouselId = $"carousel_{blog.BlogId}";
+                                }
+                                <div class="post-thumb position-relative" style="width: 80%; height: 220px; overflow: hidden;">
+                                    @if (imagePaths.Length > 0)
+                                    {
+                                        <div id="@carouselId" class="carousel slide h-100" data-bs-ride="carousel">
+                                            <div class="carousel-inner h-100">
+                                                @for (int i = 0; i < imagePaths.Length; i++)
+                                                {
+                                                    var img = imagePaths[i];
+                                                    <div class="carousel-item @(i == 0 ? "active" : "") h-100">
+                                                        <img src="@img"
+                                                             class="d-block w-100 h-100 border-radius-15"
+                                                             style="object-fit: cover;"
+                                                             alt="Ảnh blog" />
+                                                    </div>
+                                                }
+                                            </div>
+                                            @if (imagePaths.Length > 1)
+                                            {
+                                                <button class="carousel-control-prev" type="button" data-bs-target="#@carouselId" data-bs-slide="prev">
+                                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                    <span class="visually-hidden">Trước</span>
+                                                </button>
+                                                <button class="carousel-control-next" type="button" data-bs-target="#@carouselId" data-bs-slide="next">
+                                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                    <span class="visually-hidden">Tiếp</span>
+                                                </button>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="entry-content-2 pl-50">
+                                    <h3 class="post-title mb-20">
+                                        <a asp-action="ViewBlogDetail" asp-route-id="@blog.BlogId">@blog.Title</a>
+                                    </h3>
+                                    <p class="post-exerpt mb-40">
+                                        @((blog.Content?.Length > 150 ? blog.Content.Substring(0, 150) + "..." : blog.Content))
+                                    </p>
+                                    <div class="entry-meta meta-1 font-xs color-grey mt-10 pb-10">
+                                        <div>
+                                            <span class="post-on">@blog.CreatedAt?.ToString("dd/MM/yyyy")</span>
+                                            <span class="has-dot">Tác giả: @(author?.FullName ?? "Không rõ")</span>
+                                            @{
+                                                var statusText = blog.Status switch
+                                                {
+                                                    "Published" => "Đã đăng",
+                                                    "Pending" => "Đang chờ duyệt",
+                                                    "Removed" => "Đã gỡ",
+                                                    _ => "Không xác định"
+                                                };
+
+                                                var statusClass = blog.Status switch
+                                                {
+                                                    "Published" => "text-success",
+                                                    "Pending" => "text-warning",
+                                                    "Removed" => "text-danger",
+                                                    _ => "text-muted"
+                                                };
+                                            }
+                                            <span class="has-dot">
+                                                Trạng thái: <span class="@statusClass fw-semibold">@statusText</span>
+                                            </span>
+
+                                        </div>
+                                        <div class="mt-2">
+                                            <a asp-action="ViewBlogDetail" asp-route-id="@blog.BlogId" class="btn btn-sm btn-outline-primary">Xem</a>
+                                            <button class="btn btn-link btn-favorite @(isFavorited ? "favorited" : "")"
+                                                    data-blogid="@blog.BlogId"
+                                                    title="Yêu thích">
+                                                <i class="bi @(isFavorited ? "bi-heart-fill text-danger" : "bi-heart text-dark")"
+                                                   id="fav-icon-@blog.BlogId"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-muted text-center">Không có bài viết nào.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $(".btn-favorite").click(function (e) {
+                e.preventDefault();
+                var button = $(this);
+                var blogId = button.data("blogid");
+
+                $.ajax({
+                    url: '/BlogPost/ToggleFavorite',
+                    type: 'POST',
+                    data: { blogId: blogId },
+                    success: function (response) {
+                        if (response.isSuccess) {
+                            var icon = button.find("i");
+                            if (icon.hasClass("bi-heart")) {
+                                icon.removeClass("bi-heart text-dark").addClass("bi-heart-fill text-danger");
+                            } else {
+                                icon.removeClass("bi-heart-fill text-danger").addClass("bi-heart text-dark");
+                            }
+                        } else {
+                            alert("Thao tác thất bại: " + response.message);
+                        }
+                    },
+                    error: function () {
+                        alert("Đã xảy ra lỗi.");
+                    }
+                });
+            });
+        });
+    </script>
+}

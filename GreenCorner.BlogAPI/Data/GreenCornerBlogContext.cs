@@ -56,7 +56,9 @@ public partial class GreenCornerBlogContext : DbContext
             entity.HasKey(e => e.BlogReportId).HasName("PK__BlogRepo__EC44CA9207A93957");
 
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
+            entity.Property(e => e.UserId)
+                .HasMaxLength(450)
+                .HasDefaultValue("");
             entity.HasOne(d => d.Blog).WithMany(p => p.BlogReports)
                 .HasForeignKey(d => d.BlogId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
