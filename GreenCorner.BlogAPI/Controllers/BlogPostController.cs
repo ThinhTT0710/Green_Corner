@@ -132,5 +132,22 @@ namespace GreenCorner.BlogAPI.Controllers
                 return _responseDTO;
             }
         }
+
+        [HttpGet("blogcreate")]
+        public async Task<ResponseDTO> ViewBlogCreate(string userId)
+        {
+            try
+            {
+                var blogPosts = await _blogPostService.GetBlogCreate(userId);
+                _responseDTO.Result = blogPosts;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
     }
 }

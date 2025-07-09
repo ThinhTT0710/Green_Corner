@@ -13,5 +13,7 @@ public partial class BlogReport
 
     public DateTime? CreatedAt { get; set; }
 
+    public string UserId { get; set; } = null!;
+
     public virtual BlogPost Blog { get; set; } = null!;
 }

@@ -7,5 +7,6 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> CreateReportAsync(BlogReportDTO dto);
         Task<ResponseDTO?> GetReportsByBlogIdAsync(int blogId);
         Task<ResponseDTO?> EditReportAsync(int reportId, string newReason);
+        Task<ResponseDTO?> GetReportById(int id);
     }
 }

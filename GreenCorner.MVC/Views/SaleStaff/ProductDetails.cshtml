@@ -1,0 +1,106 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@model ProductDTO
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+}
+
+<section class="content-main">
+    <div class="row">
+        <div class="col-9">
+            <div class="content-header">
+                <h2 class="content-title">@ViewData["Title"]</h2>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <!-- Product Info -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="mb-4">
+                        <label class="form-label">Tên sản phẩm</label>
+                        <input class="form-control" value="@Model.Name" disabled />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Mô tả</label>
+                        <textarea class="form-control" style="min-height: 300px;" disabled>@Model.Description</textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Giá</label>
+                            <input class="form-control" value="@Model.Price.ToString("c")" disabled />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Giảm giá (%)</label>
+                            <input class="form-control" value="@Model.Discount" disabled />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Số lượng</label>
+                            <input class="form-control" value="@Model.Quantity" disabled />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Danh mục</label>
+                            <input class="form-control" value="@Model.Category" disabled />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Thương hiệu</label>
+                            <input class="form-control" value="@Model.Brand" disabled />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Xuất xứ</label>
+                            <input class="form-control" value="@Model.Origin" disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Images -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <label class="form-label">Ảnh sản phẩm</label>
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="d-flex gap-2 flex-wrap">
+                            @foreach (var img in Model.ImageUrl.Split('&'))
+                            {
+                                <img src="@img" style="height: 100px; border: 1px solid #ccc; padding: 2px;" />
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Không có ảnh sản phẩm.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Additional Info -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5>Thông tin hệ thống</h5>
+                    <p class="text-muted mt-2">
+                        Đây là thông tin chi tiết của sản phẩm hiện tại. Bạn có thể quay lại trang danh sách.
+                    </p>
+                    <div class="d-flex justify-content-between mt-15">
+                        <a asp-action="ViewAllProduct" class="btn btn-light rounded font-sm text-body hover-up">Quay lại</a>
+                        <a class="btn btn-sm font-sm rounded btn-brand"
+                           asp-controller="Product" asp-action="UpdateProduct"
+                           asp-route-productId="@Model.ProductId">
+                            <i class="material-icons md-edit"></i> Edit
+                        </a>
+                        <a class="btn btn-sm font-sm btn-light rounded"
+                           asp-controller="Product" asp-action="DeleteProduct"
+                           asp-route-productId="@Model.ProductId">
+                            <i class="material-icons md-delete_forever"></i> Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

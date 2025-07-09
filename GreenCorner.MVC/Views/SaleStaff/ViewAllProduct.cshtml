@@ -1,0 +1,92 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@model IEnumerable<ProductDTO>
+
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Danh sách sản phẩm</h2>
+            <p>Xem, chỉnh sửa hoặc xóa sản phẩm hiện có.</p>
+        </div>
+        <div>
+            <a asp-action="Export" class="btn btn-light rounded font-md">Export</a>
+            <a asp-action="Import" class="btn btn-light rounded font-md">Import</a>
+            <a asp-action="CreateNewProduct" asp-controller="Product" class="btn btn-primary btn-sm rounded">Tạo sản phẩm mới</a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Tìm kiếm..." class="form-control" />
+                </div>
+                <div class="col-lg-2 col-6 col-md-3">
+                    <select class="form-select">
+                        <option>Danh mục</option>
+                        <option>Điện tử</option>
+                        <option>Thời trang</option>
+                        <option>Khác</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-6 col-md-3">
+                    <select class="form-select">
+                        <option>Mới nhất</option>
+                        <option>Giá thấp</option>
+                        <option>Xem nhiều</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <div class="card-body">
+            <div class="row gx-3 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 row-cols-xxl-5">
+                @foreach (var item in Model)
+                {
+                    <div class="col">
+                        <div class="card card-product-grid">
+                            <a asp-action="ProductDetails" asp-route-productId="@item.ProductId" class="img-wrap">
+                                <img src="@(item.ImageUrl?.Split('&').FirstOrDefault() ?? "/assets/imgs/no-image.png")" alt="@item.Name" />
+                            </a>
+                            <div class="info-wrap">
+                                <a asp-action="ProductDetails" asp-route-productId="@item.ProductId" class="title text-truncate">
+                                    @item.Name
+                                </a>
+                                <div class="price mb-2">@item.Price.ToString("c")</div>
+                                <div class="d-flex gap-1">
+                                    <a class="btn btn-sm font-sm rounded btn-brand"
+                                       asp-controller="Product" asp-action="UpdateProduct"
+                                       asp-route-productId="@item.ProductId">
+                                        <i class="material-icons md-edit"></i> Edit
+                                    </a>
+                                    <a class="btn btn-sm font-sm btn-light rounded"
+                                       asp-controller="Product" asp-action="DeleteProduct"
+                                       asp-route-productId="@item.ProductId">
+                                        <i class="material-icons md-delete_forever"></i> Delete
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="pagination-area mt-30 mb-50">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-start">
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                <li class="page-item"><a class="page-link" href="#">10</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</section>
+

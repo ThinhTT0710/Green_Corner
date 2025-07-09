@@ -99,7 +99,7 @@ namespace GreenCorner.MVC.Controllers
                         CreatedAt = DateTime.Now,
                     };
 					var logResponse = await _adminService.AddLogStaff(log);
-					return RedirectToAction(nameof(Index));
+                    return RedirectToAction("ViewAllProduct", "SaleStaff");
                 }
 
                 TempData["error"] = response?.Message ?? "Có lỗi xảy ra.";
@@ -147,7 +147,7 @@ namespace GreenCorner.MVC.Controllers
 					CreatedAt = DateTime.Now,
 				};
 				var logResponse = await _adminService.AddLogStaff(log);
-				return RedirectToAction(nameof(Index));
+                return RedirectToAction("ViewAllProduct", "SaleStaff");
             }
             else
             {
@@ -225,7 +225,7 @@ namespace GreenCorner.MVC.Controllers
 					CreatedAt = DateTime.Now,
 				};
 				var logResponse = await _adminService.AddLogStaff(log);
-				return RedirectToAction(nameof(Index));
+                return RedirectToAction("ViewAllProduct", "SaleStaff");
             }
 
             TempData["error"] = response?.Message;

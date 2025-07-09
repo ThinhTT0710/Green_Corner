@@ -1,5 +1,7 @@
 ﻿using GreenCorner.MVC.Models;
 using GreenCorner.MVC.Services.Interface;
+using GreenCorner.MVC.Utility;
+using GreenCorner.MVC.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
@@ -16,70 +18,235 @@ namespace GreenCorner.MVC.Controllers
         private readonly IBlogReportService _blogReportService;
         private readonly IFeedbackService _feedbackService;
         private readonly IReportService _reportService;
-        public BlogPostController(IBlogPostService blogPostService, IBlogFavoriteService blogFavoriteService, IBlogReportService blogReportService, IFeedbackService feedbackService, IReportService reportService)
+        private readonly IUserService _userService;
+        public BlogPostController(IBlogPostService blogPostService, IBlogFavoriteService blogFavoriteService, IBlogReportService blogReportService, IFeedbackService feedbackService, IReportService reportService, IUserService userService)
         {
             this._blogPostService = blogPostService;
             this._blogFavoriteService = blogFavoriteService;
             _blogReportService = blogReportService;
             _feedbackService = feedbackService;
             _reportService = reportService;
+            _userService = userService;
         }
 
         //BlogPost
+
         public async Task<IActionResult> Index()
         {
-            List<BlogPostDTO> listBlog = new();
+            List<BlogWithAuthorViewModel> blogsWithAuthors = new();
             List<int> favoriteBlogIds = new();
 
-            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+            var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
 
-            // Lấy danh sách blog
-            ResponseDTO? response = await _blogPostService.GetAllBlogPost();
-            if (response != null && response.IsSuccess)
+            // Lấy tất cả blog
+            ResponseDTO? blogResponse = await _blogPostService.GetAllBlogPost();
+
+            if (blogResponse != null && blogResponse.IsSuccess && blogResponse.Result != null)
             {
-                listBlog = JsonConvert.DeserializeObject<List<BlogPostDTO>>(response.Result.ToString());
+                var blogList = JsonConvert.DeserializeObject<List<BlogPostDTO>>(blogResponse.Result.ToString());
+
+                // Lấy danh sách blog yêu thích của người dùng
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    var favResponse = await _blogFavoriteService.GetFavoritesByUserAsync(userId);
+                    if (favResponse != null && favResponse.IsSuccess && favResponse.Result != null)
+                    {
+                        var favorites = JsonConvert.DeserializeObject<List<BlogFavoriteDTO>>(favResponse.Result.ToString());
+                        favoriteBlogIds = favorites.Select(f => f.BlogId).ToList();
+                    }
+                }
+
+                foreach (var blog in blogList)
+                {
+                    UserDTO? author = null;
+
+                    var userResponse = await _userService.GetUserById(blog.AuthorId);
+                    if (userResponse != null && userResponse.IsSuccess && userResponse.Result != null)
+                    {
+                        author = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
+                    }
+
+                    blogsWithAuthors.Add(new BlogWithAuthorViewModel
+                    {
+                        Blog = blog,
+                        Author = author
+                    });
+                }
             }
 
+            // Gán danh sách BlogId đã yêu thích vào ViewBag để View biết mà hiển thị tim đỏ
+            ViewBag.FavoriteBlogIds = favoriteBlogIds;
+
+            return View(blogsWithAuthors);
+        }
+
+
+        public async Task<IActionResult> MyFavoriteBlogs()
+        {
+            List<BlogWithAuthorViewModel> blogsWithAuthors = new();
+            List<int> favoriteBlogIds = new();
+
+            var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["error"] = "Không thể xác định người dùng. Vui lòng đăng nhập.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            // Lấy tất cả bài viết
+            ResponseDTO? blogResponse = await _blogPostService.GetAllBlogPost();
+            List<BlogPostDTO> listBlog = new();
+
+            if (blogResponse != null && blogResponse.IsSuccess && blogResponse.Result != null)
+            {
+                listBlog = JsonConvert.DeserializeObject<List<BlogPostDTO>>(blogResponse.Result.ToString());
+            }
+
+            // Lấy danh sách blog yêu thích
             if (!string.IsNullOrEmpty(userId))
             {
                 var favResponse = await _blogFavoriteService.GetFavoritesByUserAsync(userId);
-                if (favResponse != null && favResponse.IsSuccess)
+                if (favResponse != null && favResponse.IsSuccess && favResponse.Result != null)
                 {
                     var favorites = JsonConvert.DeserializeObject<List<BlogFavoriteDTO>>(favResponse.Result.ToString());
                     favoriteBlogIds = favorites.Select(f => f.BlogId).ToList();
                 }
             }
 
+            var favoriteBlogs = listBlog.Where(b => favoriteBlogIds.Contains(b.BlogId)).ToList();
+
+            foreach (var blog in favoriteBlogs)
+            {
+                UserDTO? author = null;
+
+                var userResponse = await _userService.GetUserById(blog.AuthorId);
+                if (userResponse != null && userResponse.IsSuccess && userResponse.Result != null)
+                {
+                    author = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
+                }
+
+                blogsWithAuthors.Add(new BlogWithAuthorViewModel
+                {
+                    Blog = blog,
+                    Author = author
+                });
+            }
+
             ViewBag.FavoriteBlogIds = favoriteBlogIds;
 
-            return View(listBlog);
+            return View(blogsWithAuthors); // Trả về view dùng chung
         }
+
 
 
         public async Task<IActionResult> ViewBlogDetail(int id)
         {
-            BlogPostDTO blogPost = null;
+            BlogWithAuthorViewModel viewModel = new();
+
+            // Lấy thông tin bài viết
             ResponseDTO? response = await _blogPostService.GetByBlogId(id);
-            if (response != null && response.IsSuccess)
+            if (response != null && response.IsSuccess && response.Result != null)
             {
-                blogPost = JsonConvert.DeserializeObject<BlogPostDTO>(response.Result.ToString());
+                var blogPost = JsonConvert.DeserializeObject<BlogPostDTO>(response.Result.ToString());
+                viewModel.Blog = blogPost;
+
+                // Lấy thông tin tác giả
+                var authorResponse = await _userService.GetUserById(blogPost.AuthorId);
+                if (authorResponse != null && authorResponse.IsSuccess && authorResponse.Result != null)
+                {
+                    var author = JsonConvert.DeserializeObject<UserDTO>(authorResponse.Result.ToString());
+                    viewModel.Author = author;
+                }
+
+                var reportResponse = await _blogReportService.GetReportsByBlogIdAsync(blogPost.BlogId);
+                if (reportResponse != null && reportResponse.IsSuccess && reportResponse.Result != null)
+                {
+                    var reports = JsonConvert.DeserializeObject<List<BlogReportDTO>>(reportResponse.Result.ToString());
+                    viewModel.Reports = reports ?? new();
+
+                    var userIds = viewModel.Reports
+                .Where(r => !string.IsNullOrEmpty(r.UserId))
+                .Select(r => r.UserId!)
+                .Distinct()
+                .ToList();
+
+                    var reportAuthors = new Dictionary<string, UserDTO>();
+
+                    foreach (var reportUserId in userIds)
+                    {
+                        var userResponse = await _userService.GetUserById(reportUserId);
+                        if (userResponse != null && userResponse.IsSuccess && userResponse.Result != null)
+                        {
+                            var user = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
+                            if (user != null)
+                                reportAuthors[reportUserId] = user;
+                        }
+                    }
+
+                    ViewBag.ReportAuthors = reportAuthors;
+                }
+
+                var userId = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    var favResponse = await _blogFavoriteService.IsFavoritedAsync(blogPost.BlogId, userId);
+                    ViewBag.IsFavorited = favResponse?.IsSuccess == true && (bool)favResponse.Result;
+                }
+                else
+                {
+                    ViewBag.IsFavorited = false;
+                }
             }
             else
             {
                 TempData["error"] = response?.Message ?? "Không tìm thấy bài viết.";
                 return RedirectToAction("Index");
             }
-            return View(blogPost);
+
+            return View(viewModel);
         }
+
 
         public async Task<IActionResult> CreateBlog()
         {
-            return View();
+            var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["error"] = "Vui lòng đăng nhập.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var model = new BlogPostDTO
+            {
+                AuthorId = userId
+            };
+
+            return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateBlog(BlogPostDTO blogDTO)
         {
+            var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            if (!string.IsNullOrEmpty(userId))
+            {
+                blogDTO.AuthorId = userId;
+            }
+
+            // Xử lý hình ảnh
+            var files = Request.Form.Files;
+            var (isSuccess, imagePaths, errorMessage) = await FileUploadHelper.UploadImagesStrictAsync(
+                files, folderName: "blog", filePrefix: "blog");
+
+            if (!isSuccess)
+            {
+                ModelState.AddModelError("Image", errorMessage);
+                return View(blogDTO);
+            }
+
+            // Gán đường dẫn hình ảnh nếu có
+            blogDTO.ThumbnailUrl = string.Join("&", imagePaths);
+
             if (ModelState.IsValid)
             {
                 ResponseDTO response = await _blogPostService.AddBlog(blogDTO);
@@ -90,19 +257,22 @@ namespace GreenCorner.MVC.Controllers
                 }
                 else
                 {
-                    TempData["error"] = response?.Message;
+                    TempData["error"] = response?.Message ?? "Đã xảy ra lỗi khi tạo blog.";
                 }
             }
+
             return View(blogDTO);
         }
+
+
 
         public async Task<IActionResult> UpdateBlog(int blogId)
         {
             ResponseDTO response = await _blogPostService.GetByBlogId(blogId);
             if (response != null && response.IsSuccess)
             {
-                BlogPostDTO product = JsonConvert.DeserializeObject<BlogPostDTO>(response.Result.ToString());
-                return View(product);
+                BlogPostDTO blog = JsonConvert.DeserializeObject<BlogPostDTO>(response.Result.ToString());
+                return View(blog);
             }
             else
             {
@@ -114,6 +284,44 @@ namespace GreenCorner.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateBlog(BlogPostDTO blogDto)
         {
+            // Kiểm tra người dùng đăng nhập
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["loginError"] = "Bạn cần đăng nhập để thực hiện chức năng này";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var files = Request.Form.Files;
+            bool hasNewImages = files != null && files.Count > 0;
+
+            if (hasNewImages)
+            {
+                // Xóa hình cũ nếu có
+                if (!string.IsNullOrEmpty(blogDto.ThumbnailUrl))
+                {
+                    foreach (var oldPath in blogDto.ThumbnailUrl.Split("&"))
+                    {
+                        var fullOldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", oldPath.TrimStart('/'));
+                        if (System.IO.File.Exists(fullOldPath))
+                        {
+                            System.IO.File.Delete(fullOldPath);
+                        }
+                    }
+                }
+
+                var (isSuccess, imagePaths, errorMessage) = await FileUploadHelper.UploadImagesStrictAsync(
+                    files, folderName: "blog", filePrefix: "blog");
+
+                if (!isSuccess)
+                {
+                    ModelState.AddModelError("Image", errorMessage);
+                    return View(blogDto);
+                }
+
+                blogDto.ThumbnailUrl = string.Join("&", imagePaths);
+            }
+
+            // Gọi service cập nhật
             ResponseDTO response = await _blogPostService.UpdateBlog(blogDto);
             if (response != null && response.IsSuccess)
             {
@@ -122,14 +330,16 @@ namespace GreenCorner.MVC.Controllers
             }
             else
             {
-                TempData["error"] = response?.Message;
+                TempData["error"] = response?.Message ?? "Đã xảy ra lỗi khi cập nhật Blog.";
             }
+
             return View(blogDto);
         }
 
-        public async Task<IActionResult> DeleteBlog(int blogId)
+
+        public async Task<IActionResult> DeleteBlog(int id)
         {
-            ResponseDTO response = await _blogPostService.GetByBlogId(blogId);
+            ResponseDTO response = await _blogPostService.GetByBlogId(id);
             if (response != null && response.IsSuccess)
             {
                 BlogPostDTO product = JsonConvert.DeserializeObject<BlogPostDTO>(response.Result.ToString());
@@ -247,13 +457,27 @@ namespace GreenCorner.MVC.Controllers
         //BlogReport
         public async Task<IActionResult> CreateReport(int blogId)
         {
-            var model = new BlogReportDTO { BlogId = blogId };
+            var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["error"] = "Vui lòng đăng nhập.";
+                return RedirectToAction("Login", "Auth");
+            }
+            var model = new BlogReportDTO { BlogId = blogId, UserId = userId };
             return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateReport(BlogReportDTO reportDTO)
         {
+            var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["error"] = "Vui lòng đăng nhập.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            reportDTO.UserId = userId;
             if (ModelState.IsValid)
             {
                 ResponseDTO? response = await _blogReportService.CreateReportAsync(reportDTO);
@@ -270,38 +494,82 @@ namespace GreenCorner.MVC.Controllers
             return View(reportDTO);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> EditReport(int reportId, string newReason)
+        [HttpGet]
+        public async Task<IActionResult> EditReport(int id)
         {
-            if (string.IsNullOrWhiteSpace(newReason))
+            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+            ResponseDTO? response = await _blogReportService.GetReportById(id);
+
+            if (response == null || !response.IsSuccess)
             {
-                TempData["error"] = "Lý do báo cáo không được để trống.";
+                TempData["error"] = response?.Message ?? "Không thể lấy thông tin báo cáo.";
                 return RedirectToAction("Index", "BlogPost");
             }
 
-            ResponseDTO? response = await _blogReportService.EditReportAsync(reportId, newReason);
+            var report = JsonConvert.DeserializeObject<BlogReportDTO>(Convert.ToString(response.Result)!);
+
+            return View(report); // Trả về view để sửa
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditReport(BlogReportDTO model)
+        {
+            if (string.IsNullOrWhiteSpace(model.Reason))
+            {
+                TempData["error"] = "Lý do báo cáo không được để trống.";
+                return RedirectToAction("ViewBlogReports", "BlogPost", new { blogId = model.BlogId });
+            }
+
+            ResponseDTO? response = await _blogReportService.EditReportAsync(model.BlogReportId, model.Reason);
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Cập nhật lý do báo cáo thành công!";
-                return RedirectToAction("Index", "BlogPost");
+                return RedirectToAction("ViewBlogReports", "BlogPost", new { blogId = model.BlogId });
             }
             else
             {
                 TempData["error"] = response?.Message ?? "Không thể cập nhật lý do.";
-                return RedirectToAction("Index", "BlogPost");
+                return RedirectToAction("ViewBlogReports", "BlogPost", new { blogId = model.BlogId });
             }
         }
 
         public async Task<IActionResult> ViewBlogReports(int blogId)
         {
             List<BlogReportDTO> reports = new();
+            Dictionary<string, UserDTO> reportAuthors = new(); // ánh xạ userId -> User
+
+            var currentUserId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
 
             ResponseDTO? response = await _blogReportService.GetReportsByBlogIdAsync(blogId);
             if (response != null && response.IsSuccess)
             {
                 reports = JsonConvert.DeserializeObject<List<BlogReportDTO>>(response.Result.ToString());
+
+                // Lấy danh sách các userId duy nhất trong danh sách báo cáo
+                var userIds = reports
+                    .Where(r => !string.IsNullOrEmpty(r.UserId))
+                    .Select(r => r.UserId!)
+                    .Distinct()
+                    .ToList();
+
+                foreach (var userId in userIds)
+                {
+                    var userResponse = await _userService.GetUserById(userId);
+                    if (userResponse != null && userResponse.IsSuccess && userResponse.Result != null)
+                    {
+                        var user = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
+                        if (user != null)
+                        {
+                            reportAuthors[userId] = user;
+                        }
+                    }
+                }
+
                 ViewBag.BlogId = blogId;
-                return View(reports); // Trả về view hiển thị danh sách báo cáo
+                ViewBag.UserId = currentUserId;
+                ViewBag.ReportAuthors = reportAuthors; // Truyền dictionary xuống View
+                return View(reports);
             }
             else
             {
@@ -309,6 +577,7 @@ namespace GreenCorner.MVC.Controllers
                 return RedirectToAction("ViewBlogDetail", "BlogPost", new { id = blogId });
             }
         }
+
 
         //Feedback
         [HttpGet]
@@ -347,19 +616,37 @@ namespace GreenCorner.MVC.Controllers
 
         public async Task<IActionResult> ViewFeedbacks()
         {
-            List<FeedbackDTO> reports = new();
+            List<FeedbackWithUserViewModel> feedbacksWithUsers = new();
 
             ResponseDTO? response = await _feedbackService.GetAllFeedback();
-            if (response != null && response.IsSuccess)
+            if (response != null && response.IsSuccess && response.Result != null)
             {
-                reports = JsonConvert.DeserializeObject<List<FeedbackDTO>>(response.Result.ToString());
-                return View(reports); // Trả về view hiển thị danh sách báo cáo
+                var feedbackList = JsonConvert.DeserializeObject<List<FeedbackDTO>>(response.Result.ToString());
+
+                foreach (var feedback in feedbackList)
+                {
+                    UserDTO? user = null;
+                    if (!string.IsNullOrEmpty(feedback.UserId))
+                    {
+                        var userResponse = await _userService.GetUserById(feedback.UserId);
+                        if (userResponse != null && userResponse.IsSuccess && userResponse.Result != null)
+                        {
+                            user = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
+                        }
+                    }
+
+                    feedbacksWithUsers.Add(new FeedbackWithUserViewModel
+                    {
+                        Feedback = feedback,
+                        User = user
+                    });
+                }
+
+                return View(feedbacksWithUsers);
             }
-            else
-            {
-                TempData["error"] = response?.Message ?? "Không thể lấy danh sách báo cáo.";
-                return RedirectToAction("Index", "Home");
-            }
+
+            TempData["error"] = response?.Message ?? "Không thể lấy danh sách phản hồi.";
+            return RedirectToAction("Index", "Home");
         }
 
         //ReportLeader
@@ -399,19 +686,61 @@ namespace GreenCorner.MVC.Controllers
 
         public async Task<IActionResult> ViewReports()
         {
-            List<ReportDTO> reports = new();
+            List<ReportWithUserViewModel> reportsWithUsers = new();
 
             ResponseDTO? response = await _reportService.GetAllReports();
-            if (response != null && response.IsSuccess)
+            if (response != null && response.IsSuccess && response.Result != null)
             {
-                reports = JsonConvert.DeserializeObject<List<ReportDTO>>(response.Result.ToString());
-                return View(reports); // Trả về view hiển thị danh sách báo cáo
+                var reportList = JsonConvert.DeserializeObject<List<ReportDTO>>(response.Result.ToString());
+
+                foreach (var report in reportList)
+                {
+                    UserDTO? user = null;
+                    if (!string.IsNullOrEmpty(report.LeaderId)) // hoặc report.LeaderId nếu có
+                    {
+                        var userResponse = await _userService.GetUserById(report.LeaderId);
+                        if (userResponse != null && userResponse.IsSuccess && userResponse.Result != null)
+                        {
+                            user = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
+                        }
+                    }
+
+                    reportsWithUsers.Add(new ReportWithUserViewModel
+                    {
+                        Report = report,
+                        User = user
+                    });
+                }
+
+                return View(reportsWithUsers);
             }
-            else
+
+            TempData["error"] = response?.Message ?? "Không thể lấy danh sách báo cáo.";
+            return RedirectToAction("Index", "Home");
+        }
+
+
+        public async Task<IActionResult> MyPendingBlogs()
+        {
+            List<BlogPostDTO> listBlog = new();
+
+            var userId = User.Claims
+                .FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            if (string.IsNullOrEmpty(userId))
             {
-                TempData["error"] = response?.Message ?? "Không thể lấy danh sách báo cáo.";
-                return RedirectToAction("Index", "Home");
+                TempData["error"] = "Không thể xác định người dùng. Vui lòng đăng nhập lại.";
+                return RedirectToAction("Login", "Auth"); 
             }
+            if (!string.IsNullOrEmpty(userId))
+            {
+                ResponseDTO? response = await _blogPostService.GetBlogCreate(userId);
+                if (response != null && response.IsSuccess)
+                {
+                    listBlog = JsonConvert.DeserializeObject<List<BlogPostDTO>>(response.Result.ToString());
+                }
+            }
+
+            return View(listBlog);
         }
 
     }

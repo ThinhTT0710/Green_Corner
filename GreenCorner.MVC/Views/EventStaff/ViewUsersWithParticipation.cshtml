@@ -1,0 +1,83 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@model GreenCorner.MVC.ViewModels.VolunteerRegistrationsViewModel
+
+@{
+    ViewData["Title"] = "Người dùng đã tham gia hoạt động";
+}
+
+<section class="content-main">
+    <div class="content-header d-flex justify-content-between align-items-center">
+        <h2 class="content-title mb-4">Người dùng đã tham gia hoạt động</h2>
+        <div></div>
+    </div>
+
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Tìm kiếm tên hoặc email..." class="form-control" />
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select">
+                        <option>Trạng thái</option>
+                        <option>Đã tham gia</option>
+                        <option>Chưa tham gia</option>
+                        <option>Tất cả</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <div class="card-body">
+            @if (Model.Registrations == null || !Model.Registrations.Any())
+            {
+                <div class="alert alert-info text-center">
+                    Không có người dùng nào đã tham gia hoạt động.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Người dùng</th>
+                                <th>Email</th>
+                                <th class="text-end">Lịch sử tham gia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Registrations)
+                            {
+                                <tr>
+                                    <td width="40%">
+                                        <a href="#" class="itemside">
+                                            <div class="left">
+                                                <img src="~/assets/imgs/people/avatar-1.png" class="img-sm img-avatar" alt="Avatar" />
+                                            </div>
+                                            <div class="info pl-3">
+                                                <h6 class="mb-0 title">@item.User.FullName</h6>
+                                                <small class="text-muted">User ID: @item.User.ID</small>
+                                            </div>
+                                        </a>
+                                    </td>
+                                    <td>@item.User.Email</td>
+                                    <td class="text-end">
+                                        <a asp-action="ViewActivities"
+                                           asp-controller="User"
+                                           asp-route-userId="@item.User.ID"
+                                           class="btn btn-sm btn-outline-primary">
+                                            Xem lịch sử
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</section>

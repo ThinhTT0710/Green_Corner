@@ -64,6 +64,11 @@ namespace GreenCorner.BlogAPI.Repositories
                         .ToListAsync();
         }
 
+        public  async Task<IEnumerable<BlogPost>> GetBlogCreate(string userId)
+        {
+            return await _context.BlogPosts.Where(b => b.AuthorId == userId && b.Status == "Pending").ToListAsync();
+        }
+
         public async Task<BlogPost> GetByBlogId(int id)
         {
             return await _context.BlogPosts

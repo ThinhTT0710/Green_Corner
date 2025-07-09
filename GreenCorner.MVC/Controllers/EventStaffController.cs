@@ -34,34 +34,71 @@ namespace GreenCorner.MVC.Controllers
         public async Task<IActionResult> ViewPendingPostDetail(int id)
         {
             BlogPostDTO blogPost = null;
+            UserDTO author = null;
+
+            // Lấy bài viết
             ResponseDTO? response = await _blogPostService.GetByBlogId(id);
-            if (response != null && response.IsSuccess)
+            if (response != null && response.IsSuccess && response.Result != null)
             {
                 blogPost = JsonConvert.DeserializeObject<BlogPostDTO>(response.Result.ToString());
+
+                // Lấy tác giả
+                var userResponse = await _userService.GetUserById(blogPost.AuthorId);
+                if (userResponse != null && userResponse.IsSuccess && userResponse.Result != null)
+                {
+                    author = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
+                }
             }
             else
             {
                 TempData["error"] = "Không tìm thấy bài viết.";
                 return RedirectToAction("ViewPendingPosts");
             }
-            
-            return View(blogPost);
+
+            // Gửi viewmodel sang view
+            var viewModel = new BlogWithAuthorViewModel
+            {
+                Blog = blogPost,
+                Author = author
+            };
+
+            return View(viewModel);
         }
+
 
         //Pending Post
         public async Task<IActionResult> ViewPendingPosts()
         {
-            List<BlogPostDTO> listProduct = new();
+            List<BlogWithAuthorViewModel> blogsWithAuthors = new();
+
             ResponseDTO? response = await _blogPostService.GetAllPendingPost();
-            if (response != null && response.IsSuccess)
+            if (response != null && response.IsSuccess && response.Result != null)
             {
-                listProduct = JsonConvert.DeserializeObject<List<BlogPostDTO>>(response.Result.ToString());
+                var listProduct = JsonConvert.DeserializeObject<List<BlogPostDTO>>(response.Result.ToString());
+
+                foreach (var blog in listProduct)
+                {
+                    UserDTO? author = null;
+
+                    var userResponse = await _userService.GetUserById(blog.AuthorId);
+                    if (userResponse != null && userResponse.IsSuccess && userResponse.Result != null)
+                    {
+                        author = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
+                    }
+
+                    blogsWithAuthors.Add(new BlogWithAuthorViewModel
+                    {
+                        Blog = blog,
+                        Author = author
+                    });
+                }
             }
             else
             {
                 TempData["error"] = response?.Message;
             }
-            return View(listProduct);
+
+            return View(blogsWithAuthors);
         }
 
         [HttpPost]
@@ -122,24 +159,6 @@ namespace GreenCorner.MVC.Controllers
                 return View(new VolunteerRegistrationsViewModel { Registrations = new() });
             }
         }
-
-        //public async Task<IActionResult> ViewVolunteerRegistrationDetail(int id)
-        //{
-        //    VolunteerDTO item = null;
-        //    var response = await _volunteerService.GetVolunteerRegistrationById(id);
-
-        //    if (response != null && response.IsSuccess)
-        //    {
-        //        item = JsonConvert.DeserializeObject<VolunteerDTO>(response.Result.ToString());
-        //    }
-        //    else
-        //    {
-        //        TempData["error"] = "Không tìm thấy thông tin tình nguyện viên.";
-        //        return RedirectToAction("ViewVolunteerRegistrations");
-        //    }
-
-        //    return View(item);
-        //}
 
         public async Task<IActionResult> ViewVolunteerRegistrationDetail(int id)
         {
@@ -320,5 +339,57 @@ namespace GreenCorner.MVC.Controllers
 
             return RedirectToAction("ViewTeamLeaderRegistrations");
         }
+
+        public async Task<IActionResult> ViewUsersWithParticipation()
+        {
+            var response = await _volunteerService.GetUserWithParticipation();
+
+            if (response == null || !response.IsSuccess)
+            {
+                TempData["error"] = response?.Message ?? "Lỗi khi lấy danh sách người dùng đã tham gia.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Parse danh sách userId từ response.Result
+            var userIds = JsonConvert.DeserializeObject<List<string>>(response.Result.ToString());
+
+            if (userIds == null || !userIds.Any())
+            {
+                TempData["error"] = "Không có người dùng nào tham gia hoạt động.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            List<VolunteerWithUserViewModel> result = new();
+
+            foreach (var userId in userIds)
+            {
+                var userResponse = await _userService.GetUserById(userId);
+                if (userResponse != null && userResponse.IsSuccess)
+                {
+                    var user = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
+
+                    result.Add(new VolunteerWithUserViewModel
+                    {
+                        User = user
+                    });
+                }
+                else
+                {
+                    TempData["error"] = userResponse?.Message ?? $"Không thể lấy thông tin người dùng có ID: {userId}";
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+
+            var finalViewModel = new VolunteerRegistrationsViewModel
+            {
+                Registrations = result
+            };
+
+            return View(finalViewModel);
+        }
+
+
+
+
     }
 }

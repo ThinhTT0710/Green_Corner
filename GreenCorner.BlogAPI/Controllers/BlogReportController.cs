@@ -74,5 +74,22 @@ namespace GreenCorner.BlogAPI.Controllers
                 return _responseDTO;
             }
         }
+
+        [HttpGet("by-reportid/{reportId}")]
+        public async Task<ResponseDTO> GetReportById(int reportId)
+        {
+            try
+            {
+                var reports = await _blogReportService.GetReportById(reportId);
+                _responseDTO.Result = reports;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
     }
 }

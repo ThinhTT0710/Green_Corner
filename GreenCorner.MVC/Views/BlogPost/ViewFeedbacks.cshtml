@@ -1,35 +1,94 @@
-﻿@model List<GreenCorner.MVC.Models.FeedbackDTO>
+﻿@model List<GreenCorner.MVC.ViewModels.FeedbackWithUserViewModel>
 
 @{
     ViewData["Title"] = "Danh sách phản hồi";
 }
 
-<h2>@ViewData["Title"]</h2>
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title mb-4">@ViewData["Title"]</h2>
+            <p>Danh sách phản hồi từ người dùng</p>
+        </div>
+        <div>
+            <input type="text" placeholder="Tìm theo tên người gửi..." class="form-control bg-white" />
+        </div>
+    </div>
 
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Tìm kiếm..." class="form-control" />
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select">
+                        <option>Trạng thái</option>
+                        <option>Đã xử lý</option>
+                        <option>Chưa xử lý</option>
+                        <option>Tất cả</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select">
+                        <option>Hiển thị 10</option>
+                        <option>Hiển thị 20</option>
+                        <option>Hiển thị 50</option>
+                    </select>
+                </div>
+            </div>
+        </header>
 
-@if (Model == null || !Model.Any())
-{
-    <p>Chưa có phản hồi nào.</p>
-}
-else
-{
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Tiêu đề</th>
-                <th>Nội dung</th>
-                <th>Thời gian tạo</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var feedback in Model)
-            {
-                <tr>
-                    <td>@feedback.Title</td>
-                    <td>@feedback.Content</td>
-                    <td>@(feedback.CreatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Người gửi</th>
+                            <th>Tiêu đề</th>
+                            <th>Nội dung</th>
+                            <th>Thời gian</th>
+                            <th class="text-end">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.Feedback.FeedBackId</td>
+                                    <td>@(item.User?.FullName ?? "Không rõ")</td>
+                                    <td>@item.Feedback.Title</td>
+                                    <td>@item.Feedback.Content</td>
+                                    <td>@item.Feedback.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td class="text-end d-flex justify-content-end gap-3">
+                                        <a href="#" class="btn btn-md rounded font-sm">Chi tiết</a>
+                                        <div class="dropdown">
+                                            <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm">
+                                                <i class="material-icons md-more_horiz"></i>
+                                            </a>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item" href="#">Xem chi tiết</a>
+                                                <a class="dropdown-item" href="#">Xử lý</a>
+                                                <a class="dropdown-item text-danger" href="#">Xóa</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center">Không có phản hồi nào</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+

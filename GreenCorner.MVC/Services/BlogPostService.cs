@@ -59,6 +59,15 @@ namespace GreenCorner.MVC.Services
             });
         }
 
+        public async Task<ResponseDTO?> GetBlogCreate(string userId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.BlogAPIBase}/api/BlogPost/blogcreate?userId={userId}"
+            });
+        }
+
         public async Task<ResponseDTO?> GetByBlogId(int id)
         {
             return await _baseService.SendAsync(new RequestDTO
