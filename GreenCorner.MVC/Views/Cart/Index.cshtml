@@ -63,7 +63,8 @@ else
                         <tbody>
                             @foreach (var item in Model)
                             {
-                                var productImg = item.Product.ImageUrl.Split('&')[0];
+                                var imageUrl = item.Product.ImageUrl;
+                                var productImg = imageUrl?.Contains("&") == true ? imageUrl.Split('&')[0] : imageUrl;
                                 int price = (int)item.Product.Price;
                                 int priceDiscount = price - (item.Product.Discount.HasValue ? (price *
                                 item.Product.Discount.Value / 100) : 0);

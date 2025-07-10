@@ -48,6 +48,12 @@ namespace GreenCorner.EcommerceAPI.Services
             await _productRepository.UpdateProduct(product);
         }
 
+        public async Task<IEnumerable<ProductDTO>> GetOutOfStockProduct()
+        {
+            var outOfStockProducts = await _productRepository.GetOutOfStockProduct();
+            return _mapper.Map<List<ProductDTO>>(outOfStockProducts);
+        }
+
         public async Task<IEnumerable<ProductDTO>> Search(string keyword)
         {
             var products = await _productRepository.GetAllProduct();

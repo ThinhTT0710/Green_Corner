@@ -310,3 +310,37 @@ $(document).ready(function () {
         });
     });
 });
+
+$(document).ready(function () {
+    $('.add-to-wishlist-btn').off('click').on('click', function (e) {
+        e.preventDefault();
+        var productId = $(this).data('product-id');
+
+        $.ajax({
+            url: '/WishList/AddToWishList',
+            type: 'POST',
+            data: { productId: productId },
+            success: function (response) {
+                Swal.fire({
+                    icon: response.icon,
+                    title: response.isSuccess ? 'Thành công!' : 'Lỗi!',
+                    text: response.message,
+                    showConfirmButton: true,
+                    timer: response.isSuccess ? 1500 : undefined
+                }).then(() => {
+                    if (response.isSuccess) {
+                    } else if (response.message === "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.") {
+                        window.location.href = "/Auth/Login";
+                    }
+                });
+            },
+            error: function (xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: 'Không thể thêm sản phẩm vào danh sách yêu thích. Vui lòng thử lại sau.',
+                });
+            }
+        });
+    });
+});

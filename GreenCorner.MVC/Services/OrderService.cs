@@ -82,5 +82,49 @@ namespace GreenCorner.MVC.Services
 				Data = requestData
 			});
 		}
+        public async Task<ResponseDTO?> TotalOrdersComplete()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.EcommerceAPIBase + "/api/order/total-orders-complete"
+            });
+        }
+
+        public async Task<ResponseDTO?> TotalOrdersWaiting()
+		{
+			return await _baseService.SendAsync(new RequestDTO
+			{
+				APIType = SD.APIType.GET,
+				Url = SD.EcommerceAPIBase + "/api/order/total-orders-waiting"
+			});
+		}
+
+		public async Task<ResponseDTO?> TotalSales()
+		{
+			return await _baseService.SendAsync(new RequestDTO
+			{
+				APIType = SD.APIType.GET,
+				Url = SD.EcommerceAPIBase + "/api/order/total-sales"
+			});
+		}
+
+        public async Task<ResponseDTO?> GetBestSellingProduct()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.EcommerceAPIBase + "/api/order/get-best-selling-product"
+            });
+        }
+
+        public async Task<ResponseDTO?> GetTotalMoneyByMonth()
+		{
+			return await _baseService.SendAsync(new RequestDTO
+			{
+				APIType = SD.APIType.GET,
+				Url = SD.EcommerceAPIBase + "/api/order/total-money-by-month"
+			});
+		}
 	}
 }

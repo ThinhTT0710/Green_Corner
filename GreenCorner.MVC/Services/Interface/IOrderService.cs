@@ -11,5 +11,10 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> UpdateOrder(OrderDTO orderDTO);
         Task<ResponseDTO?> DeleteOrder(int orderID);
 		Task<ResponseDTO?> UpdateOrderStatus(int orderId, string orderStatus);
+        Task<ResponseDTO?> TotalOrdersComplete();
+        Task<ResponseDTO?> TotalOrdersWaiting();
+		Task<ResponseDTO?> TotalSales();
+        Task<ResponseDTO?> GetBestSellingProduct();
+        Task<ResponseDTO?> GetTotalMoneyByMonth();
 	}
 }

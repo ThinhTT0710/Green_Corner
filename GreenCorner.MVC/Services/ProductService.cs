@@ -66,5 +66,13 @@ namespace GreenCorner.MVC.Services
                 Url = SD.EcommerceAPIBase + "/api/Product"
             });
         }
+        public async Task<ResponseDTO?> OutOfStockProduct()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.EcommerceAPIBase + "/api/Product/outofstock"
+            });
+        }
     }
 }

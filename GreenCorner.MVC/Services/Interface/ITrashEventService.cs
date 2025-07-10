@@ -11,5 +11,6 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> DeleteTrashEvent(int id);
         Task<ResponseDTO?> ApproveTrashEvent(int id);
 		Task<ResponseDTO?> RejectTrashEvent(int id);
-	}
+        Task<ResponseDTO?> GetTrashEventsByUserId(string userId);
+    }
 }

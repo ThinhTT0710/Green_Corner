@@ -133,5 +133,22 @@ namespace GreenCorner.EventAPI.Controllers
 				return _responseDTO;
 			}
 		}
-	}
+
+        [HttpGet("get-by-user/{userId}")]
+        public async Task<ResponseDTO> GetUserReport(string userId)
+        {
+            try
+            {
+                var trashEvents = await _trashEventService.GetByUserId(userId);
+                _responseDTO.Result = trashEvents;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+    }
 }

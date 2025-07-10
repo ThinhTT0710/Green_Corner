@@ -1,78 +1,120 @@
-﻿﻿
-@model IEnumerable<TrashEventDTO>
-<div class="card shadow border-0 mt-4">
-	<div class="card-header bg-secondary bg-gradient ml-0 py-3">
-		<div class="row">
-			<div class="col-12 text-center">
-				<h1 class="text-white">Trash Event List</h1>
-			</div>
-		</div>
-	</div>
-	<div class="card-body p-4">
-		<div class="row pb-3">
-			<div class="col-6">
-			</div>
-			<div class="col-6 text-end">
-				<a asp-action="ReportTrashEvent" class="btn btn-outline-primary"><i class="bi bi-plus-square"></i> Report New Event</a>
-
-			</div>
-		</div>
-		<table class="table">
-			<thead>
-				<tr>
-					<th>
-						ID
-					</th>
-					<th>
-						Status
-					</th>
-					<th>
-						Description
-					</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var item in Model)
-				{
-					<tr>
-						<td>
-							@item.TrashReportId
-						</td>
-						<td>
-							@item.Status
-						</td>
-						<td>
-							@item.Description
-						</td>
-						<td>
-							<a class="btn btn-success" asp-action="UpdateTrashEvent" asp-route-trashReportId="@item.TrashReportId">
-								Update
-							</a>
-							<a class="btn btn-danger" asp-action="DeleteTrashEvent" asp-route-trashReportId="@item.TrashReportId">
-								Delete
-							</a>
-							@if (item.Status == "Chờ xác nhận")
-							{
-								<a class="btn btn-danger" asp-action="ApproveTrashEvent" asp-route-trashReportId="@item.TrashReportId">
-									Approve
-								</a>
-								<a class="btn btn-danger" asp-action="RejectrashEvent" asp-route-trashReportId="@item.TrashReportId">
-									Reject
-								</a>
-							}
-							@if(item.Status == "Đã xác nhận")
-                            {
-                                <a class="btn btn-primary" href="#">
-                                    Tạo envent
-                                </a>
-                            }
-						</td>
-					</tr>
-				}
-			</tbody>
-		</table>
-
-	</div>
-
-</div>
+﻿@model IEnumerable<TrashReportListViewModel>
+@{
+    ViewData["Title"] = "Report List";
+    Layout = "_LayoutAdmin";
+}
+﻿
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Danh sách báo cáo</h2>
+            <p>Danh sách các điểm rác thải được báo cáo bởi người dùng.</p>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Tìm kiếm..." class="form-control" />
+                </div>
+                <div class="col-lg-2 col-6 col-md-3">
+                    <select class="form-select">
+                        <option>Status</option>
+                        <option>Active</option>
+                        <option>Disabled</option>
+                        <option>Show all</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-6 col-md-3">
+                    <select class="form-select">
+                        <option>Show 20</option>
+                        <option>Show 30</option>
+                        <option>Show 40</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+        <!-- card-header end// -->
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#ID</th>
+                            <th scope="col">Người báo cáo</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Địa chỉ</th>
+                            <th scope="col">Mô tả</th>
+                            <th scope="col">Trạng thái</th>
+                            <th scope="col">Ngày báo cáo</th>
+                            <th scope="col" class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.TrashEvent.TrashReportId</td>
+                                <td>
+                                    <a class="itemside" href="#">
+                                        <div class="left">
+                                            @{
+                                                var imageUrl = item.TrashEvent.ImageUrl;
+                                                var reportImg = imageUrl?.Contains("&") == true ? imageUrl.Split('&')[0] :
+                                                imageUrl;
+                                            }
+                                            <img src="@reportImg" class="img-sm img-thumbnail" alt="Avatar" />
+                                        </div>
+                                        <div class="info">
+                                            <h6 class="mb-0">@item.User.FullName</h6>
+                                        </div>
+                                    </a>
+                                </td>
+                                <td>@item.User.Email</td>
+                                <td>@item.TrashEvent.Address</td>
+                                <td>@item.TrashEvent.Description</td>
+                                <td><span class="badge rounded-pill badge-soft-success">@item.TrashEvent.Status</span></td>
+                                <td>@item.TrashEvent.CreatedAt?.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm">
+                                            <i class="material-icons md-more_horiz"></i>
+                                        </a>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" href="#">View detail</a>
+                                            @if (item.TrashEvent.Status == "Chờ xác nhận")
+                                            {
+                                                <a class="dropdown-item" asp-action="ApproveTrashEvent"
+                                                    asp-route-trashReportId="@item.TrashEvent.TrashReportId">Chấp nhận</a>
+                                                <a class="dropdown-item text-danger" asp-action="RejectrashEvent"
+                                                    asp-route-trashReportId="@item.TrashEvent.TrashReportId">Từ chối</a>
+                                            }
+                                            @if (item.TrashEvent.Status == "Đã xác nhận")
+                                            {
+                                                <a class="dropdown-item" href="#">Tạo sự kiện</a>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="pagination-area mt-15 mb-50">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                <li class="page-item"><a class="page-link" href="#">02</a></li>
+                <li class="page-item"><a class="page-link" href="#">03</a></li>
+                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                <li class="page-item"><a class="page-link" href="#">16</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</section>

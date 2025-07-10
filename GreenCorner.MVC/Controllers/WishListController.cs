@@ -46,6 +46,46 @@ namespace GreenCorner.MVC.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddToWishList(int productId)
+        {
+            try
+            {
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return Json(new { isSuccess = false, message = "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng." });
+                }
+
+                var userID = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+
+                if (string.IsNullOrEmpty(userID))
+                {
+                    return Json(new { isSuccess = false, message = "Không thể xác định người dùng. Vui lòng đăng nhập lại." });
+                }
+
+                var wishListDto = new WishListDTO
+                {
+                    UserId = userID,
+                    ProductId = productId
+                };
+
+                var response = await _wishListService.AddToWishList(wishListDto);
+
+                if (response != null && response.IsSuccess)
+                {
+                    return Json(new { isSuccess = true, message = "Sản phẩm đã được thêm vào danh sách yêu thích!", icon = "success" });
+                }
+                else
+                {
+                    return Json(new { isSuccess = false, message = response?.Message ?? "Có lỗi xảy ra khi thêm sản phẩm vào danh sách yêu thích.", icon = "error" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isSuccess = false, message = $"Đã xảy ra lỗi hệ thống: {ex.Message}", icon = "error" });
+            }
+        }
+
         [HttpGet]
         [Authorize(Roles = "CUSTOMER")]
         public async Task<IActionResult> Remove(int wishListId)

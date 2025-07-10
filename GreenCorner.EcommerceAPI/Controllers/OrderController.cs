@@ -140,5 +140,126 @@ namespace GreenCorner.EcommerceAPI.Controllers
                 return _responseDTO;
             }
         }
+
+        //dashboard
+        [HttpGet("total-orders-complete")]
+        public async Task<ResponseDTO> TotalOrdersComplete()
+        {
+            try
+            {
+                var total = await _orderService.TotalOrdersComplete();
+                _responseDTO.Result = total;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
+        [HttpGet("total-orders-waiting")]
+        public async Task<ResponseDTO> TotalOrdersWaiting()
+        {
+            try
+            {
+                var total = await _orderService.TotalOrdersWaiting();
+                _responseDTO.Result = total;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
+        [HttpGet("total-sales")]
+        public async Task<ResponseDTO> TotalSales()
+        {
+            try
+            {
+                var total = await _orderService.TotalSales();
+                _responseDTO.Result = total;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+        [HttpGet("total-money-by-month")]
+        public async Task<ResponseDTO> GetTotalMoneyByMonth()
+        {
+            try
+            {
+                var total = await _orderService.GetTotalMoneyByMonth();
+                _responseDTO.Result = total;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
+        [HttpGet("get-best-selling-product")]
+        public async Task<ResponseDTO> GetBestSeller()
+        {
+            try
+            {
+                var products = await _orderService.GetBestSellingProduct();
+                _responseDTO.Result = products;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
+        [HttpGet("monthly-analytics")]
+        public async Task<ResponseDTO> GetMonthlyAnalytics()
+        {
+            try
+            {
+                // Lấy dữ liệu cho năm hiện tại
+                int currentYear = DateTime.Now.Year;
+                var analytics = await _orderService.GetMonthlySalesAnalytics(currentYear);
+                _responseDTO.Result = analytics;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
+        [HttpGet("sales-by-category")]
+        public async Task<ResponseDTO> GetSalesByCategory()
+        {
+            try
+            {
+                var salesData = await _orderService.GetSalesByCategory();
+                _responseDTO.Result = salesData;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
     }
 }
