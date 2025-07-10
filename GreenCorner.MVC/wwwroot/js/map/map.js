@@ -123,3 +123,8 @@ function initStreetView(lat, lng) {
 function roundCoord(coord) {
     return Math.round(coord * 1e6) / 1e6;
 }
+
+function setInitialLocation(lat, lng) {
+    updateLatLng(lat, lng);
+    initMap(lat, lng);
+}

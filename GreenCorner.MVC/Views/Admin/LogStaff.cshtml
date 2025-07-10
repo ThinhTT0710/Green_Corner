@@ -2,47 +2,96 @@
 
 @{
     ViewData["Title"] = "Nhật ký hệ thống";
+    Layout = "_LayoutAdmin";
 }
 
-<h2 class="mb-4">Nhật ký hoạt động của nhân viên</h2>
-
-<table class="table table-bordered table-striped">
-    <thead class="table-dark">
-        <tr>
-            <th>Hành động</th>
-            <th>Loại đối tượng</th>
-            <th>Mô tả</th>
-            <th>Thời gian</th>
-            <th>Người thực hiện</th>
-            <th>Email</th>
-            <th>Trạng thái</th>
-            <th>Avatar</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var log in Model)
-        {
-            <tr>
-                <td>@log.ActionType</td>
-                <td>@log.ObjectType (#@log.ObjectId)</td>
-                <td>@log.Description</td>
-                <td>@log.CreatedAt.ToString("HH:mm dd/MM/yyyy")</td>
-                <td>@log.FullName (@log.UserName)</td>
-                <td>@log.Email</td>
-                <td>
-                    @if (log.IsBanned)
-                    {
-                        <span class="badge bg-danger">Bị khóa</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-success">Hoạt động</span>
-                    }
-                </td>
-                <td>
-                    <img src="~/images/avatar/@log.Avatar" alt="Avatar" width="50" height="50" style="border-radius: 50%;" />
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<section class="content-main">
+    <div class="content-header">
+        <h2 class="content-title">Danh sách nhật ký hoạt động của nhân viên</h2>
+    </div>
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Tìm kiếm..." class="form-control" />
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select">
+                        <option>Trạng thái</option>
+                        <option>Hoạt động</option>
+                        <option>Bị chặn</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select">
+                        <option>Show 20</option>
+                        <option>Show 30</option>
+                        <option>Show 40</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+        <!-- card-header end// -->
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Người thực hiện</th>
+                            <th>Email</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                            <th>Loại đối tượng</th>
+                            <th>Mô tả</th>
+                            <th>Thời gian</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td width="25%">
+                                    <a href="#" class="itemside">
+                                        <div class="left">
+                                            <img src="@item.Avatar" class="img-sm img-avatar" alt="Userpic" />
+                                        </div>
+                                        <div class="info pl-3">
+                                            <h6 class="mb-0 title">@item.FullName</h6>
+                                        </div>
+                                    </a>
+                                </td>
+                                <td>@item.Email</td>
+                                @if (!item.IsBanned)
+                                {
+                                    <td><span class="badge rounded-pill badge-soft-success">Hoạt động</span></td>
+                                }
+                                else
+                                {
+                                    <td><span class="badge rounded-pill badge-soft-danger">Bị khóa</span></td>
+                                }
+                                <td>@item.ActionType</td>
+                                <td>@item.ObjectType (#@item.ObjectId)</td>
+                                <td>@item.Description</td>
+                                <td>@item.CreatedAt.ToString("HH:mm dd/MM/yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="pagination-area mt-15 mb-50">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                <li class="page-item"><a class="page-link" href="#">02</a></li>
+                <li class="page-item"><a class="page-link" href="#">03</a></li>
+                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                <li class="page-item"><a class="page-link" href="#">16</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</section>

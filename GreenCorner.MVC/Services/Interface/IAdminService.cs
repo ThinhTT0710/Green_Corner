@@ -6,5 +6,7 @@ namespace GreenCorner.MVC.Services.Interface
 	{
 		Task<ResponseDTO?> AddLogStaff(SystemLogDTO logDTO);
 		Task<ResponseDTO?> GetAllLog();
-	}
+        Task<ResponseDTO?> GetMonthlyAnalytics();
+		Task<ResponseDTO?> GetSalesByCategory();
+    }
 }

@@ -16,8 +16,8 @@ namespace GreenCorner.EcommerceAPI.Repositories
         {
             await _context.Products.AddAsync(item);
             await _context.SaveChangesAsync();
-			return item;
-		}
+            return item;
+        }
 
         public async Task DeleteProduct(int id)
         {
@@ -52,7 +52,16 @@ namespace GreenCorner.EcommerceAPI.Repositories
             }
             _context.Entry(product).CurrentValues.SetValues(item);
             product.UpdatedAt = DateTime.Now;
-			await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Product>> GetOutOfStockProduct()
+        {
+            return await _context.Products
+                .Where(p => p.Quantity <= 0 && p.IsDeleted == false)
+                .OrderByDescending(p => p.CreatedAt)
+                .Take(10)
+                .ToListAsync();
         }
     }
 }

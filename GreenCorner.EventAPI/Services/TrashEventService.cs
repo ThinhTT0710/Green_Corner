@@ -39,6 +39,12 @@ namespace GreenCorner.EventAPI.Services
             return _mapper.Map<TrashEventDTO>(trashEvent);
         }
 
+        public async Task<IEnumerable<TrashEventDTO>> GetByUserId(string userId)
+        {
+            var trashEvents = await _trashEventRepository.GetByUserId(userId);
+            return _mapper.Map<List<TrashEventDTO>>(trashEvents);
+        }
+
         public Task UpdateTrashEvent(TrashEventDTO TrashEventDTO)
         {
             TrashEvent trashEvent = _mapper.Map<TrashEvent>(TrashEventDTO);

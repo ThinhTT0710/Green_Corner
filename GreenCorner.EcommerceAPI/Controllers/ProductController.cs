@@ -122,5 +122,22 @@ namespace GreenCorner.EcommerceAPI.Controllers
                 return _responseDTO;
             }
         }
+
+        [HttpGet("outofstock")]
+        public async Task<ResponseDTO> GetOutOfStockProduct()
+        {
+            try
+            {
+                var outOfStockProducts = await _productService.GetOutOfStockProduct();
+                _responseDTO.Result = outOfStockProducts;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
     }
 }

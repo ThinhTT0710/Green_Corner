@@ -14,11 +14,13 @@ namespace GreenCorner.MVC.Controllers
         private readonly IUserService _userService;
         private readonly IVolunteerService _volunteerService;
         private readonly IEventService _eventService;
-        public UserController(IUserService userService, IVolunteerService volunteerService, IEventService eventService)
+        private readonly ITrashEventService _trashEventService;
+        public UserController(IUserService userService, IVolunteerService volunteerService, IEventService eventService, ITrashEventService trashEventService)
         {
             _userService = userService;
             _volunteerService = volunteerService;
             _eventService = eventService;
+            _trashEventService = trashEventService;
         }
 
         [HttpGet]
@@ -177,6 +179,36 @@ namespace GreenCorner.MVC.Controllers
             };
 
             return View(vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ReportHistory()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["loginError"] = "Vui lòng đăng nhập để xem lịch sử báo cáo của bạn";
+                return RedirectToAction("Index", "Home");
+            }
+            try
+            {
+                var userID = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+                var response = await _trashEventService.GetTrashEventsByUserId(userID);
+                if (response != null && response.IsSuccess)
+                {
+                    List<TrashEventDTO> reportHistory = JsonConvert.DeserializeObject<List<TrashEventDTO>>(Convert.ToString(response.Result));
+                    return View(reportHistory);
+                }
+                else
+                {
+                    TempData["error"] = response.Message;
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = ex.Message;
+                return RedirectToAction("Index", "Home");
+            }
         }
     }
 }

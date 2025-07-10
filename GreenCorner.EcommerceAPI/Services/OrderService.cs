@@ -132,5 +132,74 @@ namespace GreenCorner.EcommerceAPI.Services
 		{
 			await _orderRepository.UpdateOrderStatus(orderId, newStatus);
 		}
-	}
+
+        //Dash board
+        public async Task<int> TotalOrdersComplete()
+        {
+            return await _orderRepository.TotalOrdersComplete();
+        }
+        public async Task<int> TotalOrdersWaiting()
+        {
+            return await _orderRepository.TotalOrdersWaiting();
+        }
+
+        public async Task<int> TotalSales()
+        {
+            return await _orderRepository.TotalSales();
+        }
+        public async Task<int> GetTotalMoneyByMonth()
+        {
+            return await _orderRepository.GetTotalMoneyByMonth();
+        }
+
+        public async Task<MonthlyAnalyticsDto> GetMonthlySalesAnalytics(int year)
+        {
+            return await _orderRepository.GetMonthlySalesAnalytics(year);
+        }
+
+        public async Task<List<BestSellingProductDTO>> GetBestSellingProduct()
+        {
+            try
+            {
+                var products = await _productService.GetAllProduct();
+                var orders = await GetAll();
+
+                var allOrderDetails = orders.SelectMany(o => o.OrderDetailsDTO).ToList();
+
+                var topSelling = allOrderDetails
+                    .GroupBy(od => od.ProductId)
+                    .Select(group => new
+                    {
+                        ProductId = group.Key,
+                        TotalQuantity = group.Sum(x => x.Quantity)
+                    })
+                    .OrderByDescending(x => x.TotalQuantity)
+                    .Take(10)
+                    .ToList();
+
+                var result = topSelling
+                    .Select(item =>
+                    {
+                        var product = products.FirstOrDefault(p => p.ProductId == item.ProductId);
+                        return product == null ? null : new BestSellingProductDTO
+                        {
+                            Product = product,
+                            TotalSoldQuantity = item.TotalQuantity
+                        };
+                    })
+                    .Where(x => x != null)
+                    .ToList();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error when fetching best-selling products: " + ex.Message);
+            }
+        }
+        public async Task<CategorySalesDto> GetSalesByCategory()
+        {
+            return await _orderRepository.GetSalesByCategory();
+        }
+    }
 }
