@@ -16,6 +16,7 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<IActionResult> Index()
         {
             if (!User.Identity.IsAuthenticated)

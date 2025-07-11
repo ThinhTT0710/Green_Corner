@@ -39,7 +39,12 @@ namespace GreenCorner.MVC.Controllers
                     LoginResponseDTO loginResponse = JsonConvert.DeserializeObject<LoginResponseDTO>(response.Result.ToString());
                     await SignInUser(loginResponse);
                     _tokenProvider.SetToken(loginResponse.Token);
-                    TempData["success"] = "Login successfully.";
+                    TempData["success"] = "Đăng nhập thành công.";
+                    var role = User.Claims.Where(u => u.Type == ClaimTypes.Role)?.FirstOrDefault()?.Value;
+                    if (role == SD.RoleAdmin)
+                    {
+                        return RedirectToAction("Index", "Admin");
+                    }
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -272,6 +277,8 @@ namespace GreenCorner.MVC.Controllers
 
             var principal = new ClaimsPrincipal(identity);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+            HttpContext.User = principal;
         }
 
 		public async Task<IActionResult> GetStaffList()
@@ -381,6 +388,9 @@ namespace GreenCorner.MVC.Controllers
 			return NotFound();
 		}
 
-
-	}
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+    }
 }
