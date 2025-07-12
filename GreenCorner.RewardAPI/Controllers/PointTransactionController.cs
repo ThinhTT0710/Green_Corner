@@ -47,5 +47,91 @@ namespace GreenCorner.RewardAPI.Controllers
                 return _responseDTO;
             }
         }
+
+		// Giao dịch theo loại (Kiếm / Đổi)
+		[HttpPost("Transaction")]
+		public async Task<ResponseDTO> TransactionPoints([FromBody] PointTransactionDTO request)
+		{
+			try
+			{
+				await _pointTransactionService.TransactionPoints(request.UserId, request.Points, request.Type);
+				_responseDTO.Message = $"Giao dịch {request.Type} điểm thành công.";
+				return _responseDTO;
+			}
+			catch (Exception ex)
+			{
+				_responseDTO.Message = ex.Message;
+				_responseDTO.IsSuccess = false;
+				return _responseDTO;
+			}
+		}
+
+		[HttpGet("reward/{userId}")]
+		public async Task<ResponseDTO> GetRewardPoint(string userId)
+		{
+			try
+			{
+				var rewardPoint = await _pointTransactionService.GetRewardPointByUserIdAsync(userId);
+				_responseDTO.Result = rewardPoint;
+				return _responseDTO;
+			}
+			catch (Exception ex)
+			{
+				_responseDTO.Message = ex.Message;
+				_responseDTO.IsSuccess = false;
+				return _responseDTO;
+			}
+		}
+
+		[HttpPost("add-transaction")]
+		public async Task<ResponseDTO> AddTransaction([FromBody] PointTransactionDTO dto)
+		{
+			try
+			{
+				await _pointTransactionService.AddTransactionAsync(dto);
+				_responseDTO.Message = "Giao dịch đã được thêm.";
+				return _responseDTO;
+			}
+			catch (Exception ex)
+			{
+				_responseDTO.Message = ex.Message;
+				_responseDTO.IsSuccess = false;
+				return _responseDTO;
+			}
+		}
+
+		[HttpPut("update-reward")]
+		public async Task<ResponseDTO> UpdateRewardPoint([FromBody] RewardPointDTO dto)
+		{
+			try
+			{
+				await _pointTransactionService.UpdateRewardPointAsync(dto);
+				_responseDTO.Message = "Điểm thưởng đã được cập nhật.";
+				return _responseDTO;
+			}
+			catch (Exception ex)
+			{
+				_responseDTO.Message = ex.Message;
+				_responseDTO.IsSuccess = false;
+				return _responseDTO;
+			}
+		}
+
+        [HttpGet("rewardpointshistory")]
+        public async Task<ResponseDTO> GetRewardPointHistory()
+        {
+            try
+            {
+                var rewardPoint = await _pointTransactionService.GetPointsAwardHistoryAsync();
+                _responseDTO.Result = rewardPoint;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
     }
 }

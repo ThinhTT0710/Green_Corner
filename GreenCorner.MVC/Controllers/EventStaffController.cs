@@ -16,7 +16,8 @@ namespace GreenCorner.MVC.Controllers
         private readonly IReportService _reportService;
         private readonly IVolunteerService _volunteerService;
         private readonly IUserService _userService;
-        public EventStaffController(IBlogPostService blogPostService, IBlogFavoriteService blogFavoriteService, IBlogReportService blogReportService, IFeedbackService feedbackService, IReportService reportService, IVolunteerService volunteerService, IUserService userService)
+        private readonly IPointTransactionService _pointTransactionService;
+        public EventStaffController(IBlogPostService blogPostService, IBlogFavoriteService blogFavoriteService, IBlogReportService blogReportService, IFeedbackService feedbackService, IReportService reportService, IVolunteerService volunteerService, IUserService userService, IPointTransactionService pointTransactionService)
         {
             this._blogPostService = blogPostService;
             this._blogFavoriteService = blogFavoriteService;
@@ -25,6 +26,7 @@ namespace GreenCorner.MVC.Controllers
             _reportService = reportService;
             _volunteerService = volunteerService;
             _userService = userService;
+            _pointTransactionService = pointTransactionService;
         }
         public IActionResult Index()
         {
@@ -386,6 +388,39 @@ namespace GreenCorner.MVC.Controllers
             };
 
             return View(finalViewModel);
+        }
+
+        public async Task<IActionResult> ViewPointsRewardHistory()
+        {
+            var response = await _pointTransactionService.GetPointsAwardHistoryAsync();
+
+            if (response != null && response.IsSuccess && response.Result != null)
+            {
+                var transactions = JsonConvert.DeserializeObject<List<PointTransactionDTO>>(response.Result.ToString());
+                var resultList = new List<PointTransactionWithUserDTO>();
+
+                foreach (var transaction in transactions)
+                {
+                    var userResponse = await _userService.GetUserById(transaction.UserId); // Gọi đến API người dùng
+                    UserDTO? user = null;
+
+                    if (userResponse != null && userResponse.IsSuccess && userResponse.Result != null)
+                    {
+                        user = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
+                    }
+
+                    resultList.Add(new PointTransactionWithUserDTO
+                    {
+                        Transaction = transaction,
+                        User = user ?? new UserDTO { FullName = "Không xác định" }
+                    });
+                }
+
+                return View(resultList);
+            }
+
+            TempData["error"] = "Không thể tải lịch sử.";
+            return View(new List<PointTransactionWithUserDTO>());
         }
 
 

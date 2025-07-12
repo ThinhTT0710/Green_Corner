@@ -6,6 +6,7 @@ namespace GreenCorner.MVC.Services.Interface
     public interface IRewardService
     {
         Task<ResponseDTO?> GetAllReward();
+        Task<ResponseDTO?> GetVoucherById(int id);
 
     }
 }
