@@ -9,10 +9,11 @@
 
 <form asp-action="CreateReport" method="post">
     <input type="hidden" asp-for="BlogId" />
+    <input type="hidden" asp-for="UserId" />
 
     <div class="mb-3">
         <label asp-for="Reason" class="form-label">Lý do báo cáo</label>
-        <textarea asp-for="Reason" class="form-control" rows="4"></textarea>
+        <textarea asp-for="Reason" class="form-control" style="min-height: 300px;"></textarea>
         <span asp-validation-for="Reason" class="text-danger"></span>
     </div>
 

@@ -4,117 +4,133 @@
     ViewData["Title"] = "Checkout";
     int total = 0;
 }
-
+<div class="page-header breadcrumb-wrap">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/Home" rel="nofollow"><i class="fi-rs-home mr-5"></i>Trang chủ</a>
+            <span></span> Giỏ hàng
+            <span></span> Thanh toán
+        </div>
+    </div>
+</div>
 @if (!Model.CartItems.Any())
 {
-    <p>Your cart is empty.</p>
+    <div class="container mb-80 mt-50 text-center">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-20">Giỏ hàng của bạn hiện đang trống nên không thể đặt hàng</h2>
+                <p class="text-muted mb-30">Có vẻ như bạn chưa thêm bất kỳ sản phẩm nào vào giỏ hàng.</p>
+                <a href="/Product" class="btn btn-fill-out"><i class="fi-rs-shopping-bag mr-10"></i>Bắt đầu mua sắm</a>
+            </div>
+        </div>
+    </div>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Image</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Subtotal</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.CartItems)
-            {
-                int price = (int)item.Product.Price;
-                int priceDiscount = price - (price * item.Product.Discount.Value / 100);
-                var totalPrice = (price - (price * item.Product.Discount.Value / 100)) * item.Quantity;
-                total += priceDiscount * item.Quantity;
-                <tr>
-                    <td>@item.Product.Name</td>
-                    <td><img src="@item.Product.ImageUrl" width="50" /></td>
-                    <td>@priceDiscount.ToString("C")</td>
-                    <td>@item.Quantity</td>
-                    <td>@totalPrice.ToString("C")</td>
-                    
-                </tr>
-            }
-        </tbody>
-    </table>
-    <h4>Total: @total.ToString("C")</h4>
 
-    <form id="checkoutform" method="post" asp-controller="Order" asp-action="Index" >
-        <br />
-        <div class="container border p-3">
-            <h1 class="text-dark text-center">Order Product</h1>
-
-            <hr />
-            <div class="row">
-                <div class="col-2">
-                    <label class="control-label pt-2" style="font-size:20px;">Full Name</label>
+    <div class="container mb-80 mt-50">
+        <div class="row">
+            <div class="col-lg-8 mb-40">
+                <h1 class="heading-2 mb-10">Thanh toán đơn hàng</h1>
+                <div class="d-flex justify-content-between">
+                    <h6 class="text-body">Có <span class="text-brand">@Model.CartItems.Count()</span> sản phẩm bạn cần thanh
+                        toán</h6>
                 </div>
-                <div class="col-10 pb-3">
-                    <input type="text" asp-for="Order.Name" class="form-control" />
-                </div>
-                <div class="col-2">
-                    <label class="control-label pt-2" style="font-size:20px;">Phone Number</label>
-                </div>
-                <div class="col-10 pb-3">
-                    <input type="text" asp-for="Order.PhoneNumber" class="form-control" />
-                </div>
-                <div class="col-2">
-                    <label class="control-label pt-2" style="font-size:20px;">Email</label>
-                </div>
-                <div class="col-10 pb-3">
-                    <input type="email" asp-for="Order.Email" class="form-control" />
-                </div>
-                <div class="col-2">
-                    <label class="control-label pt-2" style="font-size:20px;">ShippingAddress</label>
-                </div>
-                <div class="col-10 pb-3">
-                    <input type="text" asp-for="Order.ShippingAddress" class="form-control" />
-                </div>
-                <div class="col-2">
-                    <label class="control-label pt-2" style="font-size:20px;">PaymentMethod</label>
-                </div>
-                <div class="col-10 pb-3">
-                    
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" asp-for="Order.PaymentMethod" value="Thanh toán khi nhận hàng" id="cod" />
-                        <label class="form-check-label" for="cod">
-                            Thanh toán khi nhận hàng
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" asp-for="Order.PaymentMethod" value="Thanh toán bằng VNPay" id="vnpay" />
-                        <label class="form-check-label" for="vnpay">
-                            Thanh toán bằng VNPay
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" asp-for="Order.PaymentMethod" value="Thanh toán bằng Momo" id="momo" />
-                        <label class="form-check-label" for="momo">
-                            Thanh toán bằng Momo
-                        </label>
-                    </div>
-                </div>
-
-                <div class="col-2">
-                    <label class="control-label pt-2" style="font-size:20px;">Note</label>
-                </div>
-                <div class="col-10 pb-3">
-                    <textarea asp-for="Order.Note" class="form-control" rows="5"></textarea>
-                </div>
-                <div class="col-5">
-                    <input type="submit" value="Order" class="btn btn-success form-control" />
-
-                </div>
-            </div>
-            <div>
             </div>
         </div>
-    </form>
-
-    <div class="col-5 offset-2">
-        <a asp-controller="Cart" asp-action="Index" class="btn-primary btn form-control ">Back to cart</a>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="row">
+                    <h4 class="mb-30">Thông tin nhận hàng</h4>
+                    <form method="post">
+                        <div class="row">
+                            <div class="form-group col-lg-12">
+                                <input asp-for="Order.Name" type="text" required="" placeholder="Họ và tên*">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-12">
+                                <input asp-for="Order.Email" required="" type="text" placeholder="Địa chỉ Email *">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-12">
+                                <input asp-for="Order.PhoneNumber" required="" type="text" placeholder="Số điện thoại *">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-12">
+                                <input asp-for="Order.ShippingAddress" type="text" required=""
+                                    placeholder="Địa chỉ nhận hàng *">
+                            </div>
+                        </div>
+                        <div class="form-group mb-30">
+                            <textarea rows="5" asp-for="Order.Note" placeholder="Ghi chú cho đơn hàng"></textarea>
+                        </div>
+                        <div class="payment ml-30">
+                            <h4 class="mb-30">Phương thức thanh toán</h4>
+                            <div class="payment_option">
+                                <div class="custome-radio">
+                                    <input class="form-check-input" asp-for="Order.PaymentMethod"
+                                        value="Thanh toán khi nhận hàng" type="radio" id="exampleRadios3" checked="">
+                                    <label class="form-check-label" for="exampleRadios3" data-bs-toggle="collapse"
+                                        data-target="#bankTranfer" aria-controls="bankTranfer">Thanh toán khi nhận
+                                        hàng</label>
+                                </div>
+                                <div class="custome-radio">
+                                    <input class="form-check-input" type="radio" asp-for="Order.PaymentMethod"
+                                        value="Chuyển khoản ngân hàng" id="exampleRadios4">
+                                    <label class="form-check-label" for="exampleRadios4" data-bs-toggle="collapse"
+                                        data-target="#checkPayment" aria-controls="checkPayment">Chuyển khoản ngân
+                                        hàng</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-fill-out btn-block mt-30 float-end">Đặt hàng<i
+                                    class="fi-rs-sign-out ml-15"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="border p-40 cart-totals ml-30 mb-50">
+                    <div class="d-flex align-items-end justify-content-between mb-30">
+                        <h4>Đơn hàng của bạn</h4>
+                        <h6 class="text-muted">Tổng cộng</h6>
+                    </div>
+                    <div class="divider-2 mb-30"></div>
+                    <div class="table-responsive order_table checkout">
+                        <table class="table no-border">
+                            <tbody>
+                                @foreach (var item in Model.CartItems)
+                                {
+                                    var imageUrl = item.Product.ImageUrl;
+                                    var productImg = imageUrl?.Contains("&") == true ? imageUrl.Split('&')[0] : imageUrl;
+                                    int price = (int)item.Product.Price;
+                                    int priceDiscount = price - (price * item.Product.Discount.Value / 100);
+                                    var totalPrice = (price - (price * item.Product.Discount.Value / 100)) *
+                                    item.Quantity;
+                                    total += priceDiscount * item.Quantity;
+                                    <tr>
+                                        <td class="image product-thumbnail"><img src="@productImg" alt="#"></td>
+                                        <td>
+                                            <h6 class="w-160 mb-5"><a href="shop-product-full.html"
+                                                    class="text-heading">@item.Product.Name</a></h6>
+                                        </td>
+                                        <td>
+                                            <h6 class="text-muted pl-20 pr-20">x @item.Quantity</h6>
+                                        </td>
+                                        <td>
+                                            <h4 class="text-brand">@totalPrice.ToString("N0", new CultureInfo("vi-VN"))đ
+                                            </h4>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 }
 

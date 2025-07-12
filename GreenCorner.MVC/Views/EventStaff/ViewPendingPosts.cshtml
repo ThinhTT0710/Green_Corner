@@ -1,68 +1,124 @@
-﻿@model List<GreenCorner.MVC.Models.BlogPostDTO>
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@model List<GreenCorner.MVC.ViewModels.BlogWithAuthorViewModel>
 
 @{
     ViewData["Title"] = "Danh sách bài viết";
     var favoriteBlogIds = ViewBag.FavoriteBlogIds as List<int> ?? new();
 }
 
-<a asp-controller="BlogPost" asp-action="ViewFeedbacks" class="btn btn-dark ">Xem Feedback</a>
+<section class="content-main">
+    <div class="content-header d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="content-title card-title mb-4">Danh sách bài viết</h2>
+            <p class="text-muted">Quản lý bài viết và trạng thái duyệt.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-controller="BlogPost" asp-action="ViewFeedbacks" class="btn btn-light rounded font-md">Xem Feedback</a>
+            <a asp-controller="BlogPost" asp-action="ViewReports" class="btn btn-light rounded font-md">Xem Report</a>
+        </div>
+    </div>
 
-<a asp-controller="BlogPost" asp-action="ViewReports" class="btn btn-dark ">Xem Report</a>
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3 align-items-center">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Tìm kiếm tiêu đề..." class="form-control text-center" />
+                </div>
+                <div class="col-lg-2 col-6 col-md-3">
+                    <select class="form-select text-center">
+                        <option selected>Tất cả trạng thái</option>
+                        <option>Chờ duyệt</option>
+                        <option>Đã duyệt</option>
+                        <option>Bị từ chối</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <div class="card-body">
+            <div class="row gx-3 gy-4 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 row-cols-xxl-5 justify-content-center">
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var blog in Model)
+                    {
+                        var isFavorited = favoriteBlogIds.Contains(blog.Blog.BlogId);
+                        <div class="col d-flex justify-content-center">
+                            <div class="card card-product-grid text-center w-100 h-100">
+                                <a asp-action="ViewPendingPostDetail" asp-route-id="@blog.Blog.BlogId"
+                                   class="img-wrap bg-light d-flex align-items-center justify-content-center"
+                                   style="height: 150px;">
+
+                                    @{
+                                        var firstImage = blog.Blog.ThumbnailUrl?.Split('&', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(firstImage))
+                                    {
+                                        <img src="@firstImage" style="max-height: 100%; max-width: 100%; object-fit: contain;" />
+                                    }
+                                    else
+                                    {
+                                        <i class="material-icons text-muted" style="font-size:48px;">article</i>
+                                    }
+                                </a>
+
+                                <div class="info-wrap p-2">
+                                    <a asp-action="ViewPendingPostDetail" asp-route-id="@blog.Blog.BlogId"
+                                       class="title text-truncate fw-bold d-block mb-1">
+                                        @blog.Blog.Title
+                                    </a>
+                                    <div class="text-muted mb-1" style="font-size:13px;">
+                                        Tác giả: <strong>@blog.Author?.FullName</strong>
+                                    </div>
+                                    <div class="text-muted mb-2" style="font-size:13px;">
+                                        Ngày tạo: @blog.Blog.CreatedAt?.ToString("dd/MM/yyyy")
+                                    </div>
+                                    <div class="mb-2">
+                                        @{
+                                            string status = blog.Blog.Status;
+                                            string badgeClass = status == "Approved" ? "bg-success"
+                                            : status == "Rejected" ? "bg-danger"
+                                            : "bg-warning";
+
+                                            string statusText = status switch
+                                            {
+                                                "Approved" => "Đã duyệt",
+                                                "Rejected" => "Từ chối",
+                                                "Pending" => "Đang chờ duyệt",
+                                                _ => "Không xác định"
+                                            };
+                                        }
+
+                                        <span class="badge rounded-pill text-white @badgeClass">
+                                            @statusText
+                                        </span>
+                                    </div>
 
 
-<table class="table table-bordered table-hover align-middle">
-    <thead class="table-light">
-        <tr>
-            <th>#</th>
-            <th>Tiêu đề</th>
-            <th>Tác giả</th>
-            <th>Trạng thái</th>
-            <th>Ngày tạo</th>
-            <th>Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model != null && Model.Any())
-        {
-            int index = 1;
-            foreach (var blog in Model)
-            {
-                bool isFavorited = favoriteBlogIds.Contains(blog.BlogId);
-                <tr>
-                    <td>@index</td>
-                    <td>@blog.Title</td>
-                    <td>@blog.AuthorId</td>
-                    <td>@blog.Status</td>
-                    <td>@blog.CreatedAt?.ToString("dd/MM/yyyy")</td>
-                    <td>
-                        <a asp-action="ViewPendingPostDetail"
-                           asp-route-id="@blog.BlogId"
-                           class="btn btn-sm btn-primary">
-                            Xem chi tiết
-                        </a>
-                        <a asp-controller="BlogPost" asp-action="UpdateBlog" asp-route-blogId="@blog.BlogId" class="btn btn-sm btn-success">
-                            Update
-                        </a>
-                        <form asp-controller="EventStaff" asp-action="BlogApprove" asp-route-id="@blog.BlogId" method="post" style="display:inline;">
-                            <button type="submit" class="btn btn-success btn-sm"
-                                    onclick="return confirm('Bạn có chắc muốn phê duyệt bài viết này không?')">
-                                Phê duyệt
-                            </button>
-                        </form>
-
-                       
-                    </td>
-                </tr>
-                index++;
-            }
-        }
-        else
-        {
-            <tr>
-                <td colspan="7" class="text-center text-muted">Không có bài viết nào.</td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <form asp-controller="EventStaff" asp-action="BlogApprove" asp-route-id="@blog.Blog.BlogId" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-success rounded"
+                                                    onclick="return confirm('Bạn có chắc muốn phê duyệt bài viết này không?')">
+                                                <i class="material-icons md-check_circle"></i> Phê duyệt
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-12">
+                        <div class="alert alert-warning text-center w-100">
+                            Không có bài viết nào.
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

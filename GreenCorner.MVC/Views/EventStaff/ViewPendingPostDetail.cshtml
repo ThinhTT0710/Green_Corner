@@ -1,49 +1,112 @@
-﻿@model GreenCorner.MVC.Models.BlogPostDTO
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@model GreenCorner.MVC.ViewModels.BlogWithAuthorViewModel
 
 @{
     ViewData["Title"] = "Chi tiết bài viết";
 }
 
-<h2 class="mb-4">@ViewData["Title"]</h2>
+<section class="content-main">
+    <div class="row">
+        <div class="col-9">
+            <div class="content-header">
+                <h2 class="content-title mb-4">Chi tiết bài viết</h2>
+            </div>
+        </div>
 
-<div class="card shadow-sm">
-    <div class="card-header bg-primary text-white">
-        <h4>@Model.Title</h4>
+        <!-- Phần trái -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="mb-4">
+                        <label class="form-label">Tiêu đề</label>
+                        <input class="form-control" value="@Model.Blog.Title" readonly />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Nội dung</label>
+                        <div class="form-control" style="min-height: 300px; overflow-y: auto;">
+                            @Html.Raw(Model.Blog.Content)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Blog.ThumbnailUrl))
+            {
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <label class="form-label">Ảnh thumbnail</label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            @foreach (var img in Model.Blog.ThumbnailUrl.Split("&", StringSplitOptions.RemoveEmptyEntries))
+                            {
+                                <img src="@img" style="max-height: 200px; border: 1px solid #ccc; padding: 4px;" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Phần phải -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <label class="form-label">Trạng thái</label>
+                    <div class="form-control">
+                        @if (Model.Blog.Status == "Pending")
+                        {
+                            <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                        }
+                        else if (Model.Blog.Status == "Removed")
+                        {
+                            <span class="badge bg-secondary">Đã xóa</span>
+                        }
+                        else if (Model.Blog.Status == "Published")
+                        {
+                            <span class="badge bg-primary">Công khai</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-dark">Không xác định</span>
+                        }
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label">Tác giả</label>
+                        <div class="form-control">@Model.Author.FullName</div>
+                    </div>
+
+                    <div class="mt-2">
+                        <label class="form-label">Ngày tạo</label>
+                        <div class="form-control">
+                            @Model.Blog.CreatedAt?.ToString("dd/MM/yyyy HH:mm")
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chỉ hiện nút nếu cần phê duyệt -->
+            @if (Model.Blog.Status == "Pending")
+            {
+                <div class="card mb-4">
+                    <div class="d-flex card-body text-center gap-3">
+                        <a asp-action="ViewPendingPosts" class="btn btn-light rounded font-sm text-body hover-up">← Quay lại</a>
+                        <form asp-controller="EventStaff" asp-action="BlogApprove" asp-route-id="@Model.Blog.BlogId" method="post">
+                            <button type="submit" class="btn btn-success"
+                                    onclick="return confirm('Bạn có chắc muốn phê duyệt bài viết này không?')">
+                                Phê duyệt bài viết
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
-    <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-3">Tác giả:</dt>
-            <dd class="col-sm-9">@Model.AuthorId</dd>
+</section>
 
-            <dt class="col-sm-3">Trạng thái:</dt>
-            <dd class="col-sm-9">@Model.Status</dd>
-
-            <dt class="col-sm-3">Ngày tạo:</dt>
-            <dd class="col-sm-9">@Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</dd>
-
-            <dt class="col-sm-3">Hình ảnh:</dt>
-            <dd class="col-sm-9">
-                @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
-                {
-                    <img src="@Model.ThumbnailUrl" alt="Ảnh bìa" class="img-fluid" style="max-height: 300px;" />
-                }
-                else
-                {
-                    <span class="text-muted">Không có ảnh</span>
-                }
-            </dd>
-
-            <dt class="col-sm-3">Nội dung:</dt>
-            <dd class="col-sm-9">@Html.Raw(Model.Content)</dd>
-        </dl>
-    </div>
-    <div class="card-footer">
-        <form asp-controller="EventStaff" asp-action="BlogApprove" asp-route-id="@Model.BlogId" method="post" style="display:inline;">
-            <button type="submit" class="btn btn-success btn-sm"
-                    onclick="return confirm('Bạn có chắc muốn phê duyệt bài viết này không?')">
-                Phê duyệt
-            </button>
-        </form>
-        <a asp-action="ViewPendingPosts" class="btn btn-secondary">← Quay lại danh sách</a>
-    </div>
-</div>
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

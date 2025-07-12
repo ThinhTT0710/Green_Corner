@@ -101,7 +101,7 @@ namespace GreenCorner.MVC.Controllers
                     orderDTO.Note = "";
                 }
 
-                if (orderDTO.PaymentMethod == "Thanh toán bằng VNPay")
+                if (orderDTO.PaymentMethod == "Chuyển khoản ngân hàng")
                 {
                     TempData["OrderDTO"] = JsonConvert.SerializeObject(orderDTO);
 
@@ -125,10 +125,6 @@ namespace GreenCorner.MVC.Controllers
                         foreach (var item in cartItems)
                         {
                             await _cartService.DeleteItemInCart(item.CartId);
-                        }
-                        if (orderDTO.PaymentMethod == "Chuyển khoản ngân hàng")
-                        {
-
                         }
                         return RedirectToAction("OrderComplete", "Order");
                     }
@@ -254,6 +250,66 @@ namespace GreenCorner.MVC.Controllers
             catch (Exception ex)
             {
                 return Json(new { isSuccess = false, message = ex.Message });
+            }
+        }
+
+        public async Task<IActionResult> ListOrder()
+        {
+            List<OrderDTO> orders = new();
+            ResponseDTO? response = await _orderService.GetAllOrder();
+
+            if (response != null && response.IsSuccess)
+            {
+                orders = JsonConvert.DeserializeObject<List<OrderDTO>>(response.Result.ToString());
+            }
+            else
+            {
+                TempData["error"] = response.Message ?? "Error";
+                return RedirectToAction("Index", "Admin");
+            }
+
+            return View(orders);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> OrderDetail(int id)
+        {
+            ResponseDTO? response = await _orderService.GetOrderByID(id);
+            OrderDTO order = new();
+            if (response != null && response.IsSuccess)
+            {
+                order = JsonConvert.DeserializeObject<OrderDTO>(response.Result.ToString());
+            }
+            else
+            {
+                TempData["error"] = response.Message ?? "Error";
+                return RedirectToAction("ListOrders", "Admin");
+            }
+
+            return View(order);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateOrderStatus(OrderDTO order)
+        {
+            try
+            {
+                var response = await _orderService.UpdateOrderStatus(order.OrderId, order.Status);
+                if (response != null && response.IsSuccess)
+                {
+                    TempData["success"] = "Cập nhật trạng thái đơn hàng thành công";
+                }
+                else
+                {
+                    TempData["error"] = response?.Message ?? "Lỗi cập nhật trạng thái đơn hàng";
+                }
+                return RedirectToAction(nameof(ListOrder));
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = ex.Message;
+                return RedirectToAction(nameof(ListOrder));
             }
         }
     }

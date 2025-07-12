@@ -8,18 +8,50 @@ namespace GreenCorner.MVC.Controllers
 	public class SaleStaffController : Controller
 	{
 		private IOrderService _orderService;
+        private readonly IProductService _productService;
+        public SaleStaffController(IOrderService orderService, IProductService productService)
+        {
+            _orderService = orderService;
+            _productService = productService;
+        }
 
-		public SaleStaffController(IOrderService orderService)
-		{
-			_orderService = orderService;
-		}
-
-		public IActionResult Index()
+        public IActionResult Index()
 		{
 			return View();
 		}
 
-		public async Task<IActionResult> OrderList() 
+        public async Task<IActionResult> ViewAllProduct()
+        {
+            List<ProductDTO> listProduct = new();
+            ResponseDTO? response = await _productService.GetAllProduct();
+            if (response != null && response.IsSuccess)
+            {
+                listProduct = JsonConvert.DeserializeObject<List<ProductDTO>>(response.Result.ToString());
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+            return View(listProduct);
+        }
+
+        public async Task<IActionResult> ProductDetails(int productId)
+        {
+            ProductDTO product = new();
+            var response = await _productService.GetByProductId(productId);
+
+            if (response != null && response.IsSuccess)
+            {
+                product = JsonConvert.DeserializeObject<ProductDTO>(response.Result.ToString());
+                return View(product);
+            }
+
+            TempData["error"] = response?.Message ?? "Không tìm thấy sản phẩm.";
+            return RedirectToAction("ViewAllProduct");
+        }
+
+
+        public async Task<IActionResult> OrderList() 
 		{
 			ResponseDTO? response = await _orderService.GetAllOrder();
 			try

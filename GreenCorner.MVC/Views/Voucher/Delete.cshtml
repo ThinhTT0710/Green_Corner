@@ -1,0 +1,75 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@model VoucherDTO
+
+@{
+    ViewData["Title"] = "Xóa voucher";
+}
+
+<section class="content-main">
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="VoucherId" />
+
+        <div class="row">
+            <div class="col-12">
+                <div class="content-header mb-4">
+                    <h2 class="content-title">@ViewData["Title"]</h2>
+                </div>
+            </div>
+
+            <!-- Phần trái -->
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <!-- Title -->
+                        <div class="mb-4">
+                            <label asp-for="Title" class="form-label">Tiêu đề voucher</label>
+                            <input asp-for="Title" class="form-control" readonly />
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label">Mô tả</label>
+                            <textarea asp-for="Description" class="form-control" style="min-height: 150px;" readonly></textarea>
+                        </div>
+
+                        <!-- Points -->
+                        <div class="mb-4">
+                            <label asp-for="PointsRequired" class="form-label">Điểm yêu cầu</label>
+                            <input asp-for="PointsRequired" class="form-control" readonly />
+                        </div>
+
+                        <!-- Expiration -->
+                        <div class="mb-4">
+                            <label asp-for="ExpirationDate" class="form-label">Ngày hết hạn</label>
+                            <input asp-for="ExpirationDate" class="form-control" readonly />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Phần phải -->
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5>Cảnh báo</h5>
+                        <p class="text-danger mt-2">
+                            Thao tác này không thể hoàn tác. Voucher sẽ bị xóa vĩnh viễn khỏi hệ thống.
+                        </p>
+                        <div>
+                            <button type="submit" class="btn btn-danger btn-md rounded font-sm hover-up">Xóa</button>
+                            <a asp-action="Index" class="btn btn-light rounded font-sm text-body hover-up ms-2">Hủy</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+

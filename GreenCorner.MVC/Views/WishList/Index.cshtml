@@ -1,0 +1,85 @@
+﻿@model IEnumerable<WishListDTO>
+@{
+    ViewData["Title"] = "Wish List";
+    Layout = "_LayoutCart";
+}
+<div class="page-header breadcrumb-wrap">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/Home" rel="nofollow"><i class="fi-rs-home mr-5"></i>Trang chủ</a>
+            <span></span> Danh sách yêu thích
+        </div>
+    </div>
+</div>
+@if (!Model.Any())
+{
+    <div class="container mb-80 mt-50 text-center">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-20">Danh sách yêu thích của bạn hiện đang trống</h2>
+                <p class="text-muted mb-30">Có vẻ như bạn chưa yêu thích bất kỳ sản phẩm nào.</p>
+                <a href="/Product" class="btn btn-fill-out"><i class="fi-rs-shopping-bag mr-10"></i>Bắt đầu yêu thích</a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container mb-30 mt-50">
+        <div class="row">
+            <div class="col-xl-10 col-lg-12 m-auto">
+                <div class="mb-50">
+                    <h1 class="heading-2 mb-10">Danh Sách yêu thích</h1>
+                    <h6 class="text-body">There are <span class="text-brand">@Model.Count()</span> products in this list
+                    </h6>
+                </div>
+                <div class="table-responsive shopping-summery">
+                    <table class="table table-wishlist">
+                        <thead>
+                            <tr class="main-heading">
+                                <th class="custome-checkbox start pl-30">
+                                </th>
+                                <th class="start pl-30" scope="col" colspan="2">Sản phẩm</th>
+                                <th scope="col">Giá</th>
+                                <th scope="col">Trạng thái</th>
+                                <th scope="col">Giỏ hàng</th>
+                                <th scope="col">Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var productImg = item.Product.ImageUrl.Split('&')[0];
+                                int price = (int)item.Product.Price;
+                                int priceDiscount = price - (item.Product.Discount.HasValue ? (price *
+                                item.Product.Discount.Value / 100) : 0);
+
+                                <tr class="pt-30">
+                                    <td class="custome-checkbox pl-30">
+                                    </td>
+                                    <td class="image product-thumbnail pt-40"><img src="@productImg" alt="#" /></td>
+                                    <td class="product-des product-name">
+                                        <h6><a class="product-name mb-10"
+                                                href="/Product/Detail/@item.Product.ProductId">@item.Product.Name</a></h6>
+                                    </td>
+                                    <td class="price" data-title="Price">
+                                        <h3 class="text-brand">@priceDiscount.ToString("N0", new CultureInfo("vi-VN"))đ</h3>
+                                    </td>
+                                    <td class="detail-info" data-title="Stock">
+                                        <span class="stock-status in-stock mb-0"> In Stock </span>
+                                    </td>
+                                    <td class="text-right" data-title="Cart">
+                                        <a href="#" data-product-id="@item.ProductId"  class="btn btn-sm add-to-cart-btn">Add to cart</a>
+                                    </td>
+                                    <td class="action text-center" data-title="Remove">
+                                        <a href="#" class="text-body remove-from-wishlist remove-wishlist-item" data-wishlist-id="@item.WishListId"><i class="fi-rs-trash"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}

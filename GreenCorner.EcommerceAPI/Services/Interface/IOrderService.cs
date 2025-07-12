@@ -11,5 +11,13 @@ namespace GreenCorner.EcommerceAPI.Services.Interface
 		Task UpdateOrderStatus(int orderId, string newStatus);
 		Task Delete(int orderId);
         Task<List<OrderDTO>> GetByUserID(string userID);
+        //dashboard
+        Task<int> TotalOrdersComplete();
+        Task<int> TotalOrdersWaiting();
+        Task<int> TotalSales();
+        Task<int> GetTotalMoneyByMonth();
+        Task<List<BestSellingProductDTO>> GetBestSellingProduct();
+        Task<MonthlyAnalyticsDto> GetMonthlySalesAnalytics(int year);
+        Task<CategorySalesDto> GetSalesByCategory();
     }
 }

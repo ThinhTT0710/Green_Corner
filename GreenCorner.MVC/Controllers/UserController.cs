@@ -1,5 +1,6 @@
 ﻿using GreenCorner.MVC.Models;
 using GreenCorner.MVC.Services.Interface;
+using GreenCorner.MVC.Utility;
 using GreenCorner.MVC.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +14,16 @@ namespace GreenCorner.MVC.Controllers
         private readonly IUserService _userService;
         private readonly IVolunteerService _volunteerService;
         private readonly IEventService _eventService;
-        public UserController(IUserService userService, IVolunteerService volunteerService, IEventService eventService)
+        private readonly ITrashEventService _trashEventService;
+        public UserController(IUserService userService, IVolunteerService volunteerService, IEventService eventService, ITrashEventService trashEventService)
         {
             _userService = userService;
             _volunteerService = volunteerService;
             _eventService = eventService;
+            _trashEventService = trashEventService;
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> Profile()
         {
             if (!User.Identity.IsAuthenticated)
@@ -40,7 +42,7 @@ namespace GreenCorner.MVC.Controllers
             }
             else
             {
-                TempData["error"] = response.Message;
+                TempData["error"] = response?.Message;
                 return RedirectToAction("Index", "Home");
             }
         }
@@ -74,6 +76,31 @@ namespace GreenCorner.MVC.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateProfile(UserDTO user)
         {
+            var files = Request.Form.Files;
+            bool hasNewAvatar = files != null && files.Count > 0;
+
+            if (hasNewAvatar)
+            {
+                if (!string.IsNullOrEmpty(user.Avatar))
+                {
+                    var oldAvatarPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", user.Avatar.TrimStart('/'));
+                    if (System.IO.File.Exists(oldAvatarPath))
+                    {
+                        System.IO.File.Delete(oldAvatarPath);
+                    }
+                }
+
+                var (isSuccess, imagePaths, errorMessage) = await FileUploadHelper.UploadImagesStrictAsync(
+                    files, folderName: "avatars", filePrefix: "avatar", onlyOneFile: true);
+
+                if (!isSuccess)
+                {
+                    ModelState.AddModelError("Images", errorMessage);
+                    return View(user);
+                }
+
+                user.Avatar = imagePaths.FirstOrDefault();
+            }
 
             var response = await _userService.UpdateUser(user);
             if (response != null && response.IsSuccess)
@@ -145,6 +172,48 @@ namespace GreenCorner.MVC.Controllers
                     }
                 }
             }
+            if (!list.Any())
+            {
+                TempData["error"] = "Bạn chưa tham gia hoạt động nào.";
+                return RedirectToAction("Profile", "User"); 
+            }
+            var vm = new VolunteerEventListViewModel
+            {
+                Participations = list
+            };
+
+            return View(vm);
+        }
+
+        public async Task<IActionResult> ViewActivities(string userId)
+        {
+            //var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["error"] = "Bạn cần đăng nhập để xem các hoạt động đã tham gia.";
+                return RedirectToAction("Login", "Auth");
+            }
+            var response = await _volunteerService.GetParticipatedActivitiesByUserId(userId);
+            List<VolunteerWithEventViewModel> list = new();
+
+            if (response != null && response.IsSuccess)
+            {
+                var volunteers = JsonConvert.DeserializeObject<List<VolunteerDTO>>(response.Result.ToString());
+
+                foreach (var v in volunteers)
+                {
+                    var eventResponse = await _eventService.GetByEventId(v.CleanEventId);
+                    if (eventResponse != null && eventResponse.IsSuccess)
+                    {
+                        var evt = JsonConvert.DeserializeObject<EventDTO>(eventResponse.Result.ToString());
+                        list.Add(new VolunteerWithEventViewModel
+                        {
+                            Volunteer = v,
+                            Event = evt
+                        });
+                    }
+                }
+            }
 
             var vm = new VolunteerEventListViewModel
             {
@@ -152,6 +221,36 @@ namespace GreenCorner.MVC.Controllers
             };
 
             return View(vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ReportHistory()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["loginError"] = "Vui lòng đăng nhập để xem lịch sử báo cáo của bạn";
+                return RedirectToAction("Index", "Home");
+            }
+            try
+            {
+                var userID = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+                var response = await _trashEventService.GetTrashEventsByUserId(userID);
+                if (response != null && response.IsSuccess)
+                {
+                    List<TrashEventDTO> reportHistory = JsonConvert.DeserializeObject<List<TrashEventDTO>>(Convert.ToString(response.Result));
+                    return View(reportHistory);
+                }
+                else
+                {
+                    TempData["error"] = response.Message;
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = ex.Message;
+                return RedirectToAction("Index", "Home");
+            }
         }
     }
 }

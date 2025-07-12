@@ -1,0 +1,174 @@
+﻿@model OrderDTO
+@{
+	ViewData["Title"] = "Order Detail";
+	Layout = "_LayoutAdmin";
+}﻿
+
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Chi tiết đơn hàng</h2>
+            <p>#@Model.OrderId</p>
+        </div>
+    </div>
+    <div class="card">
+        <header class="card-header">
+            <div class="row align-items-center">
+                <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
+                    <span> <i class="material-icons md-calendar_today"></i> <b>@Model.CreatedAt</b> </span> <br />
+                    <small class="text-muted">ID Đơn hàng: @Model.OrderId</small>
+                </div>
+                <div class="col-lg-6 col-md-6 ms-auto text-md-end">
+                    <form class="d-inline-block" method="post" asp-controller="Order" asp-action="UpdateOrderStatus">
+                    <input type="hidden" asp-for="OrderId" value="@Model.OrderId" />
+                    <select asp-for="Status" class="form-select d-inline-block mb-lg-0 mr-5 mw-200" >
+                        <option value="" disabled selected>Chọn trạng thái</option>
+                        <option>Từ chối đơn hàng</option>
+                        <option>Xác nhận đơn hàng</option>
+                        <option>Đang vận chuyển</option>
+                        <option>Hoàn thành</option>
+                        <option>Không hoàn thành</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    </form>
+                </div>
+            </div>
+        </header>
+        <div class="card-body">
+            <div class="row mb-50 mt-20 order-info-wrap">
+                <div class="col-md-4">
+                    <article class="icontext align-items-start">
+                        <span class="icon icon-sm rounded-circle bg-primary-light">
+                            <i class="text-primary material-icons md-person"></i>
+                        </span>
+                        <div class="text">
+                            <h6 class="mb-1">Khách hàng</h6>
+                            <p class="mb-1">
+                                @Model.Name <br />
+                                @Model.Email <br />
+                                +84 @Model.PhoneNumber
+                            </p>
+                        </div>
+                    </article>
+                </div>
+                <div class="col-md-4">
+                    <article class="icontext align-items-start">
+                        <span class="icon icon-sm rounded-circle bg-primary-light">
+                            <i class="text-primary material-icons md-local_shipping"></i>
+                        </span>
+                        <div class="text">
+                            <h6 class="mb-1">Thông tin đơn hàng</h6>
+                            <p class="mb-1">
+                                Shipping: @Model.TotalMoney.ToString("N0", new CultureInfo("vi-VN"))đ <br/>
+                                Phương thức thanh toán: <br />
+                                @Model.PaymentMethod
+                            </p>
+                        </div>
+                    </article>
+                </div>
+                <div class="col-md-4">
+                    <article class="icontext align-items-start">
+                        <span class="icon icon-sm rounded-circle bg-primary-light">
+                            <i class="text-primary material-icons md-place"></i>
+                        </span>
+                        <div class="text">
+                            <h6 class="mb-1">Nơi vận chuyển</h6>
+                            <p class="mb-1">
+                                Địa chỉ: @Model.ShippingAddress</br>
+                                Trạng thái: @Model.Status
+                            </p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th width="40%">Sản phẩm</th>
+                                    <th width="20%">Đơn giá</th>
+                                    <th width="20%">Số lượng</th>
+                                    <th width="20%" class="text-end">Tổng cộng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var orderDetail in Model.OrderDetailsDTO)
+                            {
+                                <tr>
+                                    <td>
+                                        <a class="itemside" href="#">
+                                            <div class="left">
+                                                 @{
+                                                 int price = (int)orderDetail.ProductDTO.Price;
+                                                 int priceDiscount = price - (price * orderDetail.ProductDTO.Discount.Value / 100);
+                                                        var imageUrl = orderDetail.ProductDTO.ImageUrl;
+                                                        var productImg = imageUrl?.Contains("&") == true ? imageUrl.Split('&')[0] : imageUrl;
+                                                 }
+                                                 <img src="@productImg" width="40" height="40" class="img-xs" alt="Item" />
+                                            </div>
+                                            <div class="info">@orderDetail.ProductDTO.Name</div>
+                                        </a>
+                                    </td>
+                                    <td>@priceDiscount.ToString("N0", new CultureInfo("vi-VN"))đ</td>
+                                    <td>@orderDetail.Quantity</td>
+                                        <td class="text-end">@orderDetail.Price.ToString("N0", new CultureInfo("vi-VN"))đ</td>
+                                </tr>
+                            }
+                                <tr>
+                                    <td colspan="4">
+                                        <article class="float-end">
+                                            <dl class="dlist">
+                                                <dt>Tổng tiền hàng:</dt>
+                                                <dd>@Model.TotalMoney.ToString("N0", new CultureInfo("vi-VN"))đ</dd>
+                                            </dl>
+                                            <dl class="dlist">
+                                                <dt>Phí vận chuyển:</dt>
+                                                <dd>30.000đ</dd>
+                                            </dl>
+                                            <dl class="dlist">
+                                                <dt>Tổng cộng:</dt>
+                                                <dd><b class="h5">@((Model.TotalMoney + 30000).ToString("N0", new CultureInfo("vi-VN")))đ</b></dd>
+                                            </dl>
+                                            <dl class="dlist">
+                                                <dt class="text-muted">Trạng thái:</dt>
+                                                <dd>
+                                                    <span class="badge rounded-pill alert-success text-success">@Model.Status</span>
+                                                </dd>
+                                            </dl>
+                                        </article>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-lg-1"></div>
+                <div class="col-lg-4">
+                    <div class="box shadow-sm bg-light" >
+                        <h6 class="mb-15">Phương thức thanh toán</h6>
+                        @if (Model.PaymentMethod == "Thanh toán ngân hàng")
+                        {
+                            <p style="display : flex; align-items : center; justify-content : center;">
+                                <img src="~/admin/imgs/card-brands/6.png" height="20" style="margin-right : 5px;" /> @Model.PaymentMethod
+                            </p>
+                        }
+                        else
+                        {
+                            <p style="display:flex; align-items:center; justify-content:center;">
+                                <img src="~/admin/imgs/card-brands/5.png"  height="20" style="margin-right : 5px;" /> @Model.PaymentMethod
+                            </p>
+                        }
+                    </div>
+                    <div class="h-25 pt-4">
+                        <div class="mb-3">
+                            <label>Ghi chú</label>
+                            <textarea class="form-control" asp-for="Note" name="notes" id="notes" placeholder="Type some note" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

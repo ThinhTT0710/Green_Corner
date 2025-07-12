@@ -1,69 +1,121 @@
 ﻿@model IEnumerable<OrderDTO>
-<div class="card shadow border-0 mt-4">
-	<div class="card-header bg-secondary bg-gradient ml-0 py-3">
+<div class="page-header breadcrumb-wrap">
+	<div class="container">
+		<div class="breadcrumb">
+			<a href="/Home" rel="nofollow"><i class="fi-rs-home mr-5"></i>Home</a>
+			<span></span> Đơn hàng của tôi
+		</div>
+	</div>
+</div>
+<div class="page-content pt-50 pb-50">
+	<div class="container">
 		<div class="row">
-			<div class="col-12 text-center">
-				<h1 class="text-white">Order History</h1>
+			<div class="col-lg-10 m-auto">
+				<div class="row">
+					<div class="col-md-3">
+						<div class="dashboard-menu">
+							<ul class="nav flex-column" role="tablist">
+								<li class="nav-item">
+									<a class="nav-link" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard"
+										role="tab" aria-controls="dashboard" aria-selected="false"><i
+											class="fi-rs-settings-sliders mr-10"></i>Dashboard</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link active" id="orders-tab" data-bs-toggle="tab" href="#orders"
+										role="tab" aria-controls="orders" aria-selected="false"><i
+											class="fi-rs-shopping-bag mr-10"></i>Đơn hàng</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#track-orders"
+										role="tab" aria-controls="track-orders" aria-selected="false"><i
+											class="fi-rs-shopping-cart-check mr-10"></i>Track Your Order</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" id="address-tab" data-bs-toggle="tab" href="#address" role="tab"
+										aria-controls="address" aria-selected="true"><i
+											class="fi-rs-marker mr-10"></i>My Address</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" href="User/Profile"><i class="fi-rs-user mr-10"></i>Thông tin
+										tài khoản</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" href="/Auth/Logout"><i class="fi-rs-sign-out mr-10"></i>Đăng
+										xuất</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					@if (!Model.Any())
+                    {
+                        <div class="col-md-9">
+                            <div class="alert alert-info" role="alert">
+                                <h4 class="alert-heading">Không có đơn hàng nào</h4>
+                                <p>Hiện tại bạn chưa có đơn hàng nào. Hãy mua sắm ngay để trải nghiệm dịch vụ của chúng tôi!</p>
+                            </div>
+                        </div>
+                    }
+					else
+					{
+					<div class="col-md-9">
+						<div class="tab-content account dashboard-content pl-50">
+							<div class="tab-pane fade active show" id="orders" role="tabpanel"
+								aria-labelledby="orders-tab">
+								<div class="card">
+									<div class="card-header">
+										<h3 class="mb-0">Đơn hàng của bạn</h3>
+									</div>
+									<div class="card-body">
+										<div class="table-responsive">
+											<table class="table">
+												<thead>
+													<tr>
+														<th>Đơn hàng</th>
+														<th>Ngày đặt hàng</th>
+														<th>Phương thức thành toán</th>
+														<th>Tổng cộng</th>
+														<th>Trạng thái</th>
+														<th></th>
+													</tr>
+												</thead>
+												<tbody>
+													@foreach (var order in Model)
+													{
+														<tr>
+															<td>@order.OrderId</td>
+															<td>@order.CreatedAt.ToString("dd/MM/yyyy")</td>
+															<td>@order.PaymentMethod</td>
+															<td>@order.TotalMoney.ToString("N0", new CultureInfo("vi-VN"))đ
+															</td>
+															<td>@order.Status</td>
+															<td>
+																@if (order.Status == "Chờ xác nhận")
+																{
+																	<form method="post" asp-action="CancelOrder"
+																		asp-controller="Order">
+																		<input type="hidden" name="orderId"
+																			value="@order.OrderId" />
+																		<button type="submit" class="btn-sm" style="font-size: 12px;">Hủy đơn hàng</button>
+																	</form>
+																}
+															</td>
+														</tr>
+													}
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					}
+				</div>
 			</div>
 		</div>
 	</div>
-	<div class="card-body p-4">
-		<div class="row pb-3">
-			<div class="col-6">
-			</div>
-		</div>
-		<table class="table">
-			<thead>
-				<tr>
-					<th>
-						Order #
-					</th>
-					<th>
-						Date purchased
-					</th>
-					<th>
-						Status
-					</th>
-					<th>
-						Total
-					</th>
-					<th>
-                        Actions	
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var item in Model)
-				{
-					<tr>
-						<td>
-							@item.OrderId
-						</td>
-						<td>
-							@item.CreatedAt.ToString("MMMM dd, yyyy")
-						</td>
-						<td>
-							@item.Status
-						</td>
-						<td>
-							@((item.TotalMoney).ToString("c"))
-						</td>
-						<td>
-							@if(item.Status == "Chờ xác nhận")
-							{
-								<form method="post" asp-action="CancelOrder" asp-controller="Order">
-									<input type="hidden" name="orderId" value="@item.OrderId" />
-									<button type="submit" class="btn btn-danger"><i class="bi bi-x-circle"></i> Cancel Order</button>
-								</form>
-							}
-						</td>
-					</tr>
-				}
-			</tbody>
-		</table>
-
-	</div>
-
 </div>
 
-
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,77 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@model VoucherDTO
+@{
+    ViewData["Title"] = "Tạo voucher mới";
+}
+
+<form asp-action="Create" method="post">
+    <section class="content-main">
+        <div class="row">
+            <div class="col-12">
+                <div class="content-header mb-4">
+                    <h2 class="content-title">@ViewData["Title"]</h2>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <!-- Title -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <label asp-for="Title" class="form-label">Tiêu đề voucher</label>
+                            <input asp-for="Title" class="form-control" placeholder="Nhập tiêu đề..." />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label">Mô tả</label>
+                            <textarea asp-for="Description" class="form-control" style="min-height: 150px;" placeholder="Nhập mô tả chi tiết..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <!-- Points Required -->
+                        <div class="mb-4">
+                            <label asp-for="PointsRequired" class="form-label">Điểm yêu cầu</label>
+                            <input asp-for="PointsRequired" class="form-control" type="number" min="1" />
+                            <span asp-validation-for="PointsRequired" class="text-danger"></span>
+                        </div>
+
+                        <!-- Expiration Date -->
+                        <div class="mb-4">
+                            <label asp-for="ExpirationDate" class="form-label">Ngày hết hạn</label>
+                            <input asp-for="ExpirationDate" class="form-control" type="date" />
+                            <span asp-validation-for="ExpirationDate" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Submit & Back Buttons -->
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="Index" class="btn btn-light rounded font-sm text-body hover-up">Quay lại</a>
+                    <button type="submit" class="btn btn-success rounded font-sm hover-up">Tạo voucher</button>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Metadata / Hidden fields -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5>Thông tin hệ thống</h5>
+                        <input type="hidden" asp-for="VoucherId" />
+                        <p class="text-muted mt-2">
+                            Voucher sẽ được lưu vào hệ thống. Nếu không có ảnh, hệ thống sẽ dùng ảnh mặc định.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

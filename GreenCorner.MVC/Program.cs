@@ -1,3 +1,5 @@
+using GreenCorner.MVC.Controllers;
+using GreenCorner.MVC.Hubs;
 using GreenCorner.MVC.Services;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
@@ -24,12 +26,19 @@ builder.Services.AddHttpClient<ICartService, CartService>();
 builder.Services.AddHttpClient<ITrashEventService, TrashEventService>();
 builder.Services.AddHttpClient<IOrderService, OrderService>();
 builder.Services.AddHttpClient<IEventService, EventService>();
-builder.Services.AddHttpClient<ITrashEventService, TrashEventService>();
+builder.Services.AddHttpClient<IRewardService, RewardService>();
+builder.Services.AddHttpClient<IRewardPointService, RewardPointService>(); 
+builder.Services.AddHttpClient<IChatService, ChatService>();
+builder.Services.AddHttpClient<IWishListService, WishListService>();
+
+builder.Services.AddSignalR();
+
 
 SD.AuthAPIBase = builder.Configuration["ServiceUrls:AuthAPI"];
 SD.EcommerceAPIBase = builder.Configuration["ServiceUrls:EcommerceAPI"];
 SD.BlogAPIBase = builder.Configuration["ServiceUrls:BlogAPI"];
 SD.EventAPIBase = builder.Configuration["ServiceUrls:EventAPI"];
+SD.RewardAPIBase = builder.Configuration["ServiceUrls:RewardAPI"];
 
 builder.Services.AddScoped<IBaseService, BaseService>();
 builder.Services.AddScoped<ITokenProvider, TokenProvider>();
@@ -38,6 +47,11 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ITrashEventService, TrashEventService>();
+builder.Services.AddScoped<IRewardService, RewardService>();
+builder.Services.AddScoped<IVoucherService, VoucherService>();
+builder.Services.AddScoped<IPointTransactionService, PointTransactionService>();
+builder.Services.AddScoped<IRewardPointService, RewardPointService>();
+builder.Services.AddScoped<IRewardRedemptionHistoryService, RewardRedemptionHistoryService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddScoped<IBlogFavoriteService, BlogFavoriteService>();
@@ -46,20 +60,20 @@ builder.Services.AddScoped<IBlogReportService, BlogReportService>();
 builder.Services.AddScoped<IFeedbackService,FeedbackService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IEventService, EventService>();
-builder.Services.AddScoped<ITrashEventService, TrashEventService>();
 builder.Services.AddScoped<IVolunteerService, VolunteerService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IWishListService, WishListService>();
 
 // Add authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 }).AddCookie(options =>
     {
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
         options.LoginPath = "/Auth/Login";
-        options.AccessDeniedPath = "/Auth/Login";
+        options.AccessDeniedPath = "/Auth/AccessDenied";
     }).AddGoogle(options =>
     {
         options.ClientId = builder.Configuration["Google:ClientId"];
@@ -97,5 +111,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();

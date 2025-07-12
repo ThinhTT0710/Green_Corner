@@ -3,6 +3,8 @@ using GreenCorner.EcommerceAPI.Models;
 using GreenCorner.EcommerceAPI.Models.DTO;
 using GreenCorner.EcommerceAPI.Repositories.Interface;
 using GreenCorner.EcommerceAPI.Services.Interface;
+using System.Globalization;
+using System.Text;
 
 namespace GreenCorner.EcommerceAPI.Services
 {
@@ -18,10 +20,10 @@ namespace GreenCorner.EcommerceAPI.Services
         }
         public async Task<ProductDTO> AddProduct(ProductDTO productDto)
         {
-			var product = _mapper.Map<Product>(productDto);
-			var addedProduct = await _productRepository.AddProduct(product);
-			return _mapper.Map<ProductDTO>(addedProduct);
-		}
+            var product = _mapper.Map<Product>(productDto);
+            var addedProduct = await _productRepository.AddProduct(product);
+            return _mapper.Map<ProductDTO>(addedProduct);
+        }
 
         public async Task DeleteProduct(int id)
         {
@@ -30,7 +32,7 @@ namespace GreenCorner.EcommerceAPI.Services
 
         public async Task<IEnumerable<ProductDTO>> GetAllProduct()
         {
-            var products =  await _productRepository.GetAllProduct();
+            var products = await _productRepository.GetAllProduct();
             return _mapper.Map<List<ProductDTO>>(products);
         }
 
@@ -44,6 +46,44 @@ namespace GreenCorner.EcommerceAPI.Services
         {
             Product product = _mapper.Map<Product>(productDto);
             await _productRepository.UpdateProduct(product);
+        }
+
+        public async Task<IEnumerable<ProductDTO>> GetOutOfStockProduct()
+        {
+            var outOfStockProducts = await _productRepository.GetOutOfStockProduct();
+            return _mapper.Map<List<ProductDTO>>(outOfStockProducts);
+        }
+
+        public async Task<IEnumerable<ProductDTO>> Search(string keyword)
+        {
+            var products = await _productRepository.GetAllProduct();
+            var searchedProducts = _mapper.Map<List<ProductDTO>>(products);
+            if (string.IsNullOrEmpty(keyword))
+            {
+                throw new Exception("No product found");
+            }
+
+            string normalizedKeyword = RemoveDiacritics(keyword.ToLower());
+            return searchedProducts.Where(p => RemoveDiacritics(p.Name.ToLower()).Contains(normalizedKeyword));
+        }
+
+        private static string RemoveDiacritics(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+
+            var normalizedString = text.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
         }
     }
 }

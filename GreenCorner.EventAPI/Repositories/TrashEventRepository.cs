@@ -61,27 +61,34 @@ namespace GreenCorner.EventAPI.Repositories
             {
                 throw new Exception($"TrashEvent with ID {id} not found.");
             }
-			if (trashEvent.Status == "Đã từ chối")
-			{
-				throw new Exception($"Sự kiện này đã bị từ chối trước đó");
-			}
-			trashEvent.Status = "Đã xác nhận";
+            if (trashEvent.Status == "Đã từ chối")
+            {
+                throw new Exception($"Sự kiện này đã bị từ chối trước đó");
+            }
+            trashEvent.Status = "Đã xác nhận";
             await _context.SaveChangesAsync();
         }
 
-		public async Task RejectTrashEvent(int id)
-		{
-			var trashEvent = await _context.TrashEvents.FindAsync(id);
-			if (trashEvent == null)
-			{
-				throw new KeyNotFoundException($"TrashEvent with ID {id} not found.");
-			}
-			if (trashEvent.Status == "Đã xác nhận")
-			{
-				throw new Exception($"Sự kiện này đã được xác nhận trước đó");
-			}
-			trashEvent.Status = "Đã từ chối";
-			await _context.SaveChangesAsync();
-		}
-	}
+        public async Task RejectTrashEvent(int id)
+        {
+            var trashEvent = await _context.TrashEvents.FindAsync(id);
+            if (trashEvent == null)
+            {
+                throw new KeyNotFoundException($"TrashEvent with ID {id} not found.");
+            }
+            if (trashEvent.Status == "Đã xác nhận")
+            {
+                throw new Exception($"Sự kiện này đã được xác nhận trước đó");
+            }
+            trashEvent.Status = "Đã từ chối";
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<TrashEvent>> GetByUserId(string userId)
+        {
+            return await _context.TrashEvents
+                .Where(t => t.UserId == userId)
+                .ToListAsync();
+        }
+    }
 }

@@ -1,21 +1,59 @@
 ﻿@model GreenCorner.MVC.Models.VolunteerDTO
 
-<h3>Đăng ký tình nguyện cho sự kiện</h3>
+<section class="content-main">
+    <div class="row">
+        <div class="col-12">
+            <div class="content-header">
+                <h2 class="content-title mb-4">Đăng ký tình nguyện cho sự kiện</h2>
+            </div>
+        </div>
 
-<form asp-controller="Event" asp-action="RegisterVolunteer" method="post">
-    <input type="hidden" asp-for="CleanEventId" />
-    <input type="hidden" asp-for="UserId" />
-    <input type="hidden" asp-for="ApplicationType" value="Volunteer" />
+        <div class="col-lg-8">
+            <form asp-controller="Event" asp-action="RegisterVolunteer" method="post">
+                <input type="hidden" asp-for="CleanEventId" />
+                <input type="hidden" asp-for="UserId" />
+                <input type="hidden" asp-for="ApplicationType" value="Volunteer" />
 
-    <div class="mb-3">
-        <label asp-for="Assignment" class="form-label">Nhiệm vụ mong muốn</label>
-        <input asp-for="Assignment" class="form-control" />
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <label asp-for="Assignment" class="form-label">Nhiệm vụ mong muốn</label>
+                            <input asp-for="Assignment" class="form-control" placeholder="Ví dụ: Hướng dẫn, phân loại rác..." />
+                            <span asp-validation-for="Assignment" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="CarryItems" class="form-label">Vật dụng sẽ mang theo</label>
+                            <input asp-for="CarryItems" class="form-control" placeholder="Ví dụ: Găng tay, nước, túi đựng..." />
+                            <span asp-validation-for="CarryItems" class="text-danger"></span>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Xác nhận đăng ký</button>
+                            <a class="btn btn-success" asp-action="GetEventById" asp-route-eventId="@Model.CleanEventId">
+                                <i class="bi bi-arrow-left"></i> Quay Lại
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Ghi chú</h5>
+                    <ul class="text-muted fs-6 ps-3 text-center">
+                        <li>Chỉ đăng ký 1 lần cho mỗi sự kiện.</li>
+                        <li>Thông tin không thể sửa sau khi gửi.</li>
+                        <li>Hãy chuẩn bị kỹ các vật dụng cần thiết.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
+</section>
 
-    <div class="mb-3">
-        <label asp-for="CarryItems" class="form-label">Vật dụng sẽ mang theo</label>
-        <input asp-for="CarryItems" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Xác nhận đăng ký</button>
-</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

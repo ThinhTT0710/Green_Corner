@@ -1,0 +1,51 @@
+﻿@model List<VoucherDTO>
+
+<main class="main pages mb-80">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a asp-controller="Home" asp-action="Index" rel="nofollow"><i class="fi-rs-home mr-5"></i>Home</a>
+                <span></span> Vouchers
+            </div>
+        </div>
+    </div>
+
+    <div class="page-content pt-50">
+        <div class="container">
+            <div class="archive-header-2 text-center">
+                <h1 class="display-2 mb-50">Reward List</h1>
+            </div>
+
+            <div class="row voucher-grid">
+                @foreach (var item in Model)
+                {
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="vendor-wrap mb-40">
+                            <div class="vendor-img-action-wrap">
+                                <div class="vendor-img text-center p-3 bg-light">
+                                    <a asp-action="ViewDetailVoucher" asp-route-voucherId="@item.VoucherId">
+                                        <img class="default-img" src="~/assets/imgs/voucher/default-voucher.png" alt="Voucher Image" style="max-height: 120px;" />
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="vendor-content-wrap">
+                                <div class="mb-20">
+                                    <h4 class="mb-5">
+                                        <a asp-action="ViewDetailVoucher" asp-route-voucherId="@item.VoucherId">@item.Title</a>
+                                    </h4>
+                                    <p class="font-sm text-muted">@item.Description</p>
+                                </div>
+                                <div class="mb-10">
+                                    <span class="font-small d-block"><strong>Points:</strong> @item.PointsRequired</span>
+                                    <span class="font-small d-block"><strong>Expires:</strong> @item.ExpirationDate?.ToShortDateString()</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</main>
+
+

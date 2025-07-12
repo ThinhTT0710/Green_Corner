@@ -1,52 +1,126 @@
-﻿@model GreenCorner.MVC.ViewModels.VolunteerWithUserViewModel
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@model GreenCorner.MVC.ViewModels.VolunteerWithUserViewModel
 
 @{
     ViewData["Title"] = "Chi tiết đăng ký tình nguyện viên";
 }
 
-<h2 class="mb-4 text-primary">@ViewData["Title"]</h2>
+<section class="content-main">
+    <div class="row">
+        <!-- Tiêu đề -->
+        <div class="col-9">
+            <div class="content-header">
+                <h2 class="content-title mb-4">@ViewData["Title"]</h2>
+            </div>
+        </div>
 
-<div class="card shadow-sm p-4">
-    <h5 class="text-secondary">Thông tin người dùng</h5>
-    <dl class="row">
-        <dt class="col-sm-4 fw-bold">ID người dùng:</dt>
-        <dd class="col-sm-8">@Model.User.ID</dd>
+        <!-- Cột trái: Thông tin người dùng + đơn đăng ký -->
+        <div class="col-lg-8">
+            <!-- Người dùng -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Thông tin người dùng</h5>
 
-        <dt class="col-sm-4 fw-bold">Họ tên:</dt>
-        <dd class="col-sm-8">@Model.User.FullName</dd>
+                    <div class="mb-3">
+                        <label class="form-label">ID người dùng</label>
+                        <div class="form-control">@Model.User.ID</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Họ tên</label>
+                        <div class="form-control">@Model.User.FullName</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <div class="form-control">@Model.User.Email</div>
+                    </div>
+                </div>
+            </div>
 
-        <dt class="col-sm-4 fw-bold">Email:</dt>
-        <dd class="col-sm-8">@Model.User.Email</dd>
-    </dl>
+            <!-- Đơn đăng ký -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Thông tin đơn đăng ký</h5>
 
-    <hr />
+                    <div class="mb-3">
+                        <label class="form-label">Mã đăng ký</label>
+                        <div class="form-control">@Model.Volunteer.VolunteerId</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Sự kiện</label>
+                        <div class="form-control">@Model.Volunteer.CleanEventId</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Loại đơn</label>
+                        <div class="form-control">@Model.Volunteer.ApplicationType</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ngày tạo</label>
+                        <div class="form-control">@Model.Volunteer.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <h5 class="text-secondary">Thông tin đơn đăng ký</h5>
-    <dl class="row">
-        <dt class="col-sm-4 fw-bold">Mã đăng ký:</dt>
-        <dd class="col-sm-8">@Model.Volunteer.VolunteerId</dd>
+        <!-- Cột phải: Trạng thái + phân công + vật dụng + thao tác -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Trạng thái</label>
+                        <div class="form-control">
+                            @{
+                                var status = Model.Volunteer.Status;
 
-        <dt class="col-sm-4 fw-bold">Sự kiện:</dt>
-        <dd class="col-sm-8">@Model.Volunteer.CleanEventId</dd>
+                                string statusDisplay = status switch
+                                {
+                                    "Pending" => "Đang chờ duyệt",
+                                    "Approved" => "Đã duyệt",
+                                    "Rejected" => "Đã từ chối",
+                                    _ => "Không xác định"
+                                };
 
-        <dt class="col-sm-4 fw-bold">Loại đơn:</dt>
-        <dd class="col-sm-8">@Model.Volunteer.ApplicationType </dd>
+                                string statusClass = status switch
+                                {
+                                    "Pending" => "text-warning",
+                                    "Approved" => "text-success",
+                                    "Rejected" => "text-danger",
+                                    _ => "text-muted"
+                                };
+                            }
+                            <span class="@statusClass fw-semibold">@statusDisplay</span>
+                        </div>
 
-        <dt class="col-sm-4 fw-bold">Trạng thái:</dt>
-        <dd class="col-sm-8">@Model.Volunteer.Status </dd>
+                    </div>
 
-        <dt class="col-sm-4 fw-bold">Phân công:</dt>
-        <dd class="col-sm-8">@Model.Volunteer.Assignment </dd>
+                    <div class="mb-3">
+                        <label class="form-label">Phân công</label>
+                        <div class="form-control">@Model.Volunteer.Assignment</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Vật dụng mang theo</label>
+                        <div class="form-control">@Model.Volunteer.CarryItems</div>
+                    </div>
+                </div>
+            </div>
 
-        <dt class="col-sm-4 fw-bold">Vật dụng mang theo:</dt>
-        <dd class="col-sm-8">@Model.Volunteer.CarryItems </dd>
+            <!-- Nút thao tác -->
+            <div class="card mb-4">
+                <div class="d-flex card-body text-center gap-3">
+                     <a asp-action="ViewTeamLeaderRegistrations" class="btn btn-light rounded font-sm text-body hover-up">← Quay lại</a>
+                    <form asp-action="ApproveTeamLeader" asp-route-id="@Model.Volunteer.VolunteerId" method="post">
+                        <button type="submit" class="btn btn-success mb-2">Phê duyệt</button>
+                    </form>
+                    <form asp-action="RejectTeamLeader" asp-route-id="@Model.Volunteer.VolunteerId" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Từ chối</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-        <dt class="col-sm-4 fw-bold">Ngày tạo:</dt>
-        <dd class="col-sm-8">@Model.Volunteer.CreatedAt?.ToString("dd/MM/yyyy HH:mm") </dd>
-    </dl>
-
-    <form asp-action="ApproveTeamLeader" asp-route-id="@Model.Volunteer.VolunteerId" method="post">
-        <button type="submit" class="btn btn-success">Phê duyệt</button>
-        <a asp-action="ViewTeamLeaderRegistrations" class="btn btn-secondary ms-2">Quay lại</a>
-    </form>
-</div>
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

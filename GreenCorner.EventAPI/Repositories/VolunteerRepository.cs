@@ -198,5 +198,13 @@ namespace GreenCorner.EventAPI.Repositories
                 v.ApplicationType == "TeamLeader" &&
                 v.Status == "Approved");
         }
+
+        public async Task<IEnumerable<string>> GetUserWithParticipation()
+        {
+            return await _context.Volunteers
+                                .Select(v => v.UserId)
+                                .Distinct()
+                                .ToListAsync();
+        }
     }
 }

@@ -29,16 +29,22 @@ namespace GreenCorner.BlogAPI.Services
             if (report == null)
                 return null;
 
-
-            if (report.CreatedAt == null || (DateTime.Now - report.CreatedAt.Value).TotalHours > 2)
-                return null;
-
             report.Reason = newReason;
             await _repository.UpdateReport(report);
 
             return _mapper.Map<BlogReportDTO>(report);
         }
 
+        public async Task<BlogReportDTO?> GetReportById(int id)
+        {
+            var report = await _repository.GetReportById(id);
+            if (report == null)
+            {
+                return null;
+            }
+
+            return _mapper.Map<BlogReportDTO>(report);
+        }
 
         public async Task<IEnumerable<BlogReportDTO>> GetReportsByBlogIdAsync(int blogId)
         {

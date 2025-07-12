@@ -1,0 +1,127 @@
+﻿@model IEnumerable<TrashEventDTO>
+<div class="page-header breadcrumb-wrap">
+	<div class="container">
+		<div class="breadcrumb">
+			<a href="/Home" rel="nofollow"><i class="fi-rs-home mr-5"></i>Trang chủ</a>
+			<span></span> Báo cáo của tôi
+		</div>
+	</div>
+</div>
+<div class="page-content pt-50 pb-50">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-10 m-auto">
+				<div class="row">
+					<div class="col-md-3">
+						<div class="dashboard-menu">
+							<ul class="nav flex-column" role="tablist">
+								<li class="nav-item">
+									<a class="nav-link" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard"
+										role="tab" aria-controls="dashboard" aria-selected="false">
+										<i class="fi-rs-settings-sliders mr-10"></i>Dashboard
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab"
+										aria-controls="orders" aria-selected="false">
+										<i class="fi-rs-shopping-bag mr-10"></i>Đơn hàng
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link active" id="track-orders-tab" data-bs-toggle="tab" href="#"
+										role="tab" aria-controls="track-orders" aria-selected="false">
+										<i class="fi-rs-shopping-cart-check mr-10"></i>Báo cáo
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" id="address-tab" data-bs-toggle="tab" href="#address" role="tab"
+										aria-controls="address" aria-selected="true">
+										<i class="fi-rs-marker mr-10"></i>My Address
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" href="User/Profile">
+										<i class="fi-rs-user mr-10"></i>Thông tin
+										tài khoản
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" href="/Auth/Logout">
+										<i class="fi-rs-sign-out mr-10"></i>Đăng
+										xuất
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					@if (!Model.Any())
+					{
+						<div class="col-md-9">
+							<div class="alert alert-info" role="alert">
+								<h4 class="alert-heading">Không có báo cáo nào!</h4>
+								<p>Hiện tại bạn chưa gửi bất kỳ báo cáo nào. Hãy gửi báo cáo mới để theo dõi.</p>
+							</div>
+						</div>
+					}
+					else
+					{
+						<div class="col-md-9">
+							<div class="tab-content account dashboard-content pl-50">
+								<div class="tab-pane fade active show" id="orders" role="tabpanel"
+									aria-labelledby="orders-tab">
+									<div class="card">
+										<div class="card-header">
+											<h3 class="mb-0">Báo cáo của bạn</h3>
+										</div>
+										<div class="card-body">
+											<div class="table-responsive">
+												<table class="table">
+													<thead>
+														<tr>
+															<th>Báo cáo</th>
+															<th>Địa chỉ</th>
+															<th>Mô tả</th>
+															<th>Trạng thái</th>
+															<th>Ngày báo cáo</th>
+															<th></th>
+														</tr>
+													</thead>
+													<tbody>
+														@foreach (var item in Model)
+														{
+															<tr>
+																<td>@item.TrashReportId</td>
+																<td>@item.Address</td>
+																<td>@item.Description</td>
+																<td>@item.Status</td>
+																<td>@item.CreatedAt.Value.ToString("dd/MM/yyyy")</td>
+																<td>
+																	@if (item.Status == "Chờ xác nhận")
+																	{
+																		<a class="btn-small d-block" asp-action="UpdateTrashEvent"
+																			asp-controller="TrashEvent"
+																			asp-route-trashReportId="@item.TrashReportId">
+																			Cập nhật
+																		</a>
+																	}
+																</td>
+															</tr>
+														}
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

@@ -52,6 +52,29 @@ namespace GreenCorner.EcommerceAPI.Controllers
             }
         }
 
+        [HttpPost("search")]
+        public async Task<ResponseDTO> Search([FromBody] string keyword)
+        {
+            try
+            {
+                var products = await _productService.Search(keyword);
+                _responseDTO.Result = products;
+                if (products.Count() == 0)
+                {
+                    _responseDTO.Message = "No product found";
+                    _responseDTO.IsSuccess = false;
+                    return _responseDTO;
+                }
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
         [HttpPost]
         public async Task<ResponseDTO> CreateProduct([FromBody] ProductDTO product)
         {
@@ -90,6 +113,23 @@ namespace GreenCorner.EcommerceAPI.Controllers
             try
             {
                 await _productService.DeleteProduct(id);
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
+        [HttpGet("outofstock")]
+        public async Task<ResponseDTO> GetOutOfStockProduct()
+        {
+            try
+            {
+                var outOfStockProducts = await _productService.GetOutOfStockProduct();
+                _responseDTO.Result = outOfStockProducts;
                 return _responseDTO;
             }
             catch (Exception ex)

@@ -14,6 +14,7 @@ namespace GreenCorner.EcommerceAPI.Mapping
                 config.CreateMap<CartDTO, Cart>().ReverseMap();
                 config.CreateMap<OrderDTO, Order>().ReverseMap();
                 config.CreateMap<OrderDetailDTO, OrderDetail>().ReverseMap();
+                config.CreateMap<WishListDTO, WishList>().ReverseMap();
             });
             
             return mappingConfig;

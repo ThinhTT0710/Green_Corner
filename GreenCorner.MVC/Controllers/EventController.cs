@@ -377,7 +377,11 @@ namespace GreenCorner.MVC.Controllers
         public IActionResult RegisterVolunteer(int eventId)
         {
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
-
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["error"] = "Vui lòng đăng nhập để tiếp tục.";
+                return RedirectToAction("Login", "Auth");
+            }
             var dto = new VolunteerDTO
             {
                 CleanEventId = eventId,
@@ -413,7 +417,11 @@ namespace GreenCorner.MVC.Controllers
         public IActionResult RegisterTeamLeader(int eventId)
         {
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
-
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["error"] = "Vui lòng đăng nhập để tiếp tục.";
+                return RedirectToAction("Login", "Auth");
+            }
             var dto = new VolunteerDTO
             {
                 CleanEventId = eventId,

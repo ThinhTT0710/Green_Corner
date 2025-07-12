@@ -2,43 +2,106 @@
 
 @{
     ViewData["Title"] = "Danh sách báo cáo";
+    var userId = ViewBag.UserId as string;
     int blogId = ViewBag.BlogId;
 }
 
-<h2>Danh sách báo cáo cho Blog ID: @blogId</h2>
-
-@if (Model != null && Model.Any())
-{
-    <table class="table table-bordered table-striped">
-        <thead class="thead-dark">
-            <tr>
-                <th>ID</th>
-                <th>Lý do</th>
-                <th>Ngày tạo</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var report in Model)
-            {
-                <tr>
-                    <td>@report.BlogReportId</td>
-                    <td>@report.Reason</td>
-                    <td>@report.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <div class="alert alert-info">
-        Không có báo cáo nào cho bài viết này.
+<main class="main">
+    <div class="page-header mt-30 mb-75">
+        <div class="container">
+            <div class="archive-header">
+                <div class="row align-items-center">
+                    <div class="col-xl-4">
+                        <h1 class="mb-15">@ViewData["Title"]</h1>
+                        <div class="breadcrumb">
+                            <a href="index.html" rel="nofollow"><i class="fi-rs-home mr-5"></i>Home</a>
+                            <span></span> Blog & News
+                        </div>
+                    </div>
+                    <div class="col-xl-8 text-end d-none d-xl-block">
+                        <ul class="tags-list">
+                            <li class="hover-up"><a asp-action="Index"><i class="fi-rs-arrow-left mr-10"></i>Quay Lại</a></li>
+                            <li class="hover-up"><a asp-action="CreateBlog"><i class="fi-rs-edit mr-10"></i>Tạo Bài Viết</a></li>
+                            <li class="hover-up"><a asp-action="MyFavoriteBlogs"><i class="fi-rs-heart  mr-10"></i>Bài Viết Yêu Thích</a></li>
+                            <li class="hover-up mr-0"><a asp-action="MyPendingBlogs"><i class="fi-rs-cross mr-10"></i>Bài Viết Chờ Duyệt</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-}
+    <div class="page-content mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="shop-product-fillter mb-50 pr-30">
+                    <div class="totall-product">
+                        <h2>
+                            <img class="w-36px mr-10" src="assets/imgs/theme/icons/category-1.svg" alt="" />
+                            Nội Dung Báo Cáo
+                        </h2>
+                    </div> 
+                </div>
+                @if (Model != null && Model.Any())
+                {
+                    <div class="loop-grid pr-30">
+                        <div class="row">
+                            @foreach (var report in Model)
+                            {
+                                var authors = ViewBag.ReportAuthors as Dictionary<string, GreenCorner.MVC.Models.UserDTO>;
+                                string reporterName = authors != null && authors.ContainsKey(report.UserId)
+                                ? authors[report.UserId].FullName
+                                : "Ẩn danh";
+
+                                <article class="col-xl-4 col-lg-6 col-md-6 text-center hover-up mb-30 animated">
+                                    <div class="entry-content-2 p-4 border border-warning rounded bg-light shadow-sm h-100 d-flex flex-column justify-content-between">
+
+                                        <div class="d-flex justify-content-between align-items-center mb-3 text-start">
+                                            <span class="text-muted">
+                                                <i class="far fa-user me-1 text-primary"></i><strong>@reporterName</strong>
+                                            </span>
+                                            <span class="text-muted">
+                                                <i class="far fa-clock me-1"></i>@report.CreatedAt?.ToString("dd/MM/yyyy HH:mm")
+                                            </span>
+                                        </div>
+
+                                        <div class="text-start">
+                                            <p class="mb-0 text-dark fs-5 fw-semibold fst-italic  bg-opacity-10 p-3 rounded">
+                                                @report.Reason
+                                            </p>
+                                        </div>
+
+                                        @if (!string.IsNullOrEmpty(userId) && report.UserId == userId)
+                                        {
+                                            <div class="mt-3 text-start">
+                                                <a asp-action="EditReport" asp-route-id="@report.BlogReportId" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-edit me-1"></i>Chỉnh sửa
+                                                </a>
+                                            </div>
+                                        }
+                                    </div>
+                                </article>
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        Không có báo cáo nào cho bài viết này.
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</main>
 
 <div class="mt-3">
     <a asp-action="CreateReport" asp-controller="BlogPost" asp-route-blogId="@blogId" class="btn btn-danger me-2">
         + Thêm báo cáo
     </a>
-    <a asp-action="Index" asp-controller="BlogPost" class="btn btn-secondary">Quay lại danh sách bài viết</a>
+    <a asp-action="ViewBlogDetail" asp-controller="BlogPost" asp-route-id="@blogId" class="btn btn-secondary">
+        Quay lại bài viết
+    </a>
+
 </div>

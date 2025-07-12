@@ -1,0 +1,117 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@model GreenCorner.MVC.ViewModels.VolunteerEventListViewModel
+
+<section class="content-main">
+    <div class="content-header">
+        <h2 class="content-title">Lịch sử hoạt động</h2>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            @if (!Model.Participations.Any())
+            {
+                <div class="alert alert-info text-center">
+                    Bạn chưa tham gia hoạt động nào.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tên sự kiện</th>
+                                <th>Ngày bắt đầu</th>
+                                <th>Ngày kết thúc</th>
+                                <th>Trạng thái sự kiện</th>
+                                <th>Loại đơn</th>
+                                <th>Phân công</th>
+                                <th>Vật dụng mang theo</th>
+                                <th>Trạng thái đăng ký</th>
+                                <th>Ngày đăng ký</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Participations)
+                            {
+                                <tr>
+                                    <td>@item.Event.Title</td>
+                                    <td>@item.Event.StartDate?.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.Event.EndDate?.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        @{
+                                            var status = item.Event.Status;
+
+                                            var eventBg = status switch
+                                            {
+                                                "Approved" => "#28a745", // xanh lá
+                                                "Pending" => "#ffc107",  // vàng
+                                                "Removed" => "#dc3545",  // đỏ
+                                                _ => "#6c757d"           // xám
+                                            };
+
+                                            var eventColor = status == "Pending" ? "#212529" : "#fff";
+
+                                            var statusText = status switch
+                                            {
+                                                "Approved" => "Đã duyệt",
+                                                "Pending" => "Đang chờ duyệt",
+                                                "Removed" => "Đã bị hủy",
+                                                _ => "Không xác định"
+                                            };
+                                        }
+                                        <span class="badge rounded-pill" style="background-color:@(eventBg); color:@(eventColor);">
+                                            @statusText
+                                        </span>
+                                    </td>
+
+                                    <td>@item.Volunteer.ApplicationType</td>
+                                    <td>@item.Volunteer.Assignment</td>
+                                    <td>@item.Volunteer.CarryItems</td>
+                                    <td>
+                                        @{
+                                            var statusVL = item.Volunteer.Status;
+
+                                            var volunteerBg = statusVL switch
+                                            {
+                                                "Approved" => "#28a745",  // Xanh lá
+                                                "Pending" => "#ffc107",   // Vàng
+                                                "Rejected" => "#dc3545",  // Đỏ
+                                                _ => "#6c757d"            // Xám
+                                            };
+
+                                            var volunteerColor = statusVL == "Pending" ? "#212529" : "#fff";
+
+                                            var statusTextVL = statusVL switch
+                                            {
+                                                "Approved" => "Đã duyệt",
+                                                "Pending" => "Đang chờ duyệt",
+                                                "Rejected" => "Đã bị từ chối",
+                                                _ => "Không xác định"
+                                            };
+                                        }
+                                        <span class="badge rounded-pill" style="background-color:@(volunteerBg); color:@(volunteerColor);">
+                                            @statusTextVL
+                                        </span>
+                                    </td>
+                                    <td>@item.Volunteer.CreatedAt?.ToString("dd/MM/yyyy")</td>
+                                </tr>
+
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4">
+                    <a asp-action="ViewUsersWithParticipation"
+                       asp-controller="EventStaff"
+                       class="btn btn-light rounded font-md">
+                        ← Quay lại danh sách người dùng
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>

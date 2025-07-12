@@ -50,6 +50,15 @@ namespace GreenCorner.MVC.Services
             });
         }
 
+        public async Task<ResponseDTO?> GetTrashEventsByUserId(string userId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.EventAPIBase + "/api/trashevent/get-by-user/" + userId
+            });
+        }
+
         public async Task<ResponseDTO?> UpdateTrashEvent(TrashEventDTO trashEventDTO)
         {
             return await _baseService.SendAsync(new RequestDTO

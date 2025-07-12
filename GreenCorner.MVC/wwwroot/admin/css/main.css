@@ -3919,4 +3919,13 @@ footer.main-footer {
   .table-responsive table thead {
     display: none;
   }
+    .product-title {
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* Giới hạn 2 dòng */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-height: 3em; /* khoảng chiều cao tương ứng 2 dòng */
+        line-height: 1.5em;
+    }
 }/*# sourceMappingURL=main.css.map */

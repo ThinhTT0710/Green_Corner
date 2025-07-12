@@ -1,0 +1,141 @@
+﻿@model List<GreenCorner.MVC.Models.BlogPostDTO>
+
+@{
+    ViewData["Title"] = "Bài viết đang chờ duyệt";
+}
+
+<main class="main">
+    <div class="page-header mt-30 mb-75">
+        <div class="container">
+            <div class="archive-header">
+                <div class="row align-items-center">
+                    <div class="col-xl-4">
+                        <h1 class="mb-15">@ViewData["Title"]</h1>
+                        <div class="breadcrumb">
+                            <a href="index.html" rel="nofollow"><i class="fi-rs-home mr-5"></i>Home</a>
+                            <span></span> Blog & News
+                        </div>
+                    </div>
+                    <div class="col-xl-8 text-end d-none d-xl-block">
+                        <ul class="tags-list">
+                            <li class="hover-up"><a asp-action="Index"><i class="fi-rs-arrow-left mr-10"></i>Quay Lại</a></li>
+                            <li class="hover-up"><a asp-action="CreateBlog"><i class="fi-rs-edit mr-10"></i>Tạo Bài Viết</a></li>
+                            <li class="hover-up"><a asp-action="MyFavoriteBlogs"><i class="fi-rs-heart  mr-10"></i>Bài Viết Yêu Thích</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-content mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="shop-product-fillter mb-50">
+                        <div class="totall-product">
+                            <h2>
+                                <img class="w-36px mr-10" src="assets/imgs/theme/icons/category-1.svg" alt="" />
+                                Bài Viết Chờ Duyệt
+                            </h2>
+                        </div>
+                    </div>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        <div class="loop-grid mb-50">
+                            <div class="row">
+                                @foreach (var blog in Model)
+                                {
+                                    <article class="col-xl-3 col-lg-4 col-md-6 text-center hover-up mb-30 animated">
+                                        <div class="post-thumb">
+                                            <a asp-controller="BlogPost" asp-action="ViewBlogDetail" asp-route-id="@blog.BlogId">
+                                                @{
+                                                    var imagePaths = blog.ThumbnailUrl?.Split('&') ?? Array.Empty<string>();
+                                                    var carouselId = $"carousel_{blog.BlogId}";
+                                                }
+                                                <div class="post-thumb position-relative" style="width: 100%; height: 220px; overflow: hidden;">
+                                                    @if (imagePaths.Length > 0)
+                                                    {
+                                                        <div id="@carouselId" class="carousel slide h-100" data-bs-ride="carousel">
+                                                            <div class="carousel-inner h-100">
+                                                                @for (int i = 0; i < imagePaths.Length; i++)
+                                                                {
+                                                                    var img = imagePaths[i];
+                                                                    <div class="carousel-item @(i == 0 ? "active" : "") h-100">
+                                                                        <a asp-controller="BlogPost" asp-action="ViewBlogDetail" asp-route-id="@blog.BlogId">
+                                                                            <img src="@img" class="d-block w-100 h-100 border-radius-15" style="object-fit: cover;" alt="Ảnh blog" />
+                                                                        </a>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                            @if (imagePaths.Length > 1)
+                                                            {
+                                                                <button class="carousel-control-prev" type="button" data-bs-target="#@carouselId" data-bs-slide="prev">
+                                                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                                    <span class="visually-hidden">Trước</span>
+                                                                </button>
+                                                                <button class="carousel-control-next" type="button" data-bs-target="#@carouselId" data-bs-slide="next">
+                                                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                                    <span class="visually-hidden">Tiếp</span>
+                                                                </button>
+                                                            }
+                                                        </div>
+                                                    }
+                                                </div>
+
+                                            </a>
+                                        </div>
+                                        <div class="entry-content-2">
+                                            @{
+                                                var statusText = blog.Status switch
+                                                {
+                                                    "Published" => "Đã đăng",
+                                                    "Pending" => "Đang chờ duyệt",
+                                                    "Removed" => "Đã gỡ",
+                                                    _ => "Không xác định"
+                                                };
+
+                                                var statusClass = blog.Status switch
+                                                {
+                                                    "Published" => "text-success",
+                                                    "Pending" => "text-warning",
+                                                    "Removed" => "text-danger",
+                                                    _ => "text-muted"
+                                                };
+                                            }
+                                            <h6 class="mb-10 font-sm fw-semibold @statusClass">@statusText</h6>
+
+                                            <h4 class="post-title mb-15">
+                                                <a asp-controller="BlogPost" asp-action="ViewBlogDetail" asp-route-id="@blog.BlogId">@blog.Title</a>
+                                            </h4>
+                                            <div class="font-xs color-grey mt-10 pb-10" style="max-height: 45px; overflow: hidden;">
+                                                @((!string.IsNullOrEmpty(blog.Content) && blog.Content.Length > 100)
+                                                    ? blog.Content.Substring(0, 100) + "..."
+                                                    : blog.Content)
+                                            </div>
+                                            <div class="entry-meta font-xs color-grey">
+                                                <span class="post-on">@blog.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</span>
+                                            </div>
+                                            <div class="mt-2 d-flex justify-content-center gap-2">
+                                                <a asp-controller="BlogPost" asp-action="UpdateBlog" asp-route-blogId="@blog.BlogId" class="btn btn-sm btn-outline-success">Sửa</a>
+                                                <a asp-action="DeleteBlog" asp-route-id="@blog.BlogId" class="btn btn-sm btn-outline-danger">Xoá</a>
+                                            </div>
+                                        </div>
+                                    </article>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            Bạn chưa có bài viết nào đang chờ duyệt.
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+

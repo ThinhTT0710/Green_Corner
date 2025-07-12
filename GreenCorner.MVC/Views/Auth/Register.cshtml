@@ -1,37 +1,71 @@
 ﻿@model RegisterationRequestDTO
-<form method="post">
-    <div class="container border p-4">
-        <div class="row text-center p-3">
-            <h1>Register</h1>
+<div class="page-header breadcrumb-wrap">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/Home" rel="nofollow"><i class="fi-rs-home mr-5"></i>Trang chủ</a>
+            <span></span> Đăng ký
         </div>
+    </div>
+</div>
+<div class="page-content pt-40 pb-40">
+    <div class="container">
         <div class="row">
-            <div class="col-12 col-md-6 offset-md-3 pb-2">
-                <input asp-for="Email" class="form-control" placeholder="Email" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="col-12 col-md-6 offset-md-3 pb-2">
-                <input asp-for="FullName" class="form-control" placeholder="FullName" />
-                <span asp-validation-for="FullName" class="text-danger"></span>
-            </div>
-            <div class="col-12 col-md-6 offset-md-3 pb-2">
-                <input asp-for="PhoneNumber" class="form-control" placeholder="PhoneNumber" />
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-            </div>
-            <div class="col-12 col-md-6 offset-md-3 pb-2">
-                <input asp-for="Address" class="form-control" placeholder="Address" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="col-12 col-md-6 offset-md-3 pb-2">
-                <input asp-for="Password" class="form-control" placeholder="Password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <a asp-controller="Auth" asp-action="ResendConfirmEmail" class="col-12 col-md-6 offset-md-3 pb-2 text-center">Resend Confirm Email?</a>
-            <div class="col-12 col-md-6 offset-md-3 pb-2">
-                <button type="submit" class="form-control btn btn-success" value="Submit"> Register</button>
+            <div class="col-xl-8 col-lg-10 col-md-12 m-auto">
+                <div class="row">
+                    <div class="col-lg-6 col-md-8">
+                        <div class="login_wrap widget-taber-content background-white">
+                            <div class="padding_eight_all bg-white">
+                                <div class="heading_s1">
+                                    <h1 class="mb-5">Tạo tài khoản</h1>
+                                    <p class="mb-30">Bạn đã có tài khoản? <a href="/Auth/Login">Đăng nhập</a></p>
+                                </div>
+                                <form method="post">
+                                    <div class="form-group">
+                                        <input asp-for="Email" type="text" placeholder="Địa chỉ Email" />
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <input asp-for="FullName" type="text" placeholder="Họ và tên" />
+                                        <span asp-validation-for="FullName" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <input asp-for="PhoneNumber" type="text" placeholder="Số điện thoại" />
+                                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <input asp-for="Address" type="text" placeholder="Địa chỉ" />
+                                        <span asp-validation-for="Address" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <input asp-for="Password" type="password" placeholder="Mật khẩu" />
+                                        <span asp-validation-for="Password" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group mb-30">
+                                        <button type="submit"
+                                            class="btn btn-fill-out btn-block hover-up font-weight-bold">Đăng
+                                            ký</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 pr-30 d-none d-lg-block">
+                        <div class="card-login mt-115">
+                            <a href="#" class="social-login facebook-login">
+                                <img src="~/imgs/theme/icons/logo-facebook.svg" alt="" />
+                                <span>Đăng nhập bằng Facebook</span>
+                            </a>
+                            <a href="#" class="social-login google-login">
+                                <img src="~/imgs/theme/icons/logo-google.svg" alt="" />
+                                <span>Đăng nhập bằng Google</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

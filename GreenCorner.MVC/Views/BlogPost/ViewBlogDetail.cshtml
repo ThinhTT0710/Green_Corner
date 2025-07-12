@@ -1,47 +1,197 @@
-﻿@model GreenCorner.MVC.Models.BlogPostDTO
+﻿@model GreenCorner.MVC.ViewModels.BlogWithAuthorViewModel
 
 @{
     ViewData["Title"] = "Chi tiết bài viết";
+    var blog = Model.Blog;
+    var author = Model.Author;
 }
 
-<h2 class="mb-4">@ViewData["Title"]</h2>
+<main class="main">
+    <div class="page-content mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-9 m-auto">
+                    <div class="single-page pt-50 pr-30">
+                        <div class="single-header style-2">
+                            <div class="row">
+                                <div class="col-xl-10 col-lg-12 m-auto">
+                                    <h6 class="mb-10"><a href="#">Bài viết</a></h6>
+                                    <h2 class="mb-10">@blog.Title</h2>
+                                    <div class="single-header-meta">
+                                        <div class="entry-meta meta-1 font-xs mt-15 mb-15">
+                                            <span class="post-by">Tác giả: <strong>@(author?.FullName ?? "Không rõ")</strong></span>
+                                            <span class="post-on has-dot">@blog.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</span>
+                                            @{
+                                                var statusText = blog.Status switch
+                                                {
+                                                    "Published" => "Đã đăng",
+                                                    "Pending" => "Đang chờ duyệt",
+                                                    "Removed" => "Đã gỡ",
+                                                    _ => "Không xác định"
+                                                };
+
+                                                var statusClass = blog.Status switch
+                                                {
+                                                    "Published" => "text-success",
+                                                    "Pending" => "text-warning",
+                                                    "Removed" => "text-danger",
+                                                    _ => "text-muted"
+                                                };
+                                            }
+                                            <span class="time-reading has-dot">
+                                                Trạng thái:
+                                                <span class="@statusClass fw-semibold">@statusText</span>
+                                            </span>
+                                            <span class="ml-20">
+                                                <button class="btn-favorite @(ViewBag.IsFavorited ? "favorited" : "")"
+                                                        style="background: none; border: none; padding: 0;"
+                                                        data-blogid="@blog.BlogId"
+                                                        title="Yêu thích">
+                                                    <i class="bi @(ViewBag.IsFavorited ? "bi-heart-fill text-danger" : "bi-heart text-dark")"
+                                                       id="fav-icon-@blog.BlogId"></i>
+                                                </button>
+                                            </span>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @{
+                            var imagePaths = blog.ThumbnailUrl?.Split('&') ?? Array.Empty<string>();
+                            var carouselId = "blogCarousel";
+                        }
+
+                        @if (imagePaths.Length > 0)
+                        {
+                            <div id="@carouselId" class="carousel slide mb-4" data-bs-ride="carousel" style="max-height: 400px; overflow: hidden;">
+                                <div class="carousel-inner">
+                                    @for (int i = 0; i < imagePaths.Length; i++)
+                                    {
+                                        var img = imagePaths[i];
+                                        <div class="carousel-item @(i == 0 ? "active" : "")">
+                                            <img src="@img" class="border-radius-15 d-block w-100" alt="Ảnh blog" style="max-height: 400px; object-fit: cover;" />
+                                        </div>
+                                    }
+                                </div>
+                                @if (imagePaths.Length > 1)
+                                {
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#@carouselId" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Trước</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#@carouselId" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Tiếp</span>
+                                    </button>
+                                }
+                            </div>
+                        }
 
 
-<div class="card shadow-sm">
-    <div class="card-header bg-primary text-white">
-        <h4>@Model.Title</h4>
+                        <div class="single-content">
+                            <div class="row">
+                                <div class="col-xl-10 col-lg-12 m-auto">
+                                    <p class="single-excerpt">
+                                        @Html.Raw(blog.Content)
+                                    </p>
+
+                                    @if (Model.Reports != null && Model.Reports.Any())
+                                    {
+                                        <div class="comments-area mt-50">
+                                            <h3 class="mb-30">Đánh giá của Blog</h3>
+                                            <div class="comment-list">
+                                                @{
+                                                    var maxReportsToShow = Model.Reports.Take(3).ToList(); // Chỉ lấy 3 báo cáo
+                                                }
+                                                @foreach (var report in maxReportsToShow)
+                                                {
+                                                    var authors = ViewBag.ReportAuthors as Dictionary<string, GreenCorner.MVC.Models.UserDTO>;
+                                                    string reporterName = authors != null && authors.ContainsKey(report.UserId)
+                                                    ? authors[report.UserId].FullName
+                                                    : "Ẩn danh";
+
+                                                    <div class="single-comment p-4 mb-4 border border-warning rounded bg-white shadow-sm">
+                                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                                            <h6 class="mb-0 text-dark">
+                                                                <i class="fas fa-user-edit text-success me-1"></i> @reporterName
+                                                            </h6>
+                                                            <small class="text-muted">
+                                                                <i class="far fa-clock me-1"></i>@report.CreatedAt?.ToString("dd/MM/yyyy HH:mm")
+                                                            </small>
+                                                        </div>
+
+                                                        <div class="comment-body">
+                                                            <p class="mb-1 text-dark">
+                                                                <strong class="text-success">📝 Nội dung:</strong>
+                                                            </p>
+                                                            <p class="mb-0 text-dark fst-italic border-start border-3 ps-3">
+                                                                @report.Reason
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <!-- Đặt hai nút điều hướng bên dưới các báo cáo -->
+                                    <div class="entry-bottom mt-50 mb-30 d-flex justify-content-between">
+                                        <a asp-action="ViewBlogReports" asp-route-blogId="@blog.BlogId" class="btn btn-warning">
+                                            Xem báo cáo
+                                        </a>
+                                        <a asp-action="CreateReport" asp-controller="BlogPost" asp-route-blogId="@blog.BlogId" class="btn btn-danger me-2">
+                                            + Thêm báo cáo
+                                        </a>
+                                        <a asp-action="Index" class="btn btn-secondary">← Quay lại danh sách</a>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-3">Tác giả:</dt>
-            <dd class="col-sm-9">@Model.AuthorId</dd>
+</main>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $(".btn-favorite").click(function (e) {
+                e.preventDefault();
+                var button = $(this);
+                var blogId = button.data("blogid");
 
-            <dt class="col-sm-3">Trạng thái:</dt>
-            <dd class="col-sm-9">@Model.Status</dd>
-
-            <dt class="col-sm-3">Ngày tạo:</dt>
-            <dd class="col-sm-9">@Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</dd>
-
-            <dt class="col-sm-3">Hình ảnh:</dt>
-            <dd class="col-sm-9">
-                @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
-                {
-                    <img src="@Model.ThumbnailUrl" alt="Ảnh bìa" class="img-fluid" style="max-height: 300px;" />
-                }
-                else
-                {
-                    <span class="text-muted">Không có ảnh</span>
-                }
-            </dd>
-
-            <dt class="col-sm-3">Nội dung:</dt>
-            <dd class="col-sm-9">@Html.Raw(Model.Content)</dd>
-        </dl>
-    </div>
-    <div class="card-footer">
-        <a asp-action="ViewBlogReports" asp-route-blogId="@Model.BlogId" class="btn btn-warning">
-            Xem báo cáo
-        </a>
-        <a asp-action="Index" class="btn btn-secondary">← Quay lại danh sách</a>
-    </div>
-</div>
+                $.ajax({
+                    url: '/BlogPost/ToggleFavorite',
+                    type: 'POST',
+                    data: { blogId: blogId },
+                    success: function (response) {
+                        if (response.isSuccess) {
+                            var icon = button.find("i");
+                            if (icon.hasClass("bi-heart")) {
+                                icon.removeClass("bi-heart text-dark").addClass("bi-heart-fill text-danger");
+                            } else {
+                                icon.removeClass("bi-heart-fill text-danger").addClass("bi-heart text-dark");
+                            }
+                        } else {
+                            if (response.message && response.message.includes("đăng nhập")) {
+                                alert("Bạn cần đăng nhập để sử dụng chức năng yêu thích.");
+                                window.location.href = "/Auth/Login";
+                            } else {
+                                alert("Thao tác thất bại: " + response.message);
+                            }
+                        }
+                    },
+                    error: function () {
+                        alert("Đã xảy ra lỗi.");
+                    }
+                });
+            });
+        });
+    </script>
+}

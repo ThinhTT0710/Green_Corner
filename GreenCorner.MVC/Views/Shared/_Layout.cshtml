@@ -16,6 +16,9 @@
     <!-- Template CSS -->
     <link rel="stylesheet" href="~/css/plugins/animate.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/main.css?v=6.1" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/chatbox.css" asp-append-version="true" />
+
 </head>
 <body>
     <header class="header-area header-style-1 header-height-2">
@@ -29,115 +32,57 @@
                         <a href="index.html"><img src="~/imgs/theme/logo.svg" alt="logo" /></a>
                     </div>
                     <div class="header-right">
-                        <div class="search-style-2">
-                            <form action="#">
-                                <select class="select-active">
-                                    <option>All Categories</option>
-                                    <option>Milks and Dairies</option>
-                                    <option>Wines & Alcohol</option>
-                                    <option>Clothing & Beauty</option>
-                                    <option>Pet Foods & Toy</option>
-                                    <option>Fast food</option>
-                                    <option>Baking material</option>
-                                    <option>Vegetables</option>
-                                    <option>Fresh Seafood</option>
-                                    <option>Noodles & Rice</option>
-                                    <option>Ice cream</option>
-                                </select>
-                                <input type="text" placeholder="Search for items..." />
+                        <div class="search-style-2" style="
+                             align-items: center;
+                             display: flex;
+                             justify-content: center;">
+                            <form action="#" method="get" style="max-width: 500px;">
+                                <input type="text" placeholder="Search for items..." id="search-input-realtime" style="max-width: 500px;" />
+                                <ul id="search-results" class="dropdown-menu w-100">
+                                </ul>
                             </form>
                         </div>
                         <div class="header-action-right">
                             <div class="header-action-2">
-                                <div class="search-location">
-                                    <form action="#">
-                                        <select class="select-active">
-                                            <option>Your Location</option>
-                                            <option>Alabama</option>
-                                            <option>Alaska</option>
-                                            <option>Arizona</option>
-                                            <option>Delaware</option>
-                                            <option>Florida</option>
-                                            <option>Georgia</option>
-                                            <option>Hawaii</option>
-                                            <option>Indiana</option>
-                                            <option>Maryland</option>
-                                            <option>Nevada</option>
-                                            <option>New Jersey</option>
-                                            <option>New Mexico</option>
-                                            <option>New York</option>
-                                        </select>
-                                    </form>
+                                <div class="location">
+                                    <a href="/TrashEvent/ReportTrashEvent" class="btn btn-sm font-weight-bold text-white mr-10 border-radius-5 btn-shadow-brand hover-up"><i class="fi-rs-marker mr-5"></i>Báo cáo</a>
                                 </div>
                                 <div class="header-action-icon-2">
-                                    <a href="shop-compare.html">
-                                        <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-compare.svg" />
-                                        <span class="pro-count blue">3</span>
-                                    </a>
-                                    <a href="shop-compare.html"><span class="lable ml-0">Compare</span></a>
-                                </div>
-                                <div class="header-action-icon-2">
-                                    <a href="shop-wishlist.html">
+                                    <a href="/WishList">
                                         <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-heart.svg" />
-                                        <span class="pro-count blue">6</span>
                                     </a>
-                                    <a href="shop-wishlist.html"><span class="lable">Wishlist</span></a>
+                                    <a href="/WishList"><span class="lable">Wishlist</span></a>
                                 </div>
                                 <div class="header-action-icon-2">
-                                    <a class="mini-cart-icon" href="shop-cart.html">
+                                    <a class="mini-cart-icon" href="/Cart">
                                         <img alt="Nest" src="~/imgs/theme/icons/icon-cart.svg" />
-                                        <span class="pro-count blue">2</span>
                                     </a>
-                                    <a href="shop-cart.html"><span class="lable">Cart</span></a>
-                                    <div class="cart-dropdown-wrap cart-dropdown-hm2">
-                                        <ul>
-                                            <li>
-                                                <div class="shopping-cart-img">
-                                                    <a href="shop-product-right.html"><img alt="Nest"
-                                                            src="~/imgs/shop/thumbnail-3.jpg" /></a>
-                                                </div>
-                                                <div class="shopping-cart-title">
-                                                    <h4><a href="shop-product-right.html">Daisy Casual Bag</a></h4>
-                                                    <h4><span>1 × </span>$800.00</h4>
-                                                </div>
-                                                <div class="shopping-cart-delete">
-                                                    <a href="#"><i class="fi-rs-cross-small"></i></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="shopping-cart-img">
-                                                    <a href="shop-product-right.html"><img alt="Nest"
-                                                            src="~/imgs/shop/thumbnail-2.jpg" /></a>
-                                                </div>
-                                                <div class="shopping-cart-title">
-                                                    <h4><a href="shop-product-right.html">Corduroy Shirts</a></h4>
-                                                    <h4><span>1 × </span>$3200.00</h4>
-                                                </div>
-                                                <div class="shopping-cart-delete">
-                                                    <a href="#"><i class="fi-rs-cross-small"></i></a>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <div class="shopping-cart-footer">
-                                            <div class="shopping-cart-total">
-                                                <h4>Total <span>$4000.00</span></h4>
-                                            </div>
-                                            <div class="shopping-cart-button">
-                                                <a href="shop-cart.html" class="outline">View cart</a>
-                                                <a href="shop-checkout.html">Checkout</a>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <a href="/Cart"><span class="lable">Cart</span></a>
                                 </div>
                                 <div class="header-action-icon-2">
-                                    <a href="page-account.html">
+                                    <a href="/User/Profile">
                                         <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-user.svg" />
                                     </a>
-                                    <a href="page-account.html"><span class="lable ml-0">Account</span></a>
+                                    <a href="/User/Profile"><span class="lable ml-0">Tài khoản</span></a>
                                     <div class="cart-dropdown-wrap cart-dropdown-hm2 account-dropdown">
                                         <ul>
+                                            @if (!User.Identity.IsAuthenticated)
+                                            {
+                                                <li>
+                                                    <a href="/Auth/Login">
+                                                        <i class="fi fi-rs-user mr-10"></i>Đăng nhập
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="/Auth/Register">
+                                                        <i class="fi fi-rs-location-alt mr-10"></i>Đăng ký
+                                                    </a>
+                                                </li>
+                                            }
+                                            else
+                                            {
                                             <li>
-                                                <a href="page-account.html"><i class="fi fi-rs-user mr-10"></i>My
+                                                <a href="/User/Profile"><i class="fi fi-rs-user mr-10"></i>My
                                                     Account</a>
                                             </li>
                                             <li>
@@ -157,9 +102,9 @@
                                                         class="fi fi-rs-settings-sliders mr-10"></i>Setting</a>
                                             </li>
                                             <li>
-                                                <a href="page-login.html"><i class="fi fi-rs-sign-out mr-10"></i>Sign
-                                                    out</a>
+                                                <a href="/Auth/Logout"><i class="fi fi-rs-sign-out mr-10"></i>Đăng xuất</a>
                                             </li>
+                                            }
                                         </ul>
                                     </div>
                                 </div>
@@ -263,28 +208,25 @@
                                     <li class="hot-deals"><img src="~/imgs/theme/icons/icon-hot.svg"
                                             alt="hot deals" /><a href="shop-grid-right.html">Deals</a></li>
                                     <li>
-                                        <a class="active" href="index.html">Home</a>
+                                        <a class="active" href="/Home">Trang chủ</a>
                                     </li>
                                     <li>
-                                        <a href="page-about.html">About</a>
+                                        <a href="page-about.html">Giới thiệu</a>
                                     </li>
                                     <li>
-                                        <a href="shop-grid-right.html">Shop</a>
+                                        <a href="/Product">Cửa hàng</a>
                                     </li>
                                     <li>
-                                        <a href="#">Vendors</a>
+                                        <a href="#">Sự kiện</a>
                                     </li>
                                     <li class="position-static">
-                                        <a href="#">Mega menu</i></a>
+                                        <a href="#">Về chúng tôi</a>
                                     </li>
                                     <li>
-                                        <a href="blog-category-grid.html">Blog</a>
+                                        <a asp-controller="BlogPost" asp-action="Index">Blog</a>
                                     </li>
                                     <li>
-                                        <a href="#">Pages</a>
-                                    </li>
-                                    <li>
-                                        <a href="page-contact.html">Contact</a>
+                                        <a href="page-contact.html">Liên  hệ</a>
                                     </li>
                                 </ul>
                             </nav>
@@ -292,7 +234,7 @@
                     </div>
                     <div class="hotline d-none d-lg-flex">
                         <img src="~/imgs/theme/icons/icon-headphone.svg" alt="hotline" />
-                        <p>1900 - 888<span>24/7 Support Center</span></p>
+                        <p>0945-583-554<span>24/7 Chăm sóc khách hàng</span></p>
                     </div>
                     <div class="header-action-icon-2 d-block d-lg-none">
                         <div class="burger-icon burger-icon-white">
@@ -430,10 +372,49 @@
         </div>
     </div>
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main" class="main pages">
             @RenderBody()
             <partial name="_Notification" />
         </main>
+        <div id="chatbot-container">
+        <div id="chat-window">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                        <img src="/imgs/theme/bot-avatar.jpg" alt="Bot Avatar" class="avatar">
+                    <span>Trợ lý ảo</span>
+                </div>
+                <button class="close-btn" onclick="toggleChat()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#FFFFFF" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div id="chat-body">
+                <div class="message-container bot-message">
+                    <div class="message-bubble">
+                        Xin chào! Tôi có thể giúp gì cho bạn về sản phẩm hoặc sự kiện của chúng tôi?
+                    </div>
+                    <img src="/imgs/theme/bot-avatar.jpg" alt="Bot Avatar" class="avatar">
+                </div>
+            </div>
+
+            <div class="chat-footer">
+                <input type="text" id="chat-input" placeholder="Nhập tin nhắn..." onkeydown="handleEnter(event)">
+                <button id="send-btn" onclick="sendMessage()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#FFFFFF" viewBox="0 0 16 16">
+                         <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <button id="chat-toggle-btn" onclick="toggleChat()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.504 7-5.5S11.996 3 8 3 1 5.504 1 8.5c0 .642.07 1.254.196 1.822a1 1 0 0 1 .482.774zM8.5 5.5a.5.5 0 0 0 0 1h.5a.5.5 0 0 0 0-1h-.5zm-2 0a.5.5 0 0 0 0 1h.5a.5.5 0 0 0 0-1h-.5zm4 0a.5.5 0 0 0 0 1h.5a.5.5 0 0 0 0-1h-.5z"/>
+            </svg>
+        </button>
+    </div>
     </div>
     <footer class="main">
         <section class="featured section-padding">
@@ -629,6 +610,7 @@
             </div>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
     <!-- Vendor JS-->
     <script src="~/js/vendor/modernizr-3.6.0.min.js"></script>
     <script src="~/js/vendor/jquery-3.7.1.min.js"></script>
@@ -652,6 +634,9 @@
     <!-- Template  JS -->
     <script src="~/js/main.js?v=6.1"></script>
     <script src="~/js/shop.js?v=6.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/chatbot/chatbot.js"></script>
+    <script src="~/js/search/search.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

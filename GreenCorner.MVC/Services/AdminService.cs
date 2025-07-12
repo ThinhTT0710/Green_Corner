@@ -31,5 +31,23 @@ namespace GreenCorner.MVC.Services
 				Url = SD.AuthAPIBase + "/api/Admin/add-log-staff"
 			});
 		}
-	}
+
+        public async Task<ResponseDTO?> GetMonthlyAnalytics()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.EcommerceAPIBase + "/api/order/monthly-analytics"
+            });
+        }
+
+        public async Task<ResponseDTO?> GetSalesByCategory()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.EcommerceAPIBase + "/api/order/sales-by-category"
+            });
+        }
+    }
 }

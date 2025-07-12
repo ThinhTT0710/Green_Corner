@@ -1,0 +1,28 @@
+﻿@model GreenCorner.MVC.Models.BlogReportDTO
+
+@{
+    ViewData["Title"] = "Chỉnh sửa báo cáo";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+<form asp-action="EditReport" method="post">
+    <input type="hidden" asp-for="BlogReportId" />
+    <input type="hidden" asp-for="BlogId" />
+    <input type="hidden" asp-for="UserId" />
+
+    <div class="mb-3">
+        <label asp-for="Reason" class="form-label">Lý do báo cáo</label>
+        <textarea asp-for="Reason" class="form-control" style="min-height: 300px;"></textarea>
+        <span asp-validation-for="Reason" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Cập nhật</button>
+    <a asp-action="ViewBlogDetail" asp-controller="BlogPost" asp-route-id="@Model.BlogId" class="btn btn-secondary">Quay lại</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

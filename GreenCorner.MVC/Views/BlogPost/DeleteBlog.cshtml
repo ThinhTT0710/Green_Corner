@@ -1,49 +1,96 @@
 ﻿@model GreenCorner.MVC.Models.BlogPostDTO
 
 @{
-    ViewData["Title"] = "Cập nhật bài viết mới";
+    ViewData["Title"] = "Xóa bài viết";
 }
 
-<h2 class="mb-4">@ViewData["Title"]</h2>
+<section class="content-main">
+    <form asp-action="DeleteBlog" method="post">
+        <input type="hidden" asp-for="BlogId" />
+        <input type="hidden" asp-for="AuthorId" />
+        <input type="hidden" asp-for="ThumbnailUrl" />
+        <input type="hidden" asp-for="Status" />
 
+        <div class="row">
+            <div class="col-9">
+                <div class="content-header">
+                    <h2 class="content-title mb-4">Xóa bài viết</h2>
+                </div>
+            </div>
 
-<form asp-action="DeleteBlog" method="post">
-    <input type="hidden" asp-for="BlogId" />
-    <div class="mb-3">
-        <label asp-for="Title" class="form-label">Tiêu đề</label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
+            <!-- Phần trái -->
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <label asp-for="Title" class="form-label">Tiêu đề</label>
+                            <input asp-for="Title" class="form-control" readonly />
+                        </div>
 
-    <div class="mb-3">
-        <label asp-for="Content" class="form-label">Nội dung</label>
-        <textarea asp-for="Content" class="form-control" rows="6"></textarea>
-        <span asp-validation-for="Content" class="text-danger"></span>
-    </div>
+                        <div class="mb-4">
+                            <label asp-for="Content" class="form-label">Nội dung</label>
+                            <textarea asp-for="Content" class="form-control" style="min-height: 300px;" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
 
-    <div class="mb-3">
-        <label asp-for="ThumbnailUrl" class="form-label">Ảnh thumbnail (URL)</label>
-        <input asp-for="ThumbnailUrl" class="form-control" />
-        <span asp-validation-for="ThumbnailUrl" class="text-danger"></span>
-    </div>
+                @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
+                {
+                    <div class="mb-3">
+                        <label>Ảnh thumbnail hiện tại:</label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            @foreach (var img in Model.ThumbnailUrl.Split("&", StringSplitOptions.RemoveEmptyEntries))
+                            {
+                                <img src="@img" style="max-height: 150px; border: 1px solid #ccc; padding: 4px;" />
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
 
-    <div class="mb-3">
-        <label asp-for="Status" class="form-label">Trạng thái</label>
-        <select asp-for="Status" class="form-select">
-            <option value="Draft">Nháp</option>
-            <option value="Published">Công khai</option>
-        </select>
-        <span asp-validation-for="Status" class="text-danger"></span>
-    </div>
+            <!-- Phần phải -->
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <label class="form-label">Trạng thái</label>
+                        <div class="form-control-plaintext">
+                            @if (Model.Status == "Published")
+                            {
+                                <span class="badge bg-success">Đã đăng</span>
+                            }
+                            else if (Model.Status == "Pending")
+                            {
+                                <span class="badge bg-warning text-dark">Đang chờ duyệt</span>
+                            }
+                            else if (Model.Status == "Removed")
+                            {
+                                <span class="badge bg-danger">Đã gỡ</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-dark">Không xác định</span>
+                            }
+                        </div>
+                    </div>
+                </div>
 
-    <input type="hidden" asp-for="AuthorId" value="@User.Identity.Name" />
-
-    <button type="submit" class="btn btn-success">Delete</button>
-    <a asp-action="Index" class="btn btn-secondary ms-2">Hủy</a>
-</form>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5>Cảnh báo</h5>
+                        <p class="text-danger mt-2">
+                            Thao tác này không thể hoàn tác. Bài viết sẽ bị xóa vĩnh viễn khỏi hệ thống.
+                        </p>
+                        <div>
+                            <button type="submit" class="btn btn-danger btn-md rounded font-sm hover-up">Xóa</button>
+                            <a asp-action="Index" class="btn btn-light rounded font-sm text-body hover-up ms-2">Hủy</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }

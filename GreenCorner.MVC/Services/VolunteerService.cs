@@ -1,4 +1,4 @@
-﻿using GreenCorner.MVC.Models;
+﻿    using GreenCorner.MVC.Models;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
 
@@ -72,6 +72,15 @@ namespace GreenCorner.MVC.Services
             {
                 APIType = SD.APIType.GET,
                 Url = $"{SD.EventAPIBase}/api/Volunteer/teamleader-registration/{id}"
+            });
+        }
+
+        public async Task<ResponseDTO?> GetUserWithParticipation()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/user-activities"
             });
         }
 

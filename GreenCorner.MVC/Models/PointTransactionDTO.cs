@@ -1,0 +1,14 @@
+﻿namespace GreenCorner.MVC.Models
+{
+    public class PointTransactionDTO
+    {
+        public int PointTransactionsId { get; set; }
+
+        public string? UserId { get; set; } = null!;
+
+        public string? Type { get; set; }
+
+        public DateTime? CreatedAt { get; set; }
+		public int Points { get; set; }
+	}
+}

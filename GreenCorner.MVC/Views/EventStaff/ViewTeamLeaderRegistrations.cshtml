@@ -1,39 +1,97 @@
-﻿@model VolunteerRegistrationsViewModel
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@model VolunteerRegistrationsViewModel
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Người dùng</th>
-            <th>Sự kiện</th>
-            <th>Loại đơn</th>
-            <th>Phân công</th>
-            <th>Vật dụng mang theo</th>
-            <th>Trạng thái</th>
-            <th>Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Registrations)
-        {
-            <tr>
-                <td>@item.Volunteer.VolunteerId</td>
-                <td>@item.User.FullName</td>
-                <td>@item.Volunteer.CleanEventId</td>
-                <td>@item.Volunteer.ApplicationType</td>
-                <td>@item.Volunteer.Assignment</td>
-                <td>@item.Volunteer.CarryItems</td>
-                <td>@item.Volunteer.Status</td>
-                <td>
-                    <a asp-action="ViewTeamLeaderRegistrationDetail" asp-route-id="@item.Volunteer.VolunteerId" class="btn btn-info btn-sm">Chi tiết</a>
-                    <form asp-action="ApproveTeamLeader" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-success btn-sm">Phê duyệt</button>
-                    </form>
-                    <form asp-action="RejectTeamLeader" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-danger btn-sm">Từ chối</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<section class="content-main">
+    <div class="content-header">
+        <h2 class="content-title mb-4">Danh sách đơn đăng ký làm Đội trưởng</h2>
+    </div>
+
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm..." />
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select">
+                        <option>Trạng thái</option>
+                        <option>Chờ duyệt</option>
+                        <option>Đã duyệt</option>
+                        <option>Đã từ chối</option>
+                        <option>Tất cả</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select">
+                        <option>Hiển thị 10</option>
+                        <option>Hiển thị 20</option>
+                        <option>Hiển thị 50</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>Người dùng</th>
+                            <th>Sự kiện</th>
+                            <th>Loại đơn</th>
+                            <th>Phân công</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Registrations)
+                        {
+                            <tr>
+                                <td class="text-center">@item.Volunteer.VolunteerId</td>
+                                <td>@item.User.FullName</td>
+                                <td class="text-center">@item.Volunteer.CleanEventId</td>
+                                <td class="text-center">@item.Volunteer.ApplicationType</td>
+                                <td class="text-center">
+                                    @{
+                                        var status = item.Volunteer.Status;
+
+                                        string statusDisplay = status switch
+                                        {
+                                            "Pending" => "Đang chờ duyệt",
+                                            "Approved" => "Đã duyệt",
+                                            "Removed" => "Đã bị hủy",
+                                            _ => "Không xác định"
+                                        };
+
+                                        string statusClass = status switch
+                                        {
+                                            "Pending" => "text-warning",
+                                            "Approved" => "text-success",
+                                            "Removed" => "text-danger",
+                                            _ => "text-muted"
+                                        };
+                                    }
+                                    <span class="@statusClass fw-semibold">@statusDisplay</span>
+                                </td>
+
+
+                                <td class="text-end">
+                                    <a asp-action="ViewTeamLeaderRegistrationDetail" asp-route-id="@item.Volunteer.VolunteerId" class="btn btn-sm btn-info me-1">Chi tiết</a>
+                                    <form asp-action="ApproveTeamLeader" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-success me-1">Phê duyệt</button>
+                                    </form>
+                                    <form asp-action="RejectTeamLeader" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-danger">Từ chối</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
