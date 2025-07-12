@@ -20,6 +20,20 @@ namespace GreenCorner.MVC.Controllers
         public async Task<IActionResult> Index()
         {
             List<EventDTO> listEvent = new();
+            ResponseDTO? response = await _eventService.GetOpenEvent();
+            if (response != null && response.IsSuccess)
+            {
+                listEvent = JsonConvert.DeserializeObject<List<EventDTO>>(response.Result.ToString());
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+            return View(listEvent);
+        }
+        public async Task<IActionResult> GetAllEvent()
+        {
+            List<EventDTO> listEvent = new();
             ResponseDTO? response = await _eventService.GetAllEvent();
             if (response != null && response.IsSuccess)
             {
@@ -93,8 +107,8 @@ namespace GreenCorner.MVC.Controllers
                 return RedirectToAction("Login", "Auth");
             }
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
-            eventReviewDTO.CleanEventId = 2;
             eventReviewDTO.UserId = userId;
+            eventReviewDTO.CleanEventId = 1;
             eventReviewDTO.CreatedAt = DateTime.Now;
             if (ModelState.IsValid)
             {
@@ -111,7 +125,7 @@ namespace GreenCorner.MVC.Controllers
             }
             return View(eventReviewDTO);
         }
-        public async Task<IActionResult> EventReviewHistory(string id)
+        public async Task<IActionResult> EventReviewHistory()
         {
             List<EventReviewDTO> listEventReview = new();
             if (!User.Identity.IsAuthenticated)
@@ -210,10 +224,9 @@ namespace GreenCorner.MVC.Controllers
 
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
             leaderReviewDTO.CreatedAt = DateTime.Now;
-            leaderReviewDTO.CleanEventId = 2;
-            leaderReviewDTO.LeaderId = "2";
             leaderReviewDTO.ReviewerId = userId;
-
+            leaderReviewDTO.CleanEventId = 1;
+            leaderReviewDTO.LeaderId = "1";
             if (ModelState.IsValid)
             {
                 ResponseDTO response = await _eventService.LeaderReview(leaderReviewDTO);
@@ -229,7 +242,7 @@ namespace GreenCorner.MVC.Controllers
             }
             return View(leaderReviewDTO);
         }
-        public async Task<IActionResult> LeaderReviewHistory(string id)
+        public async Task<IActionResult> LeaderReviewHistory()
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -328,14 +341,28 @@ namespace GreenCorner.MVC.Controllers
 			}
 			return View(listEventVolunteer);
 		}
-
+        [HttpGet]
         public async Task<IActionResult> AttendanceCheck(string userId,int eventId, bool check)
         {
 
 			ResponseDTO response = await _eventService.AttendanceCheck(userId, eventId, check);
 			if (response != null && response.IsSuccess)
 			{
-				return RedirectToAction(nameof(ViewEventVolunteerListCheck));
+                return RedirectToAction(nameof(ViewEventVolunteerListCheck),new { eventId = eventId });
+			}
+			else
+			{
+				TempData["error"] = response?.Message;
+			}
+			return NotFound();
+		}
+		public async Task<IActionResult> EditAttendance(string userId, int eventId)
+		{
+
+			ResponseDTO response = await _eventService.EditAttendance(userId, eventId);
+			if (response != null && response.IsSuccess)
+			{
+				return RedirectToAction(nameof(ViewEventVolunteerListCheck), new { eventId = eventId });
 			}
 			else
 			{
@@ -345,8 +372,8 @@ namespace GreenCorner.MVC.Controllers
 		}
 
 
-        //Dangky Volunteer
-        [HttpGet]
+		//Dangky Volunteer
+		[HttpGet]
         public IActionResult RegisterVolunteer(int eventId)
         {
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
@@ -529,7 +556,7 @@ namespace GreenCorner.MVC.Controllers
                 if (response != null && response.IsSuccess)
                 {
                     TempData["success"] = "Create Event successfully!";
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(GetAllEvent));
                 }
                 else
                 {
@@ -560,7 +587,7 @@ namespace GreenCorner.MVC.Controllers
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Event updated successfully!";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(GetAllEvent));
             }
             else
             {
@@ -590,7 +617,7 @@ namespace GreenCorner.MVC.Controllers
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Event updated successfully!";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(GetAllEvent));
             }
             else
             {
@@ -611,15 +638,36 @@ namespace GreenCorner.MVC.Controllers
 				{
 					TempData["error"] = response?.Message;
 				}
-				return RedirectToAction("Index", "Event");
+				return RedirectToAction("GetAllEvent", "Event");
 			}
 			catch (Exception ex)
 			{
 				TempData["error"] = ex.Message;
-				return RedirectToAction("Index", "Event");
+				return RedirectToAction("GetAllEvent", "Event");
 			}
 		}
-        public async Task<IActionResult> ViewEventVolunteerList(int eventId)
+		public async Task<IActionResult> OpenCleanupEvent(int eventId)
+		{
+			try
+			{
+				var response = await _eventService.OpenCleanupEvent(eventId);
+				if (response != null && response.IsSuccess)
+				{
+					TempData["success"] = "Open event thành công";
+				}
+				else
+				{
+					TempData["error"] = response?.Message;
+				}
+				return RedirectToAction("GetAllEvent", "Event");
+			}
+			catch (Exception ex)
+			{
+				TempData["error"] = ex.Message;
+				return RedirectToAction("GetAllEvent", "Event");
+			}
+		}
+		public async Task<IActionResult> ViewEventVolunteerList(int eventId)
         {
             List<EventVolunteerDTO> listEventVolunteer = new();
             ResponseDTO? response = await _eventService.ViewEventVolunteerList(eventId);
@@ -640,13 +688,27 @@ namespace GreenCorner.MVC.Controllers
             ResponseDTO response = await _eventService.KickVolunteer(userId, eventId);
             if (response != null && response.IsSuccess)
             {
-                return RedirectToAction(nameof(ViewEventVolunteerList));
+                return RedirectToAction(nameof(ViewEventVolunteerList), new { eventId = eventId });
             }
             else
             {
                 TempData["error"] = response?.Message;
             }
             return NotFound();
+        }
+        public async Task<IActionResult> GetOpenEventsByTeamLeader(string userId)
+        {
+            List<EventDTO> listEvent = new();
+            ResponseDTO? response = await _eventService.GetOpenEventsByTeamLeader(userId);
+            if (response != null && response.IsSuccess)
+            {
+                listEvent = JsonConvert.DeserializeObject<List<EventDTO>>(response.Result.ToString());
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+            return View(listEvent);
         }
 
         [HttpGet]

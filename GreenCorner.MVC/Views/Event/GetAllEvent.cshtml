@@ -1,0 +1,80 @@
+﻿@model IEnumerable<EventDTO>
+<div class="card shadow border-0 mt-4">
+		<div class="row">
+				<h2 class="content-title card-title">All Event List</h2>
+		</div>
+	<div class="card-body p-4">
+	<div class="row pb-3">
+		<div class="col-6">
+		</div>
+		<div class="col-6 text-end">
+			<a asp-action="CreateCleanupEvent" class="btn btn-outline-primary"><i class="bi bi-plus-square"></i> Create Cleanup Event</a>
+		</div>
+	</div>
+	<div class="card-body">
+	<div class="table-responsive">
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th>Title</th>
+					<th>Description</th>
+					<th>Start Date</th>
+					<th>Max Parti</th>
+					<th>Status</th>
+					<th class="text-end">Action</th>
+				</tr>
+			</thead>
+			
+			<tbody>
+				@foreach (var item in Model)
+				{
+				<tr>
+					<td>
+						@item.Title
+					</td>
+					<td>
+						@item.Description
+					</td>
+					<td>
+						@item.StartDate
+					</td>
+					<td>
+						@item.MaxParticipants
+					</td>
+					<td>
+						@item.Status
+					</td>
+					<td class="text-end d-flex justify-content-end gap-3">
+						<div class="dropdown">
+							<a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
+							<div class="dropdown-menu">
+								<a class="btn btn-success" asp-action="UpdateCleanupEvent" asp-route-eventId="@item.CleanEventId">
+									Update Info
+							</a>
+							<a class="btn btn-success" asp-action="UpdateCleanupEventStatus" asp-route-eventId="@item.CleanEventId">
+									Update Status
+							</a>
+							@{if(@item.Status=="Open"){
+									<a  class="btn btn-danger" asp-action="CloseCleanupEvent" asp-route-eventId="@item.CleanEventId">
+										Close Event
+													</a>
+												}else if (item.Status == "Close")
+												{
+													<a  class="btn btn-danger" asp-action="OpenCleanupEvent" asp-route-eventId="@item.CleanEventId">
+										Open Event
+													</a>
+												}
+											}
+							</div>
+
+						</div>
+					</td>
+				</tr>
+				}
+			</tbody>
+		</table
+	</div>
+	</div>
+</div>
+</div>
+

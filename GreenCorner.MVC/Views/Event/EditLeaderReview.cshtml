@@ -1,45 +1,72 @@
 ﻿@model LeaderReviewDTO
 
-<form asp-controller="Event" asp-action="EditLeaderReview" enctype="multipart/form-data">
-    <br />
-    <div class="container border p-3">Leader Review</h1>
-        <input hidden asp-for="LeaderReviewId" />
-        <input hidden asp-for="CreatedAt" />
-        <input hidden asp-for="CleanEventId" />
-        <input hidden asp-for="LeaderId" />
-        <input hidden asp-for="ReviewerId" />
-        <hr />
-        <div class="row">
-            <div class="col-2">
-                <label class="control-label pt-2" style="font-size:20px;">Rating</label>
-            </div>
-            <div class="col-10 pb-3">
-                <input asp-for="Rating" class="form-control" />
-                <span asp-validation-for="Rating" class="text-danger"></span>
-            </div>
-            <div class="col-2">
-                <label class="control-label pt-2" style="font-size:20px;">Comment</label>
-            </div>
-            <div class="col-10 pb-3">
-                <input asp-for="Comment" class="form-control" />
-                <span asp-validation-for="Comment" class="text-danger"></span>
-            </div>
-
-            <div class="col-5 offset-2">
-
-                <a asp-controller="Event" asp-action="LeaderReviewHistory" class="btn-primary btn form-control ">Back to List</a>
-            </div>
-            <div class="col-5">
-                <input type="submit" value="Update" class="btn btn-success form-control" />
-
-            </div>
-        </div>
-        <div>
+<div class="comment-form">
+    <h3 class="mb-15">Edit Leader Review</h3>
+    <div class="row">
+        <div class="col-lg-9 col-md-12">
+            <form asp-controller="Event" asp-action="EditLeaderReview" enctype="multipart/form-data">
+                <input hidden asp-for="LeaderReviewId" />
+                <input hidden asp-for="CreatedAt" />
+                <input hidden asp-for="CleanEventId" />
+                <input hidden asp-for="LeaderId" />
+                <input hidden asp-for="ReviewerId" />
+                <div class="row">
+                    <div class="col-12">
+                        <div>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <input required type="radio" name="rating" id="star-@i" value="@i"
+                                @(i == Model.Rating ? "checked" : "") style="display: none;" />
+                                <label for="star-@i"
+                                       style="font-size: 30px; color:@(i <= Model.Rating ? "orange" : "gray"); cursor: pointer;"
+                                       onmouseover="highlightStars(@i)"
+                                       onmouseout="resetStars()"
+                                       onclick="selectStar(@i)">&#9733;</label>
+                                <span asp-validation-for="Rating" class="text-danger"></span>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <input required asp-for="Comment" class="form-control" placeholder="Comment" />
+                            <span asp-validation-for="Comment" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <a asp-controller="Event" asp-action="LeaderReviewHistory" class="button button-contactForm ">Back to List</a>
+                    <button type="submit" class="button button-contactForm">Save</button>
+                </div>
+            </form>
         </div>
     </div>
-</form>
+</div>
 
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+<script>
+    let selectedRating = Model.Rating;
+
+    function highlightStars(rating) {
+        for (let i = 1; i <= 5; i++) {
+            const label = document.querySelector(`label[for='star-${i}']`);
+            label.style.color = i <= rating ? 'orange' : 'gray';
+        }
+    }
+
+    function resetStars() {
+        for (let i = 1; i <= 5; i++) {
+            const label = document.querySelector(`label[for='star-${i}']`);
+            label.style.color = i <= selectedRating ? 'orange' : 'gray';
+        }
+    }
+
+    function selectStar(rating) {
+        selectedRating = rating;
+        document.getElementById(`star-${rating}`).checked = true;
+        document.getElementById("rating-value").textContent = `${rating}/5`;
+        resetStars();
+    }
+</script>

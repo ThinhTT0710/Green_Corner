@@ -1,42 +1,43 @@
 ﻿@model EventDTO
-
 <form asp-controller="Event" asp-action="UpdateCleanupEvent" enctype="multipart/form-data">
-    <br />
-    <div class="container border p-3">
-        <h1 class="text-dark text-center">Edit Event Review</h1>
-        <input hidden asp-for="CleanEventId" />
-        <input hidden asp-for="CreatedAt" />
-        <input hidden asp-for="EndDate" />
-        <input hidden asp-for="Title" />
-        <input hidden asp-for="Description" />
-        <input hidden asp-for="StartDate" />
-        <input hidden asp-for="MaxParticipants" />
-        <hr />
+    <input hidden asp-for="CleanEventId" />
+    <input hidden asp-for="CreatedAt" />
+    <input hidden asp-for="EndDate" />
+    <input hidden asp-for="Title" />
+    <input hidden asp-for="Description" />
+    <input hidden asp-for="StartDate" />
+    <input hidden asp-for="MaxParticipants" />
+    <section class="content-main">
         <div class="row">
-           
-           
-           
-            <div class="col-2">
-                    <label class="control-label pt-2" style="font-size:20px;">Status</label>
+            <div class="col-9">
+                <div class="content-header">
+                    <h2 class="content-title">Update Cleanup Event</h2>
+                    <div>
+                        <button style="color: yellow" class="btn btn-light rounded font-sm mr-5 text-body hover-up"><a asp-controller="Auth" asp-action="GetStaffList">Back to List</a></button>
+                        <button type="submit" class="btn btn-md rounded font-sm hover-up">Update</button>
+                    </div>
+                </div>
             </div>
-            <div class="col-10 pb-3">
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Basic</h4>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-4">
+                    <label class="control-label pt-2" style="font-size:20px;">Status</label>
+            
                 <select name="Status" asp-for="Status">
-                    <option value="Open">Close</option>
+                    <option value="Open">Open</option>
                     <option value="Close">Close</option>
                 </select>
-            </div>
-            <div class="col-5 offset-2">
-
-                <a asp-controller="Event" asp-action="Index" class="btn-primary btn form-control ">Back to List</a>
-            </div>
-            <div class="col-5">
-                <input type="submit" value="Update" class="btn btn-success form-control" />
-
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-        <div>
-        </div>
-    </div>
+    </section>
 </form>
 
 

@@ -18,7 +18,12 @@ namespace GreenCorner.EventAPI.Repositories
         {
             return await _context.CleanupEvents.ToListAsync();
         }
-
+        public async Task<IEnumerable<CleanupEvent>> GetOpenEvent()
+        {
+            return await _context.CleanupEvents
+                                 .Where(e => e.Status == "Open")
+                                 .ToListAsync();
+        }
         public async Task<CleanupEvent> GetByEventId(int id)
         {
             return await _context.CleanupEvents
@@ -43,7 +48,18 @@ namespace GreenCorner.EventAPI.Repositories
             cleanupEvent.Status = "Close";
             await _context.SaveChangesAsync();
         }
-        public async Task UpdateCleanupEvent(CleanupEvent item)
+		public async Task OpenCleanupEvent(int id)
+		{
+			var cleanupEvent = await _context.CleanupEvents.FindAsync(id);
+			if (cleanupEvent == null)
+			{
+				throw new KeyNotFoundException($"Event review with ID {id} not found.");
+			}
+			cleanupEvent.EndDate = null;
+			cleanupEvent.Status = "Open";
+			await _context.SaveChangesAsync();
+		}
+		public async Task UpdateCleanupEvent(CleanupEvent item)
         {
             var cleanupEvent = await _context.CleanupEvents.FindAsync(item.CleanEventId);
             if (cleanupEvent == null)
