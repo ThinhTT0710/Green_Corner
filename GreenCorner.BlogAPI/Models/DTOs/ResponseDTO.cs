@@ -1,4 +1,4 @@
-﻿namespace GreenCorner.AuthAPI.Models.DTO
+﻿namespace GreenCorner.BlogAPI.Models.DTO
 {
     public class ResponseDTO
     {

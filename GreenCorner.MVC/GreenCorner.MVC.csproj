@@ -16,6 +16,8 @@
 	
 	<ItemGroup>
 	  <Folder Include="wwwroot\admin\fonts\material-icon\css\" />
+	  <Folder Include="wwwroot\admin\imgs\avatar-staff\" />
+	  <Folder Include="wwwroot\imgs\icons\" />
 	</ItemGroup>
 
 </Project>

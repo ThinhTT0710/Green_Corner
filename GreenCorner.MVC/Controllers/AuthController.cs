@@ -310,7 +310,31 @@ namespace GreenCorner.MVC.Controllers
 				return RedirectToAction("Login", "Auth");
 			}
 
-			var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
+            var file = Request.Form.Files.FirstOrDefault(); // Lấy file đầu tiên
+
+            if (file != null && file.Length > 0)
+            {
+                string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/admin/imgs/avatar-staff");
+
+                if (!Directory.Exists(uploadPath))
+                {
+                    Directory.CreateDirectory(uploadPath);
+                }
+
+                // Tạo tên file duy nhất
+                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                string filePath = Path.Combine(uploadPath, fileName);
+
+                // Lưu file
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                // Gán tên file vào thuộc tính
+                staffDTO.Avatar = fileName;
+            }
+            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
             staffDTO.ID = userId;
 			if (ModelState.IsValid)
 			{
@@ -345,9 +369,41 @@ namespace GreenCorner.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateStaff(StaffDTO staffDTO)
         {
-            staffDTO.Password = "Thinh@123";
-            staffDTO.Role = "EventStaff";
+
+            ResponseDTO? existingResponse = await _authService.GetStaffById(staffDTO.ID);
+            StaffDTO existingStaff = JsonConvert.DeserializeObject<StaffDTO>(existingResponse.Result.ToString());
+            var file = Request.Form.Files.FirstOrDefault(); // Lấy file đầu tiên
+            staffDTO.Avatar = existingStaff.Avatar;
+            staffDTO.Password = existingStaff.Password;
+            staffDTO.Role = existingStaff.Role;
+            if (file != null && file.Length > 0)
+            {
+                string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/admin/imgs/avatar-staff");
+
+                if (!Directory.Exists(uploadPath))
+                {
+                    Directory.CreateDirectory(uploadPath);
+                }
+
+                // Tạo tên file duy nhất
+                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                string filePath = Path.Combine(uploadPath, fileName);
+
+                // Lưu file
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+                if(existingStaff.Avatar!= fileName)
+                {
+                    existingStaff.Avatar = fileName;
+                }
+                // Gán tên file vào thuộc tính
+                staffDTO.Avatar = existingStaff.Avatar;
+            }
+            
             ResponseDTO response = await _authService.UpdateStaff(staffDTO);
+
             if (response != null && response.IsSuccess)
             {
                 
@@ -365,6 +421,7 @@ namespace GreenCorner.MVC.Controllers
             ResponseDTO response = await _authService.BlockStaffAccount(staffID);
             if (response != null && response.IsSuccess)
             {
+                TempData["success"] = "Block account successfully.";
                 return RedirectToAction(nameof(GetStaffList));
             }
             else
@@ -379,7 +436,8 @@ namespace GreenCorner.MVC.Controllers
 			ResponseDTO response = await _authService.UnBlockStaffAccount(staffID);
 			if (response != null && response.IsSuccess)
 			{
-				return RedirectToAction(nameof(GetStaffList));
+                TempData["success"] = "Unblock account successfully.";
+                return RedirectToAction(nameof(GetStaffList));
 			}
 			else
 			{

@@ -22,7 +22,11 @@ namespace GreenCorner.EventAPI.Services
             var events =  await _eventRepository.GetAllEvent();
             return _mapper.Map<List<EventDTO>>(events);
         }
-
+        public async Task<IEnumerable<EventDTO>> GetOpenEvent()
+        {
+            var events = await _eventRepository.GetOpenEvent();
+            return _mapper.Map<List<EventDTO>>(events);
+        }
         public async Task<EventDTO> GetByEventId(int id)
         {
             var cleanupEvent = await _eventRepository.GetByEventId(id);
@@ -39,7 +43,11 @@ namespace GreenCorner.EventAPI.Services
         {
             await _eventRepository.CloseCleanupEvent(id);
         }
-        public async Task UpdateCleanupEvent(EventDTO eventDTO)
+		public async Task OpenCleanupEvent(int id)
+		{
+			await _eventRepository.OpenCleanupEvent(id);
+		}
+		public async Task UpdateCleanupEvent(EventDTO eventDTO)
         {
             CleanupEvent cleanup = _mapper.Map<CleanupEvent>(eventDTO);
             await _eventRepository.UpdateCleanupEvent(cleanup);

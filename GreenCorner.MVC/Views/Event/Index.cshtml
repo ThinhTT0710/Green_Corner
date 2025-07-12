@@ -1,71 +1,55 @@
-﻿﻿
-@model IEnumerable<EventDTO>
-<div class="card shadow border-0 mt-4">
-	<div class="card-header bg-secondary bg-gradient ml-0 py-3">
-		<div class="row">
-			<div class="col-12 text-center">
-				<h1 class="text-white">Events List</h1>
-			</div>
-		</div>
-	</div>
-	<div class="card-body p-4">
-		<div class="col-6 text-end">
-			<a asp-action="CreateCleanupEvent" class="btn btn-outline-primary"><i class="bi bi-plus-square"></i> Create New Event</a>
+﻿@model IEnumerable<EventDTO>
+<div class="page-content pt-50">
+    <div class="container">
+        <div class="archive-header-2 text-center">
+            <h1 class="display-2 mb-50">Events List</h1>
+            <div class="row">
+                <div class="col-lg-5 mx-auto">
+                    <div class="sidebar-widget-2 widget_search mb-50">
+                        <div class="search-form">
+                            <form action="#">
+                                <input type="text" placeholder="Search vendors (by name or ID)..." />
+                                <button type="submit"><i class="fi-rs-search"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+        <div class="row vendor-grid">
+            @foreach (var item in Model)
+            {
+                <div class="col-lg-6 col-md-6 col-12 col-sm-6">
+                    <div class="vendor-wrap style-2 mb-40">
+                    <div class="product-badges product-badges-position product-badges-mrg">
+                        <span class="hot">@item.Status</span>
+                    </div>
+                    <div class="vendor-img-action-wrap">
+                        <div class="vendor-img">
+                            <a href="vendor-details-1.html">
+                                <img class="default-img" src="./imgs/vendor/vendor-1.png" alt="" />
+                            </a>
+                        </div>
+                        
+                    </div>
+                    <div class="vendor-content-wrap">
+                        <div class="mb-30">
+                                <h4 class="mb-5"><a asp-action="GetEventById" asp-route-eventId="@item.CleanEventId">@item.Title</a></h4>
+                            <div class="vendor-info d-flex justify-content-between align-items-end mt-30">
+                                <ul class="contact-infor text-muted">
+                                    <li><strong>Description: </strong> <span>@item.Description</span></li>
+                                    <li><strong>Max Participants:</strong><span>@item.MaxParticipants</span></li>
+                                    <li><strong>Date:</strong><span>@item.StartDate</span></li>
+                                </ul>
+                                    <a style="margin-left:200px" asp-action="GetEventById" asp-route-eventId="@item.CleanEventId" class="btn btn-xs">View Detail<i class="fi-rs-arrow-small-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
 
-		</div>
-		<table class="table">
-			<thead>
-				<tr>
-					<th>
-						Title
-					</th>
-					<th>
-						Description
-					</th>
-					<th>
-						Status
-					</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var item in Model)
-				{
-					<tr>
-						<td>
-							@item.Title
-						</td>
-						<td>
-							@item.Description
-						</td>
-						<td>
-							@item.Status
-						</td>
-						<td>
-							<a class="btn btn-success" asp-action="GetEventById" asp-route-eventId="@item.CleanEventId">
-								<i class="bi bi-pencil-square"></i>
-							</a>
-							<a class="btn btn-success" asp-action="ViewEventVolunteerList" asp-route-eventId="@item.CleanEventId">
-								<i class="bi bi-pencil-square">Volunteer List</i>
-							</a>
-							<a class="btn btn-success" asp-action="UpdateCleanupEvent" asp-route-eventId="@item.CleanEventId">
-								<i class="bi bi-pencil-square">Update</i>
-							</a>
-							<a class="btn btn-success" asp-action="UpdateCleanupEventStatus" asp-route-eventId="@item.CleanEventId">
-								<i class="bi bi-pencil-square">Update Status</i>
-							</a>
-							<a class="btn btn-success" asp-action="ViewEventVolunteerListCheck" asp-route-eventId="@item.CleanEventId">
-								<i class="bi bi-pencil-square">Attendance</i>
-							</a>
-							<a class="btn btn-danger" asp-action="CloseCleanupEvent" asp-route-eventId="@item.CleanEventId">
-								<i class="bi bi-x">Close Event</i>
-							</a>
-						</td>
-					</tr>
-				}
-			</tbody>
-		</table>
-
-	</div>
-
+    </div>
 </div>

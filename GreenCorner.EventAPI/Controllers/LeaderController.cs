@@ -30,15 +30,48 @@ namespace GreenCorner.EventAPI.Controllers
 				_responseDTO.Message = ex.Message;
 				_responseDTO.IsSuccess = false;
 				return _responseDTO;
-			}
-		}
+            }
+        }
 
         [HttpGet("{userID},{eventId},{check}")]
         public async Task<ResponseDTO> AttendanceCheck(string userID, int eventId, bool check)
         {
             try
             {
-                 await _leaderService.AttendanceCheck(userID, eventId, check);
+                await _leaderService.AttendanceCheck(userID, eventId, check);
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
+		[HttpGet("edit-attendance/{userID},{eventId}")]
+		public async Task<ResponseDTO> EditAttendance(string userID, int eventId)
+		{
+			try
+			{
+				await _leaderService.EditAttendance(userID, eventId);
+				return _responseDTO;
+			}
+			catch (Exception ex)
+			{
+				_responseDTO.Message = ex.Message;
+				_responseDTO.IsSuccess = false;
+				return _responseDTO;
+			}
+		}
+
+        [HttpGet("getEvent-byLeader/{userID}")]
+        public async Task<ResponseDTO> GetEventByLeader(string userID)
+        {
+            try
+            {
+                var volunteerList = await _leaderService.GetOpenEventsByTeamLeader(userID);
+                _responseDTO.Result = volunteerList;
                 return _responseDTO;
             }
             catch (Exception ex)
