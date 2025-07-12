@@ -26,6 +26,22 @@ namespace GreenCorner.MVC.Controllers
             }
             return View(listVoucher);
         }
+        public async Task<IActionResult> ViewDetailVoucher(int voucherId)
+        {
+            VoucherDTO voucher = new();
+            ResponseDTO? response = await _rewardService.GetVoucherById(voucherId);
+
+            if (response != null && response.IsSuccess)
+            {
+                voucher = JsonConvert.DeserializeObject<VoucherDTO>(response.Result.ToString());
+            }
+            else
+            {
+                return NotFound(); // hoặc RedirectToAction("Index") nếu bạn muốn
+            }
+
+            return View("Detail", voucher); // View tên Detail.cshtml
+        }
 
     }
 }

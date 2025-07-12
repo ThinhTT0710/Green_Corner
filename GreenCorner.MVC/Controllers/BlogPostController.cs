@@ -143,14 +143,12 @@ namespace GreenCorner.MVC.Controllers
         {
             BlogWithAuthorViewModel viewModel = new();
 
-            // Lấy thông tin bài viết
             ResponseDTO? response = await _blogPostService.GetByBlogId(id);
             if (response != null && response.IsSuccess && response.Result != null)
             {
                 var blogPost = JsonConvert.DeserializeObject<BlogPostDTO>(response.Result.ToString());
                 viewModel.Blog = blogPost;
 
-                // Lấy thông tin tác giả
                 var authorResponse = await _userService.GetUserById(blogPost.AuthorId);
                 if (authorResponse != null && authorResponse.IsSuccess && authorResponse.Result != null)
                 {
@@ -233,7 +231,6 @@ namespace GreenCorner.MVC.Controllers
                 blogDTO.AuthorId = userId;
             }
 
-            // Xử lý hình ảnh
             var files = Request.Form.Files;
             var (isSuccess, imagePaths, errorMessage) = await FileUploadHelper.UploadImagesStrictAsync(
                 files, folderName: "blog", filePrefix: "blog");
@@ -244,7 +241,6 @@ namespace GreenCorner.MVC.Controllers
                 return View(blogDTO);
             }
 
-            // Gán đường dẫn hình ảnh nếu có
             blogDTO.ThumbnailUrl = string.Join("&", imagePaths);
 
             if (ModelState.IsValid)
@@ -284,7 +280,6 @@ namespace GreenCorner.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateBlog(BlogPostDTO blogDto)
         {
-            // Kiểm tra người dùng đăng nhập
             if (!User.Identity.IsAuthenticated)
             {
                 TempData["loginError"] = "Bạn cần đăng nhập để thực hiện chức năng này";
@@ -296,7 +291,6 @@ namespace GreenCorner.MVC.Controllers
 
             if (hasNewImages)
             {
-                // Xóa hình cũ nếu có
                 if (!string.IsNullOrEmpty(blogDto.ThumbnailUrl))
                 {
                     foreach (var oldPath in blogDto.ThumbnailUrl.Split("&"))
@@ -321,7 +315,6 @@ namespace GreenCorner.MVC.Controllers
                 blogDto.ThumbnailUrl = string.Join("&", imagePaths);
             }
 
-            // Gọi service cập nhật
             ResponseDTO response = await _blogPostService.UpdateBlog(blogDto);
             if (response != null && response.IsSuccess)
             {
@@ -372,7 +365,6 @@ namespace GreenCorner.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToFavorite(int blogId)
         {
-            // Ví dụ lấy UserId trong controller action
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
 
             if (string.IsNullOrEmpty(userId))
@@ -399,7 +391,6 @@ namespace GreenCorner.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> RemoveFromFavorite(int blogId)
         {
-            // Ví dụ lấy UserId trong controller action
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
 
             ;
@@ -426,7 +417,6 @@ namespace GreenCorner.MVC.Controllers
         [HttpGet]
         public async Task<IActionResult> IsFavorited(int blogId)
         {
-            // Ví dụ lấy UserId trong controller action
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
 
             if (string.IsNullOrEmpty(userId))
@@ -441,7 +431,6 @@ namespace GreenCorner.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> ToggleFavorite(int blogId)
         {
-            // Ví dụ lấy UserId trong controller action
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
 
 
@@ -508,7 +497,7 @@ namespace GreenCorner.MVC.Controllers
 
             var report = JsonConvert.DeserializeObject<BlogReportDTO>(Convert.ToString(response.Result)!);
 
-            return View(report); // Trả về view để sửa
+            return View(report);
         }
 
 
@@ -537,7 +526,7 @@ namespace GreenCorner.MVC.Controllers
         public async Task<IActionResult> ViewBlogReports(int blogId)
         {
             List<BlogReportDTO> reports = new();
-            Dictionary<string, UserDTO> reportAuthors = new(); // ánh xạ userId -> User
+            Dictionary<string, UserDTO> reportAuthors = new();
 
             var currentUserId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
 
@@ -546,7 +535,6 @@ namespace GreenCorner.MVC.Controllers
             {
                 reports = JsonConvert.DeserializeObject<List<BlogReportDTO>>(response.Result.ToString());
 
-                // Lấy danh sách các userId duy nhất trong danh sách báo cáo
                 var userIds = reports
                     .Where(r => !string.IsNullOrEmpty(r.UserId))
                     .Select(r => r.UserId!)
@@ -568,7 +556,7 @@ namespace GreenCorner.MVC.Controllers
 
                 ViewBag.BlogId = blogId;
                 ViewBag.UserId = currentUserId;
-                ViewBag.ReportAuthors = reportAuthors; // Truyền dictionary xuống View
+                ViewBag.ReportAuthors = reportAuthors; 
                 return View(reports);
             }
             else
@@ -583,7 +571,7 @@ namespace GreenCorner.MVC.Controllers
         [HttpGet]
         public IActionResult SubmitFeedback()
         {
-            return View(); // Trả về form để nhập feedback
+            return View(); 
         }
 
         [HttpPost]
@@ -591,7 +579,6 @@ namespace GreenCorner.MVC.Controllers
         public async Task<IActionResult> SubmitFeedback(FeedbackDTO feedback)
         {
             var userid = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
-            // Gán UserId từ thông tin đăng nhập
             feedback.UserId = userid;
 
             feedback.CreatedAt = DateTime.Now;
@@ -696,7 +683,7 @@ namespace GreenCorner.MVC.Controllers
                 foreach (var report in reportList)
                 {
                     UserDTO? user = null;
-                    if (!string.IsNullOrEmpty(report.LeaderId)) // hoặc report.LeaderId nếu có
+                    if (!string.IsNullOrEmpty(report.LeaderId)) 
                     {
                         var userResponse = await _userService.GetUserById(report.LeaderId);
                         if (userResponse != null && userResponse.IsSuccess && userResponse.Result != null)

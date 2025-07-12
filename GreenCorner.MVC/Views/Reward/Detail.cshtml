@@ -1,0 +1,61 @@
+﻿@model VoucherDTO
+
+@{
+    ViewData["Title"] = "Chi tiết Reward";
+}
+
+<section class="content-main">
+    <div class="row">
+        <div class="col-12">
+            <div class="content-header mb-4">
+                <h2 class="content-title">@ViewData["Title"]</h2>
+            </div>
+        </div>
+
+        <!-- Phần trái -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <!-- Title -->
+                    <div class="mb-4">
+                        <label class="form-label">Tiêu đề voucher</label>
+                        <input class="form-control" value="@Model.Title" readonly />
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <label class="form-label">Mô tả</label>
+                        <textarea class="form-control" style="min-height: 150px;" readonly>@Model.Description</textarea>
+                    </div>
+
+                    <!-- Points -->
+                    <div class="mb-4">
+                        <label class="form-label">Điểm yêu cầu</label>
+                        <input class="form-control" value="@Model.PointsRequired" readonly />
+                    </div>
+
+                    <!-- Expiration -->
+                    <div class="mb-4">
+                        <label class="form-label">Ngày hết hạn</label>
+                        <input class="form-control" value="@Model.ExpirationDate?.ToString("dd/MM/yyyy")" readonly />
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Phần phải -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5>Thao tác</h5>
+                    <p class="text-muted mt-2">Bạn có thể xem chi tiết voucher hoặc quay lại danh sách voucher.</p>
+                    <div>
+                        <a asp-action="Index" class="btn btn-light rounded font-sm text-body hover-up ms-2">Quay lại</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
