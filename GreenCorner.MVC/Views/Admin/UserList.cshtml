@@ -68,7 +68,7 @@
                                 }
                             <td>@item.PhoneNumber</td>
                             <td class="text-end">
-                                <a href="#" class="btn btn-sm btn-brand rounded font-sm mt-15">Xem hồ sơ</a>
+                                    <a asp-controller="Admin" asp-action="UserDetail" asp-route-userId="@item.ID" class="btn btn-sm btn-brand rounded font-sm mt-15">Xem hồ sơ</a>
                                     @if (!item.IsBan)
                                     {
                                         <a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-controller="Admin" asp-action="BlockUser" asp-route-userId="@item.ID">Chặn

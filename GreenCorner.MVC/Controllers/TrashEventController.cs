@@ -50,6 +50,36 @@ namespace GreenCorner.MVC.Controllers
             return View(viewModelList);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Detail(int trashReportId) 
+        {
+            
+
+            ResponseDTO response = await _trashEventService.GetByTrashEventId(trashReportId);
+            if (response != null && response.IsSuccess)
+            {
+                TrashEventDTO trashEventDTO = JsonConvert.DeserializeObject<TrashEventDTO>(response.Result.ToString());
+                ResponseDTO? userResponse = await _userService.GetUserById(trashEventDTO.UserId);
+
+                UserDTO userDTO = new UserDTO();
+
+                if (userResponse != null && userResponse.IsSuccess)
+                {
+                    userDTO = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
+                }
+                TrashReportListViewModel viewModel = new() { 
+                    TrashEvent = trashEventDTO,
+                    User = userDTO 
+                };
+
+                return View(viewModel);
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+                return RedirectToAction(nameof(Index));
+            }
+        }
 
         public async Task<IActionResult> ReportTrashEvent()
         {

@@ -1,0 +1,30 @@
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace GreenCorner.MVC.Models.Chat
+{
+    public class ChatMessageDTO
+    {
+        [Key]
+        public int ChatMessageId { get; set; }
+
+        [Required]
+        public int EventId { get; set; }
+
+        [Required]
+        public string SenderId { get; set; }
+
+        [Required]
+        [MaxLength(255)]
+        public string SenderName { get; set; }
+
+        [MaxLength(255)]
+        public string? SenderAvatar { get; set; }
+
+        [Required]
+        public string Content { get; set; }
+
+        [Required]
+        public DateTime Timestamp { get; set; }
+    }
+}

@@ -226,6 +226,23 @@ namespace GreenCorner.EcommerceAPI.Controllers
             }
         }
 
+        [HttpGet("get-top-selling-product")]
+        public async Task<ResponseDTO> GetTrendingProduct()
+        {
+            try
+            {
+                var products = await _orderService.Top10BestSelling();
+                _responseDTO.Result = products;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
         [HttpGet("monthly-analytics")]
         public async Task<ResponseDTO> GetMonthlyAnalytics()
         {

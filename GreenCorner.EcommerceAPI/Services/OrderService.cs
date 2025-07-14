@@ -197,6 +197,51 @@ namespace GreenCorner.EcommerceAPI.Services
                 throw new Exception("Error when fetching best-selling products: " + ex.Message);
             }
         }
+
+        public async Task<List<ProductDTO>> Top10BestSelling()
+        {
+            try
+            {
+                var products = await _productService.GetAllProduct();
+                var orders = await GetAll();
+
+                var allOrderDetails = orders.SelectMany(o => o.OrderDetailsDTO).ToList();
+
+                var topSelling = allOrderDetails
+                    .GroupBy(od => od.ProductId)
+                    .Select(group => new
+                    {
+                        ProductId = group.Key,
+                        TotalQuantity = group.Sum(x => x.Quantity)
+                    })
+                    .OrderByDescending(x => x.TotalQuantity)
+                    .Take(10)
+                    .ToList();
+
+                if (topSelling.Count < 10)
+                {
+                    var remainingProducts = products
+                        .Where(p => !topSelling.Any(ts => ts.ProductId == p.ProductId))
+                        .OrderBy(x => Guid.NewGuid())
+                        .Take(10 - topSelling.Count)
+                        .Select(p => new { ProductId = p.ProductId, TotalQuantity = 0 });
+
+                    topSelling.AddRange(remainingProducts);
+                }
+
+                var result = topSelling
+                    .Select(tp => products.FirstOrDefault(p => p.ProductId == tp.ProductId))
+                    .Where(p => p != null)
+                    .ToList();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error when fetching best-selling products: " + ex.Message);
+            }
+        }
+
         public async Task<CategorySalesDto> GetSalesByCategory()
         {
             return await _orderRepository.GetSalesByCategory();

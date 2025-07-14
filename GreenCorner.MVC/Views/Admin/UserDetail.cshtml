@@ -1,0 +1,275 @@
+﻿@model UserProfileViewModel
+@{
+	ViewData["Title"] = "User List";
+	Layout = "_LayoutAdmin";
+}﻿
+<section class="content-main">
+    <div class="content-header">
+        <a href="/Admin/UserList"><i class="material-icons md-arrow_back"></i>Trở về</a>
+    </div>
+    <div class="row">
+    <div class="card mb-4">
+        <div class="card-header bg-brand-2" style="height: 150px; background: #3BB77E;"></div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl col-lg flex-grow-0" style="flex-basis: 230px">
+                    <div class="img-thumbnail shadow w-100 bg-white position-relative text-center" style="height: 190px; width: 200px; margin-top: -120px">
+                        <img src="@Model.User.Avatar" class="center-xy img-fluid" alt="Logo Avatar" />
+                    </div>
+                </div>
+                <div class="col-xl col-lg">
+                    <h3>@Model.User.FullName</h3>
+                </div>
+                <div class="col-xl-4 text-md-end">
+                    @if (!Model.User.IsBan)
+                    {
+                        <a href="#" class="btn btn-primary"> Hoạt động </a>
+                    }
+                    else
+                    {
+                        <a href="#" class="btn btn-danger">
+                            Bị khóa <i class="material-icons md-launch"></i>
+                        </a>
+                            }
+                </div>
+            </div>
+            <hr class="my-4" />
+            <div class="row g-4">
+                <div class="col-md-12 col-lg-6 col-xl-2">
+                    <article class="box">
+                        <p class="mb-0 text-muted">Điểm:</p>
+                        <h5 class="text-success">@Model.TotalPoints</h5>
+                        <p class="mb-0 text-muted">Sự kiện đăng ký:</p>
+                        <h5 class="text-success mb-0">@Model.ParticipatedActivities?.Count()</h5>
+                    </article>
+                </div>
+                <div class="col-sm-6 col-lg-4 col-xl-3">
+                    <h6>Liên hệ</h6>
+                    <p>
+                        Email: @Model.User.Email <br />
+                        Số điện thoại: @Model.User.PhoneNumber
+                    </p>
+                </div>
+                <div class="col-sm-6 col-lg-4 col-xl-3">
+                    <h6>Địa chỉ</h6>
+                    <p>
+                        @Model.User.Address
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="row">
+    <div class="col-lg-6">
+    <div class="card mb-4">
+        <header class="card-header">
+            <h4 class="card-title">Lịch sử trao đổi điểm</h4>
+            <div class="row align-items-center">    
+                <div class="col-md-2 col-6">
+                    <input type="date" value="02.05.2021" class="form-control" />
+                </div>
+                <div class="col-md-2 col-6">
+                    <div class="custom_select">
+                        <select class="form-select select-nice">
+                            <option selected>-- Loại --</option>
+                            <option>Đổi điểm</option>
+                            <option>Nhận điểm</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div class="table-responsive">
+                    @if (!Model.PointTransactions.Any())
+                    {
+                    <p class="text-center">Không có lịch sử trao đổi điểm nào trước đây</p>    
+                    }
+                    else{
+                    <table class="table align-middle table-nowrap mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="align-middle" scope="col">ID</th>
+                                <th class="align-middle" scope="col">Điểm</th>
+                                <th class="align-middle" scope="col">Loại</th>
+                                <th class="align-middle" scope="col">Ngày</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var item in Model.PointTransactions)
+                            {
+                            <tr>
+                                <td><a href="#" class="fw-bold">@item.PointTransactionsId</a></td>
+                                <td>@item.Points</td>
+                                @if (@item.Type == "Đổi điểm")
+                                {
+                                    <td>
+                                        <span class="badge rounded-pill badge-soft-warning">@item.Type</span>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <span class="badge rounded-pill badge-soft-success">@item.Type</span>
+                                    </td>
+                                }
+                                <td>@item.CreatedAt?.ToString("HH:mm:ss dd/MM/yyyy")</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <header class="card-header">
+                    <h4 class="card-title">Lịch sử tham gia sự kiện</h4>
+                    <div class="row align-items-center">
+                        <div class="col-md-2 col-6">
+                            <input type="date" value="02.05.2021" class="form-control" />
+                        </div>
+                        <div class="col-md-2 col-6">
+                            <div class="custom_select">
+                                <select class="form-select select-nice">
+                                    <option selected>-- Loại --</option>
+                                    <option>Đổi điểm</option>
+                                    <option>Nhận điểm</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <div class="table-responsive">
+                            @if (!Model.PointTransactions.Any())
+                            {
+                                <p class="text-center">Không có lịch sử trao đổi điểm nào trước đây</p>
+                            }
+                            else
+                            {
+                                <table class="table align-middle table-nowrap mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="align-middle" scope="col">ID Sự kiện</th>
+                                            <th class="align-middle" scope="col">Chức vụ</th>
+                                            <th class="align-middle" scope="col">Trạng thái</th>
+                                            <th class="align-middle" scope="col">Ngày đăng  ký</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.ParticipatedActivities)
+                                        {
+                                            <tr>
+                                                <td><a href="#" class="fw-bold">@item.CleanEventId</a></td>
+                                                <td>@item.ApplicationType</td>
+                                                @if (@item.Status == "Không tham gia")
+                                                {
+                                                    <td>
+                                                        <span class="badge rounded-pill badge-soft-danger">@item.Status</span>
+                                                    </td>
+                                                }
+                                                else if (@item.Status == "Chờ xác nhận")
+                                                {
+                                                    <td>
+                                                        <span class="badge rounded-pill badge-soft-warning">@item.Status</span>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td>
+                                                        <span class="badge rounded-pill badge-soft-success">@item.Status</span>
+                                                    </td>
+                                                }
+                                                <td>@item.CreatedAt?.ToString("dd/MM/yyyy")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (!Model.OrderHistory.Any())
+    {
+        <p class="text-center">Không có lịch sử đơn hàng nào trước đây</p>
+    }
+    else
+    {
+        <div class="card mb-4">
+                <header class="card-header">
+                    <h4 class="card-title">Lịch sử đặt hàng</h4>
+                    <div class="row align-items-center">
+                        <div class="col-md-2 col-6">
+                            <div class="custom_select">
+                                <select class="form-select select-nice">
+                                    <option selected>Status</option>
+                                    <option>All</option>
+                                    <option>Paid</option>
+                                    <option>Chargeback</option>
+                                    <option>Refund</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div class="table-responsive">
+                    <table class="table align-middle table-nowrap mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="align-middle" scope="col">Đơn hàng</th>
+                                <th class="align-middle" scope="col">Ngày đặt hàng</th>
+                                <th class="align-middle" scope="col">Phương thức thanh toán</th>
+                                <th class="align-middle" scope="col">Tổng cộng</th>
+                                <th class="align-middle" scope="col">Số lượng sản phẩm</th>
+                                <th class="align-middle" scope="col">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var order in Model.OrderHistory)
+                            {
+                            <tr>
+                                <td><a href="#" class="fw-bold">@order.OrderId</a></td>
+                                <td>@order.CreatedAt.ToString("HH:mm:ss dd/MM/yyyy")</td>
+                                <td>@order.PaymentMethod</td>
+                                <td>@order.TotalMoney.ToString("N0", new CultureInfo("vi-VN"))đ</td>
+                                    <td>@(order.OrderDetailsDTO?.Sum(x => x.Quantity) ?? 0) sản phẩm</td>
+                                    @if (order.Status == "Chờ xác nhận" || order.Status == "Đang vận chuyển")
+                                    {
+                                        <td>
+                                            <span class="badge badge-pill badge-soft-warning">@order.Status</span>
+                                        </td>
+                                    }
+                                    @if (order.Status == "Từ chối đơn hàng" || order.Status == "Không hoàn thành" || order.Status == "Hủy đơn hàng")
+                                    {
+                                        <td>
+                                            <span class="badge badge-pill badge-soft-danger">@order.Status</span>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <span class="badge badge-pill badge-soft-success">@order.Status</span>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        </div>
+    }
+</section>

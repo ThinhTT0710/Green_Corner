@@ -17,6 +17,7 @@ namespace GreenCorner.EcommerceAPI.Services.Interface
         Task<int> TotalSales();
         Task<int> GetTotalMoneyByMonth();
         Task<List<BestSellingProductDTO>> GetBestSellingProduct();
+        Task<List<ProductDTO>> Top10BestSelling();
         Task<MonthlyAnalyticsDto> GetMonthlySalesAnalytics(int year);
         Task<CategorySalesDto> GetSalesByCategory();
     }

@@ -16,6 +16,41 @@ namespace GreenCorner.RewardAPI.Controllers
             _pointTransactionService = pointTransactionService;
             _responseDTO = new ResponseDTO();
         }
+
+        [HttpGet("get-all")]
+        public async Task<ResponseDTO> GetAll()
+        {
+            try
+            {
+                var allPointtransaction = await _pointTransactionService.GetAllPointTransaction();
+                _responseDTO.Result = allPointtransaction;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
+        [HttpGet("get-by-user/{userId}")]
+        public async Task<ResponseDTO> GetUserPointTransaction(string userId)
+        {
+            try
+            {
+                var pointTransactions = await _pointTransactionService.GetByUserId(userId);
+                _responseDTO.Result = pointTransactions;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
         [HttpPost("{userId},{points}")]
         public async Task<ResponseDTO> TransactionPoint(string userId, int points)
         {
