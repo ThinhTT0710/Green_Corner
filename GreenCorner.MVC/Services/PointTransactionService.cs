@@ -27,7 +27,7 @@ namespace GreenCorner.MVC.Services
             });
         }
 
-        public async Task<ResponseDTO?> GetUserPointTransactions(string userId)
+        public async Task<ResponseDTO?> GetUserTransactions(string userId)
         {
             return await _baseService.SendAsync(new RequestDTO
             {
