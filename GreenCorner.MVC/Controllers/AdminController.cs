@@ -14,13 +14,19 @@ namespace GreenCorner.MVC.Controllers
 		private readonly IAdminService _adminService; 
 		private readonly IOrderService _orderService;
 		private readonly IProductService _productservice;
+		private readonly IRewardPointService _rewardPointService;
+		private readonly IPointTransactionService _pointTransactionService;
+        private readonly IVolunteerService _volunteerService;
 
-        public AdminController(IUserService userService, IAdminService adminService, IOrderService orderService, IProductService productservice)
+        public AdminController(IUserService userService, IAdminService adminService, IOrderService orderService, IProductService productservice, IRewardPointService rewardPointService, IPointTransactionService pointTransactionService, IVolunteerService volunteerService)
         {
             _userService = userService;
             _adminService = adminService;
             _orderService = orderService;
             _productservice = productservice;
+            _rewardPointService = rewardPointService;
+            _pointTransactionService = pointTransactionService;
+            _volunteerService = volunteerService;
         }
 
         public async Task<IActionResult> Index()
@@ -137,6 +143,79 @@ namespace GreenCorner.MVC.Controllers
                 return View(users);
             }
             return RedirectToAction("Index", "Admin");
+        }
+
+        public async Task<IActionResult> UserDetail(string userId)
+        {
+            try
+            {
+				int userPoints = 0;
+                UserDTO user = new();
+                RewardPointDTO rewardPoint = new();
+                List<PointTransactionDTO> userPointTransactions = new();
+                List<VolunteerDTO> participatedActivities = new();
+				List<OrderDTO> orderHistory = new();
+
+                ResponseDTO? responseTotalPoints = await _rewardPointService.GetUserTotalPoints(userId);
+                if (responseTotalPoints != null && responseTotalPoints.IsSuccess)
+                {
+                    rewardPoint = Newtonsoft.Json.JsonConvert.DeserializeObject<RewardPointDTO>(responseTotalPoints.Result.ToString());
+                    userPoints = (int) rewardPoint.TotalPoints;
+                }
+
+                ResponseDTO? response = await _userService.GetUserById(userId);
+				if (response != null && response.IsSuccess)
+				{
+					user = Newtonsoft.Json.JsonConvert.DeserializeObject<UserDTO>(response.Result.ToString());
+				}
+				else
+				{
+					TempData["error"] = response?.Message ?? "Error fetching user details";
+				}
+                ResponseDTO? pointTransactionResponse = await _pointTransactionService.GetUserPointTransactions(userId);
+                if (pointTransactionResponse != null && pointTransactionResponse.IsSuccess)
+                {
+                    userPointTransactions = JsonConvert.DeserializeObject<List<PointTransactionDTO>>(pointTransactionResponse.Result.ToString());
+                }
+                else
+                {
+                    TempData["error"] = pointTransactionResponse.Message == null ? "Error" : pointTransactionResponse.Message;
+                    return RedirectToAction("UserList", "Admin");
+                }
+                ResponseDTO? orderResponse = await _orderService.GetOrderByUserID(userId);
+				if (orderResponse != null && orderResponse.IsSuccess)
+				{
+					orderHistory = JsonConvert.DeserializeObject<List<OrderDTO>>(orderResponse.Result.ToString());
+				}
+				else
+				{
+					TempData["error"] = pointTransactionResponse.Message == null ? "Error" : pointTransactionResponse.Message;
+				}
+                ResponseDTO? participatedResponse = await _volunteerService.GetParticipatedActivitiesByUserId(userId);
+                if (participatedResponse != null && participatedResponse.IsSuccess)
+				{
+                    participatedActivities = JsonConvert.DeserializeObject<List<VolunteerDTO>>(participatedResponse.Result.ToString());
+				}
+				else 
+				{ 
+					TempData["error"] = participatedResponse.Message == null ? "Error" : participatedResponse.Message;
+                }
+                var userProfileViewModel = new UserProfileViewModel
+				{
+					TotalPoints = userPoints,
+					User = user,
+					PointTransactions = userPointTransactions,
+                    OrderHistory = orderHistory,
+					ParticipatedActivities = participatedActivities
+                };
+
+                return View(userProfileViewModel);
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = ex.Message;
+                return RedirectToAction("UserList", "Admin");
+            }
         }
 
         public async Task<IActionResult> BlockUser(string userId)

@@ -16,6 +16,18 @@ namespace GreenCorner.RewardAPI.Repositories
             _context = context;
         }
 
+        public async Task<IEnumerable<PointTransaction>> GetAllPointTransaction()
+        {
+            return await _context.PointTransactions.ToListAsync();
+        }
+
+        public async Task<IEnumerable<PointTransaction>> GetByUserId(string userId)
+        {
+            return await _context.PointTransactions
+                .Where(t => t.UserId == userId)
+                .ToListAsync();
+        }
+
         public async Task TransactionPoint(string userId, int points)
         {
             var userTransaction = await _context.PointTransactions.FirstOrDefaultAsync(rp => rp.UserId == userId);
@@ -28,7 +40,7 @@ namespace GreenCorner.RewardAPI.Repositories
         {
             return await _context.PointTransactions
               .FirstOrDefaultAsync(p => p.UserId == userId)
-              ?? throw new KeyNotFoundException($"User with ID {userId} not found.");
+              ?? throw new Exception($"User with ID {userId} not found.");
         }
     }
 }

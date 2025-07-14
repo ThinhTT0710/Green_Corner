@@ -18,6 +18,23 @@ namespace GreenCorner.MVC.Services
             _baseService = baseService;
         }
 
+        public async Task<ResponseDTO?> GetAllPointTransactions()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.RewardAPIBase + "/api/PointTransaction/get-all"
+            });
+        }
+
+        public async Task<ResponseDTO?> GetUserPointTransactions(string userId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.RewardAPIBase + "/api/PointTransaction/get-by-user/" + userId
+            });
+        }
 
         public async Task<ResponseDTO?> ExchangePoints(string userId, int exchangePoint)
         {

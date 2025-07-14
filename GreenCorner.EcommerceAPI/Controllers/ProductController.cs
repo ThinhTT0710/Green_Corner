@@ -123,6 +123,23 @@ namespace GreenCorner.EcommerceAPI.Controllers
             }
         }
 
+        [HttpGet("get-newest-products")]
+        public async Task<ResponseDTO> GetNewestProducts()
+        {
+            try
+            {
+                var newestProducts = await _productService.GetNewestProducts();
+                _responseDTO.Result = newestProducts;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
         [HttpGet("outofstock")]
         public async Task<ResponseDTO> GetOutOfStockProduct()
         {

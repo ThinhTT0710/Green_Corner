@@ -90,6 +90,34 @@ namespace GreenCorner.EventAPI.Controllers
             }
         }
 
+        [HttpGet("is-confirm-volunteer")]
+        public async Task<ResponseDTO> IsConfirmVolunteer([FromQuery] int eventId, [FromQuery] string userId)
+        {
+            try
+            {
+                bool result = await _volunteerService.IsConfirmVolunteer(eventId, userId);
+                _responseDTO.Result = result;
+                if (result == true)
+                {
+                    _responseDTO.Message = "Bạn là thành viên của sự kiện này";
+                    _responseDTO.IsSuccess = result;
+                }
+                else
+                {
+                    _responseDTO.Message = "Bạn chưa trở thành tình nguyện viên của sự kiện này. Vui lòng đăng ký hoặc chờ được xác nhận";
+                    _responseDTO.IsSuccess = false;
+                }
+
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.Message;
+                return _responseDTO;
+            }
+        }
+
         [HttpGet("isteamleader")]
         public async Task<ResponseDTO> IsTeamLeader([FromQuery] int eventId, [FromQuery] string userId)
         {

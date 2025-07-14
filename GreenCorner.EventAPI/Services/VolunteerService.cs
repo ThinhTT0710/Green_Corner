@@ -86,6 +86,11 @@ namespace GreenCorner.EventAPI.Services
             return await _volunteerRepository.IsVolunteer(eventId, userId);
         }
 
+        public async Task<bool> IsConfirmVolunteer(int eventId, string userId)
+        {
+            return await _volunteerRepository.IsVolunteer(eventId, userId);
+        }
+
         public async Task<string> RegisterVolunteer(VolunteerDTO volunteerDto)
         {
             bool isVolunteer = await _volunteerRepository.IsVolunteer(volunteerDto.CleanEventId, volunteerDto.UserId);

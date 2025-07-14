@@ -30,9 +30,8 @@
             title: "@TempData["loginError"]",
             showDenyButton: true,
             confirmButtonText: "Login",
-            denyButtonText: `Continue shopping`
+            denyButtonText: `Continue`
         }).then((result) => {
-            /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
                 window.location.href = "/Auth/Login";
             }

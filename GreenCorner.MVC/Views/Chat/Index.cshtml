@@ -1,0 +1,135 @@
+﻿@model IEnumerable<ChatMessageDTO>
+
+<div class="chat-container">
+    <div id="messageList" class="messages">
+        @for (var i = 0; i < Model.Count(); i++)
+        {
+            var msg = Model.ElementAt(i);
+            var isOwnMessage = msg.SenderId == ViewBag.SenderId?.ToString();
+            var messageClass = isOwnMessage ? "message own" : "message";
+
+            var prevMsg = i > 0 ? Model.ElementAt(i - 1) : null;
+            var isGrouped = prevMsg != null && prevMsg.SenderId == msg.SenderId;
+            if (isGrouped)
+            {
+                messageClass += " grouped";
+            }
+
+            <div class="@messageClass">
+                @if (!isOwnMessage && !isGrouped)
+                {
+                    <img src="@msg.SenderAvatar" alt="@msg.SenderName" class="avatar" />
+                }
+
+                <div class="bubble">
+                    @if (!isOwnMessage && !isGrouped)
+                    {
+                        <div class="sender-name">@msg.SenderName</div>
+                    }
+                    <div class="content">@msg.Content</div>
+                    <div class="timestamp">@msg.Timestamp.ToString("HH:mm")</div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="messageInput" class="form-control" placeholder="Nhập tin nhắn...">
+        <button id="sendButton" class="btn-send" aria-label="Gửi tin nhắn">
+            <i class="fa fa-paper-plane" aria-hidden="true"></i>
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <script>
+        {
+            const eventId = '@ViewBag.EventId';
+            const senderId = '@ViewBag.SenderId';
+            const senderName = @Html.Raw(Json.Serialize(ViewBag.SenderName));
+            const senderAvatar = '@ViewBag.SenderAvatar';
+            const messageList = document.getElementById("messageList");
+            let lastSenderId = '@(Model.LastOrDefault()?.SenderId)';
+
+            function scrollToBottom() {
+                messageList.scrollTop = messageList.scrollHeight;
+            }
+
+            function formatTimestamp(dateString) {
+                const date = new Date(dateString);
+                const hours = date.getHours().toString().padStart(2, '0');
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                return `${hours}:${minutes}`;
+            }
+
+            window.onload = scrollToBottom;
+
+            const chatConnection = new signalR.HubConnectionBuilder()
+                .withUrl("https://localhost:7006/chathub?eventId=" + eventId)
+                .build();
+
+            chatConnection.on("ReceiveMessage", function (message) {
+                const isOwn = message.senderId === senderId;
+                const isGrouped = message.senderId === lastSenderId;
+
+                const messageDiv = document.createElement('div');
+                let messageClasses = isOwn ? 'message own' : 'message';
+                if (isGrouped) {
+                    messageClasses += ' grouped';
+                }
+                messageDiv.className = messageClasses;
+
+                messageDiv.classList.add('new-message-animation');
+
+                let bubbleContent = '';
+                if (!isOwn && !isGrouped) {
+                    bubbleContent += `<div class="sender-name">${message.senderName}</div>`;
+                }
+                bubbleContent += `<div class="content">${message.content}</div>
+                                      <div class="timestamp">${formatTimestamp(message.timestamp)}</div>`;
+
+                let avatarHtml = '';
+                if (!isOwn && !isGrouped) {
+                    avatarHtml = `<img src="${message.senderAvatar}" alt="${message.senderName}" class="avatar" />`;
+                }
+
+                messageDiv.innerHTML = `
+                        ${avatarHtml}
+                        <div class="bubble">
+                            ${bubbleContent}
+                        </div>
+                    `;
+
+                messageList.appendChild(messageDiv);
+                lastSenderId = message.senderId;
+                scrollToBottom();
+            });
+
+            chatConnection.start().catch(err => console.error(err.toString()));
+
+            const messageInput = document.getElementById("messageInput");
+            const sendButton = document.getElementById("sendButton");
+
+            function sendMessage() {
+                const msg = messageInput.value.trim();
+                if (msg) {
+                    chatConnection.invoke("SendMessage", eventId, senderId, senderName, senderAvatar, msg)
+                        .catch(err => console.error(err.toString()));
+                    messageInput.value = "";
+                    messageInput.focus();
+                }
+            }
+
+            messageInput.addEventListener("keypress", function (e) {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            sendButton.addEventListener("click", sendMessage);
+        }
+    </script>
+}

@@ -18,6 +18,16 @@ namespace GreenCorner.RewardAPI.Services
             _mapper = mapper;
         }
 
+        public async Task<IEnumerable<PointTransactionDTO>> GetAllPointTransaction()
+        {
+            var pointTransactions = await _pointTransactionRepository.GetAllPointTransaction();
+            return _mapper.Map<IEnumerable<PointTransactionDTO>>(pointTransactions);
+        }
+        public async Task<IEnumerable<PointTransactionDTO>> GetByUserId(string userId)
+        {
+            var pointTransactions = await _pointTransactionRepository.GetByUserId(userId);
+            return _mapper.Map<List<PointTransactionDTO>>(pointTransactions);
+        }
         public async Task<PointTransactionDTO> GetPointTransaction(string userId)
         {
             var pointTransaction = await _pointTransactionRepository.GetPointTransaction(userId);
