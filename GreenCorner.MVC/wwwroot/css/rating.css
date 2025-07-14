@@ -1,0 +1,34 @@
+﻿.rating-stars i {
+    font-size: 14px;
+    color: #ccc;
+    display: inline;
+}
+
+.rating-stars img {
+    height: 12px;
+    max-width: none;
+}
+
+.rating-stars li {
+    display: block;
+    text-overflow: clip;
+    white-space: nowrap;
+    z-index: 1;
+}
+
+    .rating-stars li.stars-active {
+        z-index: 2;
+        position: absolute;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+    }
+
+        .rating-stars li.stars-active i {
+            color: orange;
+        }
+
+.rating-stars.stars-lg img {
+    height: 24px;
+    max-width: none;
+}

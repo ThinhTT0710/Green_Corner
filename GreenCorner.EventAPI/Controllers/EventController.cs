@@ -34,6 +34,23 @@ namespace GreenCorner.EventAPI.Controllers
                 return _responseDTO;
             }
         }
+
+        [HttpGet("get-openEvent")]
+        public async Task<ResponseDTO> GetOpenCleanupEvents()
+        {
+            try
+            {
+                var events = await _eventService.GetOpenEvent();
+                _responseDTO.Result = events;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
         [HttpGet("{id}")]
         public async Task<ResponseDTO> GetEventById(int id)
         {
@@ -110,5 +127,20 @@ namespace GreenCorner.EventAPI.Controllers
                 return _responseDTO;
             }
         }
-    }
+		[HttpGet("open-event/{id}")]
+		public async Task<ResponseDTO> OpenCleanupEvent(int id)
+		{
+			try
+			{
+				await _eventService.OpenCleanupEvent(id);
+				return _responseDTO;
+			}
+			catch (Exception ex)
+			{
+				_responseDTO.Message = ex.Message;
+				_responseDTO.IsSuccess = false;
+				return _responseDTO;
+			}
+		}
+	}
 }

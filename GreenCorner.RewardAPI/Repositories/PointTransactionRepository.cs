@@ -42,5 +42,73 @@ namespace GreenCorner.RewardAPI.Repositories
               .FirstOrDefaultAsync(p => p.UserId == userId)
               ?? throw new Exception($"User with ID {userId} not found.");
         }
+
+		public async Task<IEnumerable<PointTransaction>> GetRewardPointByUserIdAsync(string userId)
+		{
+			return await _context.PointTransactions
+				.Where(rp => rp.UserId == userId)
+				.OrderByDescending(rp => rp.CreatedAt) // Sắp xếp nếu muốn
+				.ToListAsync();
+		}
+
+
+		public async Task AddTransactionAsync(PointTransaction transaction)
+		{
+			transaction.CreatedAt = DateTime.UtcNow;
+			await _context.PointTransactions.AddAsync(transaction);
+			await _context.SaveChangesAsync();
+		}
+
+		public async Task UpdateRewardPointAsync(RewardPoint rewardPoint)
+		{
+			_context.RewardPoints.Update(rewardPoint);
+			await _context.SaveChangesAsync();
+		}
+
+		public async Task TransactionPoints(string userId, int points, string type)
+		{
+			if (type != "Thưởng" && type != "Đổi")
+				throw new ArgumentException("Type must be 'Kiếm' or 'Đổi'.");
+
+			var rewardPoint = await _context.RewardPoints.FirstOrDefaultAsync(rp => rp.UserId == userId);
+
+			if (rewardPoint == null)
+			{
+				rewardPoint = new RewardPoint
+				{
+					UserId = userId,
+					TotalPoints = 0
+				};
+				_context.RewardPoints.Add(rewardPoint);
+			}
+
+			if (type == "Thưởng")
+			{
+				rewardPoint.TotalPoints += points;
+			}
+			else if (type == "Đổi")
+			{
+				rewardPoint.TotalPoints -= points;
+			}
+
+			var transaction = new PointTransaction
+			{
+				UserId = userId,
+				Points = type == "Thưởng" ? points : -points,
+				Type = type,
+				CreatedAt = DateTime.UtcNow
+			};
+
+			await UpdateRewardPointAsync(rewardPoint);
+			await _context.PointTransactions.AddAsync(transaction);
+			await _context.SaveChangesAsync();			
+		}
+
+        public async Task<IEnumerable<PointTransaction>> GetPointsAwardHistoryAsync()
+        {
+            return await _context.PointTransactions
+						.Where(t => t.Type == "Thưởng")
+						.ToListAsync();
+        }
     }
 }

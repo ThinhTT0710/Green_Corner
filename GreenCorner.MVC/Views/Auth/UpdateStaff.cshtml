@@ -1,58 +1,92 @@
 ﻿@model StaffDTO
-
-<form asp-controller="Auth" asp-action="UpdateStaff" enctype="multipart/form-data">
-    <br />
-    <div class="container border p-3">
-        <h1 class="text-dark text-center">Update Staff</h1>
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+            <form asp-controller="Auth" asp-action="UpdateStaff" enctype="multipart/form-data">
         <input hidden asp-for="ID" />
         <input hidden asp-for="Email" />
         <input hidden asp-for="Password" />
         <input hidden asp-for="Role" />
-        <hr />
+    <section class="content-main">
         <div class="row">
-            <div class="col-2">
-                <label class="control-label pt-2" style="font-size:20px;"> FullName</label>
+            <div class="col-9">
+                <div class="content-header">
+                    <h2 class="content-title">Update Staff</h2>
+                    <div>
+                        <button class="btn btn-light rounded font-sm mr-5 text-body hover-up"><a asp-controller="Auth" asp-action="GetStaffList">Back to List</a></button>
+                        <button type="submit" class="btn btn-md rounded font-sm hover-up">Update</button>
+                    </div>
+                </div>
             </div>
-            <div class="col-10 pb-3">
-                <input asp-for="FullName" class="form-control" />
-                <span asp-validation-for="FullName" class="text-danger"></span>
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Basic</h4>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">FullName</label>
+                                <input required type="text" placeholder="Type here" class="form-control" asp-validation-for="FullName" asp-for="FullName" />
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Address</label>
+                                <textarea required asp-validation-for="Address" asp-for="Address" placeholder="Type here" class="form-control" rows="4"></textarea>
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Phone Number</label>
+                                        <div class="row gx-2">
+                                            <input required asp-validation-for="PhoneNumber" asp-for="PhoneNumber" type="text" class="form-control" />
+                                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- card end// -->
             </div>
-            <div class="col-2">
-                <label class="control-label pt-2" style="font-size:20px;">Address</label>
-            </div>
-            <div class="col-10 pb-3">
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="col-2">
-                <label class="control-label pt-2" style="font-size:20px;">Avatar</label>
-            </div>
-            <div class="col-10 pb-3">
-                <input asp-for="Avatar" class="form-control" />
-                <span asp-validation-for="Avatar" class="text-danger"></span>
-            </div>
-            <div class="col-2">
-                <label class="control-label pt-2" style="font-size:20px;">PhoneNumber</label>
-            </div>
-            <div class="col-10 pb-3">
-                <input asp-for="PhoneNumber" class="form-control" />
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-            </div>
-            <div class="col-5 offset-2">
-
-                <a asp-controller="Auth" asp-action="GetStaffList" class="btn-primary btn form-control ">Back to List</a>
-            </div>
-            <div class="col-5">
-                <input type="submit" value="Update" class="btn btn-success form-control" />
-
+            <div class="col-lg-3">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Avatar</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-upload">
+                            <img src="~/admin/imgs/avatar-staff/@Model.Avatar" id="imagePreview" alt="" style="max-width: 300px;" />
+                            <input required name="Avatar" type="file" id="Avatar" asp-for="Avatar" class="form-control" onchange="previewImage(this)" />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div>
-        </div>
-    </div>
+    </section>
+     
 </form>
-
+    </div>
+</div>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    </script>
+}
+<script>
+    function previewImage(input) {
+        const preview = document.getElementById('imagePreview');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
 }

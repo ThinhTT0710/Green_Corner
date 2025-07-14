@@ -51,7 +51,7 @@ namespace GreenCorner.AuthAPI.Repositories
 				NormalizedEmail = staff.Email.ToUpper(),
 				FullName = staff.FullName,
 				Address = staff.Address,
-				Avatar = "default.png",
+				Avatar = staff.Avatar,
 				PhoneNumber = staff.PhoneNumber,
 				
 			};

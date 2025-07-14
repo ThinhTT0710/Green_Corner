@@ -6,8 +6,12 @@ namespace GreenCorner.EventAPI.Repositories.Interface
 	{
 		Task<IEnumerable<EventVolunteer>> GetListVolunteer(int eventId);
 
-		Task AttendanceCheck (string userId, int eventId, bool check);
+        Task<IEnumerable<CleanupEvent>> GetOpenEventsByTeamLeader(string userId);
 
-        Task KickVolunteer(string userId, int eventId);
+        Task AttendanceCheck (string userId, int eventId, bool check);
+
+		Task EditAttendance(string userId, int eventId);
+
+		Task KickVolunteer(string userId, int eventId);
     }
 }

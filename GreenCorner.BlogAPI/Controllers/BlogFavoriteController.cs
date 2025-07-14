@@ -1,4 +1,4 @@
-﻿using GreenCorner.AuthAPI.Models.DTO;
+﻿using GreenCorner.BlogAPI.Models.DTO;
 using GreenCorner.BlogAPI.Models.DTOs;
 using GreenCorner.BlogAPI.Services;
 using GreenCorner.BlogAPI.Services.Interface;

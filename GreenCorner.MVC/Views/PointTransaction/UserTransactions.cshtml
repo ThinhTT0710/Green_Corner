@@ -1,0 +1,23 @@
+﻿@model List<PointTransactionDTO>
+
+<h2>Lịch sử giao dịch điểm</h2>
+
+<table class="table table-bordered mt-3">
+	<thead>
+		<tr>
+			<th>Loại giao dịch</th>
+			<th>Số điểm</th>
+			<th>Ngày thực hiện</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>@item.Type</td>
+				<td>@item.Points</td>
+				<td>@item.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+			</tr>
+		}
+	</tbody>
+</table>

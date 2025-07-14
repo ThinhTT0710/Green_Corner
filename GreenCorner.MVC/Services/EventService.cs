@@ -19,6 +19,14 @@ namespace GreenCorner.MVC.Services
                 Url = SD.EventAPIBase + "/api/Event"
             });
         }
+        public async Task<ResponseDTO?> GetOpenEvent()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.EventAPIBase + "/api/Event/get-openEvent"
+            });
+        }
         public async Task<ResponseDTO?> GetByEventId(int id)
         {
             return await _baseService.SendAsync(new RequestDTO
@@ -138,6 +146,22 @@ namespace GreenCorner.MVC.Services
                 Url = SD.EventAPIBase + "/api/Leader/" + userId+","+eventId+","+check
             });
         }
+		public async Task<ResponseDTO?> EditAttendance(string userId, int eventId)
+		{
+			return await _baseService.SendAsync(new RequestDTO
+			{
+				APIType = SD.APIType.GET,
+				Url = SD.EventAPIBase + "/api/Leader/edit-attendance/" + userId + "," + eventId 
+			});
+		}
+        public async Task<ResponseDTO?> GetOpenEventsByTeamLeader(string userId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.EventAPIBase + "/api/Leader/getEvent-byLeader/" + userId
+            });
+        }
         public async Task<ResponseDTO?> CreateCleanupEvent(EventDTO eventDTO)
         {
             return await _baseService.SendAsync(new RequestDTO
@@ -173,7 +197,15 @@ namespace GreenCorner.MVC.Services
                 Url = SD.EventAPIBase + "/api/Event/" + id
             });
         }
-        public async Task<ResponseDTO?> KickVolunteer(string userId, int eventId)
+		public async Task<ResponseDTO?> OpenCleanupEvent(int id)
+		{
+			return await _baseService.SendAsync(new RequestDTO
+			{
+				APIType = SD.APIType.GET,
+				Url = SD.EventAPIBase + "/api/Event/open-event" + id
+			});
+		}
+		public async Task<ResponseDTO?> KickVolunteer(string userId, int eventId)
         {
             return await _baseService.SendAsync(new RequestDTO
             {

@@ -1,54 +1,72 @@
 ﻿@model EventDTO
-
 <form asp-controller="Event" asp-action="CreateCleanupEvent" enctype="multipart/form-data">
-    <br />
-    <div class="container border p-3">
-        <h1 class="text-dark text-center">Rate Event</h1>
-        <hr />
+    <section class="content-main">
         <div class="row">
-            <div class="col-2">
-                <label class="control-label pt-2" style="font-size:20px;"> Title</label>
+            <div class="col-9">
+                <div class="content-header">
+                    <h2 class="content-title">Create Cleanup Event</h2>
+                    <div>
+                        <button style="color: yellow" class="btn btn-md rounded font-sm mr-5 text-body hover-up"><a asp-controller="Event" asp-action="GetAllEvent">Back to List</a></button>
+                        <button type="submit" class="btn btn-md rounded font-sm hover-up">Create</button>
+                    </div>
+                </div>
             </div>
-            <div class="col-10 pb-3">
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="col-2">
-                <label class="control-label pt-2" style="font-size:20px;">Description</label>
-            </div>
-            <div class="col-10 pb-3">
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="col-2">
-                <label class="control-label pt-2" style="font-size:20px;">MaxParticipants</label>
-            </div>
-            <div class="col-10 pb-3">
-                <input asp-for="MaxParticipants" class="form-control" />
-                <span asp-validation-for="MaxParticipants" class="text-danger"></span>
-            </div
-            <div class="col-2">
-                <label class="control-label pt-2" style="font-size:20px;">StartDate</label>
-            </div>
-            <div class="col-10 pb-3">
-                <input type="date"asp-for="StartDate" class="form-control" />
-                <span asp-validation-for="StartDate" class="text-danger"></span>
-            </div>
-
-            <div class="col-5 offset-2">
-                <a asp-controller="Event" asp-action="EventReviewHistory" class="btn-primary btn form-control ">Back to List</a>
-            </div>
-            <div class="col-5">
-                <input type="submit" value="Create" class="btn btn-success form-control" />
-
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Basic</h4>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">Title</label>
+                                <input type="text" placeholder="Type here" class="form-control" asp-validation-for="Title" asp-for="Title" required />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Description</label>
+                                <textarea asp-validation-for="Address" asp-for="Description" placeholder="Type here" class="form-control" rows="4" required></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">Max Participant</label>
+                                <input type="number" placeholder="Type here" class="form-control" asp-validation-for="MaxParticipants" asp-for="MaxParticipants" required />
+                                <span asp-validation-for="MaxParticipants" class="text-danger"></span>
+                            </div>
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">Start Date</label>
+                                <input name="StartDate" id="StartDate" type="date" placeholder="Type here" class="form-control" asp-validation-for="StartDate" asp-for="StartDate" required />
+                                <div id="startDateError" class="text-danger mt-1"></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-        <div>
-        </div>
-    </div>
+    </section>
 </form>
 
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const input = document.getElementById("StartDate");
+            const errorDiv = document.getElementById("startDateError");
+
+            input.addEventListener("change", function () {
+                const selectedDate = new Date(this.value);
+                const today = new Date();
+                selectedDate.setHours(0, 0, 0, 0);
+                today.setHours(0, 0, 0, 0);
+
+                if (selectedDate <= today) {
+                    errorDiv.textContent = "Ngày bắt đầu phải là ngày trong tương lai.";
+                    this.value = "";
+                } else {
+                    errorDiv.textContent = "";
+                }
+            });
+        });
+    </script>
 }

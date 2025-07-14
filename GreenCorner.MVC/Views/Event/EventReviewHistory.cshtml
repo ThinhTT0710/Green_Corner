@@ -1,63 +1,63 @@
-﻿
-@model IEnumerable<EventReviewDTO>
+﻿@model IEnumerable<EventReviewDTO>
 <div class="card shadow border-0 mt-4">
-	<div class="card-header bg-secondary bg-gradient ml-0 py-3">
 		<div class="row">
-			<div class="col-12 text-center">
-				<h1 class="text-white">Event Review List</h1>
-			</div>
+            <h2 class="content-title card-title">Event Reviews</h2>
 		</div>
-	</div>
 	<div class="card-body p-4">
 		<div class="row pb-3">
 			<div class="col-6">
 			</div>
 			<div class="col-6 text-end">
 				<a asp-action="RateEvent" class="btn btn-outline-primary"><i class="bi bi-plus-square"></i> Rate Event</a>
-
 			</div>
 		</div>
-		<table class="table">
-			<thead>
-				<tr>
-					<th>
-						CleanEvent
-					</th>
-					<th>
-						Rating
-					</th>
-					<th>
-						Comment
-					</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var item in Model)
-				{
-					<tr>
-						<td>
-							@item.CleanEventId
-						</td>
-						<td>
-							@item.Rating
-						</td>
-						<td>
-							@item.Comment
-						</td>
-						<td>
-							<a class="btn btn-success" asp-action="EditEventReview" asp-route-eventReviewId="@item.EventReviewId">
-								<i class="bi bi-pencil-square"></i>
-							</a>
-							<a class="btn btn-danger" asp-action="DeleteEventReview" asp-route-eventReviewId="@item.EventReviewId">
-								<i class="bi bi-trash"></i>
-							</a>
-						</td>
-					</tr>
-				}
-			</tbody>
-		</table>
-
+         <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>CleanEventId</th>
+                    <th>Rating</th>
+                    <th>Comment</th>
+                    <th>Date</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+	{
+                <tr>
+                    <td>@item.CleanEventId</td>
+                    <td>
+                        <ul class="rating-stars">
+                            @{
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <span style="font-size: 24px; color:@(i <= item.Rating ? "orange" : "lightgray");">&#9733;</span>
+                                        }
+                                    }
+                        </ul>
+                    </td>
+                    <td>@item.Comment</td>
+                    <td>@item.CreatedAt</td>
+                    <td class="text-end d-flex justify-content-end gap-3">
+                        <div class="dropdown">
+                            <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" asp-action="EditEventReview" asp-route-eventReviewId="@item.EventReviewId">Edit Info</a>
+                                        <a class="dropdown-item text-danger" asp-action="DeleteEventReview" asp-route-eventReviewId="@item.EventReviewId">Delete</a>
+                            </div>
+                        </div>
+                        <!-- dropdown //end -->
+                    </td>
+                </tr>
+    }
+            </tbody>
+        </table>
+    </div>
+		
 	</div>
-
 </div>
+
+
+
+
