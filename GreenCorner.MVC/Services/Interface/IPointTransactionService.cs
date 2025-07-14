@@ -5,7 +5,7 @@ namespace GreenCorner.MVC.Services.Interface
     public interface IPointTransactionService
     {
         Task<ResponseDTO?> GetAllPointTransactions();
-        Task<ResponseDTO?> GetUserPointTransactions(string userId);
+        Task<ResponseDTO?> GetUserTransactions(string userId);
         Task<ResponseDTO?> ExchangePoints(string userId, int exchangePoint); 
         Task<ResponseDTO?> GetExchangeTransactions(string userId); 
         Task<ResponseDTO?> GetUserRewardPoints(string userId); 

@@ -35,7 +35,7 @@ namespace GreenCorner.ChatAPI.Hubs
                 senderName,
                 senderAvatar,
                 content,
-                timestamp = message.Timestamp.ToString("HH:mm:ss dd/MM/yyyy")
+                timestamp = message.Timestamp
             });
         }
 
