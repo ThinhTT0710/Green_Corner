@@ -166,5 +166,15 @@ namespace GreenCorner.MVC.Services
                 Url = SD.EventAPIBase + "/api/Volunteer/updateregister"
             });
         }
+
+        public async Task<ResponseDTO?> GetApprovedVolunteersByUserIdAsync(string userId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/approved/{userId}"
+            });
+        }
+
     }
 }

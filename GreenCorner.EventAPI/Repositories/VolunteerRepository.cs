@@ -94,13 +94,19 @@ namespace GreenCorner.EventAPI.Repositories
             }
             volunteer.Status = "Approved";
 
+            var @event = await _context.CleanupEvents.FindAsync(volunteer.CleanEventId);
+            if (@event == null)
+            {
+                throw new KeyNotFoundException($"Event with ID {volunteer.CleanEventId} not found.");
+            }
+
             var eventVolunteer = new EventVolunteer
             {
                 CleanEventId = volunteer.CleanEventId,
                 UserId = volunteer.UserId,
                 IsTeamLeader = false,
                 AttendanceStatus = "Not Yet", 
-                PointsAwarded = 0,
+                PointsAwarded = @event.PointsAward,
                 JoinDate = DateTime.Now,
                 Note = string.IsNullOrWhiteSpace(volunteer.Assignment) && string.IsNullOrWhiteSpace(volunteer.CarryItems)
                     ? null
@@ -205,6 +211,13 @@ namespace GreenCorner.EventAPI.Repositories
                                 .Select(v => v.UserId)
                                 .Distinct()
                                 .ToListAsync();
+        }
+
+        public async Task<List<Volunteer>> GetApprovedVolunteersByUserIdAsync(string userId)
+        {
+            return await _context.Volunteers
+                        .Where(v => v.UserId == userId && v.Status == "Approved")
+                        .ToListAsync();
         }
     }
 }

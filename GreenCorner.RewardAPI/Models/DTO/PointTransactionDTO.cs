@@ -10,5 +10,6 @@
 
         public DateTime? CreatedAt { get; set; }
 		public int Points { get; set; }
-	}
+        public int? CleanEventId { get; set; }
+    }
 }

@@ -1,56 +1,143 @@
-﻿@model EventDTO
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@model EventDTO
 
-<form asp-controller="Event" asp-action="UpdateCleanupEvent" enctype="multipart/form-data">
-    <input hidden asp-for="CleanEventId" />
-    <input hidden asp-for="CreatedAt" />
-    <input hidden asp-for="Status" />
-    <input hidden asp-for="EndDate" />
+<form asp-controller="Event" asp-action="UpdateCleanupEvent" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="CleanEventId" />
+    <input type="hidden" asp-for="CreatedAt" />
+    <input type="hidden" asp-for="Status" />
+    <input type="hidden" asp-for="EndDate" />
+    <input type="hidden" asp-for="ImageUrl" />
+
     <section class="content-main">
         <div class="row">
-            <div class="col-9">
-                <div class="content-header">
-                    <h2 class="content-title">Update Cleanup Event</h2>
-                    <div>
-                        <button style="color: yellow" class="btn btn-light rounded font-sm mr-5 text-body hover-up"><a asp-controller="Event" asp-action="GetAllEvent">Back to List</a></button>
-                        <button type="submit" class="btn btn-md rounded font-sm hover-up">Update</button>
+            <div class="col-12">
+                <div class="content-header d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="content-title">Cập nhật sự kiện</h2>
+                </div>
+            </div>
+
+            <!-- Cột trái: xem trước -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header text-white" style="background-color: #3BB77E;">
+                        <h5 class="mb-0">Xem trước thông tin sự kiện</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Mã sự kiện</label>
+                                <div class="form-control bg-light">@Model.CleanEventId</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Tiêu đề</label>
+                                <div class="form-control bg-light">@Model.Title</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Ngày tạo</label>
+                                <div class="form-control bg-light">@Model.CreatedAt?.ToString("dd/MM/yyyy")</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Trạng thái</label>
+                                <div class="form-control bg-light">@Model.Status</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Địa điểm</label>
+                                <div class="form-control bg-light">@Model.Address</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Hình ảnh hiện tại</label>
+                                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                                {
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @foreach (var img in Model.ImageUrl.Split("&", StringSplitOptions.RemoveEmptyEntries))
+                                        {
+                                            <img src="@img" class="rounded" style="max-height: 150px; border: 1px solid #ccc; padding: 4px;" />
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="form-control bg-light">Không có hình ảnh</div>
+                                }
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Mô tả</label>
+                                <div class="form-control bg-light" style="min-height: 150px; white-space: pre-line;">@Model.Description</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Điểm thưởng</label>
+                                <div class="fs-5 badge bg-success px-3 py-2">@Model.PointsAward điểm</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Cột phải: cập nhật -->
             <div class="col-lg-6">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h4>Basic</h4>
-                    </div>
+                <div class="card shadow-sm mb-4">
                     <div class="card-body">
-                        <form>
-                            <div class="mb-4">
-                                <label for="product_name" class="form-label">Title</label>
-                                <input type="text" placeholder="Type here" class="form-control" asp-validation-for="Title" asp-for="Title" required />
-                                <span asp-validation-for="Title" class="text-danger"></span>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label">Description</label>
-                                <textarea asp-validation-for="Address" asp-for="Description" placeholder="Type here" class="form-control" rows="4" required></textarea>
-                                <span asp-validation-for="Description" class="text-danger"></span>
-                            </div>
-                            <div class="mb-4">
-                                <label for="product_name" class="form-label">Max Participant</label>
-                                <input type="number" placeholder="Type here" class="form-control" asp-validation-for="MaxParticipants" asp-for="MaxParticipants" required />
-                                <span asp-validation-for="MaxParticipants" class="text-danger"></span>
-                            </div>
-                            <div class="mb-4">
-                                <label for="product_name" class="form-label">Start Date</label>
-                                <input name="StartDate" id="StartDate" type="date" placeholder="Type here" class="form-control" asp-validation-for="StartDate" required asp-for="StartDate" />
-                                <div id="startDateError" class="text-danger mt-1"></div>
-                            </div>
-                        </form>
+                        <h5 class="mb-3">Cập nhật thông tin</h5>
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">Tiêu đề</label>
+                            <input asp-for="Title" class="form-control" required />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Mô tả</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" required></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">Địa chỉ</label>
+                            <input asp-for="Address" class="form-control" required />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MaxParticipants" class="form-label">Số lượng tham gia</label>
+                            <input asp-for="MaxParticipants" class="form-control" type="number" min="1" required />
+                            <span asp-validation-for="MaxParticipants" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PointsAward" class="form-label">Điểm thưởng</label>
+                            <input asp-for="PointsAward" class="form-control" type="number" min="0" required />
+                            <span asp-validation-for="PointsAward" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="StartDate" class="form-label">Ngày bắt đầu</label>
+                            <input asp-for="StartDate" type="date" class="form-control" id="StartDate" required />
+                            <div id="startDateError" class="text-danger mt-1"></div>
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Ảnh mới (nếu có)</label>
+                            <input type="file" name="images" multiple class="form-control" accept="image/*" />
+                            <span class="text-danger">@Html.ValidationMessage("Image")</span>
+                        </div>
+
+                        <div class="d-flex justify-content-center gap-3">
+                            <a asp-controller="Event" asp-action="GetAllEvent" class="btn btn-outline-secondary">
+                                ← Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                Cập nhật
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 </form>
-
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
@@ -59,22 +146,18 @@
             const input = document.getElementById("StartDate");
             const errorDiv = document.getElementById("startDateError");
 
-            // Lưu giá trị ban đầu (hợp lệ)
             let lastValidDate = input.value;
 
             input.addEventListener("change", function () {
                 const selectedDate = new Date(this.value);
                 const today = new Date();
-
                 selectedDate.setHours(0, 0, 0, 0);
                 today.setHours(0, 0, 0, 0);
 
                 if (selectedDate <= today) {
-                    // Nếu ngày không hợp lệ
                     errorDiv.textContent = "Ngày bắt đầu phải lớn hơn ngày hôm nay.";
-                    this.value = lastValidDate; // Gán lại ngày cũ
+                    this.value = lastValidDate;
                 } else {
-                    // Nếu hợp lệ, cập nhật ngày cũ
                     errorDiv.textContent = "";
                     lastValidDate = this.value;
                 }

@@ -48,6 +48,12 @@ namespace GreenCorner.EventAPI.Services
             return await _volunteerRepository.GetApprovedRoleAsync(eventId, userId);
         }
 
+        public async Task<List<VolunteerDTO>> GetApprovedVolunteersByUserIdAsync(string userId)
+        {
+            var volunteers = await _volunteerRepository.GetApprovedVolunteersByUserIdAsync(userId);
+            return _mapper.Map<List<VolunteerDTO>>(volunteers);
+        }
+
         public async Task<IEnumerable<VolunteerDTO>> GetParticipatedActivitiesByUserId(string userId)
         {
             var volunteers = await _volunteerRepository.GetParticipatedActivitiesByUserId(userId);

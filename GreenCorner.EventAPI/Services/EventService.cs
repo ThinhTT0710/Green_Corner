@@ -57,6 +57,27 @@ namespace GreenCorner.EventAPI.Services
             CleanupEvent cleanup = _mapper.Map<CleanupEvent>(eventDTO);
             await _eventRepository.UpdateCleanupEventStatus(cleanup);
         }
-       
+
+        public async Task<List<EventDTO>> GetEventsByIdsAsync(List<int> eventIds)
+        {
+            var events = await _eventRepository.GetEventsByIdsAsync(eventIds);
+            return _mapper.Map<List<EventDTO>>(events);
+        }
+        public async Task<(int currentCount, int max)> GetEventParticipationInfoAsync(int eventId)
+        {
+            var evt = await _eventRepository.GetByEventId(eventId);
+            if (evt == null) throw new Exception("Event not found");
+
+            int current = await _eventRepository.CountVolunteersByEventIdAsync(eventId);
+            int max = evt.MaxParticipants ?? int.MaxValue;
+
+            return (current, max);
+        }
+
+        public async Task<bool> IsEventFullAsync(int eventId)
+        {
+            var (current, max) = await GetEventParticipationInfoAsync(eventId);
+            return current >= max;
+        }
     }
 }

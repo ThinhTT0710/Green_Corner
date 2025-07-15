@@ -81,5 +81,17 @@ namespace GreenCorner.EventAPI.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async  Task<List<CleanupEvent>> GetEventsByIdsAsync(List<int> eventIds)
+        {
+            return await _context.CleanupEvents
+                        .Where(e => eventIds.Contains(e.CleanEventId))
+                        .ToListAsync();
+        }
+
+        public async Task<int> CountVolunteersByEventIdAsync(int cleanEventId)
+        {
+            return await _context.EventVolunteers
+                .CountAsync(ev => ev.CleanEventId == cleanEventId);
+        }
     }
 }

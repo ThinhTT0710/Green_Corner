@@ -3,10 +3,12 @@
 }
 @model VoucherDTO
 @{
-    ViewData["Title"] = "Tạo voucher mới";
+    ViewData["Title"] = "Tạo Voucher mới";
 }
 
 <form asp-action="Create" method="post">
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
     <section class="content-main">
         <div class="row">
             <div class="col-12">
@@ -25,6 +27,12 @@
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
 
+                        <div class="mb-4">
+                            <label asp-for="Code" class="form-label">Mã Khuyến Mãi</label>
+                            <input asp-for="Code" class="form-control text-uppercase" type="text" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()" />
+                            <span asp-validation-for="Code" class="text-danger"></span>
+                        </div>
+
                         <!-- Description -->
                         <div class="mb-4">
                             <label asp-for="Description" class="form-label">Mô tả</label>
@@ -39,13 +47,18 @@
                             <span asp-validation-for="PointsRequired" class="text-danger"></span>
                         </div>
 
+                        <div class="mb-4">
+                            <label asp-for="StartDate" class="form-label">Ngày bắt đầu</label>
+                            <input asp-for="StartDate" class="form-control" type="date" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+
                         <!-- Expiration Date -->
                         <div class="mb-4">
                             <label asp-for="ExpirationDate" class="form-label">Ngày hết hạn</label>
-                            <input asp-for="ExpirationDate" class="form-control" type="date" />
+                            <input asp-for="ExpirationDate" class="form-control" type="date" value="@Model.ExpirationDate?.ToString("yyyy-MM-dd")" />
                             <span asp-validation-for="ExpirationDate" class="text-danger"></span>
                         </div>
-
                     </div>
                 </div>
 

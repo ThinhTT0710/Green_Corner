@@ -54,13 +54,19 @@ namespace GreenCorner.RewardAPI.Controllers
 		{
 			try
 			{
-				await _pointTransactionService.TransactionPoints(request.UserId, request.Points, request.Type);
+				await _pointTransactionService.TransactionPoints(request.UserId, request.Points, request.Type, request.CleanEventId);
 				_responseDTO.Message = $"Giao dịch {request.Type} điểm thành công.";
 				return _responseDTO;
 			}
-			catch (Exception ex)
+            catch (InvalidOperationException ex)
+            {
+                _responseDTO.Message = "Bạn không đủ điểm!";
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+            catch (Exception ex)
 			{
-				_responseDTO.Message = ex.Message;
+				_responseDTO.Message = "Đã xảy ra lỗi!";
 				_responseDTO.IsSuccess = false;
 				return _responseDTO;
 			}
@@ -77,7 +83,7 @@ namespace GreenCorner.RewardAPI.Controllers
 			}
 			catch (Exception ex)
 			{
-				_responseDTO.Message = ex.Message;
+				_responseDTO.Message = "Lấy thông tin thất bại!";
 				_responseDTO.IsSuccess = false;
 				return _responseDTO;
 			}
@@ -94,7 +100,7 @@ namespace GreenCorner.RewardAPI.Controllers
 			}
 			catch (Exception ex)
 			{
-				_responseDTO.Message = ex.Message;
+				_responseDTO.Message = "Thêm thất bại!";
 				_responseDTO.IsSuccess = false;
 				return _responseDTO;
 			}
@@ -111,7 +117,7 @@ namespace GreenCorner.RewardAPI.Controllers
 			}
 			catch (Exception ex)
 			{
-				_responseDTO.Message = ex.Message;
+				_responseDTO.Message = "Cập nhật điểm thất bại!";
 				_responseDTO.IsSuccess = false;
 				return _responseDTO;
 			}
@@ -128,10 +134,32 @@ namespace GreenCorner.RewardAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy lịch sử trao điểm thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
         }
+
+        [HttpGet("has-received/{userId}/{eventId}")]
+        public async Task<ResponseDTO> HasReceivedReward(string userId, int eventId)
+        {
+            try
+            {
+                bool hasReceived = await _pointTransactionService.HasReceivedReward(userId, eventId);
+                _responseDTO.Result = hasReceived;
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = hasReceived
+                    ? "Người dùng đã nhận điểm cho sự kiện này."
+                    : "Người dùng chưa nhận điểm cho sự kiện này.";
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = "Đã xảy ra lỗi khi kiểm tra!";
+                return _responseDTO;
+            }
+        }
+
     }
 }

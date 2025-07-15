@@ -38,7 +38,6 @@ namespace GreenCorner.RewardAPI.Repositories
 
 
          
-            voucher.StartDate = DateTime.Now;
             await _context.Vouchers.AddAsync(voucher);
             await _context.SaveChangesAsync();
         
@@ -53,7 +52,6 @@ namespace GreenCorner.RewardAPI.Repositories
                 throw new KeyNotFoundException($"Voucher with ID {voucher.VoucherId} not found.");
             }
             _context.Entry(product).CurrentValues.SetValues(voucher);
-            product.StartDate = DateTime.Now;
             await _context.SaveChangesAsync();
         }
 

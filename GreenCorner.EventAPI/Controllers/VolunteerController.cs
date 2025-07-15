@@ -31,7 +31,7 @@ namespace GreenCorner.EventAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Đăng ký tình nguyện viên thất bại!";
                 return _responseDTO;
             }
         }
@@ -55,7 +55,7 @@ namespace GreenCorner.EventAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Hủy đăng ký thất bại!";
                 return _responseDTO;
             }
         }
@@ -69,14 +69,14 @@ namespace GreenCorner.EventAPI.Controllers
                 _responseDTO.Result = result;
                 if (result == true)
                 {
-                    _responseDTO.Message = "Volunteer registered, please wait for approval";
+                    _responseDTO.Message = "Bạn đã đăng ký, vui lòng đợi phê duyệt.";
                     _responseDTO.IsSuccess = result;
                     
 
                 }
                 else
                 {
-                    _responseDTO.Message = "Not registered";
+                    _responseDTO.Message = "Chưa đăng ký!";
                     _responseDTO.IsSuccess = false;
                 }
 
@@ -99,14 +99,14 @@ namespace GreenCorner.EventAPI.Controllers
                 _responseDTO.Result = result;
                 if (result == true)
                 {
-                    _responseDTO.Message = "TeamLeader registered, please wait for approval";
+                    _responseDTO.Message = "Bạn đã đăng ký làm đội trưởng, vui lòng đợi phê duyệt.";
                     _responseDTO.IsSuccess = result;
                     
 
                 }
                 else
                 {
-                    _responseDTO.Message = "Not registered";
+                    _responseDTO.Message = "Chưa đăng ký!";
                     _responseDTO.IsSuccess = false;
                 }
                 return _responseDTO;
@@ -132,7 +132,7 @@ namespace GreenCorner.EventAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Cập nhật đăng ký thất bại!";
                 _responseDTO.Result = false;
             }
             return _responseDTO;
@@ -151,7 +151,7 @@ namespace GreenCorner.EventAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy danh sách thất bại!";
             }
             return _responseDTO;
         }
@@ -169,7 +169,7 @@ namespace GreenCorner.EventAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy thông tin tình nguyện viên thất bại!";
             }
             return _responseDTO;
         }
@@ -186,7 +186,7 @@ namespace GreenCorner.EventAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Phê duyệt thất bại!";
             }
             return _responseDTO;
         }
@@ -204,7 +204,7 @@ namespace GreenCorner.EventAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "lấy danh sách thất bại!";
             }
             return _responseDTO;
         }
@@ -222,7 +222,7 @@ namespace GreenCorner.EventAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy thông tin thất bại!";
             }
             return _responseDTO;
         }
@@ -239,7 +239,7 @@ namespace GreenCorner.EventAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Phê duyệt thất bại!";
             }
             return _responseDTO;
         }
@@ -256,7 +256,7 @@ namespace GreenCorner.EventAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Từ chối thất bại!";
             }
             return _responseDTO;
         }
@@ -273,7 +273,7 @@ namespace GreenCorner.EventAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Từ chối thất bại!";
             }
             return _responseDTO;
         }
@@ -291,7 +291,7 @@ namespace GreenCorner.EventAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy thông tin thất bại!";
             }
             return _responseDTO;
         }
@@ -311,7 +311,7 @@ namespace GreenCorner.EventAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy thông tin vai trò thất bại!";
             }
             return _responseDTO;
         }
@@ -331,7 +331,7 @@ namespace GreenCorner.EventAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy thông tin thất bại!";
             }
             return _responseDTO;
         }
@@ -349,9 +349,34 @@ namespace GreenCorner.EventAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy thông tin hoạt động thất bại!";
             }
             return _responseDTO;
         }
+
+        [HttpGet("approved/{userId}")]
+        public async Task<ResponseDTO> GetApprovedVolunteers(string userId)
+        {
+            var _responseDTO = new ResponseDTO();
+
+            try
+            {
+                var result = await _volunteerService.GetApprovedVolunteersByUserIdAsync(userId);
+
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = "Lấy danh sách tình nguyện viên đã duyệt thành công.";
+                _responseDTO.Result = result; // Đưa dữ liệu vào đây nếu cần
+
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = $"Đã xảy ra lỗi: {ex.Message}";
+                _responseDTO.Result = null;
+                return _responseDTO;
+            }
+        }
+
     }
 }

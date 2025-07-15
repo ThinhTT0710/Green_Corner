@@ -1,81 +1,77 @@
 ﻿@model IEnumerable<EventVolunteerDTO>
+
 <div class="card shadow border-0 mt-4">
-	<div class="row">
-		<h2 class="content-title card-title">Điểm Danh</h2>
-	</div>
-	<div class="card-body p-4">
-		<div class="card-body">
-			<div class="table-responsive">
-				<table class="table table-hover">
-					<thead>
-						<tr>
-							<th>
-								CleanEvent
-							</th>
-							<th>
-								Rating
-							</th>
-							<th>
-								Comment
-							</th>
-							<th class="text-end">Action</th>
-							<th class="text-end">Edit</th>
-						</tr>
-					</thead>
-			<tbody>
-				@foreach (var item in Model)
-				{
-					<tr>
-						<td>
-							@item.CleanEventId
-						</td>
-						<td>
-							@item.UserId
-						</td>
-						<td>
-							@item.AttendanceStatus
-						</td>
-						<td style="text-align:center">
-							@{
-								if (@item.AttendanceStatus == "Present" || @item.AttendanceStatus == "Absent")
-								{
-									<i class="bi bi-check">Đã Điểm Danh</i>
+    <div class="row">
+        <h2 class="content-title card-title">Điểm Danh</h2>
+    </div>
+    <div class="card-body p-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>CleanEvent</th>
+                            <th>User</th>
+                            <th>Attendance Status</th>
+                            <th class="text-center">Action</th>
+                            <th class="text-end">Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.CleanEventId</td>
+                                <td>@item.UserId</td>
+                                <td>@item.AttendanceStatus</td>
 
-						}else {
+                                <td class="text-center">
+                                    @if (item.AttendanceStatus == "Present" || item.AttendanceStatus == "Absent")
+                                    {
+                                        <span class="text-success"><i class="bi bi-check-circle-fill"></i> Đã điểm danh</span>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-success btn-sm me-1"
+                                           asp-action="AttendanceCheck"
+                                           asp-route-userId="@item.UserId"
+                                           asp-route-eventId="@item.CleanEventId"
+                                           asp-route-check="True">
+                                            Present
+                                        </a>
+                                        <a class="btn btn-danger btn-sm"
+                                           asp-action="AttendanceCheck"
+                                           asp-route-userId="@item.UserId"
+                                           asp-route-eventId="@item.CleanEventId"
+                                           asp-route-check="False">
+                                            Absent
+                                        </a>
+                                    }
+                                </td>
 
-									<a class="btn btn-danger" asp-action="AttendanceCheck" asp-route-userId="@item.UserId" asp-route-eventId="@item.CleanEventId" asp-route-check="True">
-										Present
-								</a>
-									<a class="btn btn-danger" asp-action="AttendanceCheck" asp-route-userId="@item.UserId" asp-route-eventId="@item.CleanEventId" asp-route-check="False">
-										Absent
-									</a>
-							}
-							}
-						</td>
-						@{
-								if (@item.AttendanceStatus == "Present" || @item.AttendanceStatus == "Absent")
-								{
-									
-
-						
-						<td class="text-end d-flex justify-content-end gap-3">
-						<div class="dropdown">
-							<a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-							<div class="dropdown-menu">
-								<a class="btn btn-success" asp-action="EditAttendance" asp-route-userId="@item.UserId" asp-route-eventId="@item.CleanEventId">
-									Edit
-							</a>
-							</div>
-						</div>
-						<!-- dropdown //end -->
-					</td>
-								}
-								}
-					</tr>
-				}
-		</tbody>
-		</table
-			</div>
-		</div>
-	</div>
+                                <td class="text-end">
+                                    @if (item.AttendanceStatus == "Present" || item.AttendanceStatus == "Absent")
+                                    {
+                                        <div class="dropdown">
+                                            <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm">
+                                                <i class="material-icons md-more_horiz"></i>
+                                            </a>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item text-success"
+                                                   asp-action="EditAttendance"
+                                                   asp-route-userId="@item.UserId"
+                                                   asp-route-eventId="@item.CleanEventId">
+                                                    Edit Attendance
+                                                </a>
+                                            </div>
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>

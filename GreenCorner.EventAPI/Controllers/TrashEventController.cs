@@ -30,7 +30,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy điểm rác thất bại! ";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -47,7 +47,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy thông tin điểm rác thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -63,7 +63,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Tạo báo cáo điểm rác thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -79,7 +79,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Cập nhật thông tin điểm rác thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -94,7 +94,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Xóa điểm rác thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -111,7 +111,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Xác nhận sự kiện thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -128,7 +128,7 @@ namespace GreenCorner.EventAPI.Controllers
 			}
 			catch (Exception ex)
 			{
-				_responseDTO.Message = ex.Message;
+				_responseDTO.Message = "Từ chối sự kiện thất bại!";
 				_responseDTO.IsSuccess = false;
 				return _responseDTO;
 			}
@@ -145,7 +145,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy danh sách báo cáo thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }

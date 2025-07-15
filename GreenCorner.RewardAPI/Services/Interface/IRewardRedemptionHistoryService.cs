@@ -5,6 +5,7 @@ namespace GreenCorner.RewardAPI.Services.Interface
 {
     public interface IRewardRedemptionHistoryService
     {
-        Task<IEnumerable<PointTransactionDTO>> GetRewardRedemptionHistory(string userId);
+        Task<IEnumerable<UserVoucherRedemptionDTO>> GetRewardRedemptionHistory(string userId);
+        Task SaveRedemptionAsync(string userId, int voucherId);
     }
 }

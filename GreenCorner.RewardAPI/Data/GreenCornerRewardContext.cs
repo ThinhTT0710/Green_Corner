@@ -30,6 +30,7 @@ public partial class GreenCornerRewardContext : DbContext
         {
             entity.HasKey(e => e.PointTransactionsId).HasName("PK__PointTra__BBA48425F1272BE3");
 
+            entity.Property(e => e.CleanEventId).HasDefaultValue(0);
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.Type).HasMaxLength(50);
             entity.Property(e => e.UserId).HasMaxLength(450);
@@ -59,6 +60,7 @@ public partial class GreenCornerRewardContext : DbContext
         {
             entity.HasKey(e => e.VoucherId).HasName("PK__Vouchers__3AEE7921C707E647");
 
+            entity.Property(e => e.Code).HasMaxLength(255);
             entity.Property(e => e.ExpirationDate).HasColumnType("datetime");
             entity.Property(e => e.StartDate).HasColumnType("datetime");
             entity.Property(e => e.Title).HasMaxLength(255);

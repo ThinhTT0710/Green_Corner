@@ -47,9 +47,9 @@ namespace GreenCorner.RewardAPI.Services
             await _pointTransactionRepository.TransactionPoint(userId, points);
         }
 
-		public async Task TransactionPoints(string userId, int points, string type)
+		public async Task TransactionPoints(string userId, int points, string type, int? eventId)
 		{
-			await _pointTransactionRepository.TransactionPoints(userId, points, type);
+			await _pointTransactionRepository.TransactionPoints(userId, points, type, eventId);
 		}
 
 		public async Task UpdateRewardPointAsync(RewardPointDTO rewardPoint)
@@ -57,5 +57,11 @@ namespace GreenCorner.RewardAPI.Services
 			var rewardPointDto = _mapper.Map<RewardPoint>(rewardPoint);
 			await _pointTransactionRepository.UpdateRewardPointAsync(rewardPointDto);
 		}
-	}
+
+        public async Task<bool> HasReceivedReward(string userId, int eventId)
+        {
+            return await _pointTransactionRepository.HasReceivedReward(userId, eventId);
+        }
+
+    }
 }

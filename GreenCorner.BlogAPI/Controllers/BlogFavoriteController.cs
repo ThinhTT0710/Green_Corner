@@ -28,7 +28,7 @@ namespace GreenCorner.BlogAPI.Controllers
             }
             catch (Exception ex) 
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Yêu thích Blog thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -44,7 +44,7 @@ namespace GreenCorner.BlogAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Xóa Blog ra khỏi danh sách yêu thích thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -79,7 +79,7 @@ namespace GreenCorner.BlogAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy danh sách Blog yêu thích thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }

@@ -1,0 +1,57 @@
+﻿@model List<GreenCorner.MVC.ViewModels.UserVoucherRedemptionViewModel>
+
+@{
+    ViewData["Title"] = "Lịch sử đổi voucher";
+}
+
+<section class="content-main">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mt-4 shadow-sm">
+                <div class="card-header text-white text-center" style="background-color: #3BB77E">
+                    <h3 class="mb-0 text-white">@ViewData["Title"]</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle text-center">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>Mã đổi</th>
+                                    <th>Tên voucher</th>
+                                    <th>Mã voucher</th>
+                                    <th>Điểm đã đổi</th>
+                                    <th>Ngày hết hạn</th>
+                                    <th>Thời gian đổi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.Redemption.UserVoucherId</td>
+                                            <td>@item.Voucher.Title</td>
+                                            <td><span class="badge bg-info text-dark">@item.Voucher.Code</span></td>
+                                            <td class="text-danger fw-bold">@item.Voucher.PointsRequired</td>
+                                            <td>@item.Voucher.ExpirationDate?.ToString("dd/MM/yyyy")</td>
+                                            <td>@item.Redemption.RedeemedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">
+                                            Không có lịch sử đổi voucher nào được tìm thấy.
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
