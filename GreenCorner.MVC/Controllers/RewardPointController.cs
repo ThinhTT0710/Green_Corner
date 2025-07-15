@@ -69,8 +69,9 @@ namespace GreenCorner.MVC.Controllers
             TempData["error"] = response?.Message ?? "Failed to award points.";
             return RedirectToAction("Index");
         }
-        public async Task<IActionResult> GetTotalRewardPoints(string userId)
+        public async Task<IActionResult> GetTotalRewardPoints()
         {
+            var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
             ResponseDTO response = await _rewardPointService.GetUserTotalPoints(userId);
             if (response != null && response.IsSuccess)
             {

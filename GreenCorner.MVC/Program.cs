@@ -30,6 +30,7 @@ builder.Services.AddHttpClient<IRewardService, RewardService>();
 builder.Services.AddHttpClient<IRewardPointService, RewardPointService>(); 
 builder.Services.AddHttpClient<IChatService, ChatService>();
 builder.Services.AddHttpClient<IWishListService, WishListService>();
+builder.Services.AddHttpClient<IRewardRedemptionHistoryService, RewardRedemptionHistoryService>();
 builder.Services.AddHttpClient<INotificationService, NotificationService>();
 
 builder.Services.AddSignalR();

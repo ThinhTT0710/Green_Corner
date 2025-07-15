@@ -65,7 +65,7 @@ namespace GreenCorner.BlogAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Result = ex.Message;
+                _responseDTO.Result = "Đã xảy ra lỗi khi truy xuất bài viết.";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -81,7 +81,7 @@ namespace GreenCorner.BlogAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Đã xảy ra lỗi khi tạo Blog";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -96,7 +96,7 @@ namespace GreenCorner.BlogAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Đã xảy ra lỗi khi cập nhật thông tin Blog!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -111,7 +111,7 @@ namespace GreenCorner.BlogAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Đã xảy ra lỗi khi xóa Blog!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -127,7 +127,7 @@ namespace GreenCorner.BlogAPI.Controllers
             }
             catch(Exception ex) 
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Phê duyệt thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -144,7 +144,7 @@ namespace GreenCorner.BlogAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Không thể xem các bài viết đã tạo!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }

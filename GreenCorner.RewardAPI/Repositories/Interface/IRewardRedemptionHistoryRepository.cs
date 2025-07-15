@@ -4,6 +4,7 @@ namespace GreenCorner.RewardAPI.Repositories.Interface
 {
     public interface IRewardRedemptionHistoryRepository
     {
-        Task<IEnumerable<PointTransaction>> GetRewardRedemptionHistory(string userId);
+        Task<IEnumerable<UserVoucherRedemption>> GetRewardRedemptionHistory(string userId);
+        Task SaveRedemptionAsync(string userId, int voucherId);
     }
 }

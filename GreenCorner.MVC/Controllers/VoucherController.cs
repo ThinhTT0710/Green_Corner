@@ -23,7 +23,7 @@ namespace GreenCorner.MVC.Controllers
             }
             return View(listVoucher);
         }
-        public async Task<IActionResult> ViewDetailVoucher(int voucherId)
+        public async Task<IActionResult> Detail(int voucherId)
         {
             VoucherDTO voucher = new();
             ResponseDTO? response = await _voucherService.GetVoucherById(voucherId);
@@ -40,13 +40,24 @@ namespace GreenCorner.MVC.Controllers
             return View("Detail", voucher); // View tên Detail.cshtml
         }
 
-        public async Task<IActionResult> Create() => View();
+        public IActionResult Create()
+        {
+            return View(new VoucherDTO());
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Create(VoucherDTO voucherDTO)
         {
-            ResponseDTO response = await _voucherService.AddVoucher(voucherDTO);
-            if (response != null && response.IsSuccess) return RedirectToAction(nameof(Index));
+            if (!ModelState.IsValid)
+            {
+                return View(voucherDTO);
+            }
+
+            var response = await _voucherService.AddVoucher(voucherDTO);
+            if (response != null && response.IsSuccess)
+                return RedirectToAction(nameof(Index));
+
             return View(voucherDTO);
         }
 
@@ -64,16 +75,19 @@ namespace GreenCorner.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(VoucherDTO voucherDTO)
         {
-            ResponseDTO response = await _voucherService.UpdateVoucher(voucherDTO);
+            if (!ModelState.IsValid)
+            {
+                return View(voucherDTO);
+            }
+
+            var response = await _voucherService.UpdateVoucher(voucherDTO);
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Voucher updated successfully!";
                 return RedirectToAction(nameof(Index));
             }
-            else
-            {
-                TempData["error"] = response?.Message;
-            }
+
+            TempData["error"] = response?.Message;
             return View(voucherDTO);
         }
 

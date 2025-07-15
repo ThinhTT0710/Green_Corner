@@ -1,55 +1,90 @@
 ﻿@model IEnumerable<EventDTO>
+
 <div class="page-content pt-50">
     <div class="container">
-        <div class="archive-header-2 text-center">
-            <h1 class="display-2 mb-50">Events List</h1>
-            <div class="row">
-                <div class="col-lg-5 mx-auto">
-                    <div class="sidebar-widget-2 widget_search mb-50">
-                        <div class="search-form">
-                            <form action="#">
-                                <input type="text" placeholder="Search vendors (by name or ID)..." />
-                                <button type="submit"><i class="fi-rs-search"></i></button>
-                            </form>
-                        </div>
+        <div class="archive-header-2 text-center mb-4">
+            <h1 class="display-2 mb-3">Events List</h1>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="sidebar-widget-2 widget_search mb-4">
+                        <form class="search-form" action="#">
+                            <input type="text" placeholder="Search events (by name or ID)..." class="form-control" />
+                            <button type="submit" class="btn"><i class="fi-rs-search"></i></button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-       
+
         <div class="row vendor-grid">
             @foreach (var item in Model)
             {
-                <div class="col-lg-6 col-md-6 col-12 col-sm-6">
-                    <div class="vendor-wrap style-2 mb-40">
-                    <div class="product-badges product-badges-position product-badges-mrg">
-                        <span class="hot">@item.Status</span>
-                    </div>
-                    <div class="vendor-img-action-wrap">
-                        <div class="vendor-img">
-                            <a href="vendor-details-1.html">
-                                <img class="default-img" src="./imgs/vendor/vendor-1.png" alt="" />
-                            </a>
-                        </div>
-                        
-                    </div>
-                    <div class="vendor-content-wrap">
-                        <div class="mb-30">
-                                <h4 class="mb-5"><a asp-action="GetEventById" asp-route-eventId="@item.CleanEventId">@item.Title</a></h4>
-                            <div class="vendor-info d-flex justify-content-between align-items-end mt-30">
-                                <ul class="contact-infor text-muted">
-                                    <li><strong>Description: </strong> <span>@item.Description</span></li>
-                                    <li><strong>Max Participants:</strong><span>@item.MaxParticipants</span></li>
-                                    <li><strong>Date:</strong><span>@item.StartDate</span></li>
-                                </ul>
-                                    <a style="margin-left:200px" asp-action="GetEventById" asp-route-eventId="@item.CleanEventId" class="btn btn-xs">View Detail<i class="fi-rs-arrow-small-right"></i></a>
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="vendor-wrap style-2 d-block shadow-sm border rounded p-3 h-100">
+                        <div class="row g-3 align-items-stretch">
+                            <!-- Ảnh bên trái -->
+                            <div class="col-md-5">
+                                <div class="vendor-img-action-wrap">
+                                    <div class="vendor-img">
+                                        <a asp-action="GetEventById" asp-route-eventId="@item.CleanEventId">
+                                            @{
+                                                var firstImage = (item.ImageUrl?.Split('&').FirstOrDefault()) ?? Url.Content("~/imgs/vendor/vendor-1.png");
+                                            }
+                                            <img class="default-img rounded shadow-sm w-100 h-100"
+                                                 src="@firstImage"
+                                                 alt="Ảnh sự kiện"
+                                                 style="object-fit: cover; aspect-ratio: 4/3; border-radius: 12px;" />
+                                        </a>
+                                    </div>
+
+                                    <div class="mt-2">
+                                        <span class="font-small total-product">@item.MaxParticipants người tham gia</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Nội dung bên phải -->
+                            <div class="col-md-7 d-flex flex-column justify-content-between">
+                                <div class="mb-2">
+                                    <div class="product-category mb-1">
+                                        <span class="text-muted">Bắt đầu từ: @item.StartDate?.ToString("dd/MM/yyyy")</span>
+                                    </div>
+                                    <h4 class="mb-2">
+                                        <a asp-action="GetEventById" asp-route-eventId="@item.CleanEventId" class="text-dark">
+                                            @item.Title
+                                        </a>
+                                    </h4>
+
+                                    <div class="product-rate-cover mb-2">
+                                        <span class="font-small text-muted">Điểm thưởng: <strong>@item.PointsAward</strong></span>
+                                    </div>
+
+                                    <div class="vendor-info">
+                                        <ul class="contact-infor text-muted small">
+                                            <li>
+                                                <img src="~/imgs/theme/icons/icon-location.svg" alt="Địa chỉ" style="width: 14px; margin-right: 6px;" />
+                                                <strong>Địa chỉ:</strong> <span>@item.Address</span>
+                                            </li>
+                                            <li class="mt-1">
+                                                <strong>Mô tả:</strong> <span>@item.Description</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="text-end mt-2">
+                                    <a asp-action="GetEventById" asp-route-eventId="@item.CleanEventId" class="btn btn-xs">
+                                        Xem chi tiết <i class="fi-rs-arrow-small-right ms-1"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+
+
             }
         </div>
-
     </div>
 </div>

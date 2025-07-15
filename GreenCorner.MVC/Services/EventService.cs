@@ -1,6 +1,7 @@
 ﻿using GreenCorner.MVC.Models;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
+using System.Net.Http;
 
 namespace GreenCorner.MVC.Services
 {
@@ -214,5 +215,34 @@ namespace GreenCorner.MVC.Services
             });
         }
 
+        public async Task<ResponseDTO?> GetEventsByIdsAsync(List<int> ids)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.POST,
+                Data = ids,
+                Url = $"{SD.EventAPIBase}/api/Event/by-ids"
+            });
+        }
+
+        public async Task<ResponseDTO?> GetParticipationInfoAsync(int eventId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/Event/participation-info/{eventId}"
+            });
+        }
+
+
+
+        public async Task<ResponseDTO?> CheckEventIsFullAsync(int eventId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/Event/is-full/{eventId}"
+            });
+        }
     }
 }

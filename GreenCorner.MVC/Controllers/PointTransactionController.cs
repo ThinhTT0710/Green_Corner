@@ -10,17 +10,21 @@ namespace GreenCorner.MVC.Controllers
     public class PointTransactionController : Controller
     {
         private readonly IPointTransactionService _pointTransactionService;
+        private readonly IRewardRedemptionHistoryService _rewardRedemptionHistoryService;
         private readonly IUserService _userService;
 
-        public PointTransactionController(IPointTransactionService pointTransactionService, IUserService userService)
+        public PointTransactionController(IPointTransactionService pointTransactionService, IRewardRedemptionHistoryService rewardRedemptionHistory, IUserService userService)
         {
             _pointTransactionService = pointTransactionService;
+            _rewardRedemptionHistoryService = rewardRedemptionHistory;
             _userService = userService;
         }
+        
         public async Task<IActionResult> PointTransaction()
         {
             return View();
         }
+        
         public async Task<IActionResult> PointTransactionList()
         {
             List<PointTransactionListViewModel> viewModelList = new();
@@ -70,34 +74,46 @@ namespace GreenCorner.MVC.Controllers
             return View(response);
         }
 
-		[HttpPost]
-		public async Task<IActionResult> EarnPoints(string userId, int points)
-		{
+        [HttpPost]
+        public async Task<IActionResult> EarnPoints(string userId, int points, int eventId)
+        {
             if (string.IsNullOrEmpty(userId))
             {
                 TempData["error"] = "Bạn cần đăng nhập để thực hiện thao tác này.";
                 return RedirectToAction("Login", "Auth");
             }
+
+            // 🔍 Kiểm tra xem đã được thưởng điểm cho sự kiện này chưa
+            var check = await _pointTransactionService.HasReceivedReward(userId, eventId);
+            if (check != null && check.IsSuccess && (bool)(check.Result ?? false))
+            {
+                TempData["error"] = "Bạn đã nhận điểm cho sự kiện này rồi.";
+                return RedirectToAction("ViewEventVolunteerList", new { eventId = eventId });
+            }
+
+            // 🏆 Nếu chưa được nhận điểm thì tiến hành thưởng
             var dto = new PointTransactionDTO
-			{
-				UserId = userId,
-				Points = points,
-				Type = "Thưởng"
+            {
+                UserId = userId,
+                Points = points,
+                Type = "Thưởng",
+                CleanEventId = eventId // Nếu DTO của bạn có thuộc tính này
             };
 
-			var response = await _pointTransactionService.TransactionPoints(dto);
+            var response = await _pointTransactionService.TransactionPoints(dto);
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = $"Bạn đã được Thưởng {points} điểm thành công.";
-                return RedirectToAction("Index", "Voucher");
+                return RedirectToAction("ViewEventVolunteerList", new { eventId = eventId });
             }
 
-            TempData["error"] = "Đổi điểm thất bại. Vui lòng thử lại.";
-            return RedirectToAction("Index", "Voucher");
+            TempData["error"] = "Thưởng điểm thất bại. Vui lòng thử lại.";
+            return RedirectToAction("ViewEventVolunteerList", new { eventId = eventId });
         }
 
-		[HttpPost]
-		public async Task<IActionResult> ExchangePoints(int points)
+
+        [HttpPost]
+		public async Task<IActionResult> ExchangePoints(int points, int voucherId)
 		{
 			var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
             if (string.IsNullOrEmpty(userId))
@@ -115,12 +131,22 @@ namespace GreenCorner.MVC.Controllers
 			var response = await _pointTransactionService.TransactionPoints(dto);
             if (response != null && response.IsSuccess)
             {
-                TempData["success"] = $"Bạn đã đổi {points} điểm thành công.";
-                return RedirectToAction("Index", "Voucher"); 
+                var redemptionResponse = await _rewardRedemptionHistoryService.SaveRedemptionAsync(userId, voucherId);
+
+                if (redemptionResponse != null && redemptionResponse.IsSuccess)
+                {
+                    TempData["success"] = $"Bạn đã đổi {points} điểm và nhận voucher thành công.";
+                }
+                else
+                {
+                    TempData["warning"] = $"Đổi điểm thành công, nhưng ghi nhận voucher thất bại: {redemptionResponse?.Message}";
+                }
+
+                return RedirectToAction("Index", "Reward");
             }
 
-            TempData["error"] = "Đổi điểm thất bại. Vui lòng thử lại.";
-            return RedirectToAction("Index", "Voucher");
+            TempData["error"] = response?.Message ?? "Đổi điểm thất bại. Vui lòng thử lại.";
+            return RedirectToAction("Index", "Reward");
         }
 
         public async Task<IActionResult> UserTransactions()

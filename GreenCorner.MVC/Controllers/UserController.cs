@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace GreenCorner.MVC.Controllers
 {
@@ -15,12 +16,16 @@ namespace GreenCorner.MVC.Controllers
         private readonly IVolunteerService _volunteerService;
         private readonly IEventService _eventService;
         private readonly ITrashEventService _trashEventService;
-        public UserController(IUserService userService, IVolunteerService volunteerService, IEventService eventService, ITrashEventService trashEventService)
+        private readonly IRewardRedemptionHistoryService _rewardRedemptionHistoryService;
+        private readonly IVoucherService _voucherService;
+        public UserController(IUserService userService, IVolunteerService volunteerService, IEventService eventService, ITrashEventService trashEventService, IRewardRedemptionHistoryService rewardRedemptionHistoryService, IVoucherService voucherService)
         {
             _userService = userService;
             _volunteerService = volunteerService;
             _eventService = eventService;
             _trashEventService = trashEventService;
+            _voucherService = voucherService;
+            _rewardRedemptionHistoryService = rewardRedemptionHistoryService;
         }
 
         [HttpGet]
@@ -28,7 +33,7 @@ namespace GreenCorner.MVC.Controllers
         {
             if (!User.Identity.IsAuthenticated)
             {
-                TempData["loginError"] = "You need to log in to view your profile.";
+                TempData["loginError"] = "Bạn cần đăng nhập để xem hồ sơ.";
                 return RedirectToAction("Login", "Auth");
             }
 
@@ -53,7 +58,7 @@ namespace GreenCorner.MVC.Controllers
         {
             if (!User.Identity.IsAuthenticated)
             {
-                TempData["loginError"] = "You need to log in to view your profile.";
+                TempData["loginError"] = "Bạn cần đăng nhập để xem hồ sơ.";
                 return RedirectToAction("Login", "Auth");
             }
 
@@ -105,7 +110,7 @@ namespace GreenCorner.MVC.Controllers
             var response = await _userService.UpdateUser(user);
             if (response != null && response.IsSuccess)
             {
-                TempData["success"] = "Profile updated successfully.";
+                TempData["success"] = "Cập nhật hồ sơ thành công.";
                 return RedirectToAction("Profile", "User");
             }
             else
@@ -132,7 +137,7 @@ namespace GreenCorner.MVC.Controllers
                 ResponseDTO response = await _userService.ChangePassword(changePasswordRequest);
                 if (response != null && response.IsSuccess)
                 {
-                    TempData["success"] = "Change Password Successfully!";
+                    TempData["success"] = "Đổi mật khẩu thành công!";
                     return RedirectToAction(nameof(Index));
                 }
                 else
@@ -251,6 +256,86 @@ namespace GreenCorner.MVC.Controllers
                 TempData["error"] = ex.Message;
                 return RedirectToAction("Index", "Home");
             }
+        }
+
+        public async Task<IActionResult> Achievements()
+        {
+            // Lấy userId từ claim
+            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["error"] = "Không tìm thấy người dùng.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            // Gọi API lấy danh sách volunteer đã duyệt của user
+            var volunteerRes = await _volunteerService.GetApprovedVolunteersByUserIdAsync(userId);
+            if (volunteerRes == null || !volunteerRes.IsSuccess)
+            {
+                TempData["error"] = "Không thể tải dữ liệu tình nguyện viên.";
+                return View(new VolunteerEventListViewModel { Participations = new List<VolunteerWithEventViewModel>() });
+            }
+
+            var volunteerList = JsonConvert.DeserializeObject<List<VolunteerDTO>>(volunteerRes.Result.ToString()!);
+            var eventIds = volunteerList.Select(v => v.CleanEventId).Distinct().ToList();
+
+            // Gọi API lấy danh sách sự kiện theo danh sách ID
+            var eventRes = await _eventService.GetEventsByIdsAsync(eventIds);
+            if (eventRes == null || !eventRes.IsSuccess)
+            {
+                TempData["error"] = "Không thể tải dữ liệu sự kiện.";
+                return View(new VolunteerEventListViewModel { Participations = new List<VolunteerWithEventViewModel>() });
+            }
+
+            var eventList = JsonConvert.DeserializeObject<List<EventDTO>>(eventRes.Result.ToString()!);
+
+            // Kết hợp dữ liệu thành ViewModel
+            var participations = (from v in volunteerList
+                                  join e in eventList on v.CleanEventId equals e.CleanEventId
+                                  select new VolunteerWithEventViewModel
+                                  {
+                                      Volunteer = v,
+                                      Event = e
+                                  }).ToList();
+
+            var viewModel = new VolunteerEventListViewModel
+            {
+                Participations = participations
+            };
+
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> GetRewardRedemptionHistory()
+        {
+            var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+            var response = await _rewardRedemptionHistoryService.GetRewardRedemptionHistory(userId);
+
+            if (response != null && response.IsSuccess)
+            {
+                var redemptionList = JsonConvert.DeserializeObject<List<UserVoucherRedemptionDTO>>(response.Result?.ToString());
+                var result = new List<UserVoucherRedemptionViewModel>();
+
+                foreach (var redemption in redemptionList!)
+                {
+                    var voucherRes = await _voucherService.GetVoucherById(redemption.VoucherId);
+                    var voucher = voucherRes != null && voucherRes.IsSuccess
+                        ? JsonConvert.DeserializeObject<VoucherDTO>(voucherRes.Result?.ToString()!)
+                        : new VoucherDTO();
+
+                    result.Add(new UserVoucherRedemptionViewModel
+                    {
+                        Redemption = redemption,
+                        Voucher = voucher!
+                    });
+                }
+
+                return View(result);
+            }
+
+            TempData["error"] = response?.Message ?? "Không thể tải lịch sử đổi điểm.";
+            return View(new List<UserVoucherRedemptionViewModel>());
         }
     }
 }

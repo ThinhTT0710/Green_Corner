@@ -15,6 +15,7 @@ namespace GreenCorner.MVC.Services.Interface
 		Task<ResponseDTO?> TransactionPoints(PointTransactionDTO dto);
 		Task<ResponseDTO?> GetUserPointTransactions(string userId);
         Task<ResponseDTO?> GetPointsAwardHistoryAsync();
+        Task<ResponseDTO?> HasReceivedReward(string userId, int eventId);
     }
 
 

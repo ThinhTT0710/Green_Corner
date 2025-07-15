@@ -30,7 +30,7 @@ namespace GreenCorner.BlogAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Tạo báo cáo thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -47,7 +47,7 @@ namespace GreenCorner.BlogAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy danh sách báo cáo thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -63,7 +63,7 @@ namespace GreenCorner.BlogAPI.Controllers
                 if (updatedReport == null)
                 {
                     _responseDTO.IsSuccess = false;
-                    _responseDTO.Message = "Cannot edit report. It may not exist or edit time exceeded 2 hours.";
+                    _responseDTO.Message = "Không thể sửa báo cáo";
                     return _responseDTO;
                 }
 
@@ -89,7 +89,7 @@ namespace GreenCorner.BlogAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy báo cáo bài viết thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }

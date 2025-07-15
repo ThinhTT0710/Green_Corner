@@ -14,9 +14,9 @@ namespace GreenCorner.RewardAPI.Repositories
         {
             _context = context;
         }
-        public async Task<IEnumerable<PointTransaction>> GetRewardRedemptionHistory(string userId)
+        public async Task<IEnumerable<UserVoucherRedemption>> GetRewardRedemptionHistory(string userId)
         {
-            var list = await _context.PointTransactions
+            var list = await _context.UserVoucherRedemptions 
                 .Where(p => p.UserId == userId)
                 .ToListAsync();
 
@@ -26,5 +26,21 @@ namespace GreenCorner.RewardAPI.Repositories
             return list;
         }
 
+        public async Task SaveRedemptionAsync(string userId, int voucherId)
+        {
+            var voucher = await _context.Vouchers.FindAsync(voucherId);
+            if (voucher == null)
+                throw new Exception("Voucher không tồn tại.");
+
+            var redemption = new UserVoucherRedemption
+            {
+                UserId = userId,
+                VoucherId = voucherId,
+                RedeemedAt = DateTime.UtcNow
+            };
+
+            await _context.UserVoucherRedemptions.AddAsync(redemption);
+            await _context.SaveChangesAsync();
+        }
     }
 }

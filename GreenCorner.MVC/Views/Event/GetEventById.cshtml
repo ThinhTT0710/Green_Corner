@@ -4,6 +4,9 @@
     bool isTeamLeader = ViewBag.IsTeamLeader as bool? ?? false;
     bool hasApprovedTeamLeader = ViewBag.HasApprovedTeamLeader as bool? ?? false;
     string approvedRole = ViewBag.ApprovedRole as string ?? "";
+    int current = ViewBag.ParticipantCurrent ?? 0;
+    int max = ViewBag.ParticipantMax ?? 0;
+    bool isFull = ViewBag.IsFull as bool? ?? false;
 }
 
 <section class="content-main">
@@ -15,32 +18,86 @@
         </div>
 
         <div class="col-lg-8">
-            <div class="card mb-4 shadow-sm">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header text-white" style="background-color: #3BB77E;">
+                    <h5 class="mb-0" style="color: white;">Thông tin chi tiết sự kiện</h5>
+                </div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label">Mã sự kiện</label>
-                        <input asp-for="CleanEventId" class="form-control" readonly />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Tiêu đề</label>
-                        <input asp-for="Title" class="form-control" readonly />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mô tả</label>
-                        <textarea asp-for="Description" class="form-control" readonly rows="3"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Ngày tạo</label>
-                        <input asp-for="CreatedAt" class="form-control" readonly />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Trạng thái</label>
-                        <input asp-for="Status" class="form-control" readonly />
-                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Mã sự kiện</label>
+                            <div class="form-control bg-light">@Model.CleanEventId</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Tiêu đề</label>
+                            <div class="form-control bg-light">@Model.Title</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Ngày tạo</label>
+                            <div class="form-control bg-light">@Model.CreatedAt?.ToString("dd/MM/yyyy")</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Trạng thái</label>
+                            <div class="form-control bg-light">@Model.Status</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Số lượng tham gia</label>
+                            <div class="form-control bg-light">
+                                @current / @max người đã đăng ký
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Địa điểm</label>
+                            <div class="form-control bg-light">@Model.Address</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Hình ảnh</label>
 
-                    <a asp-controller="Event" asp-action="Index" class="btn btn-secondary mt-3">
-                        ← Quay lại danh sách
-                    </a>
+                            @{
+                                var imagePaths = Model.ImageUrl?.Split('&') ?? Array.Empty<string>();
+                                var carouselId = "eventCarousel";
+                            }
+
+                            @if (imagePaths.Length > 0)
+                            {
+                                <div id="@carouselId" class="carousel slide mb-4" data-bs-ride="carousel" style="max-height: 400px; overflow: hidden;">
+                                    <div class="carousel-inner">
+                                        @for (int i = 0; i < imagePaths.Length; i++)
+                                        {
+                                            var img = imagePaths[i];
+                                            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                                <img src="@img" class="border-radius-15 d-block w-100" alt="Ảnh sự kiện" style="max-height: 400px; object-fit: cover;" />
+                                            </div>
+                                        }
+                                    </div>
+                                    @if (imagePaths.Length > 1)
+                                    {
+                                        <button class="carousel-control-prev" type="button" data-bs-target="#@carouselId" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Trước</span>
+                                        </button>
+                                        <button class="carousel-control-next" type="button" data-bs-target="#@carouselId" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Tiếp</span>
+                                        </button>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-control bg-light">Không có hình ảnh</div>
+                            }
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Mô tả</label>
+                            <div class="form-control bg-light" style="min-height: 150px; white-space: pre-line;">@Model.Description</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Điểm thưởng</label>
+                            <div class="fs-5 badge bg-success px-3 py-2">@Model.PointsAward điểm</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -59,71 +116,113 @@
             }
         </div>
 
+
         <div class="col-lg-4">
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
                     <h5 class="mb-3">Thao tác đăng ký</h5>
+                    @if (approvedRole == "TeamLeader")
+                    {
+                        <a asp-controller="Event"
+                           asp-action="GetOpenEventsByTeamLeader"
+                           asp-route-userId="@User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value"
+                           class="btn btn-primary w-100 mt-3">
+                            Xem sự kiện đang phụ trách
+                        </a>
+                        <div class="d-flex justify-content-start gap-2 mt-2">
+                            <a asp-action="ViewEventVolunteerList"
+                               asp-route-eventId="@Model.CleanEventId"
+                               class="btn btn-sm btn-outline-primary">
+                                Tình nguyện viên <i class="fi-rs-arrow-small-right ms-1"></i>
+                            </a>
+
+                            <a asp-action="ViewEventVolunteerListCheck"
+                               asp-route-eventId="@Model.CleanEventId"
+                               class="btn btn-sm btn-outline-success">
+                                Điểm Danh <i class="fi-rs-arrow-small-right ms-1"></i>
+                            </a>
+                        </div>
+                    }
 
                     @if (string.IsNullOrEmpty(approvedRole))
                     {
-                        if (!isVolunteer && !isTeamLeader)
+                        if (isFull)
                         {
-                            <a asp-controller="Event"
-                               asp-action="RegisterVolunteer"
-                               asp-route-eventId="@Model.CleanEventId"
-                               class="btn btn-success w-100 mb-2">
-                                Đăng ký Volunteer
-                            </a>
-
-                            @if (!hasApprovedTeamLeader)
+                            <div class="alert alert-warning text-center">
+                                Sự kiện đã đủ số lượng đăng ký (@current / @max).
+                            </div>
+                        }
+                        else
+                        {
+                            if (!isVolunteer && !isTeamLeader)
                             {
                                 <a asp-controller="Event"
-                                   asp-action="RegisterTeamLeader"
+                                   asp-action="RegisterVolunteer"
                                    asp-route-eventId="@Model.CleanEventId"
-                                   class="btn btn-warning w-100">
-                                    Đăng ký Team Leader
+                                   class="btn btn-success w-100 mb-2">
+                                    Đăng ký Volunteer
                                 </a>
+
+                                @if (!hasApprovedTeamLeader)
+                                {
+                                    <a asp-controller="Event"
+                                       asp-action="RegisterTeamLeader"
+                                       asp-route-eventId="@Model.CleanEventId"
+                                       class="btn btn-warning w-100">
+                                        Đăng ký Team Leader
+                                    </a>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-secondary w-100" disabled>
+                                        Đã có Team Leader được duyệt
+                                    </button>
+                                }
                             }
-                            else
+                            else if (isVolunteer)
                             {
-                                <button class="btn btn-secondary w-100" disabled>
-                                    Đã có Team Leader được duyệt
-                                </button>
+                                <a asp-controller="Event"
+                                   asp-action="UpdateRegister"
+                                   asp-route-eventId="@Model.CleanEventId"
+                                   class="btn btn-info w-100 mb-2">
+                                    Cập nhật đăng ký Volunteer
+                                </a>
+                                <form asp-controller="Event" asp-action="UnregisterVolunteer" method="post">
+                                    <input type="hidden" name="eventId" value="@Model.CleanEventId" />
+                                    <button type="submit" class="btn btn-outline-danger w-100"
+                                            onclick="return confirm('Bạn có chắc chắn muốn hủy đăng ký Volunteer không?');">
+                                        Hủy đăng ký Volunteer
+                                    </button>
+                                </form>
                             }
-                        }
-                        else if (isVolunteer)
-                        {
-                            <a asp-controller="Event"
-                               asp-action="UpdateRegister"
-                               asp-route-eventId="@Model.CleanEventId"
-                               class="btn btn-info w-100 mb-2">
-                                Cập nhật đăng ký Volunteer
-                            </a>
-                            <form asp-controller="Event" asp-action="UnregisterVolunteer" method="post">
-                                <input type="hidden" name="eventId" value="@Model.CleanEventId" />
-                                <button type="submit" class="btn btn-outline-danger w-100"
-                                        onclick="return confirm('Bạn có chắc chắn muốn hủy đăng ký Volunteer không?');">
-                                    Hủy đăng ký Volunteer
-                                </button>
-                            </form>
-                        }
-                        else if (isTeamLeader)
-                        {
-                            <a asp-controller="Event"
-                               asp-action="UpdateRegister"
-                               asp-route-eventId="@Model.CleanEventId"
-                               class="btn btn-info w-100 mb-2">
-                                Cập nhật đăng ký Team Leader
-                            </a>
-                            <form asp-controller="Event" asp-action="UnregisterTeamLeader" method="post">
-                                <input type="hidden" name="eventId" value="@Model.CleanEventId" />
-                                <button type="submit" class="btn btn-outline-warning w-100"
-                                        onclick="return confirm('Bạn có chắc chắn muốn hủy đăng ký Team Leader không?');">
-                                    Hủy đăng ký Team Leader
-                                </button>
-                            </form>
+                            else if (isTeamLeader)
+                            {
+                                <a asp-controller="Event"
+                                   asp-action="UpdateRegister"
+                                   asp-route-eventId="@Model.CleanEventId"
+                                   class="btn btn-info w-100 mb-2">
+                                    Cập nhật đăng ký Team Leader
+                                </a>
+                                <form asp-controller="Event" asp-action="UnregisterTeamLeader" method="post">
+                                    <input type="hidden" name="eventId" value="@Model.CleanEventId" />
+                                    <button type="submit" class="btn btn-outline-warning w-100"
+                                            onclick="return confirm('Bạn có chắc chắn muốn hủy đăng ký Team Leader không?');">
+                                        Hủy đăng ký Team Leader
+                                    </button>
+                                </form>
+                            }
                         }
                     }
+                </div>
+                
+            </div>
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="mt-4 text-center">
+                        <a asp-controller="Event" asp-action="Index" class="btn btn-outline-secondary">
+                            ← Quay lại danh sách
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
