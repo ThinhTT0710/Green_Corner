@@ -1,6 +1,5 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <title>GreenCorner Dashboard</title>
@@ -25,7 +24,7 @@
     <aside class="navbar-aside" id="offcanvas_aside">
         <div class="aside-top">
             <a href="index.html" class="brand-wrap">
-                <img src="~/admin/imgs/theme/logo.svg" class="logo" alt="Nest Dashboard" />
+                <img src="~/imgs/theme/logo.png" class="logo" alt="Green Corner" />
             </a>
             <div>
                 <button class="btn btn-icon btn-aside-minimize"><i
@@ -43,74 +42,51 @@
                 <li class="menu-item has-submenu">
                     <a class="menu-link" href="page-products-list.html">
                         <i class="icon material-icons md-shopping_bag"></i>
-                        <span class="text">Products</span>
+                        <span class="text">Sự kiện</span>
                     </a>
                     <div class="submenu">
-                        <a href="page-products-list.html">Product List</a>
-                        <a href="page-products-grid.html">Product grid</a>
-                        <a href="page-products-grid-2.html">Product grid 2</a>
-                        <a href="page-categories.html">Categories</a>
+                        <a href="/Event/GetAllEvent">Toàn bộ sự kiện</a>
+                        <a href="/TrashEvent/Index">Lịch sử báo cáo rác</a>
                     </div>
                 </li>
                 <li class="menu-item has-submenu">
                     <a class="menu-link" href="page-orders-1.html">
                         <i class="icon material-icons md-shopping_cart"></i>
-                        <span class="text">Orders</span>
+                        <span class="text">Tài khoản</span>
                     </a>
                     <div class="submenu">
-                        <a href="page-orders-1.html">Order list 1</a>
-                        <a href="page-orders-2.html">Order list 2</a>
-                        <a href="page-orders-detail.html">Order detail</a>
-                    </div>
-                </li>
-                <li class="menu-item has-submenu">
-                    <a class="menu-link" href="page-sellers-cards.html">
-                        <i class="icon material-icons md-store"></i>
-                        <span class="text">Sellers</span>
-                    </a>
-                    <div class="submenu">
-                        <a href="page-sellers-cards.html">Sellers cards</a>
-                        <a href="page-sellers-list.html">Sellers list</a>
-                        <a href="page-seller-detail.html">Seller profile</a>
-                    </div>
-                </li>
-                <li class="menu-item has-submenu">
-                    <a class="menu-link" href="page-form-product-1.html">
-                        <i class="icon material-icons md-add_box"></i>
-                        <span class="text">Add product</span>
-                    </a>
-                    <div class="submenu">
-                        <a href="page-form-product-1.html">Add product 1</a>
-                        <a href="page-form-product-2.html">Add product 2</a>
-                        <a href="page-form-product-3.html">Add product 3</a>
-                        <a href="page-form-product-4.html">Add product 4</a>
-                    </div>
-                </li>
-                <li class="menu-item has-submenu">
-                    <a class="menu-link" href="page-transactions-1.html">
-                        <i class="icon material-icons md-monetization_on"></i>
-                        <span class="text">Transactions</span>
-                    </a>
-                    <div class="submenu">
-                        <a href="page-transactions-1.html">Transaction 1</a>
-                        <a href="page-transactions-2.html">Transaction 2</a>
-                    </div>
-                </li>
-                <li class="menu-item has-submenu">
-                    <a class="menu-link" href="#">
-                        <i class="icon material-icons md-person"></i>
-                        <span class="text">Account</span>
-                    </a>
-                    <div class="submenu">
-                        <a href="page-account-login.html">User login</a>
-                        <a href="page-account-register.html">User registration</a>
-                        <a href="page-error-404.html">Error 404</a>
+                        <a href="/Admin/UserList">Tài khoản người dùng</a>
+                        <a href="/Auth/GetStaffList">Tài khoản nhân viên</a>
                     </div>
                 </li>
                 <li class="menu-item">
-                    <a class="menu-link" href="page-reviews.html">
+                    <a class="menu-link" href="/SaleStaff/OrderList">
+                        <i class="icon material-icons md-store"></i>
+                        <span class="text">Đơn hàng</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/Product/Index">
+                        <i class="icon material-icons md-add_box"></i>
+                        <span class="text">Sản phẩm</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/EventStaff/ViewPendingPosts">
+                        <i class="icon material-icons md-monetization_on"></i>
+                        <span class="text">Bài viết</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/Admin/LogStaff">
+                        <i class="icon material-icons md-person"></i>
+                        <span class="text">Lịch sử hoạt động nhân viên</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/Voucher/Index">
                         <i class="icon material-icons md-comment"></i>
-                        <span class="text">Reviews</span>
+                        <span class="text">Mã giảm giá</span>
                     </a>
                 </li>
                 <li class="menu-item">
