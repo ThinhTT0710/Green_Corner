@@ -30,6 +30,7 @@ builder.Services.AddHttpClient<IRewardService, RewardService>();
 builder.Services.AddHttpClient<IRewardPointService, RewardPointService>(); 
 builder.Services.AddHttpClient<IChatService, ChatService>();
 builder.Services.AddHttpClient<IWishListService, WishListService>();
+builder.Services.AddHttpClient<INotificationService, NotificationService>();
 
 builder.Services.AddSignalR();
 
@@ -65,6 +66,7 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IVolunteerService, VolunteerService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IWishListService, WishListService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 // Add authentication
 builder.Services.AddAuthentication(options =>

@@ -11,6 +11,8 @@ namespace GreenCorner.ChatAPI.Mapping
             var mappingConfig = new MapperConfiguration(config =>
             {
                 config.CreateMap<ChatMessageDTO, ChatMessage>().ReverseMap();
+                config.CreateMap<NotificationDTO, Notification>().ReverseMap();
+
             });
             return mappingConfig;
         }

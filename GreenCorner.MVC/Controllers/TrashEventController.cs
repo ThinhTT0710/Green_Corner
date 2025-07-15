@@ -1,4 +1,5 @@
 ﻿using GreenCorner.MVC.Models;
+using GreenCorner.MVC.Models.Notification;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
 using GreenCorner.MVC.ViewModels;
@@ -11,11 +12,13 @@ namespace GreenCorner.MVC.Controllers
     public class TrashEventController : Controller
     {
         private readonly ITrashEventService _trashEventService;
-        private readonly IUserService _userService; 
-        public TrashEventController(ITrashEventService trashEventService, IUserService userService)
+        private readonly IUserService _userService;
+        private readonly INotificationService _notificationService;
+        public TrashEventController(ITrashEventService trashEventService, IUserService userService, INotificationService notificationService)
         {
             _trashEventService = trashEventService;
             _userService = userService;
+            _notificationService = notificationService;
         }
 
         public async Task<IActionResult> Index()
@@ -51,9 +54,9 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Detail(int trashReportId) 
+        public async Task<IActionResult> Detail(int trashReportId)
         {
-            
+
 
             ResponseDTO response = await _trashEventService.GetByTrashEventId(trashReportId);
             if (response != null && response.IsSuccess)
@@ -67,9 +70,10 @@ namespace GreenCorner.MVC.Controllers
                 {
                     userDTO = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
                 }
-                TrashReportListViewModel viewModel = new() { 
+                TrashReportListViewModel viewModel = new()
+                {
                     TrashEvent = trashEventDTO,
-                    User = userDTO 
+                    User = userDTO
                 };
 
                 return View(viewModel);
@@ -164,7 +168,7 @@ namespace GreenCorner.MVC.Controllers
             ResponseDTO response = await _trashEventService.GetByTrashEventId(trashReportId);
             if (response != null && response.IsSuccess)
             {
-                TrashEventDTO trashEventDTO= JsonConvert.DeserializeObject<TrashEventDTO>(response.Result.ToString());
+                TrashEventDTO trashEventDTO = JsonConvert.DeserializeObject<TrashEventDTO>(response.Result.ToString());
                 return View(trashEventDTO);
             }
             else
@@ -213,7 +217,7 @@ namespace GreenCorner.MVC.Controllers
                 trashEventDTO.ImageUrl = string.Join("&", imagePaths);
             }
             trashEventDTO.UserId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
-			ResponseDTO response = await _trashEventService.UpdateTrashEvent(trashEventDTO);
+            ResponseDTO response = await _trashEventService.UpdateTrashEvent(trashEventDTO);
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Trash event updated successfully!";
@@ -229,33 +233,95 @@ namespace GreenCorner.MVC.Controllers
         [HttpGet]
         public async Task<IActionResult> ApproveTrashEvent(int trashReportId)
         {
-            ResponseDTO response = await _trashEventService.ApproveTrashEvent(trashReportId);
-            if (response != null && response.IsSuccess)
+            if (!User.Identity.IsAuthenticated)
             {
-                TempData["success"] = response?.Message;
+                TempData["loginError"] = "Bạn cần đăng nhập để thực hiện được chức năng này";
+                return RedirectToAction("Login", "Auth");
+            }
+            try
+            {
+                ResponseDTO response = await _trashEventService.ApproveTrashEvent(trashReportId);
+                if (response != null && response.IsSuccess)
+                {
+                    ResponseDTO responseTrash = await _trashEventService.GetByTrashEventId(trashReportId);
+                    if (responseTrash != null && responseTrash.IsSuccess)
+                    {
+                        TrashEventDTO trashEventDto = JsonConvert.DeserializeObject<TrashEventDTO>(responseTrash.Result.ToString());
+                        var notification = new NotificationDTO
+                        {
+                            UserId = trashEventDto.UserId,
+                            Title = "Báo cáo rác được xác nhận",
+                            Message = $"Báo cáo của bạn tại {trashEventDto.Address} đã được xác nhận."
+                        };
+                        var sendNotification = await _notificationService.SendNotification(notification);
+                        if (sendNotification != null && sendNotification.IsSuccess)
+                        {
+                            TempData["success"] = "Đã xác nhận sự kiện và gửi thông báo cho người dùng!";
+                        }
+                        else
+                        {
+                            TempData["error"] = sendNotification?.Message ?? "Đã có lỗi xảy ra.";
+                        }
+                    }
+                }
+                else
+                {
+                    TempData["error"] = response?.Message;
+                }
                 return RedirectToAction(nameof(Index));
             }
-            else
+            catch (Exception ex)
             {
-                TempData["error"] = response?.Message;
+                TempData["error"] = "An error occurred while approving the trash event: " + ex.Message;
+                return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction(nameof(Index));
         }
 
-		[HttpGet]
-		public async Task<IActionResult> RejectrashEvent(int trashReportId)
-		{
-			ResponseDTO response = await _trashEventService.RejectTrashEvent(trashReportId);
-			if (response != null && response.IsSuccess)
-			{
-				TempData["success"] = response?.Message;
-				return RedirectToAction(nameof(Index));
-			}
-			else
-			{
-				TempData["error"] = response?.Message;
-			}
-			return RedirectToAction(nameof(Index));
-		}
-	}
+        [HttpGet]
+        public async Task<IActionResult> RejectrashEvent(int trashReportId)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["loginError"] = "Bạn cần đăng nhập để thực hiện được chức năng này";
+                return RedirectToAction("Login", "Auth");
+            }
+            try
+            {
+                ResponseDTO response = await _trashEventService.RejectTrashEvent(trashReportId);
+                if (response != null && response.IsSuccess)
+                {
+                    ResponseDTO responseTrash = await _trashEventService.GetByTrashEventId(trashReportId);
+                    if (responseTrash != null && responseTrash.IsSuccess)
+                    {
+                        TrashEventDTO trashEventDto = JsonConvert.DeserializeObject<TrashEventDTO>(responseTrash.Result.ToString());
+                        var notification = new NotificationDTO
+                        {
+                            UserId = trashEventDto.UserId,
+                            Title = "Báo cáo rác bị từ chối",
+                            Message = $"Báo cáo của bạn tại {trashEventDto.Address} đã bị từ chối."
+                        };
+                        var sendNotification = await _notificationService.SendNotification(notification);
+                        if (sendNotification != null && sendNotification.IsSuccess)
+                        {
+                            TempData["success"] = "Đã từ chối sự kiện và gửi thông báo cho người dùng!";
+                        }
+                        else
+                        {
+                            TempData["error"] = sendNotification?.Message ?? "Đã có lỗi xảy ra.";
+                        }
+                    }
+                }
+                else
+                {
+                    TempData["error"] = response?.Message;
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = "An error occurred while approving the trash event: " + ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
+        }
+    }
 }

@@ -6,31 +6,33 @@
         {
             var msg = Model.ElementAt(i);
             var isOwnMessage = msg.SenderId == ViewBag.SenderId?.ToString();
-            var messageClass = isOwnMessage ? "message own" : "message";
 
             var prevMsg = i > 0 ? Model.ElementAt(i - 1) : null;
-            var isGrouped = prevMsg != null && prevMsg.SenderId == msg.SenderId;
-            if (isGrouped)
-            {
-                messageClass += " grouped";
-            }
+            var nextMsg = i < Model.Count() - 1 ? Model.ElementAt(i + 1) : null;
 
-            <div class="@messageClass">
-                @if (!isOwnMessage && !isGrouped)
+            var isGrouped = prevMsg != null && prevMsg.SenderId == msg.SenderId;
+            var isLastInGroup = nextMsg == null || nextMsg.SenderId != msg.SenderId;
+
+            var messageClass = isOwnMessage ? "message own" : isLastInGroup ? "message" : "message grouped";
+
+            <div class="@messageClass" data-sender-id="@msg.SenderId">
+                @if (!isOwnMessage && isLastInGroup)
                 {
                     <img src="@msg.SenderAvatar" alt="@msg.SenderName" class="avatar" />
                 }
 
                 <div class="bubble">
-                    @if (!isOwnMessage && !isGrouped)
+                    @if (!isOwnMessage && isLastInGroup)
                     {
                         <div class="sender-name">@msg.SenderName</div>
                     }
+
                     <div class="content">@msg.Content</div>
                     <div class="timestamp">@msg.Timestamp.ToString("HH:mm")</div>
                 </div>
             </div>
         }
+
     </div>
 
     <div class="input-area">
@@ -45,13 +47,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
     <script>
-        {
+        document.addEventListener("DOMContentLoaded", function () {
             const eventId = '@ViewBag.EventId';
             const senderId = '@ViewBag.SenderId';
             const senderName = @Html.Raw(Json.Serialize(ViewBag.SenderName));
             const senderAvatar = '@ViewBag.SenderAvatar';
             const messageList = document.getElementById("messageList");
-            let lastSenderId = '@(Model.LastOrDefault()?.SenderId)';
+            const messageInput = document.getElementById("messageInput");
+            const sendButton = document.getElementById("sendButton");
 
             function scrollToBottom() {
                 messageList.scrollTop = messageList.scrollHeight;
@@ -59,58 +62,77 @@
 
             function formatTimestamp(dateString) {
                 const date = new Date(dateString);
+                if (isNaN(date)) return "";
                 const hours = date.getHours().toString().padStart(2, '0');
                 const minutes = date.getMinutes().toString().padStart(2, '0');
                 return `${hours}:${minutes}`;
             }
 
-            window.onload = scrollToBottom;
+            scrollToBottom();
 
             const chatConnection = new signalR.HubConnectionBuilder()
                 .withUrl("https://localhost:7006/chathub?eventId=" + eventId)
+                .withAutomaticReconnect()
                 .build();
 
             chatConnection.on("ReceiveMessage", function (message) {
                 const isOwn = message.senderId === senderId;
-                const isGrouped = message.senderId === lastSenderId;
+                
+                const lastMessageElement = messageList.lastElementChild;
+
+                if (lastMessageElement && !isOwn && lastMessageElement.dataset.senderId === message.senderId) {
+                    lastMessageElement.classList.add("grouped");
+                    
+                    const avatar = lastMessageElement.querySelector('.avatar');
+                    if (avatar) avatar.remove();
+
+                    const senderNameDiv = lastMessageElement.querySelector('.sender-name');
+                    if (senderNameDiv) senderNameDiv.remove();
+                }
 
                 const messageDiv = document.createElement('div');
-                let messageClasses = isOwn ? 'message own' : 'message';
-                if (isGrouped) {
-                    messageClasses += ' grouped';
+                messageDiv.dataset.senderId = message.senderId; 
+                messageDiv.classList.add('message', 'new-message-animation');
+
+                if (isOwn) {
+                    messageDiv.classList.add('own');
                 }
-                messageDiv.className = messageClasses;
+                
+                let innerHtmlContent = '';
 
-                messageDiv.classList.add('new-message-animation');
-
-                let bubbleContent = '';
-                if (!isOwn && !isGrouped) {
-                    bubbleContent += `<div class="sender-name">${message.senderName}</div>`;
-                }
-                bubbleContent += `<div class="content">${message.content}</div>
-                                      <div class="timestamp">${formatTimestamp(message.timestamp)}</div>`;
-
-                let avatarHtml = '';
-                if (!isOwn && !isGrouped) {
-                    avatarHtml = `<img src="${message.senderAvatar}" alt="${message.senderName}" class="avatar" />`;
+                if (!isOwn) {
+                    innerHtmlContent += `<img src="${message.senderAvatar}" alt="${message.senderName}" class="avatar" />`;
                 }
 
-                messageDiv.innerHTML = `
-                        ${avatarHtml}
-                        <div class="bubble">
-                            ${bubbleContent}
-                        </div>
-                    `;
+                innerHtmlContent += '<div class="bubble">';
+                if (!isOwn) {
+                    innerHtmlContent += `<div class="sender-name">${message.senderName}</div>`;
+                }
+                innerHtmlContent += `<div class="content">${message.content}</div>`;
+                innerHtmlContent += `<div class="timestamp">${formatTimestamp(message.timestamp)}</div>`;
+                innerHtmlContent += '</div>';
 
+                messageDiv.innerHTML = innerHtmlContent;
                 messageList.appendChild(messageDiv);
-                lastSenderId = message.senderId;
                 scrollToBottom();
             });
 
-            chatConnection.start().catch(err => console.error(err.toString()));
+            async function start() {
+                try {
+                    await chatConnection.start();
+                    console.log("SignalR Connected.");
+                } catch (err) {
+                    console.error(err.toString());
+                    setTimeout(start, 5000);
+                }
+            };
+            
+            chatConnection.onclose(async () => {
+                await start();
+            });
 
-            const messageInput = document.getElementById("messageInput");
-            const sendButton = document.getElementById("sendButton");
+            start();
+
 
             function sendMessage() {
                 const msg = messageInput.value.trim();
@@ -130,14 +152,6 @@
             });
 
             sendButton.addEventListener("click", sendMessage);
-        }
-        function formatTimestamp(dateString) {
-    const date = new Date(dateString);
-    if (isNaN(date)) return "";
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
-}
-
+        });
     </script>
 }

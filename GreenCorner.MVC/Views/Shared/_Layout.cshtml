@@ -18,7 +18,6 @@
     <link rel="stylesheet" href="~/css/main.css?v=6.1" asp-append-version="true" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/chatbox.css" asp-append-version="true" />
-
 </head>
 <body>
     <header class="header-area header-style-1 header-height-2">
@@ -37,7 +36,7 @@
                              display: flex;
                              justify-content: center;">
                             <form action="#" method="get" style="max-width: 500px;">
-                                <input type="text" placeholder="Search for items..." id="search-input-realtime" style="max-width: 500px;" />
+                                <input type="text" placeholder="Tìm kiếm sản phầm..." id="search-input-realtime" style="max-width: 500px;" />
                                 <ul id="search-results" class="dropdown-menu w-100">
                                 </ul>
                             </form>
@@ -47,19 +46,40 @@
                                 <div class="location">
                                     <a href="/TrashEvent/ReportTrashEvent" class="btn btn-sm font-weight-bold text-white mr-10 border-radius-5 btn-shadow-brand hover-up"><i class="fi-rs-marker mr-5"></i>Báo cáo</a>
                                 </div>
-                                <div class="header-action-icon-2">
+                                </div>
+                            <div class="header-action-icon-2" style="margin: 8px;">
+                                <a class="nav-link position-relative" href="#" id="notificationDropdown" data-bs-toggle="dropdown">
+                                    <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-bell.svg" style="width: 25px;"/>
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationCount" style="display: none;">0</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationDropdown" id="notificationContainer">
+                                    <div class="notification-header">
+                                        <h6 class="m-0">Thông báo</h6>
+                                    </div>
+
+                                    <div class="notification-list-wrapper" id="notificationListWrapper">
+                                        <ul class="list-unstyled m-0" id="notificationList">
+                                        </ul>
+                                    </div>
+
+                                    <div class="notification-footer">
+                                        <a href="/User/Notifications" class="text-center d-block">Xem tất cả thông báo</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="header-action-icon-2" style="margin: 3px;">
                                     <a href="/WishList">
                                         <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-heart.svg" />
                                     </a>
-                                    <a href="/WishList"><span class="lable">Wishlist</span></a>
+                                    <a href="/WishList"><span class="lable">Yêu thích</span></a>
                                 </div>
-                                <div class="header-action-icon-2">
+                            <div class="header-action-icon-2" style="margin: 3px;">
                                     <a class="mini-cart-icon" href="/Cart">
                                         <img alt="Nest" src="~/imgs/theme/icons/icon-cart.svg" />
                                     </a>
-                                    <a href="/Cart"><span class="lable">Cart</span></a>
+                                    <a href="/Cart"><span class="lable">Giỏ hàng</span></a>
                                 </div>
-                                <div class="header-action-icon-2">
+                            <div class="header-action-icon-2" style="margin: 3px;">
                                     <a href="/User/Profile">
                                         <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-user.svg" />
                                     </a>
@@ -86,16 +106,15 @@
                                                     Account</a>
                                             </li>
                                             <li>
-                                                <a href="page-account.html"><i
-                                                        class="fi fi-rs-location-alt mr-10"></i>Order Tracking</a>
+                                                <a href="/Order/History"><i
+                                                        class="fi fi-rs-location-alt mr-10"></i>Đơn hàng của tôi</a>
                                             </li>
                                             <li>
                                                 <a href="page-account.html"><i class="fi fi-rs-label mr-10"></i>My
                                                     Voucher</a>
                                             </li>
                                             <li>
-                                                <a href="shop-wishlist.html"><i class="fi fi-rs-heart mr-10"></i>My
-                                                    Wishlist</a>
+                                                <a href="/WishList"><i class="fi fi-rs-heart mr-10"></i>Yêu thích</a>
                                             </li>
                                             <li>
                                                 <a href="page-account.html"><i
@@ -220,7 +239,7 @@
                                         <a href="#">Sự kiện</a>
                                     </li>
                                     <li class="position-static">
-                                        <a href="#">Về chúng tôi</a>
+                                        <a href="#">Đổi điểm</a>
                                     </li>
                                     <li>
                                         <a asp-controller="BlogPost" asp-action="Index">Blog</a>
@@ -318,7 +337,7 @@
             <div class="mobile-header-content-area">
                 <div class="mobile-search search-style-3 mobile-header-border">
                     <form action="#">
-                        <input type="text" placeholder="Search for items…" />
+                        <input type="text" placeholder="Tìm kiếm sản phẩm…" />
                         <button type="submit"><i class="fi-rs-search"></i></button>
                     </form>
                 </div>
@@ -611,6 +630,8 @@
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Vendor JS-->
     <script src="~/js/vendor/modernizr-3.6.0.min.js"></script>
     <script src="~/js/vendor/jquery-3.7.1.min.js"></script>
@@ -637,6 +658,133 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/chatbot/chatbot.js"></script>
     <script src="~/js/search/search.js"></script>
+    <script>
+        $(document).ready(function () {
+            const userId = '@User.FindFirst("sub")?.Value';
+            if (!userId) return;
+
+            const notificationList = $("#notificationList");
+            const badge = $("#notificationCount");
+            const listWrapper = $("#notificationListWrapper");
+            const dropdownIcon = $("#notificationDropdown i");
+
+            const notificationConnection = new signalR.HubConnectionBuilder()
+                .withUrl("https://localhost:7006/notificationhub?userId=" + userId)
+                .build();
+
+            function timeAgo(dateString) {
+                const date = new Date(dateString);
+                const now = new Date();
+                const seconds = Math.round(Math.abs((now - date) / 1000));
+
+                const intervals = {
+                    năm: 31536000,
+                    tháng: 2592000,
+                    tuần: 604800,
+                    ngày: 86400,
+                    giờ: 3600,
+                    phút: 60
+                };
+
+                let counter;
+                for (const i in intervals) {
+                    counter = Math.floor(seconds / intervals[i]);
+                    if (counter > 0) {
+                        if (counter === 1) {
+                            return `${counter} ${i} trước`;
+                        } else {
+                            return `${counter} ${i} trước`;
+                        }
+                    }
+                }
+                return "vài giây trước";
+            }
+
+            function renderNotificationItem(noti) {
+                let iconHtml = '<i class="fi fi-rs-info"></i>';
+                if (noti.type === 'order_success') {
+                    iconHtml = '<i class="fi fi-rs-check-circle" style="color: green;"></i>';
+                } else if (noti.type === 'promotion') {
+                    iconHtml = '<i class="fi fi-rs-gift" style="color: orange;"></i>';
+                }
+
+                const isUnread = noti.isRead === false ? '<div class="unread-dot"></div>' : '';
+
+                const url = noti.url || '#';
+
+                return `
+                    <li class="notification-item">
+                        <a href="${url}">
+                            <div class="icon-wrapper">${iconHtml}</div>
+                            <div class="content-wrapper">
+                                <strong>${noti.title}</strong>
+                                <span>${noti.message}</span>
+                                <small>${timeAgo(noti.createdAt)}</small>
+                            </div>
+                            ${isUnread}
+                        </a>
+                    </li>`;
+            }
+
+            function updateUnreadCount(count) {
+                if (count > 0) {
+                    badge.text(count).show();
+                } else {
+                    badge.hide();
+                }
+            }
+
+            notificationConnection.on("ReceiveNotification", function (noti) {
+                const placeholder = notificationList.find(".notification-placeholder");
+                if (placeholder.length) {
+                    placeholder.remove();
+                }
+
+                notificationList.prepend(renderNotificationItem(noti));
+
+                let currentCount = parseInt(badge.text()) || 0;
+                updateUnreadCount(currentCount + 1);
+
+                dropdownIcon.addClass("text-warning animate__animated animate__tada");
+                setTimeout(() => dropdownIcon.removeClass("text-warning animate__animated animate__tada"), 1500);
+            });
+
+            async function startNotificationConnection() {
+                try {
+                    await notificationConnection.start();
+                    console.log("SignalR Connected.");
+                    loadInitialNotifications();
+                } catch (err) {
+                    console.error("SignalR Connection Failed: ", err);
+                    setTimeout(startNotificationConnection, 5000);
+                }
+            }
+
+            function loadInitialNotifications() {
+                notificationList.html('<li class="notification-placeholder">Đang tải...</li>');
+
+                $.get(`https://localhost:7006/api/notifications/user/${userId}`, function (data) {
+                    if (data.isSuccess && data.result.length > 0) {
+                        notificationList.empty();
+                        data.result.forEach(noti => {
+                            notificationList.append(renderNotificationItem(noti));
+                        });
+
+                        const unreadCount = data.result.filter(n => n.isRead === false).length;
+                        updateUnreadCount(unreadCount);
+
+                    } else {
+                        notificationList.html('<li class="notification-placeholder">Không có thông báo nào.</li>');
+                        updateUnreadCount(0);
+                    }
+                }).fail(function () {
+                    notificationList.html('<li class="notification-placeholder">Không thể tải thông báo.</li>');
+                });
+            }
+
+            startNotificationConnection();
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 
