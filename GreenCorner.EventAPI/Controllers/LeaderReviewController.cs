@@ -27,7 +27,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Đánh giá thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -43,7 +43,7 @@ namespace GreenCorner.EventAPI.Controllers
 			}
 			catch (Exception ex)
 			{
-				_responseDTO.Message = ex.Message;
+				_responseDTO.Message = "Lấy thông tin đánh giá thất bại!";
 				_responseDTO.IsSuccess = false;
 				return _responseDTO;
 			}
@@ -58,7 +58,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Cập nhật đánh giá thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -73,7 +73,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Xóa đánh giá thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -89,7 +89,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Không thể lấy lịch sử đánh giá!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }

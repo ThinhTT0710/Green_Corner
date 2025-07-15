@@ -17,7 +17,7 @@ public partial class Voucher
 
     public DateTime? ExpirationDate { get; set; }
 
-    public bool? IsActive { get; set; }
+    public string? Code { get; set; }
 
     public virtual ICollection<UserVoucherRedemption> UserVoucherRedemptions { get; set; } = new List<UserVoucherRedemption>();
 }

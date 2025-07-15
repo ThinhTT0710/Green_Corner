@@ -9,6 +9,7 @@ namespace GreenCorner.EventAPI.Services.Interface
         Task<string> UnregisterAsync(int eventId, string userId, string role);
         Task<bool> CheckRegisteredAsync(int eventId, string userId, string applicationType);
         Task<bool> IsVolunteer(int eventId, string userId);
+        Task<bool> IsConfirmVolunteer(int eventId, string userId);
         Task<bool> IsTeamLeader(int eventId, string userId);
         Task UpdateRegister(VolunteerDTO volunteer);
         Task<IEnumerable<VolunteerDTO>> GetAllVolunteerRegistrations();
@@ -27,5 +28,7 @@ namespace GreenCorner.EventAPI.Services.Interface
         Task<bool> HasApprovedTeamLeaderAsync(int eventId);
 
         Task<IEnumerable<string>> GetUserWithParticipation();
+
+        Task<List<VolunteerDTO>> GetApprovedVolunteersByUserIdAsync(string userId);
     }
 }

@@ -25,8 +25,16 @@ namespace GreenCorner.EcommerceAPI.Repositories
 
         public async Task Add(WishList item)
         {
+            var wishList = await _context.WishLists.FirstOrDefaultAsync(w => w.UserId == item.UserId && w.ProductId == item.ProductId);
+            if (wishList == null)
+            {
                 await _context.WishLists.AddAsync(item);
                 await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new Exception("Sản phẩm đã tồn tại trong danh sách yêu thích");
+            }
         }
 
         public async Task Update(WishList item)

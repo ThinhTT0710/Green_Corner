@@ -16,6 +16,18 @@ namespace GreenCorner.RewardAPI.Repositories
             _context = context;
         }
 
+        public async Task<IEnumerable<PointTransaction>> GetAllPointTransaction()
+        {
+            return await _context.PointTransactions.ToListAsync();
+        }
+
+        public async Task<IEnumerable<PointTransaction>> GetByUserId(string userId)
+        {
+            return await _context.PointTransactions
+                .Where(t => t.UserId == userId)
+                .ToListAsync();
+        }
+
         public async Task TransactionPoint(string userId, int points)
         {
             var userTransaction = await _context.PointTransactions.FirstOrDefaultAsync(rp => rp.UserId == userId);
@@ -28,7 +40,7 @@ namespace GreenCorner.RewardAPI.Repositories
         {
             return await _context.PointTransactions
               .FirstOrDefaultAsync(p => p.UserId == userId)
-              ?? throw new KeyNotFoundException($"User with ID {userId} not found.");
+              ?? throw new Exception($"User with ID {userId} not found.");
         }
 
 		public async Task<IEnumerable<PointTransaction>> GetRewardPointByUserIdAsync(string userId)
@@ -53,7 +65,7 @@ namespace GreenCorner.RewardAPI.Repositories
 			await _context.SaveChangesAsync();
 		}
 
-		public async Task TransactionPoints(string userId, int points, string type)
+		public async Task TransactionPoints(string userId, int points, string type, int? eventId = null)
 		{
 			if (type != "Thưởng" && type != "Đổi")
 				throw new ArgumentException("Type must be 'Kiếm' or 'Đổi'.");
@@ -76,7 +88,11 @@ namespace GreenCorner.RewardAPI.Repositories
 			}
 			else if (type == "Đổi")
 			{
-				rewardPoint.TotalPoints -= points;
+                if (rewardPoint.TotalPoints < points)
+                {
+                    throw new InvalidOperationException("Bạn không có đủ điểm để thực hiện giao dịch này.");
+                }
+                rewardPoint.TotalPoints -= points;
 			}
 
 			var transaction = new PointTransaction
@@ -84,8 +100,9 @@ namespace GreenCorner.RewardAPI.Repositories
 				UserId = userId,
 				Points = type == "Thưởng" ? points : -points,
 				Type = type,
-				CreatedAt = DateTime.UtcNow
-			};
+				CreatedAt = DateTime.UtcNow,
+                CleanEventId = eventId ?? 0
+            };
 
 			await UpdateRewardPointAsync(rewardPoint);
 			await _context.PointTransactions.AddAsync(transaction);
@@ -97,6 +114,14 @@ namespace GreenCorner.RewardAPI.Repositories
             return await _context.PointTransactions
 						.Where(t => t.Type == "Thưởng")
 						.ToListAsync();
+        }
+
+        public async Task<bool> HasReceivedReward(string userId, int eventId)
+        {
+            return await _context.PointTransactions.AnyAsync(pt =>
+                pt.UserId == userId &&
+                pt.Type == "Thưởng" &&
+                pt.CleanEventId == eventId);
         }
     }
 }

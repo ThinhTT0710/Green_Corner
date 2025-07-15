@@ -10,6 +10,7 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> AddProduct(ProductDTO productDto);
         Task<ResponseDTO?> UpdateProduct(ProductDTO productDto);
         Task<ResponseDTO?> DeleteProduct(int id);
+        Task<ResponseDTO?> GetNewestProducts();
         Task<ResponseDTO?> OutOfStockProduct();
 
     }

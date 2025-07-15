@@ -27,5 +27,8 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> CloseCleanupEvent(int id);
 		Task<ResponseDTO?> OpenCleanupEvent(int id);
 		Task<ResponseDTO?> KickVolunteer(string userId, int eventId);
+        Task<ResponseDTO?> GetEventsByIdsAsync(List<int> eventIds);
+        Task<ResponseDTO?> GetParticipationInfoAsync(int eventId);
+        Task<ResponseDTO?> CheckEventIsFullAsync(int eventId);
     }
 }

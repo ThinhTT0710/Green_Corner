@@ -20,5 +20,6 @@ public partial class Volunteer
     public string? Assignment { get; set; }
 
     public string? CarryItems { get; set; }
+
     public virtual CleanupEvent CleanEvent { get; set; } = null!;
 }

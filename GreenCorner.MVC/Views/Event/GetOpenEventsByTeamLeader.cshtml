@@ -1,4 +1,5 @@
-﻿@model IEnumerable<EventDTO>
+﻿
+@model IEnumerable<EventDTO>
 <div class="page-content pt-50">
     <div class="container">
         <div class="archive-header-2 text-center">
@@ -41,8 +42,19 @@
                                         <li><strong>Max Participants:</strong><span>@item.MaxParticipants</span></li>
                                         <li><strong>Date:</strong><span>@item.StartDate</span></li>
                                     </ul>
-                                    <a style="margin-left:200px" asp-action="ViewEventVolunteerList" asp-route-eventId="@item.CleanEventId" class="btn btn-xs">Xem Danh Sách TNV<i class="fi-rs-arrow-small-right"></i></a>
-                                    <a style="margin-left:10px" asp-action="ViewEventVolunteerListCheck" asp-route-eventId="@item.CleanEventId" class="btn btn-xs">Điểm Danh<i class="fi-rs-arrow-small-right"></i></a>
+                                </div>
+                                <div class="d-flex justify-content-start gap-2 mt-2">
+                                    <a asp-action="ViewEventVolunteerList"
+                                       asp-route-eventId="@item.CleanEventId"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Xem Danh Sách TNV <i class="fi-rs-arrow-small-right ms-1"></i>
+                                    </a>
+
+                                    <a asp-action="ViewEventVolunteerListCheck"
+                                       asp-route-eventId="@item.CleanEventId"
+                                       class="btn btn-sm btn-outline-success">
+                                        Điểm Danh <i class="fi-rs-arrow-small-right ms-1"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>

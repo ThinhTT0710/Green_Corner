@@ -62,7 +62,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy thông tin sự kiện thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -77,7 +77,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Tạo sự kiện vệ sinh thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -92,7 +92,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Cập nhật thông tin sự kiện vệ sinh thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -107,7 +107,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Cập nhật trạng thái thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -122,7 +122,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Kết thúc sự kiện vệ sinh thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -137,10 +137,75 @@ namespace GreenCorner.EventAPI.Controllers
 			}
 			catch (Exception ex)
 			{
-				_responseDTO.Message = ex.Message;
+				_responseDTO.Message = "Bắt đầu sự kiện thất bại!";
 				_responseDTO.IsSuccess = false;
 				return _responseDTO;
 			}
 		}
-	}
+
+        [HttpPost("by-ids")]
+        public async Task<ResponseDTO> GetEventsByIds([FromBody] List<int> ids)
+        {
+            var _responseDTO = new ResponseDTO();
+
+            try
+            {
+                var result = await _eventService.GetEventsByIdsAsync(ids);
+
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = "Lấy danh sách sự kiện thành công.";
+                _responseDTO.Result = result;
+
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = $"Đã xảy ra lỗi: {ex.Message}";
+                _responseDTO.Result = null;
+
+                return _responseDTO;
+            }
+        }
+        [HttpGet("participation-info/{eventId}")]
+        public async Task<ResponseDTO> GetParticipationInfo(int eventId)
+        {
+            var response = new ResponseDTO();
+
+            try
+            {
+                var (current, max) = await _eventService.GetEventParticipationInfoAsync(eventId);
+                response.IsSuccess = true;
+                response.Result = new { Current = current, Max = max };
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
+
+        [HttpGet("is-full/{eventId}")]
+        public async Task<ResponseDTO> IsEventFull(int eventId)
+        {
+            var response = new ResponseDTO();
+
+            try
+            {
+                bool isFull = await _eventService.IsEventFullAsync(eventId);
+                response.IsSuccess = true;
+                response.Result = new { IsFull = isFull };
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
+
+    }
 }

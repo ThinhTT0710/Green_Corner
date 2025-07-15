@@ -16,8 +16,8 @@
     <!-- Template CSS -->
     <link rel="stylesheet" href="~/css/plugins/animate.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/main.css?v=6.1" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/chatbox.css" asp-append-version="true" />
-
 </head>
 <body>
     <header class="header-area header-style-1 header-height-2">
@@ -28,162 +28,109 @@
             <div class="container">
                 <div class="header-wrap">
                     <div class="logo logo-width-1">
-                        <a href="index.html"><img src="~/imgs/theme/logo.svg" alt="logo" /></a>
+                        <a href="index.html"><img src="~/imgs/theme/logo.png" alt="logo" /></a>
                     </div>
                     <div class="header-right">
-                        <div class="search-style-2">
-                            <form action="#">
-                                <select class="select-active">
-                                    <option>All Categories</option>
-                                    <option>Milks and Dairies</option>
-                                    <option>Wines & Alcohol</option>
-                                    <option>Clothing & Beauty</option>
-                                    <option>Pet Foods & Toy</option>
-                                    <option>Fast food</option>
-                                    <option>Baking material</option>
-                                    <option>Vegetables</option>
-                                    <option>Fresh Seafood</option>
-                                    <option>Noodles & Rice</option>
-                                    <option>Ice cream</option>
-                                </select>
-                                <input type="text" placeholder="Search for items..." />
+                        <div class="search-style-2" style="
+                             align-items: center;
+                             display: flex;
+                             justify-content: center;">
+                            <form action="#" method="get" style="max-width: 500px;">
+                                <input type="text" placeholder="Tìm kiếm sản phầm..." id="search-input-realtime" style="max-width: 500px;" />
+                                <ul id="search-results" class="dropdown-menu w-100">
+                                </ul>
                             </form>
                         </div>
                         <div class="header-action-right">
                             <div class="header-action-2">
-                                <div class="search-location">
-                                    <form action="#">
-                                        <select class="select-active">
-                                            <option>Your Location</option>
-                                            <option>Alabama</option>
-                                            <option>Alaska</option>
-                                            <option>Arizona</option>
-                                            <option>Delaware</option>
-                                            <option>Florida</option>
-                                            <option>Georgia</option>
-                                            <option>Hawaii</option>
-                                            <option>Indiana</option>
-                                            <option>Maryland</option>
-                                            <option>Nevada</option>
-                                            <option>New Jersey</option>
-                                            <option>New Mexico</option>
-                                            <option>New York</option>
-                                        </select>
-                                    </form>
+                                <div class="location">
+                                    <a href="/TrashEvent/ReportTrashEvent" class="btn btn-sm font-weight-bold text-white mr-10 border-radius-5 btn-shadow-brand hover-up"><i class="fi-rs-marker mr-5"></i>Báo cáo</a>
                                 </div>
-                                <div class="header-action-icon-2">
-                                    <a href="shop-wishlist.html">
-                                        <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-heart.svg" />
-                                        <span class="pro-count blue">6</span>
-                                    </a>
-                                    <a href="shop-wishlist.html"><span class="lable">Wishlist</span></a>
-                                </div>
-                                <div class="header-action-icon-2">
-                                    <a class="mini-cart-icon" href="shop-cart.html">
-                                        <img alt="Nest" src="~/imgs/theme/icons/icon-cart.svg" />
-                                        <span class="pro-count blue">2</span>
-                                    </a>
-                                    <a href="/Cart"><span class="lable">Cart</span></a>
-                                    <div class="cart-dropdown-wrap cart-dropdown-hm2">
-                                        <ul>
-                                            <li>
-                                                <div class="shopping-cart-img">
-                                                    <a href="shop-product-right.html">
-                                                        <img alt="Nest"
-                                                             src="~/imgs/shop/thumbnail-3.jpg" />
-                                                    </a>
-                                                </div>
-                                                <div class="shopping-cart-title">
-                                                    <h4><a href="shop-product-right.html">Daisy Casual Bag</a></h4>
-                                                    <h4><span>1 × </span>$800.00</h4>
-                                                </div>
-                                                <div class="shopping-cart-delete">
-                                                    <a href="#"><i class="fi-rs-cross-small"></i></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="shopping-cart-img">
-                                                    <a href="shop-product-right.html">
-                                                        <img alt="Nest"
-                                                             src="~/imgs/shop/thumbnail-2.jpg" />
-                                                    </a>
-                                                </div>
-                                                <div class="shopping-cart-title">
-                                                    <h4><a href="shop-product-right.html">Corduroy Shirts</a></h4>
-                                                    <h4><span>1 × </span>$3200.00</h4>
-                                                </div>
-                                                <div class="shopping-cart-delete">
-                                                    <a href="#"><i class="fi-rs-cross-small"></i></a>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <div class="shopping-cart-footer">
-                                            <div class="shopping-cart-total">
-                                                <h4>Total <span>$4000.00</span></h4>
-                                            </div>
-                                            <div class="shopping-cart-button">
-                                                <a href="shop-cart.html" class="outline">View cart</a>
-                                                <a href="shop-checkout.html">Checkout</a>
-                                            </div>
-                                        </div>
+                            </div>
+                            <div class="header-action-icon-2" style="margin: 8px;">
+                                <a class="nav-link position-relative" href="#" id="notificationDropdown" data-bs-toggle="dropdown">
+                                    <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-bell.svg" style="width: 25px;" />
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationCount" style="display: none;">0</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationDropdown" id="notificationContainer">
+                                    <div class="notification-header">
+                                        <h6 class="m-0">Thông báo</h6>
                                     </div>
-                                </div>
-                                <div class="header-action-icon-2">
-                                    <a href="/User/Profile">
-                                        <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-user.svg" />
-                                    </a>
-                                    <a href="/User/Profile"><span class="lable ml-0">Tài khoản</span></a>
-                                    <div class="cart-dropdown-wrap cart-dropdown-hm2 account-dropdown">
-                                        <ul>
-                                            @if (!User.Identity.IsAuthenticated)
-                                            {
-                                                <li>
-                                                    <a href="/Auth/Login">
-                                                        <i class="fi fi-rs-user mr-10"></i>Đăng nhập
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="/Auth/Register">
-                                                        <i class="fi fi-rs-location-alt mr-10"></i>Đăng ký
-                                                    </a>
-                                                </li>
-                                            }
-                                            else
-                                            {
-                                                <li>
-                                                    <a href="/User/Profile">
-                                                        <i class="fi fi-rs-user mr-10"></i>My
-                                                        Account
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="page-account.html">
-                                                        <i class="fi fi-rs-location-alt mr-10"></i>Order Tracking
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="page-account.html">
-                                                        <i class="fi fi-rs-label mr-10"></i>My
-                                                        Voucher
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="shop-wishlist.html">
-                                                        <i class="fi fi-rs-heart mr-10"></i>My
-                                                        Wishlist
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="page-account.html">
-                                                        <i class="fi fi-rs-settings-sliders mr-10"></i>Setting
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="/Auth/Logout"><i class="fi fi-rs-sign-out mr-10"></i>Đăng xuất</a>
-                                                </li>
-                                            }
+
+                                    <div class="notification-list-wrapper" id="notificationListWrapper">
+                                        <ul class="list-unstyled m-0" id="notificationList">
                                         </ul>
                                     </div>
+
+                                    <div class="notification-footer">
+                                        <a href="/User/Notifications" class="text-center d-block">Xem tất cả thông báo</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="header-action-icon-2" style="margin: 3px;">
+                                <a href="/WishList">
+                                    <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-heart.svg" />
+                                </a>
+                                <a href="/WishList"><span class="lable">Yêu thích</span></a>
+                            </div>
+                            <div class="header-action-icon-2" style="margin: 3px;">
+                                <a class="mini-cart-icon" href="/Cart">
+                                    <img alt="Nest" src="~/imgs/theme/icons/icon-cart.svg" />
+                                </a>
+                                <a href="/Cart"><span class="lable">Giỏ hàng</span></a>
+                            </div>
+                            <div class="header-action-icon-2" style="margin: 3px;">
+                                <a href="/User/Profile">
+                                    <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-user.svg" />
+                                </a>
+                                <a href="/User/Profile"><span class="lable ml-0">Tài khoản</span></a>
+                                <div class="cart-dropdown-wrap cart-dropdown-hm2 account-dropdown">
+                                    <ul>
+                                        @if (!User.Identity.IsAuthenticated)
+                                        {
+                                            <li>
+                                                <a href="/Auth/Login">
+                                                    <i class="fi fi-rs-user mr-10"></i>Đăng nhập
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/Auth/Register">
+                                                    <i class="fi fi-rs-location-alt mr-10"></i>Đăng ký
+                                                </a>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li>
+                                                <a href="/User/Profile">
+                                                    <i class="fi fi-rs-user mr-10"></i>My
+                                                    Account
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/Order/History">
+                                                    <i class="fi fi-rs-location-alt mr-10"></i>Đơn hàng của tôi
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="page-account.html">
+                                                    <i class="fi fi-rs-label mr-10"></i>My
+                                                    Voucher
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/WishList"><i class="fi fi-rs-heart mr-10"></i>Yêu thích</a>
+                                            </li>
+                                            <li>
+                                                <a href="page-account.html">
+                                                    <i class="fi fi-rs-settings-sliders mr-10"></i>Setting
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/Auth/Logout"><i class="fi fi-rs-sign-out mr-10"></i>Đăng xuất</a>
+                                            </li>
+                                        }
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -191,124 +138,19 @@
                 </div>
             </div>
         </div>
+        </div>
         <div class="header-bottom header-bottom-bg-color sticky-bar">
             <div class="container">
                 <div class="header-wrap header-space-between position-relative">
                     <div class="logo logo-width-1 d-block d-lg-none">
-                        <a href="index.html"><img src="~/imgs/theme/logo.svg" alt="logo" /></a>
+                        <a href="index.html"><img src="~/imgs/theme/logo.png" alt="logo" /></a>
                     </div>
                     <div class="header-nav d-none d-lg-flex">
                         <div class="main-categori-wrap d-none d-lg-block">
                             <a class="categories-button-active" href="#">
-                                <span class="fi-rs-apps"></span> <span class="et">Browse</span> All Categories
+                                <span class="fi-rs-apps"></span> <span class="et">Danh</span> mục sản phẩm
                                 <i class="fi-rs-angle-down"></i>
                             </a>
-                            <div class="categories-dropdown-wrap categories-dropdown-active-large font-heading">
-                                <div class="d-flex categori-dropdown-inner">
-                                    <ul>
-                                        <li>
-                                            <a href="shop-grid-right.html">
-                                                <img src="~/imgs/theme/icons/category-1.svg"
-                                                     alt="" />Milks and Dairies
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html">
-                                                <img src="~/imgs/theme/icons/category-2.svg"
-                                                     alt="" />Clothing & beauty
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html">
-                                                <img src="~/imgs/theme/icons/category-3.svg"
-                                                     alt="" />Pet Foods & Toy
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html">
-                                                <img src="~/imgs/theme/icons/category-4.svg"
-                                                     alt="" />Baking material
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html">
-                                                <img src="~/imgs/theme/icons/category-5.svg"
-                                                     alt="" />Fresh Fruit
-                                            </a>
-                                        </li>
-                                    </ul>
-                                    <ul class="end">
-                                        <li>
-                                            <a href="shop-grid-right.html">
-                                                <img src="~/imgs/theme/icons/category-6.svg"
-                                                     alt="" />Wines & Drinks
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html">
-                                                <img src="~/imgs/theme/icons/category-7.svg"
-                                                     alt="" />Fresh Seafood
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html">
-                                                <img src="~/imgs/theme/icons/category-8.svg"
-                                                     alt="" />Fast food
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html">
-                                                <img src="~/imgs/theme/icons/category-9.svg"
-                                                     alt="" />Vegetables
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html">
-                                                <img src="~/imgs/theme/icons/category-10.svg" alt="" />Bread and
-                                                Juice
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="more_slide_open" style="display: none">
-                                    <div class="d-flex categori-dropdown-inner">
-                                        <ul>
-                                            <li>
-                                                <a href="shop-grid-right.html">
-                                                    <img src="~/imgs/theme/icons/icon-1.svg"
-                                                         alt="" />Milks and Dairies
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="shop-grid-right.html">
-                                                    <img src="~/imgs/theme/icons/icon-2.svg"
-                                                         alt="" />Clothing & beauty
-                                                </a>
-                                            </li>
-                                        </ul>
-                                        <ul class="end">
-                                            <li>
-                                                <a href="shop-grid-right.html">
-                                                    <img src="~/imgs/theme/icons/icon-3.svg"
-                                                         alt="" />Wines & Drinks
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="shop-grid-right.html">
-                                                    <img src="~/imgs/theme/icons/icon-4.svg"
-                                                         alt="" />Fresh Seafood
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="more_categories">
-                                    <span class="icon"></span> <span class="heading-sm-1">
-                                        Show
-                                        more...
-                                    </span>
-                                </div>
-                            </div>
                         </div>
                         <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block font-heading">
                             <nav>
@@ -318,22 +160,22 @@
                                              alt="hot deals" /><a href="shop-grid-right.html">Deals</a>
                                     </li>
                                     <li>
-                                        <a class="active" href="index.html">Trang chủ</a>
+                                        <a class="active" href="/Home">Trang chủ</a>
                                     </li>
                                     <li>
                                         <a href="page-about.html">Giới thiệu</a>
                                     </li>
                                     <li>
-                                        <a href="shop-grid-right.html">Cửa hàng</a>
+                                        <a href="/Product">Cửa hàng</a>
                                     </li>
                                     <li>
                                         <a href="#">Sự kiện</a>
                                     </li>
                                     <li class="position-static">
-                                        <a href="#">Về chúng tôi</a>
+                                        <a href="#">Đổi điểm</a>
                                     </li>
                                     <li>
-                                        <a href="blog-category-grid.html">Blog</a>
+                                        <a asp-controller="BlogPost" asp-action="Index">Blog</a>
                                     </li>
                                     <li>
                                         <a href="page-contact.html">Liên  hệ</a>
@@ -420,7 +262,7 @@
         <div class="mobile-header-wrapper-inner">
             <div class="mobile-header-top">
                 <div class="mobile-header-logo">
-                    <a href="index.html"><img src="~/imgs/theme/logo.svg" alt="logo" /></a>
+                    <a href="index.html"><img src="~/imgs/theme/logo.png" alt="logo" /></a>
                 </div>
                 <div class="mobile-menu-close close-style-wrap close-style-position-inherit">
                     <button class="close-style search-close">
@@ -432,7 +274,7 @@
             <div class="mobile-header-content-area">
                 <div class="mobile-search search-style-3 mobile-header-border">
                     <form action="#">
-                        <input type="text" placeholder="Search for items…" />
+                        <input type="text" placeholder="Tìm kiếm sản phẩm…" />
                         <button type="submit"><i class="fi-rs-search"></i></button>
                     </form>
                 </div>
@@ -535,198 +377,166 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-1-5 col-md-4 col-12 col-sm-6 mb-md-4 mb-xl-0">
-                        <div class="banner-left-icon d-flex align-items-center wow animate__animated animate__fadeInUp"
-                             data-wow-delay="0">
+                        <div class="banner-left-icon d-flex align-items-center wow animate__animated animate__fadeInUp" data-wow-delay="0">
                             <div class="banner-icon">
                                 <img src="~/imgs/theme/icons/icon-1.svg" alt="" />
                             </div>
                             <div class="banner-text">
-                                <h3 class="icon-box-title">Best prices & offers</h3>
-                                <p>Orders $50 or more</p>
+                                <h3 class="icon-box-title">Giá tốt nhất</h3>
+                                <p>Ưu đãi cho đơn hàng từ 50K</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-1-5 col-md-4 col-12 col-sm-6">
-                        <div class="banner-left-icon d-flex align-items-center wow animate__animated animate__fadeInUp"
-                             data-wow-delay=".1s">
+                        <div class="banner-left-icon d-flex align-items-center wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
                             <div class="banner-icon">
                                 <img src="~/imgs/theme/icons/icon-2.svg" alt="" />
                             </div>
                             <div class="banner-text">
-                                <h3 class="icon-box-title">Free delivery</h3>
-                                <p>24/7 amazing services</p>
+                                <h3 class="icon-box-title">Giao hàng miễn phí</h3>
+                                <p>Dịch vụ tận tâm 24/7</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-1-5 col-md-4 col-12 col-sm-6">
-                        <div class="banner-left-icon d-flex align-items-center wow animate__animated animate__fadeInUp"
-                             data-wow-delay=".2s">
+                        <div class="banner-left-icon d-flex align-items-center wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
                             <div class="banner-icon">
                                 <img src="~/imgs/theme/icons/icon-3.svg" alt="" />
                             </div>
                             <div class="banner-text">
-                                <h3 class="icon-box-title">Great daily deal</h3>
-                                <p>When you sign up</p>
+                                <h3 class="icon-box-title">Ưu đãi mỗi ngày</h3>
+                                <p>Khi bạn đăng ký tài khoản</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-1-5 col-md-4 col-12 col-sm-6">
-                        <div class="banner-left-icon d-flex align-items-center wow animate__animated animate__fadeInUp"
-                             data-wow-delay=".3s">
+                        <div class="banner-left-icon d-flex align-items-center wow animate__animated animate__fadeInUp" data-wow-delay=".3s">
                             <div class="banner-icon">
                                 <img src="~/imgs/theme/icons/icon-4.svg" alt="" />
                             </div>
                             <div class="banner-text">
-                                <h3 class="icon-box-title">Wide assortment</h3>
-                                <p>Mega Discounts</p>
+                                <h3 class="icon-box-title">Sản phẩm đa dạng</h3>
+                                <p>Giảm giá lên đến 50%</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-1-5 col-md-4 col-12 col-sm-6">
-                        <div class="banner-left-icon d-flex align-items-center wow animate__animated animate__fadeInUp"
-                             data-wow-delay=".4s">
+                        <div class="banner-left-icon d-flex align-items-center wow animate__animated animate__fadeInUp" data-wow-delay=".4s">
                             <div class="banner-icon">
                                 <img src="~/imgs/theme/icons/icon-5.svg" alt="" />
                             </div>
                             <div class="banner-text">
-                                <h3 class="icon-box-title">Easy returns</h3>
-                                <p>Within 30 days</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-1-5 col-md-4 col-12 col-sm-6 d-xl-none">
-                        <div class="banner-left-icon d-flex align-items-center wow animate__animated animate__fadeInUp"
-                             data-wow-delay=".5s">
-                            <div class="banner-icon">
-                                <img src="~/imgs/theme/icons/icon-6.svg" alt="" />
-                            </div>
-                            <div class="banner-text">
-                                <h3 class="icon-box-title">Safe delivery</h3>
-                                <p>Within 30 days</p>
+                                <h3 class="icon-box-title">Đổi trả dễ dàng</h3>
+                                <p>Trong vòng 30 ngày</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
+
+        <!-- Section thông tin -->
         <section class="section-padding footer-mid">
             <div class="container pt-15 pb-20">
                 <div class="row">
                     <div class="col">
-                        <div class="widget-about font-md mb-md-3 mb-lg-3 mb-xl-0 wow animate__animated animate__fadeInUp"
-                             data-wow-delay="0">
+                        <div class="widget-about font-md mb-md-3 mb-lg-3 mb-xl-0 wow animate__animated animate__fadeInUp" data-wow-delay="0">
                             <div class="logo mb-30">
-                                <a href="index.html" class="mb-15"><img src="~/imgs/theme/logo.svg" alt="logo" /></a>
-                                <p class="font-lg text-heading">Awesome grocery store website template</p>
+                                <a href="/" class="mb-15"><img src="~/imgs/theme/logo.png" alt="logo" /></a>
+                                <p class="font-lg text-heading">Cửa hàng xanh kết hợp blog & sự kiện bảo vệ môi trường</p>
                             </div>
                             <ul class="contact-infor">
-                                <li>
-                                    <img src="~/imgs/theme/icons/icon-location.svg" alt="" /><strong>Address: </strong>
-                                    <span>5171 W Campbell Ave undefined Kent, Utah 53127 United States</span>
-                                </li>
-                                <li>
-                                    <img src="~/imgs/theme/icons/icon-contact.svg" alt="" /><strong>
-                                        Call
-                                        Us:
-                                    </strong><span>(+91) - 540-025-124553</span>
-                                </li>
-                                <li>
-                                    <img src="~/imgs/theme/icons/icon-email-2.svg"
-                                         alt="" /><strong>Email:</strong><span>sale@Nest.com</span>
-                                </li>
-                                <li>
-                                    <img src="~/imgs/theme/icons/icon-clock.svg"
-                                         alt="" /><strong>Hours:</strong><span>10:00 - 18:00, Mon - Sat</span>
-                                </li>
+                                <li><img src="~/imgs/theme/icons/icon-location.svg" alt="" /><strong>Địa chỉ: </strong><span>123 Đường Môi Trường Xanh, Quận 1, TP. HCM</span></li>
+                                <li><img src="~/imgs/theme/icons/icon-contact.svg" alt="" /><strong>Điện thoại: </strong><span>(+84) 909 123 456</span></li>
+                                <li><img src="~/imgs/theme/icons/icon-email-2.svg" alt="" /><strong>Email: </strong><span>lienhe@greencorner.vn</span></li>
+                                <li><img src="~/imgs/theme/icons/icon-clock.svg" alt="" /><strong>Giờ làm việc: </strong><span>08:00 - 20:00, Thứ 2 - Thứ 7</span></li>
                             </ul>
                         </div>
                     </div>
-                    <div class="footer-link-widget col wow animate__animated animate__fadeInUp" data-wow-delay=".1s>
-                        <h4 class=" widget-title">Company</h4>
+
+                    <div class="footer-link-widget col wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
+                        <h4 class="widget-title">Về GreenCorner</h4>
                         <ul class="footer-list mb-sm-5 mb-md-0">
-                            <li><a href="#">About Us</a></li>
-                            <li><a href="#">Delivery Information</a></li>
-                            <li><a href="#">Privacy Policy</a></li>
-                            <li><a href="#">Terms &amp; Conditions</a></li>
-                            <li><a href="#">Contact Us</a></li>
-                            <li><a href="#">Support Center</a></li>
-                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Giới thiệu</a></li>
+                            <li><a href="#">Thông tin giao hàng</a></li>
+                            <li><a href="#">Chính sách bảo mật</a></li>
+                            <li><a href="#">Điều khoản sử dụng</a></li>
+                            <li><a href="#">Liên hệ</a></li>
+                            <li><a href="#">Trung tâm hỗ trợ</a></li>
                         </ul>
                     </div>
+
                     <div class="footer-link-widget col wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
-                        <h4 class="widget-title">Account</h4>
+                        <h4 class="widget-title">Tài khoản</h4>
                         <ul class="footer-list mb-sm-5 mb-md-0">
-                            <li><a href="#">Sign In</a></li>
-                            <li><a href="#">View Cart</a></li>
-                            <li><a href="#">My Wishlist</a></li>
-                            <li><a href="#">Track My Order</a></li>
-                            <li><a href="#">Help Ticket</a></li>
-                            <li><a href="#">Shipping Details</a></li>
-                            <li><a href="#">Compare products</a></li>
+                            <li><a href="#">Đăng nhập</a></li>
+                            <li><a href="#">Giỏ hàng</a></li>
+                            <li><a href="#">Danh sách yêu thích</a></li>
+                            <li><a href="#">Theo dõi đơn hàng</a></li>
+                            <li><a href="#">Lịch sử mua hàng</a></li>
                         </ul>
                     </div>
+
                     <div class="footer-link-widget col wow animate__animated animate__fadeInUp" data-wow-delay=".3s">
-                        <h4 class="widget-title">Corporate</h4>
+                        <h4 class="widget-title">Cộng đồng</h4>
                         <ul class="footer-list mb-sm-5 mb-md-0">
-                            <li><a href="#">Become a Vendor</a></li>
-                            <li><a href="#">Affiliate Program</a></li>
-                            <li><a href="#">Farm Business</a></li>
-                            <li><a href="#">Farm Careers</a></li>
-                            <li><a href="#">Our Suppliers</a></li>
-                            <li><a href="#">Accessibility</a></li>
-                            <li><a href="#">Promotions</a></li>
+                            <li><a href="#">Tham gia tình nguyện</a></li>
+                            <li><a href="#">Sự kiện dọn rác</a></li>
+                            <li><a href="#">Blog môi trường</a></li>
+                            <li><a href="#">Chia sẻ câu chuyện</a></li>
+                            <li><a href="#">Hướng dẫn phân loại rác</a></li>
                         </ul>
                     </div>
+
                     <div class="footer-link-widget col wow animate__animated animate__fadeInUp" data-wow-delay=".4s">
-                        <h4 class="widget-title">Popular</h4>
+                        <h4 class="widget-title">Sản phẩm phổ biến</h4>
                         <ul class="footer-list mb-sm-5 mb-md-0">
-                            <li><a href="#">Milk & Flavoured Milk</a></li>
-                            <li><a href="#">Butter and Margarine</a></li>
-                            <li><a href="#">Eggs Substitutes</a></li>
-                            <li><a href="#">Marmalades</a></li>
-                            <li><a href="#">Sour Cream and Dips</a></li>
-                            <li><a href="#">Tea & Kombucha</a></li>
-                            <li><a href="#">Cheese</a></li>
+                            <li><a href="#">Túi sinh học</a></li>
+                            <li><a href="#">Bàn chải tre</a></li>
+                            <li><a href="#">Bình nước inox</a></li>
+                            <li><a href="#">Thực phẩm hữu cơ</a></li>
+                            <li><a href="#">Sản phẩm tái chế</a></li>
+                            <li><a href="#">Đồ dùng không nhựa</a></li>
                         </ul>
                     </div>
                 </div>
+            </div>
         </section>
+
+        <!-- Footer bottom -->
         <div class="container pb-30 wow animate__animated animate__fadeInUp" data-wow-delay="0">
             <div class="row align-items-center">
                 <div class="col-12 mb-30">
                     <div class="footer-bottom"></div>
                 </div>
                 <div class="col-xl-4 col-lg-6 col-md-6">
-                    <p class="font-sm mb-0">
-                        &copy; 2025, <strong class="text-brand">GreenCorner</strong> - HTML
-                        Ecommerce Template <br />All rights reserved
-                    </p>
+                    <p class="font-sm mb-0">&copy; 2025, <strong class="text-brand">GreenCorner</strong> - Website vì môi trường<br />Đã đăng ký bản quyền</p>
                 </div>
                 <div class="col-xl-4 col-lg-6 text-center d-none d-xl-block">
                     <div class="hotline d-lg-inline-flex mr-30">
                         <img src="~/imgs/theme/icons/phone-call.svg" alt="hotline" />
-                        <p>1900 - 6666<span>Working 8:00 - 22:00</span></p>
+                        <p>1900 1234<span>08:00 AM - 22:00 PM</span></p>
                     </div>
                     <div class="hotline d-lg-inline-flex">
                         <img src="~/imgs/theme/icons/phone-call.svg" alt="hotline" />
-                        <p>1900 - 8888<span>24/7 Support Center</span></p>
+                        <p>1900 5678<span>Hỗ trợ 24/7</span></p>
                     </div>
                 </div>
                 <div class="col-xl-4 col-lg-6 col-md-6 text-end d-none d-md-block">
                     <div class="mobile-social-icon">
-                        <h6>Follow Us</h6>
-                        <a href="#"><img src="~/imgs/theme/icons/icon-facebook-white.svg" alt="" /></a>
-                        <a href="#"><img src="~/imgs/theme/icons/icon-twitter-white.svg" alt="" /></a>
-                        <a href="#"><img src="~/imgs/theme/icons/icon-instagram-white.svg" alt="" /></a>
-                        <a href="#"><img src="~/imgs/theme/icons/icon-pinterest-white.svg" alt="" /></a>
-                        <a href="#"><img src="~/imgs/theme/icons/icon-youtube-white.svg" alt="" /></a>
+                        <h6>Kết nối với chúng tôi</h6>
+                        <a href="#"><img src="~/imgs/theme/icons/icon-facebook-white.svg" alt="Facebook" /></a>
+                        <a href="#"><img src="~/imgs/theme/icons/icon-twitter-white.svg" alt="Twitter" /></a>
+                        <a href="#"><img src="~/imgs/theme/icons/icon-instagram-white.svg" alt="Instagram" /></a>
+                        <a href="#"><img src="~/imgs/theme/icons/icon-youtube-white.svg" alt="YouTube" /></a>
                     </div>
-                    <p class="font-sm">Up to 15% discount on your first subscribe</p>
                 </div>
             </div>
         </div>
     </footer>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Vendor JS-->
     <script src="~/js/vendor/modernizr-3.6.0.min.js"></script>
@@ -751,8 +561,137 @@
     <!-- Template  JS -->
     <script src="~/js/main.js?v=6.1"></script>
     <script src="~/js/shop.js?v=6.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/chatbot/chatbot.js"></script>
+    <script src="~/js/search/search.js"></script>
     <script src="~/js/cart/carthandler.js"></script>
+    <script>
+        $(document).ready(function () {
+            const userId = '@User.FindFirst("sub")?.Value';
+            if (!userId) return;
+
+            const notificationList = $("#notificationList");
+            const badge = $("#notificationCount");
+            const listWrapper = $("#notificationListWrapper");
+            const dropdownIcon = $("#notificationDropdown i");
+
+            const notificationConnection = new signalR.HubConnectionBuilder()
+                .withUrl("https://localhost:7006/notificationhub?userId=" + userId)
+                .build();
+
+            function timeAgo(dateString) {
+                const date = new Date(dateString);
+                const now = new Date();
+                const seconds = Math.round(Math.abs((now - date) / 1000));
+
+                const intervals = {
+                    năm: 31536000,
+                    tháng: 2592000,
+                    tuần: 604800,
+                    ngày: 86400,
+                    giờ: 3600,
+                    phút: 60
+                };
+
+                let counter;
+                for (const i in intervals) {
+                    counter = Math.floor(seconds / intervals[i]);
+                    if (counter > 0) {
+                        if (counter === 1) {
+                            return `${counter} ${i} trước`;
+                        } else {
+                            return `${counter} ${i} trước`;
+                        }
+                    }
+                }
+                return "vài giây trước";
+            }
+
+            function renderNotificationItem(noti) {
+                let iconHtml = '<i class="fi fi-rs-info"></i>';
+                if (noti.type === 'order_success') {
+                    iconHtml = '<i class="fi fi-rs-check-circle" style="color: green;"></i>';
+                } else if (noti.type === 'promotion') {
+                    iconHtml = '<i class="fi fi-rs-gift" style="color: orange;"></i>';
+                }
+
+                const isUnread = noti.isRead === false ? '<div class="unread-dot"></div>' : '';
+
+                const url = noti.url || '#';
+
+                return `
+                            <li class="notification-item">
+                                <a href="${url}">
+                                    <div class="icon-wrapper">${iconHtml}</div>
+                                    <div class="content-wrapper">
+                                        <strong>${noti.title}</strong>
+                                        <span>${noti.message}</span>
+                                        <small>${timeAgo(noti.createdAt)}</small>
+                                    </div>
+                                    ${isUnread}
+                                </a>
+                            </li>`;
+            }
+
+            function updateUnreadCount(count) {
+                if (count > 0) {
+                    badge.text(count).show();
+                } else {
+                    badge.hide();
+                }
+            }
+
+            notificationConnection.on("ReceiveNotification", function (noti) {
+                const placeholder = notificationList.find(".notification-placeholder");
+                if (placeholder.length) {
+                    placeholder.remove();
+                }
+
+                notificationList.prepend(renderNotificationItem(noti));
+
+                let currentCount = parseInt(badge.text()) || 0;
+                updateUnreadCount(currentCount + 1);
+
+                dropdownIcon.addClass("text-warning animate__animated animate__tada");
+                setTimeout(() => dropdownIcon.removeClass("text-warning animate__animated animate__tada"), 1500);
+            });
+
+            async function startNotificationConnection() {
+                try {
+                    await notificationConnection.start();
+                    console.log("SignalR Connected.");
+                    loadInitialNotifications();
+                } catch (err) {
+                    console.error("SignalR Connection Failed: ", err);
+                    setTimeout(startNotificationConnection, 5000);
+                }
+            }
+
+            function loadInitialNotifications() {
+                notificationList.html('<li class="notification-placeholder">Đang tải...</li>');
+
+                $.get(`https://localhost:7006/api/notifications/user/${userId}`, function (data) {
+                    if (data.isSuccess && data.result.length > 0) {
+                        notificationList.empty();
+                        data.result.forEach(noti => {
+                            notificationList.append(renderNotificationItem(noti));
+                        });
+
+                        const unreadCount = data.result.filter(n => n.isRead === false).length;
+                        updateUnreadCount(unreadCount);
+
+                    } else {
+                        notificationList.html('<li class="notification-placeholder">Không có thông báo nào.</li>');
+                        updateUnreadCount(0);
+                    }
+                }).fail(function () {
+                    notificationList.html('<li class="notification-placeholder">Không thể tải thông báo.</li>');
+                });
+            }
+
+            startNotificationConnection();
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

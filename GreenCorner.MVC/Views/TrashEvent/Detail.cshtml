@@ -1,0 +1,259 @@
+﻿@model TrashReportListViewModel
+@{
+    ViewData["Title"] = "Chi tiết báo cáo rác thải";
+    Layout = "_LayoutAdmin";
+    var imageUrls = Model.TrashEvent.ImageUrl?.Split('&', StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
+}
+
+<style>
+    .gallery-container .main-image {
+        width: 100%;
+        height: 450px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+    }
+
+    .thumbnail-list {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        overflow-x: auto;
+    }
+
+    .thumbnail-list .thumb {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: border-color 0.2s;
+    }
+
+    .thumbnail-list .thumb:hover, .thumbnail-list .thumb.active {
+        border-color: #088178; /* Màu chính của theme */
+    }
+</style>
+
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Chi tiết báo cáo #@Model.TrashEvent.TrashReportId</h2>
+            <p>Thông tin chi tiết và xác thực điểm rác thải được báo cáo.</p>
+        </div>
+        <div>
+            <a href="@Url.Action("Index")" class="btn btn-light rounded font-sm">
+                <i class="material-icons md-keyboard_arrow_left"></i> Quay lại danh sách
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4><i class="material-icons md-image"></i> Hình ảnh báo cáo</h4>
+                </div>
+                <div class="card-body">
+                    @if (imageUrls.Any())
+                    {
+                        <div class="gallery-container">
+                            <img id="mainImage" src="@imageUrls.First()" alt="Main Report Image" class="main-image mb-2">
+                            <div class="thumbnail-list">
+                                @foreach (var url in imageUrls)
+                                {
+                                    <img src="@url" class="thumb" alt="Report Thumbnail" onclick="changeImage('@url')">
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">Không có hình ảnh nào được cung cấp.</div>
+                    }
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4><i class="material-icons md-info"></i> Thông tin chi tiết & Vị trí</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-4">
+                        <dt class="col-sm-3">Địa chỉ</dt>
+                        <dd class="col-sm-9">@Model.TrashEvent.Address</dd>
+
+                        <dt class="col-sm-3">Tọa độ (Lat, Lng)</dt>
+                        <dd class="col-sm-9"><code>@Model.TrashEvent.Location</code></dd>
+
+                        <dt class="col-sm-3">Mô tả</dt>
+                        <dd class="col-sm-9">@Model.TrashEvent.Description</dd>
+                        
+                        <dt class="col-sm-3">Ngày báo cáo</dt>
+                        <dd class="col-sm-9">@Model.TrashEvent.CreatedAt?.ToString("HH:mm dd/MM/yyyy")</dd>
+                    </dl>
+
+                    <div class="btn-group w-100 mb-2" role="group">
+                        <button type="button" class="btn btn-primary" id="btnMap" onclick="showTab('map')"><i class="material-icons md-map"></i> Bản đồ</button>
+                        <button type="button" class="btn btn-outline-secondary" id="btnStreet" onclick="showTab('street')"><i class="material-icons md-streetview"></i> Xem phố</button>
+                    </div>
+                    <div id="mapContainer" style="height: 400px;" class="border rounded"></div>
+                    <div id="streetContainer" style="height: 400px; display:none;" class="border rounded"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                     <h4><i class="material-icons md-flag"></i> Trạng thái</h4>
+                </div>
+                <div class="card-body">
+                     <span class="badge rounded-pill p-2 w-100 fs-6
+                        @if (Model.TrashEvent.Status == "Chờ xác nhận") { <text>alert-warning</text> }
+                        else if (Model.TrashEvent.Status == "Đã xác nhận") { <text>alert-success</text> }
+                        else if (Model.TrashEvent.Status == "Đã từ chối") { <text>alert-danger</text> }">
+                        @Model.TrashEvent.Status
+                    </span>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4><i class="material-icons md-person"></i> Người báo cáo</h4>
+                </div>
+                <div class="card-body text-center">
+                    <img src="@Model.User.Avatar" class="img-fluid rounded-circle mb-3" alt="User Avatar" style="width: 100px; height: 100px; object-fit:cover;">
+                    <h5>@Model.User.FullName</h5>
+                    <p class="text-muted">@Model.User.Email</p>
+                    <hr>
+                    <div class="text-start">
+                         <p><i class="material-icons md-phone" style="vertical-align: middle;"></i> <strong>SĐT:</strong> @Model.User.PhoneNumber</p>
+                         <p><i class="material-icons md-location_on" style="vertical-align: middle;"></i> <strong>Địa chỉ:</strong> @Model.User.Address</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4><i class="material-icons md-play_for_work"></i> Hành động</h4>
+                </div>
+                <div class="card-body">
+                    @if (Model.TrashEvent.Status == "Chờ xác nhận")
+                    {
+                        <a class="btn btn-success w-100 mb-2" asp-action="ApproveTrashEvent" asp-route-trashReportId="@Model.TrashEvent.TrashReportId">
+                           <i class="material-icons md-check_circle"></i> Chấp nhận
+                        </a>
+                        <a class="btn btn-danger w-100" asp-action="RejectTrashEvent" asp-route-trashReportId="@Model.TrashEvent.TrashReportId">
+                           <i class="material-icons md-cancel"></i> Từ chối
+                        </a>
+                    }
+                    else if (Model.TrashEvent.Status == "Đã xác nhận")
+                    {
+                        <a class="btn btn-primary w-100" href="#">
+                           <i class="material-icons md-event"></i> Tạo sự kiện dọn dẹp
+                        </a>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">Không có hành động nào khả dụng.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCiGqAY3IagwecyXc4-etRoWJHzV7LyfFU&libraries=places"></script>
+    <script>
+        function changeImage(url) {
+            document.getElementById('mainImage').src = url;
+            document.querySelectorAll('.thumbnail-list .thumb').forEach(thumb => {
+                thumb.classList.remove('active');
+                if (thumb.src === url) {
+                    thumb.classList.add('active');
+                }
+            });
+        }
+        
+        let map, marker, streetView;
+
+        function showTab(tabName) {
+            const mapContainer = document.getElementById('mapContainer');
+            const streetContainer = document.getElementById('streetContainer');
+            const btnMap = document.getElementById('btnMap');
+            const btnStreet = document.getElementById('btnStreet');
+
+            if (tabName === 'map') {
+                mapContainer.style.display = 'block';
+                streetContainer.style.display = 'none';
+                btnMap.className = 'btn btn-primary';
+                btnStreet.className = 'btn btn-outline-secondary';
+            } else {
+                mapContainer.style.display = 'none';
+                streetContainer.style.display = 'block';
+                btnMap.className = 'btn btn-outline-secondary';
+                btnStreet.className = 'btn btn-primary';
+            }
+        }
+
+        function initMap(lat, lng) {
+            const position = { lat, lng };
+            map = new google.maps.Map(document.getElementById("mapContainer"), {
+                center: position,
+                zoom: 17,
+                mapTypeControl: false,
+                streetViewControl: false, 
+            });
+
+            marker = new google.maps.Marker({
+                position: position,
+                map: map,
+                draggable: false, 
+                title: "Vị trí báo cáo"
+            });
+
+            initStreetView(lat, lng);
+        }
+        
+        function initStreetView(lat, lng) {
+            const svService = new google.maps.StreetViewService();
+            svService.getPanorama({ location: { lat, lng }, radius: 50 }, (data, status) => {
+                const streetContainer = document.getElementById("streetContainer");
+                if (status === "OK") {
+                    streetView = new google.maps.StreetViewPanorama(streetContainer, {
+                        position: data.location.latLng,
+                        pov: { heading: 165, pitch: 0 },
+                        visible: true
+                    });
+                     map.setStreetView(streetView);
+                } else {
+                    streetContainer.innerHTML = `<div class='alert alert-light text-center mt-5'>Không có chế độ Street View tại vị trí này.</div>`;
+                    document.getElementById('btnStreet').disabled = true;
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            // Kích hoạt thumbnail đầu tiên
+            $('.thumbnail-list .thumb').first().addClass('active');
+
+            const initialLocation = "@Model.TrashEvent.Location";
+            if (initialLocation && initialLocation.includes(",")) {
+                const parts = initialLocation.split(",");
+                const lat = parseFloat(parts[0].trim());
+                const lng = parseFloat(parts[1].trim());
+
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    initMap(lat, lng);
+                } else {
+                    $('#mapContainer').html("<div class='alert alert-danger'>Tọa độ không hợp lệ.</div>");
+                }
+            } else {
+                $('#mapContainer').html("<div class='alert alert-danger'>Không có thông tin tọa độ.</div>");
+            }
+        });
+    </script>
+}

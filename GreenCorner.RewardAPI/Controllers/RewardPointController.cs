@@ -31,7 +31,7 @@ namespace GreenCorner.RewardAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy điểm thưởng thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -46,7 +46,7 @@ namespace GreenCorner.RewardAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Trao điểm thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }
@@ -63,7 +63,7 @@ namespace GreenCorner.RewardAPI.Controllers
             }
             catch (Exception ex)
             {
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy điểm thưởng thất bại!";
                 _responseDTO.IsSuccess = false;
                 return _responseDTO;
             }

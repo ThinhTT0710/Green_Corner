@@ -40,7 +40,7 @@ namespace GreenCorner.EcommerceAPI.Services
 			{
 				throw new Exception($"Order with ID {orderId} not found.");
 			}
-			if (!order.Status.Equals("Chờ xác nhận"))
+			if (order.Status == "Chờ xác nhận")
 			{
 				throw new Exception("Đơn hàng đã được xác nhận và không thể xóa.");
 			}
@@ -130,7 +130,34 @@ namespace GreenCorner.EcommerceAPI.Services
 
 		public async Task UpdateOrderStatus(int orderId, string newStatus)
 		{
-			await _orderRepository.UpdateOrderStatus(orderId, newStatus);
+            var orderList = await GetById(orderId);
+            if (orderList == null)
+            {
+                throw new Exception($"Không tìm thấy đơn hàng");
+            }
+            if (orderList.Status.Equals("Đã xác nhận"))
+            {
+                foreach (var item in orderList.OrderDetailsDTO)
+                {
+                    var product = await _productService.GetByProductId(item.ProductId);
+                    if (product.Quantity < item.Quantity)
+                    {
+                        throw new Exception("Sản phẩm đã hết hàng");
+                    }
+                    product.Quantity -= item.Quantity;
+                    await _productService.UpdateProduct(product);
+                }
+            }
+            if (orderList.Status.Equals("Đang giao hàng") && newStatus.Equals("Không hoàn thành"))
+            {
+                foreach (var item in orderList.OrderDetailsDTO)
+                {
+                    var product = await _productService.GetByProductId(item.ProductId);
+                    product.Quantity += item.Quantity;
+                    await _productService.UpdateProduct(product);
+                }
+            }
+            await _orderRepository.UpdateOrderStatus(orderId, newStatus);
 		}
 
         //Dash board
@@ -197,6 +224,51 @@ namespace GreenCorner.EcommerceAPI.Services
                 throw new Exception("Error when fetching best-selling products: " + ex.Message);
             }
         }
+
+        public async Task<List<ProductDTO>> Top10BestSelling()
+        {
+            try
+            {
+                var products = await _productService.GetAllProduct();
+                var orders = await GetAll();
+
+                var allOrderDetails = orders.SelectMany(o => o.OrderDetailsDTO).ToList();
+
+                var topSelling = allOrderDetails
+                    .GroupBy(od => od.ProductId)
+                    .Select(group => new
+                    {
+                        ProductId = group.Key,
+                        TotalQuantity = group.Sum(x => x.Quantity)
+                    })
+                    .OrderByDescending(x => x.TotalQuantity)
+                    .Take(10)
+                    .ToList();
+
+                if (topSelling.Count < 10)
+                {
+                    var remainingProducts = products
+                        .Where(p => !topSelling.Any(ts => ts.ProductId == p.ProductId))
+                        .OrderBy(x => Guid.NewGuid())
+                        .Take(10 - topSelling.Count)
+                        .Select(p => new { ProductId = p.ProductId, TotalQuantity = 0 });
+
+                    topSelling.AddRange(remainingProducts);
+                }
+
+                var result = topSelling
+                    .Select(tp => products.FirstOrDefault(p => p.ProductId == tp.ProductId))
+                    .Where(p => p != null)
+                    .ToList();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error when fetching best-selling products: " + ex.Message);
+            }
+        }
+
         public async Task<CategorySalesDto> GetSalesByCategory()
         {
             return await _orderRepository.GetSalesByCategory();

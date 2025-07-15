@@ -24,12 +24,12 @@ namespace GreenCorner.BlogAPI.Controllers
             try
             {
                 await _feedbackService.SubmitFeedback(feedback);
-                _responseDTO.Message = "Feedback submitted successfully.";
+                _responseDTO.Message = "Phản hồi đã được gửi thành công.";
             }
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Phản hồi gửi thất bại!";
             }
 
             return _responseDTO;
@@ -46,7 +46,7 @@ namespace GreenCorner.BlogAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Lấy danh sách phản hồi thất bại!";
             }
 
             return _responseDTO;

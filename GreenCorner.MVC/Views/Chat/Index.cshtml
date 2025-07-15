@@ -1,0 +1,157 @@
+﻿@model IEnumerable<ChatMessageDTO>
+
+<div class="chat-container">
+    <div id="messageList" class="messages">
+        @for (var i = 0; i < Model.Count(); i++)
+        {
+            var msg = Model.ElementAt(i);
+            var isOwnMessage = msg.SenderId == ViewBag.SenderId?.ToString();
+
+            var prevMsg = i > 0 ? Model.ElementAt(i - 1) : null;
+            var nextMsg = i < Model.Count() - 1 ? Model.ElementAt(i + 1) : null;
+
+            var isGrouped = prevMsg != null && prevMsg.SenderId == msg.SenderId;
+            var isLastInGroup = nextMsg == null || nextMsg.SenderId != msg.SenderId;
+
+            var messageClass = isOwnMessage ? "message own" : isLastInGroup ? "message" : "message grouped";
+
+            <div class="@messageClass" data-sender-id="@msg.SenderId">
+                @if (!isOwnMessage && isLastInGroup)
+                {
+                    <img src="@msg.SenderAvatar" alt="@msg.SenderName" class="avatar" />
+                }
+
+                <div class="bubble">
+                    @if (!isOwnMessage && isLastInGroup)
+                    {
+                        <div class="sender-name">@msg.SenderName</div>
+                    }
+
+                    <div class="content">@msg.Content</div>
+                    <div class="timestamp">@msg.Timestamp.ToString("HH:mm")</div>
+                </div>
+            </div>
+        }
+
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="messageInput" class="form-control" placeholder="Nhập tin nhắn...">
+        <button id="sendButton" class="btn-send" aria-label="Gửi tin nhắn">
+            <i class="fa fa-paper-plane" aria-hidden="true"></i>
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const eventId = '@ViewBag.EventId';
+            const senderId = '@ViewBag.SenderId';
+            const senderName = @Html.Raw(Json.Serialize(ViewBag.SenderName));
+            const senderAvatar = '@ViewBag.SenderAvatar';
+            const messageList = document.getElementById("messageList");
+            const messageInput = document.getElementById("messageInput");
+            const sendButton = document.getElementById("sendButton");
+
+            function scrollToBottom() {
+                messageList.scrollTop = messageList.scrollHeight;
+            }
+
+            function formatTimestamp(dateString) {
+                const date = new Date(dateString);
+                if (isNaN(date)) return "";
+                const hours = date.getHours().toString().padStart(2, '0');
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                return `${hours}:${minutes}`;
+            }
+
+            scrollToBottom();
+
+            const chatConnection = new signalR.HubConnectionBuilder()
+                .withUrl("https://localhost:7006/chathub?eventId=" + eventId)
+                .withAutomaticReconnect()
+                .build();
+
+            chatConnection.on("ReceiveMessage", function (message) {
+                const isOwn = message.senderId === senderId;
+                
+                const lastMessageElement = messageList.lastElementChild;
+
+                if (lastMessageElement && !isOwn && lastMessageElement.dataset.senderId === message.senderId) {
+                    lastMessageElement.classList.add("grouped");
+                    
+                    const avatar = lastMessageElement.querySelector('.avatar');
+                    if (avatar) avatar.remove();
+
+                    const senderNameDiv = lastMessageElement.querySelector('.sender-name');
+                    if (senderNameDiv) senderNameDiv.remove();
+                }
+
+                const messageDiv = document.createElement('div');
+                messageDiv.dataset.senderId = message.senderId; 
+                messageDiv.classList.add('message', 'new-message-animation');
+
+                if (isOwn) {
+                    messageDiv.classList.add('own');
+                }
+                
+                let innerHtmlContent = '';
+
+                if (!isOwn) {
+                    innerHtmlContent += `<img src="${message.senderAvatar}" alt="${message.senderName}" class="avatar" />`;
+                }
+
+                innerHtmlContent += '<div class="bubble">';
+                if (!isOwn) {
+                    innerHtmlContent += `<div class="sender-name">${message.senderName}</div>`;
+                }
+                innerHtmlContent += `<div class="content">${message.content}</div>`;
+                innerHtmlContent += `<div class="timestamp">${formatTimestamp(message.timestamp)}</div>`;
+                innerHtmlContent += '</div>';
+
+                messageDiv.innerHTML = innerHtmlContent;
+                messageList.appendChild(messageDiv);
+                scrollToBottom();
+            });
+
+            async function start() {
+                try {
+                    await chatConnection.start();
+                    console.log("SignalR Connected.");
+                } catch (err) {
+                    console.error(err.toString());
+                    setTimeout(start, 5000);
+                }
+            };
+            
+            chatConnection.onclose(async () => {
+                await start();
+            });
+
+            start();
+
+
+            function sendMessage() {
+                const msg = messageInput.value.trim();
+                if (msg) {
+                    chatConnection.invoke("SendMessage", eventId, senderId, senderName, senderAvatar, msg)
+                        .catch(err => console.error(err.toString()));
+                    messageInput.value = "";
+                    messageInput.focus();
+                }
+            }
+
+            messageInput.addEventListener("keypress", function (e) {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            sendButton.addEventListener("click", sendMessage);
+        });
+    </script>
+}

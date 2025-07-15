@@ -7,7 +7,8 @@
         public static string BlogAPIBase { get; set; }
         public static string EventAPIBase { get; set; }
         public static string RewardAPIBase { get; set; }
-      
+        public static string ChatAPIBase { get; set; }
+
         public const string RoleCustomer = "CUSTOMER";
 
         public const string RoleAdmin = "ADMIN";

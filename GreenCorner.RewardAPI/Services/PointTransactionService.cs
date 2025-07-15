@@ -18,6 +18,17 @@ namespace GreenCorner.RewardAPI.Services
             _mapper = mapper;
         }
 
+        public async Task<IEnumerable<PointTransactionDTO>> GetAllPointTransaction()
+        {
+            var pointTransactions = await _pointTransactionRepository.GetAllPointTransaction();
+            return _mapper.Map<IEnumerable<PointTransactionDTO>>(pointTransactions);
+        }
+        public async Task<IEnumerable<PointTransactionDTO>> GetByUserId(string userId)
+        {
+            var pointTransactions = await _pointTransactionRepository.GetByUserId(userId);
+            return _mapper.Map<List<PointTransactionDTO>>(pointTransactions);
+        }
+
 		public async Task AddTransactionAsync(PointTransactionDTO transaction)
 		{
 			var transactionDto = _mapper.Map<PointTransaction>(transaction);
@@ -29,7 +40,7 @@ namespace GreenCorner.RewardAPI.Services
             var transactions = await _pointTransactionRepository.GetPointsAwardHistoryAsync();
             return _mapper.Map<IEnumerable<PointTransactionDTO>>(transactions);
         }
-
+        
         public async Task<PointTransactionDTO> GetPointTransaction(string userId)
         {
             var pointTransaction = await _pointTransactionRepository.GetPointTransaction(userId);
@@ -47,9 +58,9 @@ namespace GreenCorner.RewardAPI.Services
             await _pointTransactionRepository.TransactionPoint(userId, points);
         }
 
-		public async Task TransactionPoints(string userId, int points, string type)
+		public async Task TransactionPoints(string userId, int points, string type, int? eventId)
 		{
-			await _pointTransactionRepository.TransactionPoints(userId, points, type);
+			await _pointTransactionRepository.TransactionPoints(userId, points, type, eventId);
 		}
 
 		public async Task UpdateRewardPointAsync(RewardPointDTO rewardPoint)
@@ -57,5 +68,11 @@ namespace GreenCorner.RewardAPI.Services
 			var rewardPointDto = _mapper.Map<RewardPoint>(rewardPoint);
 			await _pointTransactionRepository.UpdateRewardPointAsync(rewardPointDto);
 		}
-	}
+
+        public async Task<bool> HasReceivedReward(string userId, int eventId)
+        {
+            return await _pointTransactionRepository.HasReceivedReward(userId, eventId);
+        }
+
+    }
 }

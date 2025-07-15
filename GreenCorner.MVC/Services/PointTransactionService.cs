@@ -18,6 +18,23 @@ namespace GreenCorner.MVC.Services
             _baseService = baseService;
         }
 
+        public async Task<ResponseDTO?> GetAllPointTransactions()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.RewardAPIBase + "/api/PointTransaction/get-all"
+            });
+        }
+
+        public async Task<ResponseDTO?> GetUserTransactions(string userId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.RewardAPIBase + "/api/PointTransaction/get-by-user/" + userId
+            });
+        }
 
         public async Task<ResponseDTO?> ExchangePoints(string userId, int exchangePoint)
         {
@@ -96,6 +113,16 @@ namespace GreenCorner.MVC.Services
                 Url = SD.RewardAPIBase + $"/api/PointTransaction/rewardpointshistory"
             });
         }
+
+        public async Task<ResponseDTO?> HasReceivedReward(string userId, int eventId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.RewardAPIBase + $"/api/PointTransaction/has-received/{userId}/{eventId}"
+            });
+        }
+
     }
 
 }

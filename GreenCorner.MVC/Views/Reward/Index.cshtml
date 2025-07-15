@@ -15,6 +15,9 @@
             <div class="archive-header-2 text-center">
                 <h1 class="display-2 mb-50">Reward List</h1>
             </div>
+            <div class="text-center mb-4">
+                <h4 class="text-success">Tổng điểm của bạn: <strong>@ViewBag.TotalPoints</strong></h4>
+            </div>
 
             <div class="row voucher-grid">
                 @foreach (var item in Model)
@@ -22,9 +25,36 @@
                     <div class="col-lg-3 col-md-6 col-sm-6">
                         <div class="vendor-wrap mb-40">
                             <div class="vendor-img-action-wrap">
-                                <div class="vendor-img text-center p-3 bg-light">
+                                <div class="vendor-img text-center p-3 ">
                                     <a asp-action="ViewDetailVoucher" asp-route-voucherId="@item.VoucherId">
-                                        <img class="default-img" src="~/assets/imgs/voucher/default-voucher.png" alt="Voucher Image" style="max-height: 120px;" />
+                                        <div class="d-flex rounded-3 overflow-hidden shadow-sm border" style="height: 120px;">
+
+                                            <!-- PHẦN TRÁI -->
+                                            <div class="d-flex align-items-center justify-content-center flex-column"
+                                                 style="background-color: #1c2b36; width: 40%; position: relative;">
+                                                <i class="bi bi-percent text-white" style="font-size: 36px;"></i>
+                                                <i class="bi bi-gift-fill text-white opacity-25" style="font-size: 18px;"></i>
+                                            </div>
+
+                                            <!-- PHẦN PHẢI -->
+                                            <div class="d-flex flex-column justify-content-between px-3 w-100 py-2" style="background-color: #3BB77E;">
+
+                                                <!-- Mã CODE - nằm giữa dọc -->
+                                                <div class="d-flex align-items-center justify-content-center flex-grow-1">
+                                                    <div class="fw-bold text-dark bg-white px-4 py-2 rounded-pill text-uppercase shadow-sm text-center"
+                                                         style="font-size: 16px; letter-spacing: 1px;">
+                                                        @item.Code
+                                                    </div>
+                                                </div>
+
+                                                <!-- Tiêu đề - sát dưới -->
+                                                <div class="text-white small fw-semibold text-center">
+                                                    @item.Title
+                                                </div>
+                                            </div>
+                                        </div>
+
+
                                     </a>
                                 </div>
                             </div>
@@ -39,6 +69,33 @@
                                     <span class="font-small d-block"><strong>Points:</strong> @item.PointsRequired</span>
                                     <span class="font-small d-block"><strong>Expires:</strong> @item.ExpirationDate?.ToShortDateString()</span>
                                 </div>
+                                <button type="button"
+                                        class="btn btn-lg btn-success w-100 mb-2"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#confirmRedeemModal">
+                                    Đổi @item.PointsRequired điểm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="confirmRedeemModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header text-white" style="background-color: #3BB77E;">
+                                    <h5 class="modal-title text-white" id="confirmModalLabel">Xác nhận đổi điểm</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Bạn có chắc muốn đổi <strong>@item.PointsRequired</strong> điểm để nhận voucher <strong>@item.Title</strong> không?
+                                </div>
+                                <div class="modal-footer">
+                                    <form asp-action="ExchangePoints" asp-controller="PointTransaction" method="post">
+                                        <input type="hidden" name="points" value="@item.PointsRequired" />
+                                        <input type="hidden" name="voucherId" value="@item.VoucherId" />
+                                        <button type="submit" class="btn btn-success">Xác nhận đổi</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -47,5 +104,6 @@
         </div>
     </div>
 </main>
+
 
 

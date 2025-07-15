@@ -120,6 +120,15 @@ namespace GreenCorner.MVC.Services
             });
         }
 
+        public async Task<ResponseDTO?> IsConfirmVolunteer(int eventId, string userId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/is-confirm-volunteer?eventId={eventId}&userId={userId}"
+            });
+        }
+
         public async Task<ResponseDTO?> RegisterVolunteer(VolunteerDTO dto)
         {
             return await _baseService.SendAsync(new RequestDTO
@@ -166,5 +175,15 @@ namespace GreenCorner.MVC.Services
                 Url = SD.EventAPIBase + "/api/Volunteer/updateregister"
             });
         }
+
+        public async Task<ResponseDTO?> GetApprovedVolunteersByUserIdAsync(string userId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/approved/{userId}"
+            });
+        }
+
     }
 }

@@ -360,3 +360,306 @@
     .search-view-all a:hover {
         background-color: #29A46B;
     }
+.chat-container {
+    border: 1px solid #e3e3e3;
+    border-radius: 12px;
+    padding: 10px;
+    height: 600px;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+    .messages::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .messages::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .messages::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 10px;
+    }
+
+        .messages::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+
+.message {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    max-width: 75%;
+    margin-top: 5px;
+}
+
+    .message.own {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+    }
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.avatar-placeholder {
+    width: 36px;
+    flex-shrink: 0;
+}
+
+.message.grouped {
+    margin-top: 0;
+}
+
+    .message.grouped .avatar {
+        display: none;
+    }
+
+.bubble {
+    padding: 10px 15px;
+    border-radius: 18px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.message:not(.grouped) .bubble {
+    border-bottom-left-radius: 4px;
+}
+
+.message.own:not(.grouped) .bubble {
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 18px;
+}
+
+.message:not(.own) .bubble {
+    background-color: #ffffff;
+}
+
+.message.own .bubble {
+    background-color: rgb(59, 183, 126);
+    color: white;
+}
+
+.sender-name {
+    font-weight: 600;
+    font-size: 0.85em;
+    margin-bottom: 4px;
+    color: rgb(59, 183, 126);
+}
+
+.content {
+    font-size: 0.95em;
+}
+
+.timestamp {
+    font-size: 0.75em;
+    color: #999;
+    margin-top: 5px;
+    text-align: right;
+}
+
+.message.own .timestamp {
+    color: #e0e0e0;
+}
+
+@@keyframes slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.new-message-animation {
+    animation: slide-in 0.3s ease-out;
+}
+
+.input-area {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-top: 1px solid #e3e3e3;
+    background: #f9f9f9;
+}
+
+#messageInput {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 10px 18px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+    #messageInput:focus {
+        border-color: rgb(59, 183, 126);
+        box-shadow: 0 0 0 3px rgba(59, 183, 126, 0.2);
+    }
+
+.btn-send {
+    background: rgb(59, 183, 126);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-left: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    flex-shrink: 0;
+}
+
+    .btn-send:hover {
+        background-color: #2f9467;
+    }
+
+/* Custom CSS cho khu vực thông báo */
+.notification-dropdown {
+    width: 350px;
+    padding: 0;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border-radius: 0.5rem;
+}
+
+.notification-header,
+.notification-footer {
+    padding: 0.75rem 1.25rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.notification-header {
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
+
+.notification-footer {
+    border-top: 1px solid #e9ecef;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+}
+
+    .notification-footer a {
+        text-decoration: none;
+        color: #007bff; /* Hoặc màu thương hiệu của bạn */
+        font-weight: 500;
+    }
+
+.notification-list-wrapper {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+    /* Tùy chỉnh thanh cuộn cho đẹp hơn (chỉ hoạt động trên trình duyệt Webkit) */
+    .notification-list-wrapper::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .notification-list-wrapper::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .notification-list-wrapper::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 6px;
+    }
+
+        .notification-list-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+
+
+/* Giao diện cho từng mục thông báo */
+.notification-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s ease-in-out;
+}
+
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+
+    .notification-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .notification-item a {
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .notification-item .icon-wrapper {
+        font-size: 1.5rem;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .notification-item .content-wrapper {
+        flex-grow: 1;
+    }
+
+        .notification-item .content-wrapper strong {
+            display: block;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .notification-item .content-wrapper span {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .notification-item .content-wrapper small {
+            font-size: 0.75rem;
+            color: #a0a0a0;
+        }
+
+    .notification-item .unread-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #007bff; /* Hoặc màu thương hiệu của bạn */
+        border-radius: 50%;
+        margin-left: 1rem;
+        flex-shrink: 0;
+    }
+
+.notification-placeholder {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #6c757d;
+}

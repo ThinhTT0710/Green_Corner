@@ -24,12 +24,12 @@ namespace GreenCorner.BlogAPI.Controllers
             try
             {
                 await _reportService.SubmitReport(report);
-                _responseDTO.Message = "Report submitted successfully.";
+                _responseDTO.Message = "Báo cáo đã được gửi thành công.";
             }
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Báo cáo gửi thất bại!";
             }
 
             return _responseDTO;
@@ -46,7 +46,7 @@ namespace GreenCorner.BlogAPI.Controllers
             catch (Exception ex)
             {
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = ex.Message;
+                _responseDTO.Message = "Không thể lấy danh sách báo cáo!";
             }
 
             return _responseDTO;

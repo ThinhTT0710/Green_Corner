@@ -54,6 +54,14 @@ namespace GreenCorner.EcommerceAPI.Repositories
             product.UpdatedAt = DateTime.Now;
             await _context.SaveChangesAsync();
         }
+        public async Task<IEnumerable<Product>> GetNewestProducts()
+        {
+            return await _context.Products
+                .Where(p => p.IsDeleted == false && p.Quantity > 0)
+                .OrderByDescending(p => p.CreatedAt)                   
+                .Take(10)                                               
+                .ToListAsync();
+        }
 
         public async Task<IEnumerable<Product>> GetOutOfStockProduct()
         {

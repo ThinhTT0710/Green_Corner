@@ -87,6 +87,11 @@
                     <article class="card-body">
                         <h5 class="card-title text-center">Sản phẩm bán chạy</h5>
                         <div class="new-member-list">
+                            @if (!Model.BestSellingProducts.Any())
+                            {
+                                <p class="text-center">Không có sản phẩm bán chạy nào</p>
+                            }
+                            else{
                             @foreach (var item in Model.BestSellingProducts)
                             {
                                 <div class="d-flex align-items-center justify-content-between mb-4">
@@ -106,6 +111,7 @@
                                     </div>
                                 </div>
                             }
+                            }
                         </div>
                     </article>
                 </div>
@@ -115,6 +121,11 @@
                     <article class="card-body">
                         <h5 class="card-title text-center">Sản phẩm hết hàng</h5>
                         <div class="new-member-list">
+                        @if (!Model.OutOfStockProduct.Any())
+                        {
+                            <p class="text-center">Không có sản phẩm nào hết hàng</p>
+                        }
+                        else{
                             @foreach (var item in Model.OutOfStockProduct)
                             {
                                 <div class="d-flex align-items-center justify-content-between mb-4">
@@ -133,6 +144,7 @@
                                         <h6>@item.Quantity</h6>
                                     </div>
                                 </div>
+                            }
                             }
                         </div>
                     </article>

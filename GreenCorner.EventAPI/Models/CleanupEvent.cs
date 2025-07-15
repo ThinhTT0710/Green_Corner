@@ -21,6 +21,12 @@ public partial class CleanupEvent
 
     public DateTime? CreatedAt { get; set; }
 
+    public int? PointsAward { get; set; }
+
+    public string? Address { get; set; }
+
+    public string? ImageUrl { get; set; }
+
     public virtual ICollection<EventReview> EventReviews { get; set; } = new List<EventReview>();
 
     public virtual ICollection<EventVolunteer> EventVolunteers { get; set; } = new List<EventVolunteer>();

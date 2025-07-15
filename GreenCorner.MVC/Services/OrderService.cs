@@ -117,7 +117,14 @@ namespace GreenCorner.MVC.Services
                 Url = SD.EcommerceAPIBase + "/api/order/get-best-selling-product"
             });
         }
-
+        public async Task<ResponseDTO?> GetTopBestSelling()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.EcommerceAPIBase + "/api/order/get-top-selling-product"
+            });
+        }
         public async Task<ResponseDTO?> GetTotalMoneyByMonth()
 		{
 			return await _baseService.SendAsync(new RequestDTO

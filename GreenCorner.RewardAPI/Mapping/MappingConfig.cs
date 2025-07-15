@@ -13,6 +13,7 @@ namespace GreenCorner.RewardAPI.Mapping
                 config.CreateMap<VoucherDTO, Voucher>().ReverseMap();
                 config.CreateMap<RewardPointDTO, RewardPoint>().ReverseMap();
                 config.CreateMap<PointTransactionDTO, PointTransaction>().ReverseMap();
+                config.CreateMap<UserVoucherRedemptionDTO, UserVoucherRedemption>().ReverseMap();
             });
 
             return mappingConfig;

@@ -18,10 +18,15 @@ namespace GreenCorner.RewardAPI.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<PointTransactionDTO>> GetRewardRedemptionHistory(string userId)
+        public async Task<IEnumerable<UserVoucherRedemptionDTO>> GetRewardRedemptionHistory(string userId)
         {
             var pointTransactions = await _rewardRedemptionHistoryRepository.GetRewardRedemptionHistory(userId);
-            return _mapper.Map<List<PointTransactionDTO>>(pointTransactions);
+            return _mapper.Map<List<UserVoucherRedemptionDTO>>(pointTransactions);
+        }
+
+        public async Task SaveRedemptionAsync(string userId, int voucherId)
+        {
+            await _rewardRedemptionHistoryRepository.SaveRedemptionAsync(userId, voucherId);
         }
     }
 }

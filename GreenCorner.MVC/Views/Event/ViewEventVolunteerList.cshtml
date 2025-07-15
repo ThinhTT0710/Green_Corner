@@ -1,50 +1,72 @@
-﻿	@model IEnumerable<EventVolunteerDTO>
+﻿@model IEnumerable<EventVolunteerWithUserViewModel>
 
 <div class="card shadow border-0 mt-4">
-	<div class="row">
-		<h2 class="content-title card-title">Volunteer List</h2>
-	</div>
-	<div class="card-body p-4">
-		<div class="card-body">
-			<div class="table-responsive">
-				<table class="table table-hover">
-			<thead>
-				<tr>
-					<th>
-						CleanEvent
-					</th>
-					<th>
-						Rating
-					</th>
-					<th>
-						Comment
-					</th>
-					<th class="text-end">Action</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var item in Model)
-				{
-					<tr>
-						<td>
-							@item.CleanEventId
-						</td>
-						<td>
-							@item.UserId
-						</td>
-						<td>
-							@item.AttendanceStatus
-						</td>
-						<td style="text-align:center">
-							<a class="btn btn-danger" asp-action="KickVolunteer" asp-route-userId="@item.UserId" asp-route-eventId="@item.CleanEventId">
-								Kick
-							</a>	
-						</td>
-					</tr>
-				}
-				</tbody>
-		</table
-			</div>
-		</div>
-	</div>
+    <div class="row">
+        <h2 class="content-title card-title">Volunteer List</h2>
+    </div>
+    <div class="card-body p-4">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light text-center">
+                    <tr>
+                        <th>Sự kiện</th>
+                        <th>Họ tên</th>
+                        <th>Trạng thái điểm danh</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                            <tr class="align-middle text-center">
+                                <td>@item.Volunteer.CleanEventId</td>
+                                <td>@item.User.FullName</td>
+                                <td>
+                                @{
+                                    var status = item.Volunteer.AttendanceStatus;
+                                    if (string.IsNullOrEmpty(status))
+                                    {
+                                                    <span class="text-muted">Chưa điểm danh</span>
+                                    }
+                                    else if (status == "Present")
+                                    {
+                                                    <span class="badge bg-success">Có mặt</span>
+                                    }
+                                    else if (status == "Absent")
+                                    {
+                                                    <span class="badge bg-danger">Vắng mặt</span>
+                                    }
+                                    else
+                                    {
+                                                    <span>@status</span>
+                                    }
+                                }
+                                </td>
+                                <td class="text-end">
+                                    <a class="btn btn-outline-danger btn-sm"
+                                       asp-action="KickVolunteer"
+                                       asp-route-userId="@item.Volunteer.UserId"
+                                       asp-route-eventId="@item.Volunteer.CleanEventId"
+                                       onclick="return confirm('Bạn có chắc chắn muốn loại tình nguyện viên này khỏi sự kiện?');">
+                                        Kick
+                                    </a>
+                                    <form asp-action="EarnPoints"
+                                          asp-controller="PointTransaction"
+                                          method="post"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Bạn có chắc chắn muốn thưởng điểm cho tình nguyện viên này?');">
+                                        <input type="hidden" name="userId" value="@item.Volunteer.UserId" />
+                                        <input type="hidden" name="points" value="@item.Volunteer.PointsAwarded" />
+                                        <input type="hidden" name="eventId" value="@item.Volunteer.CleanEventId" />
+                                        <button type="submit" class="btn btn-outline-success btn-sm">
+                                            Thưởng Điểm
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

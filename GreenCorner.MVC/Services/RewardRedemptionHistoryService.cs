@@ -20,5 +20,20 @@ namespace GreenCorner.MVC.Services
                 Url = SD.RewardAPIBase + $"/api/RewardRedemptionHistory?userId={userId}"
             });
         }
+        public async Task<ResponseDTO?> SaveRedemptionAsync(string userId, int voucherId)
+        {
+            var dto = new UserVoucherRedemptionDTO
+            {
+                UserId = userId,
+                VoucherId = voucherId
+            };
+
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.POST,
+                Url = SD.RewardAPIBase + "/api/RewardRedemptionHistory/saveredemp",
+                Data = dto
+            });
+        }
     }
 }

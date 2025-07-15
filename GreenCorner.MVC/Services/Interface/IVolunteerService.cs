@@ -7,6 +7,7 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> RegisterVolunteer(VolunteerDTO dto);
         Task<ResponseDTO?> UnregisterAsync(int eventId, string userId, string role);
         Task<ResponseDTO?> IsVolunteer(int eventId, string userId);
+        Task<ResponseDTO?> IsConfirmVolunteer(int eventId, string userId);
         Task<ResponseDTO?> IsTeamLeader(int eventId, string userId);
         Task<ResponseDTO?> UpdateRegister(VolunteerDTO volunteer);
         Task<ResponseDTO?>  GetAllVolunteerRegistrations();
@@ -21,6 +22,7 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> GetApprovedRoleAsync(int eventId, string userId);
         Task<ResponseDTO?> HasApprovedTeamLeaderAsync(int eventId);
         Task<ResponseDTO?> GetUserWithParticipation();
+        Task<ResponseDTO?> GetApprovedVolunteersByUserIdAsync(string userId);
 
     }
 }

@@ -1,0 +1,6 @@
+@GreenCorner.ChatAPI_HostAddress = http://localhost:5165
+
+GET {{GreenCorner.ChatAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

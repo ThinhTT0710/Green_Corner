@@ -81,7 +81,7 @@
                                             <i class="material-icons md-more_horiz"></i>
                                         </a>
                                         <div class="dropdown-menu">
-                                            <a class="dropdown-item" href="#">View detail</a>
+                                            <a class="dropdown-item" asp-action="Detail" asp-controller="TrashEvent" asp-route-trashReportId="@item.TrashEvent.TrashReportId">View detail</a>
                                             @if (item.TrashEvent.Status == "Chờ xác nhận")
                                             {
                                                 <a class="dropdown-item" asp-action="ApproveTrashEvent"
