@@ -15,6 +15,7 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> TotalOrdersWaiting();
 		Task<ResponseDTO?> TotalSales();
         Task<ResponseDTO?> GetBestSellingProduct();
+        Task<ResponseDTO?> GetTopBestSelling();
         Task<ResponseDTO?> GetTotalMoneyByMonth();
 	}
 }

@@ -1,6 +1,8 @@
 ﻿using System.Text.Json;
 using System.Text;
 using GreenCorner.MVC.Services.Interface;
+using GreenCorner.MVC.Models;
+using GreenCorner.MVC.Utility;
 
 namespace GreenCorner.MVC.Services
 {
@@ -8,11 +10,13 @@ namespace GreenCorner.MVC.Services
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
+        private readonly IBaseService _baseService;
 
-        public ChatService(HttpClient httpClient, IConfiguration config)
+        public ChatService(HttpClient httpClient, IConfiguration config, IBaseService baseService)
         {
             _httpClient = httpClient;
             _config = config;
+            _baseService = baseService;
         }
 
         public async Task<string> GetGeminiResponseAsync(string message)
@@ -50,6 +54,15 @@ namespace GreenCorner.MVC.Services
                 .GetString();
 
             return reply ?? "Xin lỗi, tôi chưa hiểu rõ câu hỏi.";
+        }
+        public async Task<ResponseDTO?> GetChatMessagesAsync(int id)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.ChatAPIBase + "/api/chat/messages/" + id
+            });
+
         }
     }
 }

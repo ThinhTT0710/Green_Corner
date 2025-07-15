@@ -31,6 +31,7 @@ builder.Services.AddHttpClient<IRewardPointService, RewardPointService>();
 builder.Services.AddHttpClient<IChatService, ChatService>();
 builder.Services.AddHttpClient<IWishListService, WishListService>();
 builder.Services.AddHttpClient<IRewardRedemptionHistoryService, RewardRedemptionHistoryService>();
+builder.Services.AddHttpClient<INotificationService, NotificationService>();
 
 builder.Services.AddSignalR();
 
@@ -40,6 +41,7 @@ SD.EcommerceAPIBase = builder.Configuration["ServiceUrls:EcommerceAPI"];
 SD.BlogAPIBase = builder.Configuration["ServiceUrls:BlogAPI"];
 SD.EventAPIBase = builder.Configuration["ServiceUrls:EventAPI"];
 SD.RewardAPIBase = builder.Configuration["ServiceUrls:RewardAPI"];
+SD.ChatAPIBase = builder.Configuration["ServiceUrls:ChatAPI"];
 
 builder.Services.AddScoped<IBaseService, BaseService>();
 builder.Services.AddScoped<ITokenProvider, TokenProvider>();
@@ -47,6 +49,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<ITrashEventService, TrashEventService>();
 builder.Services.AddScoped<IRewardService, RewardService>();
 builder.Services.AddScoped<IVoucherService, VoucherService>();
@@ -64,6 +67,7 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IVolunteerService, VolunteerService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IWishListService, WishListService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 // Add authentication
 builder.Services.AddAuthentication(options =>

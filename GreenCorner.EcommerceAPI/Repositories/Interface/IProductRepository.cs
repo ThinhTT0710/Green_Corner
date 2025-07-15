@@ -9,6 +9,7 @@ namespace GreenCorner.EcommerceAPI.Repositories.Interface
         Task<Product> AddProduct(Product item);
         Task UpdateProduct(Product item);
         Task DeleteProduct(int id);
+        Task<IEnumerable<Product>> GetNewestProducts();
         Task<IEnumerable<Product>> GetOutOfStockProduct();
 
     }

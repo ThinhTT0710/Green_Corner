@@ -247,7 +247,33 @@
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
+    <script>
+        $(document).ready(function () {
+            const userId = '@User.FindFirst("sub")?.Value';
+            if (!userId) return; 
+            const notificationConnection = new signalR.HubConnectionBuilder()
+                .withUrl("https://localhost:7006/notificationhub?userId=" + userId)
+                .configureLogging(signalR.LogLevel.Information) 
+                .build();
 
+            async function startNotificationConnection() {
+                try {
+                    await notificationConnection.start();
+                    console.log("SignalR đã kết nối thành công.");
+
+                } catch (err) {
+                    console.error("Kết nối SignalR thất bại: ", err);
+                    setTimeout(startNotificationConnection, 5000);
+                }
+            }
+
+            startNotificationConnection();
+            notificationConnection.onclose(async () => {
+                console.log("Mất kết nối SignalR. Đang thử kết nối lại...");
+                await startNotificationConnection();
+            });
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

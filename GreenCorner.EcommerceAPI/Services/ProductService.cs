@@ -47,6 +47,11 @@ namespace GreenCorner.EcommerceAPI.Services
             Product product = _mapper.Map<Product>(productDto);
             await _productRepository.UpdateProduct(product);
         }
+        public async Task<IEnumerable<ProductDTO>> GetNewestProducts()
+        {
+            var newestProducts = await _productRepository.GetNewestProducts();
+            return _mapper.Map<List<ProductDTO>>(newestProducts);
+        }
 
         public async Task<IEnumerable<ProductDTO>> GetOutOfStockProduct()
         {

@@ -19,7 +19,11 @@ namespace GreenCorner.EventAPI.Repositories
             return await _context.Volunteers
                 .AnyAsync(v => v.CleanEventId == eventId && v.UserId == userId && v.ApplicationType == "Volunteer" && v.Status == "Pending");
         }
-
+        public async Task<bool> IsConfirmVolunteer(int eventId, string userId)
+        {
+            return await _context.Volunteers
+                .AnyAsync(v => v.CleanEventId == eventId && v.UserId == userId  && v.Status == "Đã xác nhận");
+        }
         public async Task<bool> IsTeamLeader(int eventId, string userId)
         {
             return await _context.Volunteers
