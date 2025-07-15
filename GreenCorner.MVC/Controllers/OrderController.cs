@@ -126,27 +126,20 @@ namespace GreenCorner.MVC.Controllers
                         {
                             await _cartService.DeleteItemInCart(item.CartId);
                         }
-                        return RedirectToAction("OrderComplete", "Order");
+                        return RedirectToAction("OrderCODComplete", "Order");
                     }
                     else
                     {
                         TempData["error"] = response.Message;
-                        return View(new CheckoutViewModel
-                        {
-                            Order = orderDTO,
-                            CartItems = cartItems
-                        });
+                        return RedirectToAction("OrderFail", "Order");
+
                     }
                 }
             }
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
-                return View(new CheckoutViewModel
-                {
-                    Order = orderDTO,
-                    CartItems = new List<CartDTO>()
-                });
+                return RedirectToAction("OrderFail", "Order");
             }
         }
 
@@ -201,6 +194,16 @@ namespace GreenCorner.MVC.Controllers
 				return RedirectToAction("OrderFail", "Order");
 			}
 		}
+        [HttpGet]
+        public async Task<IActionResult> OrderCODComplete()
+        {
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> OrderFail()
+        {
+            return View();
+        }
         [HttpGet]
         public async Task<IActionResult> History()
         {

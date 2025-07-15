@@ -19,18 +19,31 @@
                     <small class="text-muted">ID Đơn hàng: @Model.OrderId</small>
                 </div>
                 <div class="col-lg-6 col-md-6 ms-auto text-md-end">
-                    <form class="d-inline-block" method="post" asp-controller="Order" asp-action="UpdateOrderStatus">
+                    <form id="updateStatusForm" class="d-inline-block" method="post" asp-controller="Order" asp-action="UpdateOrderStatus">
                     <input type="hidden" asp-for="OrderId" value="@Model.OrderId" />
                     <select asp-for="Status" class="form-select d-inline-block mb-lg-0 mr-5 mw-200" >
                         <option value="" disabled selected>Chọn trạng thái</option>
-                        <option>Từ chối đơn hàng</option>
-                        <option>Xác nhận đơn hàng</option>
-                        <option>Đang vận chuyển</option>
-                        <option>Hoàn thành</option>
-                        <option>Không hoàn thành</option>
+                            @if (Model.Status == "Chờ xác nhận" || Model.Status == "Đã thanh toán")
+                            {
+                                <option value="Đã từ chối">Từ chối đơn hàng</option>
+                                <option value="Đã xác nhận">Xác nhận đơn hàng</option>
+                            }
+                            else if (Model.Status == "Đã xác nhận")
+                            {
+                                <option value="Đang vận chuyển">Đang vận chuyển</option>
+                            }
+                            else if(Model.Status == "Đang vận chuyển")
+                            {
+                                <option value="Đang giao hàng">Đang giao hàng</option>
+                            }
+                            else if(Model.Status == "Đang giao hàng" || Model.Status == "Đã từ chối")
+                            {
+                        <option value="Hoàn thành">Hoàn thành</option>
+                        <option value="Không hoàn thành">Không hoàn thành</option>
+                            }
                     </select>
-                    <button type="submit" class="btn btn-primary">Lưu</button>
                     </form>
+                    <button type="submit" class="btn btn-primary" form="updateStatusForm">Lưu</button>
                 </div>
             </div>
         </header>
