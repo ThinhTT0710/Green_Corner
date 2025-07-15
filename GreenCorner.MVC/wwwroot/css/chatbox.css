@@ -403,7 +403,7 @@
     align-items: flex-end;
     gap: 10px;
     max-width: 75%;
-    margin-top: 15px;
+    margin-top: 5px;
 }
 
     .message.own {
@@ -416,6 +416,11 @@
     height: 36px;
     border-radius: 50%;
     object-fit: cover;
+    flex-shrink: 0;
+}
+
+.avatar-placeholder {
+    width: 36px;
     flex-shrink: 0;
 }
 
@@ -535,3 +540,126 @@
     .btn-send:hover {
         background-color: #2f9467;
     }
+
+/* Custom CSS cho khu vực thông báo */
+.notification-dropdown {
+    width: 350px;
+    padding: 0;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border-radius: 0.5rem;
+}
+
+.notification-header,
+.notification-footer {
+    padding: 0.75rem 1.25rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.notification-header {
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
+
+.notification-footer {
+    border-top: 1px solid #e9ecef;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+}
+
+    .notification-footer a {
+        text-decoration: none;
+        color: #007bff; /* Hoặc màu thương hiệu của bạn */
+        font-weight: 500;
+    }
+
+.notification-list-wrapper {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+    /* Tùy chỉnh thanh cuộn cho đẹp hơn (chỉ hoạt động trên trình duyệt Webkit) */
+    .notification-list-wrapper::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .notification-list-wrapper::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .notification-list-wrapper::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 6px;
+    }
+
+        .notification-list-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+
+
+/* Giao diện cho từng mục thông báo */
+.notification-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s ease-in-out;
+}
+
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+
+    .notification-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .notification-item a {
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .notification-item .icon-wrapper {
+        font-size: 1.5rem;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .notification-item .content-wrapper {
+        flex-grow: 1;
+    }
+
+        .notification-item .content-wrapper strong {
+            display: block;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .notification-item .content-wrapper span {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .notification-item .content-wrapper small {
+            font-size: 0.75rem;
+            color: #a0a0a0;
+        }
+
+    .notification-item .unread-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #007bff; /* Hoặc màu thương hiệu của bạn */
+        border-radius: 50%;
+        margin-left: 1rem;
+        flex-shrink: 0;
+    }
+
+.notification-placeholder {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #6c757d;
+}
