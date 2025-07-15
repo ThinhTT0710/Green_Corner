@@ -40,7 +40,7 @@ namespace GreenCorner.EcommerceAPI.Services
 			{
 				throw new Exception($"Order with ID {orderId} not found.");
 			}
-			if (!order.Status.Equals("Chờ xác nhận"))
+			if (order.Status == "Chờ xác nhận")
 			{
 				throw new Exception("Đơn hàng đã được xác nhận và không thể xóa.");
 			}
@@ -130,7 +130,34 @@ namespace GreenCorner.EcommerceAPI.Services
 
 		public async Task UpdateOrderStatus(int orderId, string newStatus)
 		{
-			await _orderRepository.UpdateOrderStatus(orderId, newStatus);
+            var orderList = await GetById(orderId);
+            if (orderList == null)
+            {
+                throw new Exception($"Không tìm thấy đơn hàng");
+            }
+            if (orderList.Status.Equals("Đã xác nhận"))
+            {
+                foreach (var item in orderList.OrderDetailsDTO)
+                {
+                    var product = await _productService.GetByProductId(item.ProductId);
+                    if (product.Quantity < item.Quantity)
+                    {
+                        throw new Exception("Sản phẩm đã hết hàng");
+                    }
+                    product.Quantity -= item.Quantity;
+                    await _productService.UpdateProduct(product);
+                }
+            }
+            if (orderList.Status.Equals("Đang giao hàng") && newStatus.Equals("Không hoàn thành"))
+            {
+                foreach (var item in orderList.OrderDetailsDTO)
+                {
+                    var product = await _productService.GetByProductId(item.ProductId);
+                    product.Quantity += item.Quantity;
+                    await _productService.UpdateProduct(product);
+                }
+            }
+            await _orderRepository.UpdateOrderStatus(orderId, newStatus);
 		}
 
         //Dash board
