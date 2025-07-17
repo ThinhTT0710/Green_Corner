@@ -50,6 +50,9 @@
                                     <div class="product-category mb-1">
                                         <span class="text-muted">Bắt đầu từ: @item.StartDate?.ToString("dd/MM/yyyy")</span>
                                     </div>
+                                    <div class="product-category mb-1">
+                                        <span class="text-muted">Thời gian: @item.StartDate?.ToString("HH:mm") - @item.EndDate?.ToString("HH:mm")</span>
+                                    </div>
                                     <h4 class="mb-2">
                                         <a asp-action="GetEventById" asp-route-eventId="@item.CleanEventId" class="text-dark">
                                             @item.Title
