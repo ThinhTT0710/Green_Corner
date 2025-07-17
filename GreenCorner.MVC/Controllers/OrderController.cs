@@ -1,7 +1,9 @@
 ﻿using GreenCorner.MVC.Models;
+using GreenCorner.MVC.Models.Notification;
 using GreenCorner.MVC.Models.VNPay;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,14 +15,18 @@ namespace GreenCorner.MVC.Controllers
         private readonly IOrderService _orderService;
         private readonly ICartService _cartService;
         private readonly IUserService _userService;
+        private readonly IAdminService _adminService;
+        private readonly INotificationService _notificationService;
         private readonly IVnPayService _vnPayService;
 
-        public OrderController(IOrderService orderService, ICartService cartService, IUserService userService, IVnPayService vnPayService)
+        public OrderController(IOrderService orderService, ICartService cartService, IUserService userService, IVnPayService vnPayService, IAdminService adminService, INotificationService notificationService)
         {
             _orderService = orderService;
             _cartService = cartService;
             _userService = userService;
             _vnPayService = vnPayService;
+            _adminService = adminService;
+            _notificationService = notificationService;
         }
 
         public async Task<IActionResult> Index()
@@ -239,7 +245,7 @@ namespace GreenCorner.MVC.Controllers
         {
             try
             {
-                var response = await _orderService.DeleteOrder(orderId);
+                var response = await _orderService.UpdateOrderStatus(orderId, "Hủy đơn hàng");
                 if (response != null && response.IsSuccess)
                 {
                     TempData["success"] = "Hủy đơn hàng thành công";
@@ -256,6 +262,7 @@ namespace GreenCorner.MVC.Controllers
             }
         }
 
+        [Authorize(Roles = "ADMIN,SALESTAFF")]
         public async Task<IActionResult> ListOrder()
         {
             List<OrderDTO> orders = new();
@@ -276,6 +283,8 @@ namespace GreenCorner.MVC.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "ADMIN,SALESTAFF")]
+
         public async Task<IActionResult> OrderDetail(int id)
         {
             ResponseDTO? response = await _orderService.GetOrderByID(id);
@@ -294,6 +303,7 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "ADMIN,SALESTAFF")]
         public async Task<IActionResult> UpdateOrderStatus(OrderDTO order)
         {
             try
@@ -302,6 +312,32 @@ namespace GreenCorner.MVC.Controllers
                 if (response != null && response.IsSuccess)
                 {
                     TempData["success"] = "Cập nhật trạng thái đơn hàng thành công";
+                    var notification = new NotificationDTO
+                    {
+                        UserId = order.UserId,
+                        Title = "Đơn hàng đã được cập nhật",
+                        Message = $"Đơn hàng của bạn đã được cập nhật trạng thái thành '{order.Status}'."
+                    };
+                    var sendNotification = await _notificationService.SendNotification(notification);
+                    if (sendNotification != null && sendNotification.IsSuccess)
+                    {
+                        TempData["success"] = "Đã từ chối sự kiện và gửi thông báo cho người dùng!";
+                        var StaffName = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Name).FirstOrDefault()?.Value;
+                        var log = new SystemLogDTO()
+                        {
+                            UserId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value,
+                            ActionType = "Cập nhật trạng thái",
+                            ObjectType = "Đơn hàng",
+                            ObjectId = order.OrderId,
+                            Description = $"Nhân viên {StaffName} đã cập nhật trạng thái đơn hàng {order.OrderId} thành {order.Status}",
+                            CreatedAt = DateTime.Now,
+                        };
+                        var logResponse = await _adminService.AddLogStaff(log);
+                    }
+                    else
+                    {
+                        TempData["error"] = sendNotification?.Message ?? "Đã có lỗi xảy ra.";
+                    }
                 }
                 else
                 {

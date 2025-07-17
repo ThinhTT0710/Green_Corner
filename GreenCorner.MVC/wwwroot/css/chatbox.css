@@ -543,7 +543,7 @@
 
 /* Custom CSS cho khu vực thông báo */
 .notification-dropdown {
-    width: 350px;
+    width: 400px;
     padding: 0;
     border: 1px solid #e9ecef;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
