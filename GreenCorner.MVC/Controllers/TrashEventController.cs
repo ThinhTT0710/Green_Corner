@@ -3,6 +3,7 @@ using GreenCorner.MVC.Models.Notification;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
 using GreenCorner.MVC.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
@@ -14,13 +15,16 @@ namespace GreenCorner.MVC.Controllers
         private readonly ITrashEventService _trashEventService;
         private readonly IUserService _userService;
         private readonly INotificationService _notificationService;
-        public TrashEventController(ITrashEventService trashEventService, IUserService userService, INotificationService notificationService)
+        private readonly IAdminService _adminService;
+        public TrashEventController(ITrashEventService trashEventService, IUserService userService, INotificationService notificationService, IAdminService adminService)
         {
             _trashEventService = trashEventService;
             _userService = userService;
             _notificationService = notificationService;
+            _adminService = adminService;
         }
 
+        [Authorize(Roles = "ADMIN,EVENTSTAFF")]
         public async Task<IActionResult> Index()
         {
             List<TrashReportListViewModel> viewModelList = new();
@@ -231,6 +235,7 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "ADMIN,EVENTSTAFF")]
         public async Task<IActionResult> ApproveTrashEvent(int trashReportId)
         {
             if (!User.Identity.IsAuthenticated)
@@ -257,6 +262,17 @@ namespace GreenCorner.MVC.Controllers
                         if (sendNotification != null && sendNotification.IsSuccess)
                         {
                             TempData["success"] = "Đã xác nhận sự kiện và gửi thông báo cho người dùng!";
+                            var StaffName = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Name).FirstOrDefault()?.Value;
+                            var log = new SystemLogDTO()
+                            {
+                                UserId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value,
+                                ActionType = "Xác nhận báo cáo",
+                                ObjectType = "Sự kiện",
+                                ObjectId = trashReportId,
+                                Description = $"Nhân viên {StaffName} đã xác nhận báo cáo của sự kiện với ID {trashReportId}.",
+                                CreatedAt = DateTime.Now,
+                            };
+                            var logResponse = await _adminService.AddLogStaff(log);
                         }
                         else
                         {
@@ -278,6 +294,7 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "ADMIN,EVENTSTAFF")]
         public async Task<IActionResult> RejectrashEvent(int trashReportId)
         {
             if (!User.Identity.IsAuthenticated)
@@ -304,6 +321,17 @@ namespace GreenCorner.MVC.Controllers
                         if (sendNotification != null && sendNotification.IsSuccess)
                         {
                             TempData["success"] = "Đã từ chối sự kiện và gửi thông báo cho người dùng!";
+                            var StaffName = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Name).FirstOrDefault()?.Value;
+                            var log = new SystemLogDTO()
+                            {
+                                UserId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value,
+                                ActionType = "Từ chối báo cáo",
+                                ObjectType = "Sự kiện",
+                                ObjectId = trashReportId,
+                                Description = $"Nhân viên {StaffName} đã từ chối báo cáo của sự kiện với ID {trashReportId}.",
+                                CreatedAt = DateTime.Now,
+                            };
+                            var logResponse = await _adminService.AddLogStaff(log);
                         }
                         else
                         {

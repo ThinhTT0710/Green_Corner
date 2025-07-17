@@ -1,8 +1,9 @@
 ﻿@model OrderDTO
 @{
-	ViewData["Title"] = "Order Detail";
-	Layout = "_LayoutAdmin";
-}﻿
+    ViewData["Title"] = "Order Detail";
+    Layout = "_LayoutAdmin";
+}
+﻿
 
 <section class="content-main">
     <div class="content-header">
@@ -19,10 +20,12 @@
                     <small class="text-muted">ID Đơn hàng: @Model.OrderId</small>
                 </div>
                 <div class="col-lg-6 col-md-6 ms-auto text-md-end">
-                    <form id="updateStatusForm" class="d-inline-block" method="post" asp-controller="Order" asp-action="UpdateOrderStatus">
-                    <input type="hidden" asp-for="OrderId" value="@Model.OrderId" />
-                    <select asp-for="Status" class="form-select d-inline-block mb-lg-0 mr-5 mw-200" >
-                        <option value="" disabled selected>Chọn trạng thái</option>
+                    <form id="updateStatusForm" class="d-inline-block" method="post" asp-controller="Order"
+                        asp-action="UpdateOrderStatus">
+                        <input type="hidden" asp-for="OrderId" value="@Model.OrderId" />
+                        <input type="hidden" asp-for="UserId" value="@Model.UserId" />
+                        <select asp-for="Status" class="form-select d-inline-block mb-lg-0 mr-5 mw-200">
+                            <option value="" disabled selected>Chọn trạng thái</option>
                             @if (Model.Status == "Chờ xác nhận" || Model.Status == "Đã thanh toán")
                             {
                                 <option value="Đã từ chối">Từ chối đơn hàng</option>
@@ -32,16 +35,16 @@
                             {
                                 <option value="Đang vận chuyển">Đang vận chuyển</option>
                             }
-                            else if(Model.Status == "Đang vận chuyển")
+                            else if (Model.Status == "Đang vận chuyển")
                             {
                                 <option value="Đang giao hàng">Đang giao hàng</option>
                             }
-                            else if(Model.Status == "Đang giao hàng" || Model.Status == "Đã từ chối")
+                            else if (Model.Status == "Đang giao hàng" || Model.Status == "Đã từ chối")
                             {
-                        <option value="Hoàn thành">Hoàn thành</option>
-                        <option value="Không hoàn thành">Không hoàn thành</option>
+                                <option value="Hoàn thành">Hoàn thành</option>
+                                <option value="Không hoàn thành">Không hoàn thành</option>
                             }
-                    </select>
+                        </select>
                     </form>
                     <button type="submit" class="btn btn-primary" form="updateStatusForm">Lưu</button>
                 </div>
@@ -72,7 +75,7 @@
                         <div class="text">
                             <h6 class="mb-1">Thông tin đơn hàng</h6>
                             <p class="mb-1">
-                                Shipping: @Model.TotalMoney.ToString("N0", new CultureInfo("vi-VN"))đ <br/>
+                                Shipping: @Model.TotalMoney.ToString("N0", new CultureInfo("vi-VN"))đ <br />
                                 Phương thức thanh toán: <br />
                                 @Model.PaymentMethod
                             </p>
@@ -107,28 +110,32 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            @foreach (var orderDetail in Model.OrderDetailsDTO)
-                            {
-                                <tr>
-                                    <td>
-                                        <a class="itemside" href="#">
-                                            <div class="left">
-                                                 @{
-                                                 int price = (int)orderDetail.ProductDTO.Price;
-                                                 int priceDiscount = price - (price * orderDetail.ProductDTO.Discount.Value / 100);
+                                @foreach (var orderDetail in Model.OrderDetailsDTO)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a class="itemside" href="#">
+                                                <div class="left">
+                                                    @{
+                                                        int price = (int)orderDetail.ProductDTO.Price;
+                                                        int priceDiscount = price - (price *
+                                                        orderDetail.ProductDTO.Discount.Value / 100);
                                                         var imageUrl = orderDetail.ProductDTO.ImageUrl;
-                                                        var productImg = imageUrl?.Contains("&") == true ? imageUrl.Split('&')[0] : imageUrl;
-                                                 }
-                                                 <img src="@productImg" width="40" height="40" class="img-xs" alt="Item" />
-                                            </div>
-                                            <div class="info">@orderDetail.ProductDTO.Name</div>
-                                        </a>
-                                    </td>
-                                    <td>@priceDiscount.ToString("N0", new CultureInfo("vi-VN"))đ</td>
-                                    <td>@orderDetail.Quantity</td>
-                                        <td class="text-end">@orderDetail.Price.ToString("N0", new CultureInfo("vi-VN"))đ</td>
-                                </tr>
-                            }
+                                                        var productImg = imageUrl?.Contains("&") == true ?
+                                                        imageUrl.Split('&')[0] : imageUrl;
+                                                    }
+                                                    <img src="@productImg" width="40" height="40" class="img-xs"
+                                                        alt="Item" />
+                                                </div>
+                                                <div class="info">@orderDetail.ProductDTO.Name</div>
+                                            </a>
+                                        </td>
+                                        <td>@priceDiscount.ToString("N0", new CultureInfo("vi-VN"))đ</td>
+                                        <td>@orderDetail.Quantity</td>
+                                        <td class="text-end">@orderDetail.Price.ToString("N0", new CultureInfo("vi-VN"))đ
+                                        </td>
+                                    </tr>
+                                }
                                 <tr>
                                     <td colspan="4">
                                         <article class="float-end">
@@ -142,12 +149,14 @@
                                             </dl>
                                             <dl class="dlist">
                                                 <dt>Tổng cộng:</dt>
-                                                <dd><b class="h5">@((Model.TotalMoney + 30000).ToString("N0", new CultureInfo("vi-VN")))đ</b></dd>
+                                                <dd><b class="h5">@((Model.TotalMoney + 30000).ToString("N0", new
+                                                                                                                CultureInfo("vi-VN")))đ</b></dd>
                                             </dl>
                                             <dl class="dlist">
                                                 <dt class="text-muted">Trạng thái:</dt>
                                                 <dd>
-                                                    <span class="badge rounded-pill alert-success text-success">@Model.Status</span>
+                                                    <span
+                                                        class="badge rounded-pill alert-success text-success">@Model.Status</span>
                                                 </dd>
                                             </dl>
                                         </article>
@@ -159,25 +168,28 @@
                 </div>
                 <div class="col-lg-1"></div>
                 <div class="col-lg-4">
-                    <div class="box shadow-sm bg-light" >
+                    <div class="box shadow-sm bg-light">
                         <h6 class="mb-15">Phương thức thanh toán</h6>
                         @if (Model.PaymentMethod == "Thanh toán ngân hàng")
                         {
                             <p style="display : flex; align-items : center; justify-content : center;">
-                                <img src="~/admin/imgs/card-brands/6.png" height="20" style="margin-right : 5px;" /> @Model.PaymentMethod
+                                <img src="~/admin/imgs/card-brands/6.png" height="20" style="margin-right : 5px;" />
+                                @Model.PaymentMethod
                             </p>
                         }
                         else
                         {
                             <p style="display:flex; align-items:center; justify-content:center;">
-                                <img src="~/admin/imgs/card-brands/5.png"  height="20" style="margin-right : 5px;" /> @Model.PaymentMethod
+                                <img src="~/admin/imgs/card-brands/5.png" height="20" style="margin-right : 5px;" />
+                                @Model.PaymentMethod
                             </p>
                         }
                     </div>
                     <div class="h-25 pt-4">
                         <div class="mb-3">
                             <label>Ghi chú</label>
-                            <textarea class="form-control" asp-for="Note" name="notes" id="notes" placeholder="Type some note" readonly></textarea>
+                            <textarea class="form-control" asp-for="Note" name="notes" id="notes"
+                                placeholder="Type some note" readonly></textarea>
                         </div>
                     </div>
                 </div>

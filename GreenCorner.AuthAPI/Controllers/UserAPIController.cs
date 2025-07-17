@@ -54,6 +54,7 @@ namespace GreenCorner.AuthAPI.Controllers
             _response.Result = response;
             return _response;
         }
+
         [HttpPost]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDTO changePasswordRequest)
         {
