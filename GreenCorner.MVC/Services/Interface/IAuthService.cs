@@ -18,8 +18,8 @@ namespace GreenCorner.MVC.Services.Interface
 		Task<ResponseDTO?> CreateStaff(StaffDTO staff);
         Task<ResponseDTO?> UpdateStaff(StaffDTO staff);
         Task<ResponseDTO?> BlockStaffAccount(string id);
-		Task<ResponseDTO?> UnBlockStaffAccount(string id);
+        Task<string> GetSecurityStampAsync(string userId);
+        Task<ResponseDTO?> UnBlockStaffAccount(string id);
 
-
-	}
+    }
 }
