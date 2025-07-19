@@ -30,7 +30,8 @@ else
             <div class="col-xl-10 col-lg-12 m-auto">
                 <div class="mb-50">
                     <h1 class="heading-2 mb-10">Danh Sách yêu thích</h1>
-                    <h6 class="text-body">There are <span class="text-brand">@Model.Count()</span> products in this list
+                    <h6 class="text-body">Có <span class="text-brand">@Model.Count()</span> sản phẩm trong danh sách yêu
+                        thích của bạn
                     </h6>
                 </div>
                 <div class="table-responsive shopping-summery">
@@ -65,14 +66,25 @@ else
                                     <td class="price" data-title="Price">
                                         <h3 class="text-brand">@priceDiscount.ToString("N0", new CultureInfo("vi-VN"))đ</h3>
                                     </td>
-                                    <td class="detail-info" data-title="Stock">
-                                        <span class="stock-status in-stock mb-0"> In Stock </span>
-                                    </td>
+                                    @if (item.Product.Quantity == 0)
+                                    {
+                                        <td class="detail-info" data-title="Stock">
+                                            <span class="stock-status in-stock mb-0"> Hết hàng </span>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td class="detail-info" data-title="Stock">
+                                            <span class="stock-status in-stock mb-0"> Còn hàng </span>
+                                        </td>
+                                    }
                                     <td class="text-right" data-title="Cart">
-                                        <a href="#" data-product-id="@item.ProductId"  class="btn btn-sm add-to-cart-btn">Add to cart</a>
+                                        <a href="#" data-product-id="@item.ProductId" class="btn btn-sm add-to-cart-btn">Thêm
+                                            giỏ hàng</a>
                                     </td>
                                     <td class="action text-center" data-title="Remove">
-                                        <a href="#" class="text-body remove-from-wishlist remove-wishlist-item" data-wishlist-id="@item.WishListId"><i class="fi-rs-trash"></i></a>
+                                        <a href="#" class="text-body remove-from-wishlist remove-wishlist-item"
+                                            data-wishlist-id="@item.WishListId"><i class="fi-rs-trash"></i></a>
                                     </td>
                                 </tr>
                             }

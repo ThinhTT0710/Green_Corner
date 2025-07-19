@@ -33,7 +33,9 @@ namespace GreenCorner.EcommerceAPI.Repositories
 
         public async Task<IEnumerable<Order>> GetAll()
         {
-            return await _context.Orders.ToListAsync();
+            return await _context.Orders
+                 .OrderByDescending(o => o.CreatedAt)
+                 .ToListAsync();
         }
 
         public async Task<Order> GetById(int id)

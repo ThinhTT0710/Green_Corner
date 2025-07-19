@@ -33,8 +33,12 @@
                             <div class="form-control bg-light">@Model.Title</div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Ngày tạo</label>
-                            <div class="form-control bg-light">@Model.CreatedAt?.ToString("dd/MM/yyyy")</div>
+                            <label class="form-label fw-bold">Ngày bắt đầu</label>
+                            <div class="form-control bg-light">@Model.StartDate?.ToString("dd/MM/yyyy")</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Thới gian</label>
+                            <div class="form-control bg-light">@Model.StartDate?.ToString("HH:mm") - @Model.EndDate?.ToString("HH:mm")</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Trạng thái</label>

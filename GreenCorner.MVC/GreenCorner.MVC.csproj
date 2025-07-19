@@ -5,6 +5,17 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Views\RewardRedemptionHistory\**" />
+    <Compile Remove="wwwroot\imgs\icons\**" />
+    <Content Remove="Views\RewardRedemptionHistory\**" />
+    <Content Remove="wwwroot\imgs\icons\**" />
+    <EmbeddedResource Remove="Views\RewardRedemptionHistory\**" />
+    <EmbeddedResource Remove="wwwroot\imgs\icons\**" />
+    <None Remove="Views\RewardRedemptionHistory\**" />
+    <None Remove="wwwroot\imgs\icons\**" />
+  </ItemGroup>
 	
 	<ItemGroup>
 		<PackageReference Include="ClosedXML" Version="0.105.0" />
@@ -18,7 +29,6 @@
 	<ItemGroup>
 	  <Folder Include="wwwroot\admin\fonts\material-icon\css\" />
 	  <Folder Include="wwwroot\admin\imgs\avatar-staff\" />
-	  <Folder Include="wwwroot\imgs\icons\" />
 	</ItemGroup>
 
 </Project>

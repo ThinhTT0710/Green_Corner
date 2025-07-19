@@ -56,5 +56,12 @@ namespace GreenCorner.EcommerceAPI.Repositories
             _context.Entry(orderdetail).CurrentValues.SetValues(orderDetail);
             await _context.SaveChangesAsync();
         }
+        public async Task<bool> HasRestrictedOrdersByProductId(int productId)
+        {
+            return await _context.OrderDetails
+                .Include(od => od.Order)
+                .AnyAsync(od => od.ProductId == productId &&
+                                (od.Order.Status == "Chờ xác nhận" || od.Order.Status == "Đã thanh toán"));
+        }
     }
 }

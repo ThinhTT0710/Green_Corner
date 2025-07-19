@@ -159,7 +159,7 @@ namespace GreenCorner.MVC.Controllers
                 if (response != null && response.IsSuccess)
                 {
                     TempData["success"] = "Đổi mật khẩu thành công!";
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Login", "Auth");
                 }
                 else
                 {

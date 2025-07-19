@@ -6,6 +6,7 @@ using GreenCorner.MVC.Utility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using System.IdentityModel.Tokens.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,6 +80,27 @@ builder.Services.AddAuthentication(options =>
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
         options.LoginPath = "/Auth/Login";
         options.AccessDeniedPath = "/Auth/AccessDenied";
+
+        options.Events.OnValidatePrincipal = async context =>
+        {
+            var userId = context.Principal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            var stampInCookie = context.Principal.Claims.FirstOrDefault(c => c.Type == "security_stamp")?.Value;
+
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(stampInCookie))
+            {
+                return;
+            }
+
+            var userService = context.HttpContext.RequestServices.GetRequiredService<IAuthService>();
+
+            var stampInDb = await userService.GetSecurityStampAsync(userId);
+
+            if (stampInDb != stampInCookie)
+            {
+                context.RejectPrincipal();
+                await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            }
+        };
     }).AddGoogle(options =>
     {
         options.ClientId = builder.Configuration["Google:ClientId"];

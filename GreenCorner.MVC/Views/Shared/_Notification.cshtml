@@ -8,7 +8,9 @@
             draggable: true
         });
     </script>
-    @TempData.Remove("success");
+
+    @TempData.Remove("success")
+    ;
 }
 @if (TempData["error"] != null)
 {
@@ -19,7 +21,9 @@
             title: "@TempData["error"]",
         });
     </script>
-    @TempData.Remove("error");
+
+    @TempData.Remove("error")
+    ;
 }
 @* notification for login error *@
 @if (TempData["loginError"] != null)
@@ -37,5 +41,7 @@
             }
         });
     </script>
-    @TempData.Remove("loginError");
+
+    @TempData.Remove("loginError")
+    ;
 }
