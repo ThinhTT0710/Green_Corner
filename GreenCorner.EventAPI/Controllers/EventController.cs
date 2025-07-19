@@ -207,5 +207,21 @@ namespace GreenCorner.EventAPI.Controllers
             return response;
         }
 
+        [HttpGet("top3event")]
+        public async Task<ResponseDTO> Get3CleanupEvents()
+        {
+            try
+            {
+                var events = await _eventService.GetTop3OpenEventsAsync();
+                _responseDTO.Result = events;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
     }
 }

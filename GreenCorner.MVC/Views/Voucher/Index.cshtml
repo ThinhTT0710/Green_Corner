@@ -7,47 +7,131 @@
     <div class="card-header bg-secondary bg-gradient py-3">
         <div class="row">
             <div class="col-12 text-center">
-                <h1 class="text-white">Voucher List</h1>
+                <h1 class="text-white">Danh sách Voucher</h1>
             </div>
         </div>
     </div>
 
     <div class="card-body p-4">
         <div class="row pb-3">
-            <div class="col-6">
-                <a asp-action="Create" class="btn btn-success">+ Add New Voucher</a>
+            <div class="col-md-4 mb-2">
+                <input type="text" id="searchInput" class="form-control" placeholder="Tìm theo tiêu đề hoặc địa chỉ..." />
+            </div>
+            <div class="col-md-2 mb-2">
+                <select id="statusFilter" class="form-select">
+                    <option value="">Trạng thái</option>
+                    <option value="Có">Đang hoạt động</option>
+                    <option value="Không">Ngừng hoạt động</option>
+                </select>
+            </div>
+            <div class="col-md-2 mb-2">
+                <select id="itemsPerPage" class="form-select">
+                    <option value="10">Hiển thị 10</option>
+                    <option value="20">Hiển thị 20</option>
+                    <option value="all">Tất cả</option>
+                </select>
+            </div>
+            <div class="col-md-4 text-end">
+                <a asp-action="Create" class="btn btn-success">+ Thêm Voucher</a>
             </div>
         </div>
 
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered table-striped" id="voucherTable">
             <thead class="table-dark">
                 <tr>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Points</th>
-                    <th>Start Date</th>
-                    <th>Expiration Date</th>
-                    <th class="text-center">Actions</th>
+                    <th>Tiêu đề</th>
+                    <th>Điểm yêu cầu</th>
+                    <th>Số lượng</th>
+                    <th>Địa chỉ</th>
+                    <th>Hoạt động</th>
+                    <th>Hạn sử dụng</th>
+                    <th class="text-center">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model)
                 {
-                    <tr>
+                    <tr class="voucher-row"
+                        data-title="@item.Title?.ToLower()"
+                        data-address="@item.Address?.ToLower()"
+                        data-active="@(item.IsActive ? "Có" : "Không")">
                         <td>@item.Title</td>
-                        <td>@item.Description</td>
                         <td>@item.PointsRequired</td>
-                        <td>@item.StartDate?.ToString("dd/MM/yyyy")</td>
-                        <td>@item.ExpirationDate?.ToString("dd/MM/yyyy")</td>
+                        <td>@item.Quantity</td>
+                        <td>@(item.Address ?? "Không có")</td>
+                        <td>@(item.IsActive ? "Có" : "Không")</td>
+                        <td>@item.ExpirationDate?.ToString("dd/MM/yyyy HH:mm")</td>
                         <td class="text-center">
-                            <a asp-action="Detail" asp-route-voucherId="@item.VoucherId" class="btn btn-sm btn-info">Detail</a>
-                            <a asp-action="Edit" asp-route-voucherId="@item.VoucherId" class="btn btn-sm btn-warning mx-1">Edit</a>
-                            <a asp-action="Delete" asp-route-voucherId="@item.VoucherId" class="btn btn-sm btn-danger">Delete</a>
+                            <a asp-action="Detail" asp-route-voucherId="@item.VoucherId" class="btn btn-sm btn-info">Chi tiết</a>
+                            <a asp-action="Edit" asp-route-voucherId="@item.VoucherId" class="btn btn-sm btn-warning mx-1">Sửa</a>
+                            <a asp-action="Delete" asp-route-voucherId="@item.VoucherId" class="btn btn-sm btn-danger">Xóa</a>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
+
+        <div class="pagination-area mt-3" id="pagination"></div>
     </div>
 </div>
 
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            function filterVouchers() {
+                let keyword = $('#searchInput').val().toLowerCase();
+                let status = $('#statusFilter').val();
+                let rows = $('.voucher-row');
+
+                rows.hide().filter(function () {
+                    let title = $(this).data('title');
+                    let address = $(this).data('address');
+                    let active = $(this).data('active');
+
+                    let matchKeyword = !keyword || (title && title.includes(keyword)) || (address && address.includes(keyword));
+                    let matchStatus = !status || active === status;
+
+                    return matchKeyword && matchStatus;
+                }).show();
+
+                paginate();
+            }
+
+            function paginate() {
+                let perPage = $('#itemsPerPage').val();
+                let items = $('.voucher-row:visible');
+                let total = items.length;
+
+                if (perPage === "all") {
+                    items.show();
+                    $('#pagination').html('');
+                    return;
+                }
+
+                let limit = parseInt(perPage);
+                let totalPages = Math.ceil(total / limit);
+
+                let paginationHtml = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    paginationHtml += `<button class="btn btn-sm btn-outline-primary me-1 page-btn" data-page="${i}">${i}</button>`;
+                }
+                $('#pagination').html(paginationHtml);
+
+                items.hide().slice(0, limit).show();
+
+                $('.page-btn').click(function () {
+                    let page = parseInt($(this).data('page'));
+                    let start = (page - 1) * limit;
+                    let end = start + limit;
+
+                    items.hide().slice(start, end).show();
+                });
+            }
+
+            $('#searchInput, #statusFilter').on('input change', filterVouchers);
+            $('#itemsPerPage').on('change', filterVouchers);
+
+            filterVouchers();
+        });
+    </script>
+}

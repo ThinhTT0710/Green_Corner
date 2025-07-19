@@ -30,5 +30,6 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> GetEventsByIdsAsync(List<int> eventIds);
         Task<ResponseDTO?> GetParticipationInfoAsync(int eventId);
         Task<ResponseDTO?> CheckEventIsFullAsync(int eventId);
+        Task<ResponseDTO?> GetTop3OpenEventsAsync();
     }
 }

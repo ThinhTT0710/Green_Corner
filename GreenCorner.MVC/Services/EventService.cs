@@ -244,5 +244,14 @@ namespace GreenCorner.MVC.Services
                 Url = $"{SD.EventAPIBase}/api/Event/is-full/{eventId}"
             });
         }
+
+        public async Task<ResponseDTO?> GetTop3OpenEventsAsync()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.EventAPIBase + "/api/Event/top3event"
+            });
+        }
     }
 }

@@ -23,6 +23,21 @@
             }
             else
             {
+                <!-- Search & Page Size -->
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-2">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Tìm theo tên, email hoặc loại giao dịch..." />
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <select id="itemsPerPage" class="form-select">
+                            <option value="10">Hiển thị 10</option>
+                            <option value="20">Hiển thị 20</option>
+                            <option value="all">Tất cả</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Table -->
                 <div class="card mb-4">
                     <div class="card-body">
                         <div class="table-responsive">
@@ -36,10 +51,13 @@
                                         <th>Ngày tạo</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="transactionTable">
                                     @foreach (var item in Model)
                                     {
-                                        <tr>
+                                        <tr class="point-row"
+                                            data-name="@item.User.FullName?.ToLower()"
+                                            data-email="@item.User.Email?.ToLower()"
+                                            data-type="@item.Transaction.Type?.ToLower()">
                                             <td>@item.User.FullName</td>
                                             <td>@item.User.Email</td>
                                             <td>
@@ -59,9 +77,67 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <!-- Pagination -->
+                        <div class="pagination-area mt-3" id="pagination"></div>
                     </div>
                 </div>
             }
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            function filterTransactions() {
+                let keyword = $('#searchInput').val().toLowerCase();
+                let rows = $('.point-row');
+
+                rows.hide().filter(function () {
+                    let name = $(this).data('name');
+                    let email = $(this).data('email');
+                    let type = $(this).data('type');
+
+                    return !keyword || name?.includes(keyword) || email?.includes(keyword) || type?.includes(keyword);
+                }).show();
+
+                paginate();
+            }
+
+            function paginate() {
+                let perPage = $('#itemsPerPage').val();
+                let items = $('.point-row:visible');
+                let total = items.length;
+
+                if (perPage === "all") {
+                    items.show();
+                    $('#pagination').html('');
+                    return;
+                }
+
+                let limit = parseInt(perPage);
+                let totalPages = Math.ceil(total / limit);
+                let paginationHtml = '';
+
+                for (let i = 1; i <= totalPages; i++) {
+                    paginationHtml += `<button class="btn btn-sm btn-outline-success me-1 page-btn" data-page="${i}">${i}</button>`;
+                }
+
+                $('#pagination').html(paginationHtml);
+                items.hide().slice(0, limit).show();
+
+                $('.page-btn').click(function () {
+                    let page = parseInt($(this).data('page'));
+                    let start = (page - 1) * limit;
+                    let end = start + limit;
+
+                    items.hide().slice(start, end).show();
+                });
+            }
+
+            $('#searchInput, #itemsPerPage').on('input change', filterTransactions);
+            filterTransactions();
+        });
+    </script>
+}

@@ -423,8 +423,5 @@ namespace GreenCorner.MVC.Controllers
             return View(new List<PointTransactionWithUserDTO>());
         }
 
-
-
-
     }
 }

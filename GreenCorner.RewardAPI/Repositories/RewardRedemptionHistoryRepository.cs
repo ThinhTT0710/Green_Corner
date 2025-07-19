@@ -21,7 +21,7 @@ namespace GreenCorner.RewardAPI.Repositories
                 .ToListAsync();
 
             if (list == null || list.Count == 0)
-                throw new KeyNotFoundException($"No transactions found for user {userId}.");
+                throw new KeyNotFoundException($"Không tìm thấy lịch sử đổi điểm {userId}.");
 
             return list;
         }
@@ -36,11 +36,37 @@ namespace GreenCorner.RewardAPI.Repositories
             {
                 UserId = userId,
                 VoucherId = voucherId,
-                RedeemedAt = DateTime.UtcNow
+                RedeemedAt = DateTime.UtcNow,
+                IsUsed = false
             };
 
             await _context.UserVoucherRedemptions.AddAsync(redemption);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<string>> GetDistinctUserIdsRedeemedAsync()
+        {
+            return await _context.UserVoucherRedemptions
+                .Select(x => x.UserId)
+                .Distinct()
+                .ToListAsync(); 
+        }
+
+        public async Task<UserVoucherRedemption> UpdateIsUsedAsync(int userVoucherId)
+        {
+            var redemption = await _context.UserVoucherRedemptions.FindAsync(userVoucherId);
+            if (redemption == null)
+                throw new KeyNotFoundException("Không tìm thấy mã đổi.");
+
+            if (redemption.IsUsed)
+                throw new InvalidOperationException("Voucher này đã được sử dụng.");
+
+            redemption.IsUsed = true;
+            _context.UserVoucherRedemptions.Update(redemption);
+            await _context.SaveChangesAsync();
+
+            return redemption;
+        }
+
     }
 }

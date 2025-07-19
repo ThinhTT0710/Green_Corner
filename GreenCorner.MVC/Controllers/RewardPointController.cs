@@ -1,5 +1,6 @@
 ﻿using GreenCorner.MVC.Models;
 using GreenCorner.MVC.Services.Interface;
+using GreenCorner.MVC.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,21 +11,44 @@ namespace GreenCorner.MVC.Controllers
     public class RewardPointController : Controller
     {
         private readonly IRewardPointService _rewardPointService;
+        private readonly IUserService _userService;
 
-        public RewardPointController(IRewardPointService rewardPointService)
+        public RewardPointController(IRewardPointService rewardPointService, IUserService userService)
         {
             _rewardPointService = rewardPointService;
+            _userService = userService;
         }
 
         public async Task<IActionResult> Index()
         {
-            List<RewardPointDTO> listReward = new();
+            List<RewardPointWithUserViewModel> viewModels = new();
+
             ResponseDTO? response = await _rewardPointService.GetRewardPoints();
             if (response != null && response.IsSuccess)
             {
-                listReward = JsonConvert.DeserializeObject<List<RewardPointDTO>>(response.Result.ToString());
+                var rewardList = JsonConvert.DeserializeObject<List<RewardPointDTO>>(response.Result.ToString());
+
+                foreach (var reward in rewardList)
+                {
+                    UserDTO? user = null;
+                    if (!string.IsNullOrEmpty(reward.UserId))
+                    {
+                        var userResponse = await _userService.GetUserById(reward.UserId);
+                        if (userResponse != null && userResponse.IsSuccess)
+                        {
+                            user = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
+                        }
+                    }
+
+                    viewModels.Add(new RewardPointWithUserViewModel
+                    {
+                        Reward = reward,
+                        User = user
+                    });
+                }
             }
-            return View(listReward);
+
+            return View(viewModels);
         }
 
 

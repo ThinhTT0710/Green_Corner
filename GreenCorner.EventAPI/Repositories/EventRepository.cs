@@ -3,6 +3,7 @@ using GreenCorner.EventAPI.Models;
 using GreenCorner.EventAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using GreenCorner.EventAPI.Repositories.Interface;
+using Microsoft.Extensions.Logging;
 
 namespace GreenCorner.EventAPI.Repositories
 {
@@ -92,6 +93,15 @@ namespace GreenCorner.EventAPI.Repositories
         {
             return await _context.EventVolunteers
                 .CountAsync(ev => ev.CleanEventId == cleanEventId);
+        }
+
+        public async Task<IEnumerable<CleanupEvent>> GetTop3OpenEventsAsync()
+        {
+            return await _context.CleanupEvents
+                .Where(e => e.Status == "Open")
+                .OrderBy(e => e.StartDate)
+                .Take(3)
+                .ToListAsync();
         }
     }
 }

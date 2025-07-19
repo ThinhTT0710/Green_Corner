@@ -12,52 +12,67 @@
 
     <div class="page-content pt-50">
         <div class="container">
-            <div class="archive-header-2 text-center">
-                <h1 class="display-2 mb-50">Reward List</h1>
-            </div>
             <div class="text-center mb-4">
+                <h1 class="display-2 mb-30">Reward List</h1>
                 <h4 class="text-success">Tổng điểm của bạn: <strong>@ViewBag.TotalPoints</strong></h4>
             </div>
 
-            <div class="row voucher-grid">
+            <!-- Tìm kiếm + lọc -->
+            <div class="row mb-4 justify-content-center">
+                <div class="col-md-4 mb-2">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Tìm theo tên, địa chỉ, HSD..." />
+                </div>
+                <div class="col-md-2 mb-2">
+                    <select id="pointFilter" class="form-select">
+                        <option value="">Lọc theo điểm</option>
+                        <option value="0-100">Dưới 100</option>
+                        <option value="100-200">100 - 200</option>
+                        <option value="200-9999">Trên 200</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-2">
+                    <select id="dateFilter" class="form-select">
+                        <option value="">Tình trạng HSD</option>
+                        <option value="valid">Còn hạn</option>
+                        <option value="expired">Hết hạn</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-2">
+                    <select id="itemsPerPage" class="form-select">
+                        <option value="10">Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
+                        <option value="all">Tất cả</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Danh sách Voucher -->
+            <div class="row voucher-grid" id="voucherContainer">
                 @foreach (var item in Model)
                 {
-                    <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="col-lg-3 col-md-6 col-sm-6 voucher-item"
+                         data-title="@item.Title.ToLower()"
+                         data-address="@(item.Address?.ToLower() ?? "")"
+                         data-expiration="@item.ExpirationDate?.ToString("yyyy-MM-dd")"
+                         data-points="@item.PointsRequired">
                         <div class="vendor-wrap mb-40">
-                            <div class="vendor-img-action-wrap">
-                                <div class="vendor-img text-center p-3 ">
-                                    <a asp-action="ViewDetailVoucher" asp-route-voucherId="@item.VoucherId">
-                                        <div class="d-flex rounded-3 overflow-hidden shadow-sm border" style="height: 120px;">
-
-                                            <!-- PHẦN TRÁI -->
-                                            <div class="d-flex align-items-center justify-content-center flex-column"
-                                                 style="background-color: #1c2b36; width: 40%; position: relative;">
-                                                <i class="bi bi-percent text-white" style="font-size: 36px;"></i>
-                                                <i class="bi bi-gift-fill text-white opacity-25" style="font-size: 18px;"></i>
-                                            </div>
-
-                                            <!-- PHẦN PHẢI -->
-                                            <div class="d-flex flex-column justify-content-between px-3 w-100 py-2" style="background-color: #3BB77E;">
-
-                                                <!-- Mã CODE - nằm giữa dọc -->
-                                                <div class="d-flex align-items-center justify-content-center flex-grow-1">
-                                                    <div class="fw-bold text-dark bg-white px-4 py-2 rounded-pill text-uppercase shadow-sm text-center"
-                                                         style="font-size: 16px; letter-spacing: 1px;">
-                                                        @item.Code
-                                                    </div>
-                                                </div>
-
-                                                <!-- Tiêu đề - sát dưới -->
-                                                <div class="text-white small fw-semibold text-center">
-                                                    @item.Title
-                                                </div>
+                            <div class="vendor-img text-center p-3">
+                                <a asp-action="ViewDetailVoucher" asp-route-voucherId="@item.VoucherId">
+                                    <div class="d-flex rounded-3 overflow-hidden shadow-sm border" style="height: 120px;">
+                                        <div class="d-flex align-items-center justify-content-center flex-column"
+                                             style="background-color: #1c2b36; width: 40%;">
+                                            <i class="bi bi-percent text-white" style="font-size: 36px;"></i>
+                                            <i class="bi bi-gift-fill text-white opacity-25" style="font-size: 18px;"></i>
+                                        </div>
+                                        <div class="d-flex flex-column justify-content-center px-3 w-100 py-2" style="background-color: #3BB77E;">
+                                            <div class="fw-bold text-dark bg-white px-4 py-2 rounded-pill text-uppercase shadow-sm text-center" style="font-size: 16px;">
+                                                @item.Title
                                             </div>
                                         </div>
-
-
-                                    </a>
-                                </div>
+                                    </div>
+                                </a>
                             </div>
+
                             <div class="vendor-content-wrap">
                                 <div class="mb-20">
                                     <h4 class="mb-5">
@@ -66,24 +81,29 @@
                                     <p class="font-sm text-muted">@item.Description</p>
                                 </div>
                                 <div class="mb-10">
-                                    <span class="font-small d-block"><strong>Points:</strong> @item.PointsRequired</span>
-                                    <span class="font-small d-block"><strong>Expires:</strong> @item.ExpirationDate?.ToShortDateString()</span>
+                                    <span class="font-small d-block"><strong>Điểm:</strong> @item.PointsRequired</span>
+                                    <span class="font-small d-block expiration"><strong>HSD:</strong> @item.ExpirationDate?.ToString("dd/MM/yyyy")</span>
+                                    <span class="font-small d-block text-truncate address"><i class="bi bi-geo-alt-fill me-1"></i>@(item.Address ?? "Không có địa chỉ")</span>
+                                    <span class="font-small d-block"><i class="bi bi-box-seam me-1"></i>Còn lại: <strong>@item.Quantity</strong></span>
                                 </div>
+
                                 <button type="button"
                                         class="btn btn-lg btn-success w-100 mb-2"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#confirmRedeemModal">
+                                        data-bs-target="#confirmRedeemModal-@item.VoucherId">
                                     Đổi @item.PointsRequired điểm
                                 </button>
                             </div>
                         </div>
                     </div>
-                    <div class="modal fade" id="confirmRedeemModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+
+                    <!-- Modal xác nhận -->
+                    <div class="modal fade" id="confirmRedeemModal-@item.VoucherId" tabindex="-1">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header text-white" style="background-color: #3BB77E;">
-                                    <h5 class="modal-title text-white" id="confirmModalLabel">Xác nhận đổi điểm</h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                    <h5 class="modal-title">Xác nhận đổi điểm</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                 </div>
                                 <div class="modal-body">
                                     Bạn có chắc muốn đổi <strong>@item.PointsRequired</strong> điểm để nhận voucher <strong>@item.Title</strong> không?
@@ -101,9 +121,88 @@
                     </div>
                 }
             </div>
+
+            <!-- Phân trang -->
+            <div class="pagination-area mt-4 text-center" id="pagination"></div>
         </div>
     </div>
 </main>
 
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            function filterVouchers() {
+                let keyword = $('#searchInput').val().toLowerCase();
+                let pointRange = $('#pointFilter').val();
+                let dateStatus = $('#dateFilter').val();
+                let now = new Date();
 
+                $('.voucher-item').hide().filter(function () {
+                    let title = $(this).data('title');
+                    let address = $(this).data('address');
+                    let expiration = new Date($(this).data('expiration'));
+                    let points = parseInt($(this).data('points'));
 
+                    // Tìm kiếm
+                    let matchKeyword = title.includes(keyword) || address.includes(keyword) ||
+                        $(this).find('.expiration').text().toLowerCase().includes(keyword);
+
+                    // Lọc điểm
+                    let matchPoint = true;
+                    if (pointRange) {
+                        let [min, max] = pointRange.split('-').map(Number);
+                        matchPoint = points >= min && points <= max;
+                    }
+
+                    // Lọc hạn sử dụng
+                    let matchDate = true;
+                    if (dateStatus === 'valid') matchDate = expiration >= now;
+                    else if (dateStatus === 'expired') matchDate = expiration < now;
+
+                    return matchKeyword && matchPoint && matchDate;
+                }).show();
+
+                paginateVouchers();
+            }
+
+            function paginateVouchers() {
+                let perPage = $('#itemsPerPage').val();
+                let items = $('.voucher-item:visible');
+                let total = items.length;
+
+                if (perPage === "all") {
+                    items.show();
+                    $('#pagination').html('');
+                    return;
+                }
+
+                let limit = parseInt(perPage);
+                let pages = Math.ceil(total / limit);
+
+                // Tạo nút phân trang
+                let paginationHtml = '';
+                for (let i = 1; i <= pages; i++) {
+                    paginationHtml += `<button class="btn btn-sm btn-outline-primary me-1 page-btn" data-page="${i}">${i}</button>`;
+                }
+                $('#pagination').html(paginationHtml);
+
+                // Hiển thị trang đầu
+                items.hide().slice(0, limit).show();
+
+                // Bắt sự kiện click
+                $('.page-btn').click(function () {
+                    let page = parseInt($(this).data('page'));
+                    let start = (page - 1) * limit;
+                    let end = start + limit;
+                    items.hide().slice(start, end).show();
+                });
+            }
+
+            $('#searchInput, #pointFilter, #dateFilter').on('input change', filterVouchers);
+            $('#itemsPerPage').on('change', filterVouchers);
+
+            // Khởi tạo lần đầu
+            filterVouchers();
+        });
+    </script>
+}

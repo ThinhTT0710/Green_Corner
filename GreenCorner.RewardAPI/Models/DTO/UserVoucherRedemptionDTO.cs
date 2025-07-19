@@ -9,6 +9,7 @@
         public string UserId { get; set; } = null!;
 
         public DateTime? RedeemedAt { get; set; }
+        public bool IsUsed { get; set; }
 
     }
 }

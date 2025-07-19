@@ -20,7 +20,11 @@ namespace GreenCorner.RewardAPI.Repositories
 
         public async Task<IEnumerable<Voucher>> GetAllRewards()
         {
-            return await _context.Vouchers.ToListAsync();
+            var today = DateTime.Today;
+
+            return await _context.Vouchers
+                .Where(v => v.ExpirationDate > today && v.IsActive == true)
+                .ToListAsync();
         }
         public async Task<IEnumerable<Voucher>> GetAllVouchers()
         {
@@ -67,6 +71,14 @@ namespace GreenCorner.RewardAPI.Repositories
             await _context.SaveChangesAsync();
         }
 
-       
+        public async Task<IEnumerable<Voucher>> GetTop10ValidVouchersAsync()
+        {
+            var now = DateTime.Today;
+            return await _context.Vouchers
+                .Where(v => v.ExpirationDate >= now && v.IsActive)
+                .OrderBy(v => v.ExpirationDate)
+                .Take(10)
+                .ToListAsync();
+        }
     }
 }

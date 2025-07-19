@@ -1,11 +1,7 @@
-﻿@{
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-}
-
-@model List<RewardPointDTO>
-
+﻿@model List<GreenCorner.MVC.ViewModels.RewardPointWithUserViewModel>
 @{
-    ViewData["Title"] = "Reward Point List";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Danh sách điểm thưởng";
 }
 
 <section class="content-main">
@@ -16,33 +12,105 @@
                     <h3 class="mb-0">@ViewData["Title"]</h3>
                 </div>
                 <div class="card-body">
-                    <table class="table table-bordered table-striped">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Tìm theo tên hoặc email..." />
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" id="itemsPerPage">
+                                <option value="10">Hiển thị 10</option>
+                                <option value="20">Hiển thị 20</option>
+                                <option value="50">Hiển thị 50</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-striped" id="rewardTable">
                         <thead class="table-dark">
                             <tr>
-                                <th>Reward ID</th>
-                                <th>User ID</th>
-                                <th>Total Points</th>
-                                <th class="text-center">Actions</th>
+                                <th>Họ tên</th>
+                                <th>Email</th>
+                                <th class="text-end">Tổng điểm</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tableBody">
                             @foreach (var item in Model)
                             {
-                                <tr>
-                                    <td>@item.RewardPointsId</td>
-                                    <td>@item.UserId</td>
-                                    <td>@item.TotalPoints</td>
-                                    <td class="text-center">
-                                        <a asp-action="AwardPoints" asp-route-userId="@item.UserId" class="btn btn-sm btn-success me-2">Award</a>
-                                        <a asp-action="GetTotalRewardPoints" asp-route-userId="@item.UserId" class="btn btn-sm btn-info">View</a>
-                                    </td>
+                                <tr class="reward-row"
+                                    data-name="@item.User?.FullName?.ToLower()"
+                                    data-email="@item.User?.Email?.ToLower()">
+                                    <td>@item.User?.FullName ?? "Không rõ"</td>
+                                    <td>@item.User?.Email ?? "Không rõ"</td>
+                                    <td class="text-end">@item.Reward.TotalPoints</td>
                                 </tr>
                             }
                         </tbody>
                     </table>
+
+                    <nav>
+                        <ul class="pagination justify-content-center" id="pagination"></ul>
+                    </nav>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const itemsPerPageSelect = document.getElementById("itemsPerPage");
+            const tableBody = document.getElementById("tableBody");
+            const pagination = document.getElementById("pagination");
+            const allRows = Array.from(document.querySelectorAll(".reward-row"));
+            let currentPage = 1;
+
+            function filterRows() {
+                const searchTerm = searchInput.value.toLowerCase();
+                return allRows.filter(row =>
+                    row.dataset.name.includes(searchTerm) ||
+                    row.dataset.email.includes(searchTerm)
+                );
+            }
+
+            function renderTable() {
+                const rowsPerPage = parseInt(itemsPerPageSelect.value);
+                const filtered = filterRows();
+                const totalPages = Math.ceil(filtered.length / rowsPerPage);
+                const start = (currentPage - 1) * rowsPerPage;
+                const end = start + rowsPerPage;
+
+                tableBody.innerHTML = "";
+                filtered.slice(start, end).forEach(row => tableBody.appendChild(row));
+
+                pagination.innerHTML = "";
+                if (totalPages > 1) {
+                    for (let i = 1; i <= totalPages; i++) {
+                        const li = document.createElement("li");
+                        li.className = `page-item ${i === currentPage ? "active" : ""}`;
+                        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                        li.addEventListener("click", e => {
+                            e.preventDefault();
+                            currentPage = i;
+                            renderTable();
+                        });
+                        pagination.appendChild(li);
+                    }
+                }
+            }
+
+            searchInput.addEventListener("input", () => {
+                currentPage = 1;
+                renderTable();
+            });
+
+            itemsPerPageSelect.addEventListener("change", () => {
+                currentPage = 1;
+                renderTable();
+            });
+
+            renderTable();
+        });
+    </script>
+}

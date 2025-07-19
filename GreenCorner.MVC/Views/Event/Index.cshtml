@@ -6,24 +6,60 @@
             <h1 class="display-2 mb-3">Events List</h1>
 
             <div class="row justify-content-center">
-                <div class="col-lg-6">
-                    <div class="sidebar-widget-2 widget_search mb-4">
-                        <form class="search-form" action="#">
-                            <input type="text" placeholder="Search events (by name or ID)..." class="form-control" />
-                            <button type="submit" class="btn"><i class="fi-rs-search"></i></button>
-                        </form>
+                <div class="col-lg-4 mb-3">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm theo tên..." />
+                </div>
+                <div class="col-lg-2 mb-3">
+                    <input type="date" id="dateFilter" class="form-control" />
+                </div>
+                <div class="col-lg-2 mb-3">
+                    <input type="text" id="addressFilter" class="form-control" placeholder="Địa điểm" />
+                </div>
+                <div class="col-lg-2 mb-3">
+                    <select class="form-select" id="statusFilter">
+                        <option value="">-- Trạng thái --</option>
+                        <option value="open">Đang mở</option>
+                        <option value="close">Đã đóng</option>
+                    </select>
+                </div>
+                <div class="col-lg-3 mb-3">
+                    <div class="input-group">
+                        <input type="number" id="minPoint" class="form-control" placeholder="Điểm từ" />
+                        <input type="number" id="maxPoint" class="form-control" placeholder="Đến" />
                     </div>
+                </div>
+                <div class="col-lg-2 mb-3">
+                    <select class="form-select" id="participantFilter">
+                        <option value="">-- Người tham gia --</option>
+                        <option value="10">Trên 10</option>
+                        <option value="50">Trên 50</option>
+                        <option value="100">Trên 100</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 mb-3">
+                    <select class="form-select" id="itemsPerPageFilter">
+                        <option value="10">Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
+                        <option value="30">Hiển thị 30</option>
+                    </select>
                 </div>
             </div>
         </div>
 
-        <div class="row vendor-grid">
+        <div class="row vendor-grid" id="eventContainer">
             @foreach (var item in Model)
             {
-                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4 event-item"
+                     data-title="@item.Title.ToLower()"
+                     data-id="@item.CleanEventId"
+                     data-date="@item.StartDate?.ToString("yyyy-MM-dd")"
+                     data-address="@item.Address.ToLower()"
+                     data-points="@item.PointsAward"
+                     data-participants="@item.MaxParticipants"
+                     data-status="@item.Status?.ToLower()">
+
                     <div class="vendor-wrap style-2 d-block shadow-sm border rounded p-3 h-100">
                         <div class="row g-3 align-items-stretch">
-                            <!-- Ảnh bên trái -->
                             <div class="col-md-5">
                                 <div class="vendor-img-action-wrap">
                                     <div class="vendor-img">
@@ -37,14 +73,11 @@
                                                  style="object-fit: cover; aspect-ratio: 4/3; border-radius: 12px;" />
                                         </a>
                                     </div>
-
                                     <div class="mt-2">
                                         <span class="font-small total-product">@item.MaxParticipants người tham gia</span>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Nội dung bên phải -->
                             <div class="col-md-7 d-flex flex-column justify-content-between">
                                 <div class="mb-2">
                                     <div class="product-category mb-1">
@@ -58,11 +91,23 @@
                                             @item.Title
                                         </a>
                                     </h4>
-
                                     <div class="product-rate-cover mb-2">
-                                        <span class="font-small text-muted">Điểm thưởng: <strong>@item.PointsAward</strong></span>
+                                        <span class="font-small text-muted">Điểm thưởng: <strong>@item.PointsAward</strong></span><br />
+                                        <span class="font-small text-muted">
+                                            Trạng thái:
+                                            <strong>
+                                                @{
+                                                    string statusDisplay = item.Status switch
+                                                    {
+                                                        "Open" => "Đang mở",
+                                                        "Close" => "Đã đóng",
+                                                        _ => "Không xác định"
+                                                    };
+                                                }
+                                                @statusDisplay
+                                            </strong>
+                                        </span>
                                     </div>
-
                                     <div class="vendor-info">
                                         <ul class="contact-infor text-muted small">
                                             <li>
@@ -75,7 +120,6 @@
                                         </ul>
                                     </div>
                                 </div>
-
                                 <div class="text-end mt-2">
                                     <a asp-action="GetEventById" asp-route-eventId="@item.CleanEventId" class="btn btn-xs">
                                         Xem chi tiết <i class="fi-rs-arrow-small-right ms-1"></i>
@@ -85,9 +129,120 @@
                         </div>
                     </div>
                 </div>
-
-
             }
+        </div>
+
+        <div class="pagination-area mt-4 mb-5">
+            <nav>
+                <ul class="pagination justify-content-center" id="pagination"></ul>
+            </nav>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const dateFilter = document.getElementById("dateFilter");
+            const addressFilter = document.getElementById("addressFilter");
+            const statusFilter = document.getElementById("statusFilter");
+            const participantFilter = document.getElementById("participantFilter");
+            const itemsPerPageFilter = document.getElementById("itemsPerPageFilter");
+            const minPoint = document.getElementById("minPoint");
+            const maxPoint = document.getElementById("maxPoint");
+
+            const eventContainer = document.getElementById("eventContainer");
+            const paginationContainer = document.getElementById("pagination");
+
+            const allItems = Array.from(eventContainer.getElementsByClassName("event-item"));
+            let filteredItems = [...allItems];
+            let currentPage = 1;
+
+            function updateDisplay() {
+                const term = searchInput.value.toLowerCase();
+                const date = dateFilter.value;
+                const address = addressFilter.value.toLowerCase();
+                const status = statusFilter.value.toLowerCase();
+                const participants = parseInt(participantFilter.value || "0", 10);
+                const min = parseInt(minPoint.value || "0", 10);
+                const max = parseInt(maxPoint.value || "1000000", 10);
+
+                filteredItems = allItems.filter(item => {
+                    const title = item.dataset.title;
+                    const id = item.dataset.id;
+                    const eventDate = item.dataset.date;
+                    const location = item.dataset.address;
+                    const eventStatus = item.dataset.status || "";
+                    const eventParticipants = parseInt(item.dataset.participants || "0", 10);
+                    const points = parseInt(item.dataset.points || "0", 10);
+
+                    return (
+                        (title.includes(term) || id.includes(term)) &&
+                        (!date || eventDate === date) &&
+                        (!address || location.includes(address)) &&
+                        (!status || eventStatus === status) &&
+                        (!participants || eventParticipants >= participants) &&
+                        (points >= min && points <= max)
+                    );
+                });
+
+                renderPagination();
+                renderItems();
+            }
+
+            function renderItems() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value);
+                const start = (currentPage - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+
+                allItems.forEach(item => item.style.display = "none");
+                filteredItems.slice(start, end).forEach(item => item.style.display = "block");
+            }
+
+            function renderPagination() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value);
+                const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+                paginationContainer.innerHTML = "";
+
+                if (totalPages <= 1) return;
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const li = document.createElement("li");
+                    li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                    li.innerHTML = `<a href="#" class="page-link" data-page="${i}">${i}</a>`;
+                    paginationContainer.appendChild(li);
+                }
+            }
+
+            function bindEvents() {
+                [searchInput, dateFilter, addressFilter, statusFilter, participantFilter, minPoint, maxPoint].forEach(input =>
+                    input.addEventListener("input", () => {
+                        currentPage = 1;
+                        updateDisplay();
+                    })
+                );
+
+                itemsPerPageFilter.addEventListener("change", () => {
+                    currentPage = 1;
+                    updateDisplay();
+                });
+
+                paginationContainer.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    const link = e.target.closest("a.page-link");
+                    if (!link) return;
+                    const page = parseInt(link.dataset.page);
+                    if (!isNaN(page)) {
+                        currentPage = page;
+                        renderItems();
+                        renderPagination();
+                    }
+                });
+            }
+
+            bindEvents();
+            updateDisplay();
+        });
+    </script>
+}

@@ -11,7 +11,7 @@ namespace GreenCorner.RewardAPI.Repositories.Interface
         Task  UpdateVoucher(Voucher voucher);
         Task DeleteVoucher(int voucherId);
         Task<IEnumerable<Voucher>> GetAllVouchers();
-
+        Task<IEnumerable<Voucher>> GetTop10ValidVouchersAsync();
 
 
     }

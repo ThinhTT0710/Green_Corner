@@ -13,5 +13,7 @@ public partial class UserVoucherRedemption
 
     public DateTime? RedeemedAt { get; set; }
 
+    public bool IsUsed { get; set; }
+
     public virtual Voucher Voucher { get; set; } = null!;
 }

@@ -29,8 +29,8 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label">Mã khuyến mãi</label>
-                        <input class="form-control text-uppercase fw-semibold text-success" value="@Model.Code" readonly />
+                        <label class="form-label">Địa chỉ</label>
+                        <input class="form-control text-uppercase fw-semibold text-success" value="@Model.Address" readonly />
                     </div>
 
                     <!-- Points -->
@@ -39,10 +39,22 @@
                         <input class="form-control" value="@Model.PointsRequired" readonly />
                     </div>
 
+                    <div class="mb-4">
+                        <label class="form-label">Số lượng</label>
+                        <input class="form-control" value="@Model.Quantity" readonly />
+                    </div>
+
+                    <!-- Start Date -->
+                    <div class="mb-4">
+                        <label class="form-label">Ngày bắt đầu</label>
+                        <input class="form-control" value="@Model.StartDate?.ToString("dd/MM/yyyy HH:mm")" readonly />
+                    </div>
+
+
                     <!-- Expiration -->
                     <div class="mb-4">
                         <label class="form-label">Ngày hết hạn</label>
-                        <input class="form-control" value="@Model.ExpirationDate?.ToString("dd/MM/yyyy")" readonly />
+                        <input class="form-control" value="@Model.ExpirationDate?.ToString("dd/MM/yyyy HH:mm")" readonly />
                     </div>
                 </div>
             </div>
