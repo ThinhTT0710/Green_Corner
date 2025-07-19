@@ -6,5 +6,6 @@ namespace GreenCorner.MVC.ViewModels
     {
         public UserVoucherRedemptionDTO Redemption { get; set; } = new();
         public VoucherDTO Voucher { get; set; } = new();
+        public UserDTO User { get; set; }
     }
 }

@@ -9,6 +9,11 @@
         public DateTime StartDate { get; set; }
         public DateTime ExpirationDate { get; set; }
         public string? Code { get; set; }
+        public string? Address { get; set; }
+
+        public int Quantity { get; set; }
+
+        public bool IsActive { get; set; }
     }
 
 }

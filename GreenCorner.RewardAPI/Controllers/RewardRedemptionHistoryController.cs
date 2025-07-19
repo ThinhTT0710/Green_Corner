@@ -49,5 +49,51 @@ namespace GreenCorner.RewardAPI.Controllers
                 return _responseDTO;
             }
         }
+
+        [HttpGet("userredemp")]
+        public async Task<ResponseDTO> GetUserRewardRedemption()
+        {
+            try
+            {
+                var pointTransaction = await _rewardRedemptionHistoryService.GetDistinctUserIdsRedeemedAsync();
+                _responseDTO.Result = pointTransaction;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = "Lấy lịch sử đổi điểm thất bại!";
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
+        [HttpPut("markused/{userVoucherId}")]
+        public async Task<ResponseDTO> MarkAsUsed(int userVoucherId)
+        {
+            try
+            {
+                var result = await _rewardRedemptionHistoryService.UpdateIsUsedAsync(userVoucherId);
+                _responseDTO.Result = result;
+                _responseDTO.Message = "Sử dụng Voucher thành công.";
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.Message;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.Message;
+            }
+            catch (Exception)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = "Sử dụng Voucher thất bại!";
+            }
+
+            return _responseDTO;
+        }
+
     }
 }

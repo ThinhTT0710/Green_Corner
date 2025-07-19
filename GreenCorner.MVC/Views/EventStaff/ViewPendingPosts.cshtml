@@ -1,9 +1,7 @@
-﻿@{
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-}
-@model List<GreenCorner.MVC.ViewModels.BlogWithAuthorViewModel>
+﻿@model List<GreenCorner.MVC.ViewModels.BlogWithAuthorViewModel>
 
 @{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     ViewData["Title"] = "Danh sách bài viết";
     var favoriteBlogIds = ViewBag.FavoriteBlogIds as List<int> ?? new();
 }
@@ -14,37 +12,35 @@
             <h2 class="content-title card-title mb-4">Danh sách bài viết</h2>
             <p class="text-muted">Quản lý bài viết và trạng thái duyệt.</p>
         </div>
-        <div class="d-flex gap-2">
-            <a asp-controller="BlogPost" asp-action="ViewFeedbacks" class="btn btn-light rounded font-md">Xem Feedback</a>
-            <a asp-controller="BlogPost" asp-action="ViewReports" class="btn btn-light rounded font-md">Xem Report</a>
-        </div>
     </div>
 
     <div class="card mb-4">
         <header class="card-header">
             <div class="row gx-3 align-items-center">
                 <div class="col-lg-4 col-md-6 me-auto">
-                    <input type="text" placeholder="Tìm kiếm tiêu đề..." class="form-control text-center" />
+                    <input type="text" placeholder="Tìm kiếm tiêu đề..." class="form-control text-center" id="searchInput" />
                 </div>
-                <div class="col-lg-2 col-6 col-md-3">
-                    <select class="form-select text-center">
-                        <option selected>Tất cả trạng thái</option>
-                        <option>Chờ duyệt</option>
-                        <option>Đã duyệt</option>
-                        <option>Bị từ chối</option>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select" id="itemsPerPageFilter">
+                        <option value="10" selected>Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
+                        <option value="30">Hiển thị 30</option>
                     </select>
                 </div>
             </div>
         </header>
 
         <div class="card-body">
-            <div class="row gx-3 gy-4 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 row-cols-xxl-5 justify-content-center">
+            <div id="noResultMessage" class="text-center text-muted my-4 d-none">
+                Không tìm thấy bài viết nào phù hợp.
+            </div>
+            <div class="row gx-3 gy-4 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 row-cols-xxl-5 justify-content-center" id="blogContainer">
                 @if (Model != null && Model.Any())
                 {
                     foreach (var blog in Model)
                     {
                         var isFavorited = favoriteBlogIds.Contains(blog.Blog.BlogId);
-                        <div class="col d-flex justify-content-center">
+                        <div class="col d-flex justify-content-center blog-item">
                             <div class="card card-product-grid text-center w-100 h-100">
                                 <a asp-action="ViewPendingPostDetail" asp-route-id="@blog.Blog.BlogId"
                                    class="img-wrap bg-light d-flex align-items-center justify-content-center"
@@ -69,11 +65,11 @@
                                        class="title text-truncate fw-bold d-block mb-1">
                                         @blog.Blog.Title
                                     </a>
-                                    <div class="text-muted mb-1" style="font-size:13px;">
+                                    <div class="text-muted mb-1 author-name" style="font-size:13px;">
                                         Tác giả: <strong>@blog.Author?.FullName</strong>
                                     </div>
-                                    <div class="text-muted mb-2" style="font-size:13px;">
-                                        Ngày tạo: @blog.Blog.CreatedAt?.ToString("dd/MM/yyyy")
+                                    <div class="text-muted mb-2 created-date" style="font-size:13px;">
+                                        Ngày tạo: <span>@blog.Blog.CreatedAt?.ToString("dd/MM/yyyy")</span>
                                     </div>
                                     <div class="mb-2">
                                         @{
@@ -96,7 +92,6 @@
                                         </span>
                                     </div>
 
-
                                     <div class="d-flex justify-content-center gap-1">
                                         <form asp-controller="EventStaff" asp-action="BlogApprove" asp-route-id="@blog.Blog.BlogId" method="post" style="display:inline;">
                                             <button type="submit" class="btn btn-sm btn-success rounded"
@@ -110,15 +105,112 @@
                         </div>
                     }
                 }
-                else
-                {
-                    <div class="col-12">
-                        <div class="alert alert-warning text-center w-100">
-                            Không có bài viết nào.
-                        </div>
-                    </div>
-                }
             </div>
         </div>
     </div>
+
+    <div class="pagination-area mt-3 mb-5">
+        <nav>
+            <ul class="pagination justify-content-center" id="pagination"></ul>
+        </nav>
+    </div>
 </section>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const itemsPerPageFilter = document.getElementById("itemsPerPageFilter");
+            const blogContainer = document.getElementById("blogContainer");
+            const noResultMessage = document.getElementById("noResultMessage");
+            const paginationContainer = document.getElementById("pagination");
+
+            const allCards = Array.from(blogContainer.getElementsByClassName("blog-item"));
+            let filteredCards = [...allCards];
+            let currentPage = 1;
+
+            function updateDisplay() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const searchTerm = searchInput.value.toLowerCase();
+
+                filteredCards = allCards.filter(card => {
+                    const title = card.querySelector(".title")?.innerText.toLowerCase() || "";
+                    const author = card.querySelector(".author-name")?.innerText.toLowerCase() || "";
+                    const date = card.querySelector(".created-date")?.innerText.toLowerCase() || "";
+
+                    return title.includes(searchTerm) || author.includes(searchTerm) || date.includes(searchTerm);
+                });
+
+
+                if (filteredCards.length === 0) {
+                    blogContainer.innerHTML = "";
+                    paginationContainer.innerHTML = "";
+                    noResultMessage.classList.remove("d-none");
+                    return;
+                }
+
+                noResultMessage.classList.add("d-none");
+                renderPagination();
+                renderCards();
+            }
+
+            function renderCards() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const paginatedCards = filteredCards.slice(startIndex, endIndex);
+
+                blogContainer.innerHTML = "";
+                paginatedCards.forEach(card => blogContainer.appendChild(card));
+            }
+
+            function renderPagination() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
+                paginationContainer.innerHTML = "";
+
+                if (totalPages <= 1) return;
+
+                const prevLi = document.createElement("li");
+                prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+                prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}"><i class="material-icons md-chevron_left"></i></a>`;
+                paginationContainer.appendChild(prevLi);
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageLi = document.createElement("li");
+                    pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                    pageLi.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+                    paginationContainer.appendChild(pageLi);
+                }
+
+                const nextLi = document.createElement("li");
+                nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+                nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}"><i class="material-icons md-chevron_right"></i></a>`;
+                paginationContainer.appendChild(nextLi);
+            }
+
+            function triggerFilter() {
+                currentPage = 1;
+                updateDisplay();
+            }
+
+            searchInput.addEventListener("input", triggerFilter);
+            itemsPerPageFilter.addEventListener("change", triggerFilter);
+
+            paginationContainer.addEventListener("click", function (e) {
+                e.preventDefault();
+                const target = e.target.closest("a.page-link");
+                if (target && !target.parentElement.classList.contains("disabled")) {
+                    const page = parseInt(target.dataset.page, 10);
+                    if (!isNaN(page)) {
+                        currentPage = page;
+                        renderCards();
+                        renderPagination();
+                    }
+                }
+            });
+
+            updateDisplay();
+        });
+    </script>
+}

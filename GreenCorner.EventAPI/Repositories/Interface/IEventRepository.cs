@@ -1,5 +1,6 @@
 ﻿
 using GreenCorner.EventAPI.Models;
+using Microsoft.Extensions.Logging;
 
 namespace GreenCorner.EventAPI.Repositories.Interface
 {
@@ -15,5 +16,6 @@ namespace GreenCorner.EventAPI.Repositories.Interface
 		Task OpenCleanupEvent(int id);
         Task<List<CleanupEvent>> GetEventsByIdsAsync(List<int> eventIds);
         Task<int> CountVolunteersByEventIdAsync(int cleanEventId);
+        Task<IEnumerable<CleanupEvent>> GetTop3OpenEventsAsync();
     }
 }

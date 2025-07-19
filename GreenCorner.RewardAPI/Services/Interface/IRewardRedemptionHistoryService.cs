@@ -7,5 +7,7 @@ namespace GreenCorner.RewardAPI.Services.Interface
     {
         Task<IEnumerable<UserVoucherRedemptionDTO>> GetRewardRedemptionHistory(string userId);
         Task SaveRedemptionAsync(string userId, int voucherId);
+        Task<IEnumerable<string>> GetDistinctUserIdsRedeemedAsync();
+        Task<UserVoucherRedemptionDTO> UpdateIsUsedAsync(int userVoucherId);
     }
 }

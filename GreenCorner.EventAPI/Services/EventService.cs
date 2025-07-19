@@ -4,6 +4,7 @@ using GreenCorner.EventAPI.Models.DTO;
 using GreenCorner.EventAPI.Repositories;
 using GreenCorner.EventAPI.Repositories.Interface;
 using GreenCorner.EventAPI.Services.Interface;
+using Microsoft.Extensions.Logging;
 
 namespace GreenCorner.EventAPI.Services
 {
@@ -78,6 +79,12 @@ namespace GreenCorner.EventAPI.Services
         {
             var (current, max) = await GetEventParticipationInfoAsync(eventId);
             return current >= max;
+        }
+
+        public async Task<IEnumerable<EventDTO>> GetTop3OpenEventsAsync()
+        {
+            var events = await _eventRepository.GetTop3OpenEventsAsync();
+            return _mapper.Map<List<EventDTO>>(events);
         }
     }
 }

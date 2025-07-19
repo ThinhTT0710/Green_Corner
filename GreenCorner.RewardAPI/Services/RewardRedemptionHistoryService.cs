@@ -28,5 +28,20 @@ namespace GreenCorner.RewardAPI.Services
         {
             await _rewardRedemptionHistoryRepository.SaveRedemptionAsync(userId, voucherId);
         }
+
+        public async Task<IEnumerable<string>> GetDistinctUserIdsRedeemedAsync()
+        {
+            return await _rewardRedemptionHistoryRepository.GetDistinctUserIdsRedeemedAsync();
+        }
+
+        public async Task<UserVoucherRedemptionDTO> UpdateIsUsedAsync(int userVoucherId)
+        {
+            var updatedRedemption = await _rewardRedemptionHistoryRepository.UpdateIsUsedAsync(userVoucherId);
+
+            if (updatedRedemption == null)
+                throw new Exception("Không tìm thấy bản ghi hoặc cập nhật thất bại.");
+
+            return _mapper.Map<UserVoucherRedemptionDTO>(updatedRedemption);
+        }
     }
 }

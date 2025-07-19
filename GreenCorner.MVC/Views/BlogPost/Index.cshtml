@@ -20,9 +20,9 @@
                     </div>
                     <div class="col-xl-9 text-end d-none d-xl-block">
                         <ul class="tags-list">
-                            <li class="hover-up"><a asp-action="CreateBlog"><i class="fi-rs-edit  mr-10"></i>Tạo Bài Viết</a></li>
-                            <li class="hover-up"><a asp-action="MyFavoriteBlogs"><i class="fi-rs-heart  mr-10"></i>Bài Viết Yêu Thích</a></li>
-                            <li class="hover-up mr-0"><a asp-action="MyPendingBlogs"><i class="fi-rs-clock mr-10"></i>Bài Viết Chờ Duyệt</a></li>
+                            <li class="hover-up"><a asp-action="CreateBlog"><i class="fi-rs-edit mr-10"></i>Tạo Bài Viết</a></li>
+                            <li class="hover-up"><a asp-action="MyFavoriteBlogs"><i class="fi-rs-heart mr-10"></i>Bài Viết Yêu Thích</a></li>
+                            <li class="hover-up mr-0"><a asp-action="MyPendingBlogs"><i class="fi-rs-clock mr-10"></i>Bài Viết Của Tôi</a></li>
                         </ul>
                     </div>
                 </div>
@@ -34,17 +34,12 @@
         <div class="container">
             <div class="row">
                 <div class="col-xl-8 col-lg-10 col-md-12 m-auto">
-                    <div class="shop-product-fillter mb-50">
-                        <div class="totall-product">
-                            <h2>
-                                <img class="w-36px mr-10" src="assets/imgs/theme/icons/category-1.svg" alt="" />
-                                Danh sách bài viết
-                            </h2>
-                        </div>
+                    <div class="shop-product-fillter mb-30 d-flex justify-content-center">
+                        <input type="text" id="searchInput" class="form-control w-75 text-center" placeholder="Tìm theo tiêu đề, tác giả hoặc ngày (dd/MM/yyyy)..." />
                     </div>
 
                     <div class="loop-grid loop-big">
-                        <div class="row">
+                        <div class="row" id="blogContainer">
                             @if (Model != null && Model.Any())
                             {
                                 foreach (var item in Model)
@@ -52,7 +47,7 @@
                                     var blog = item.Blog;
                                     var author = item.Author;
                                     bool isFavorited = favoriteBlogIds.Contains(blog.BlogId);
-                                    <article class="first-post mb-30 hover-up animated">
+                                    <article class="first-post mb-30 hover-up animated blog-item">
                                         <div class="position-relative overflow-hidden">
                                             <div class="post-thumb border-radius-15">
                                                 @{
@@ -71,8 +66,8 @@
                                                 @((blog.Content?.Length > 100 ? blog.Content.Substring(0, 100) + "..." : blog.Content))
                                             </p>
                                             <div class="entry-meta meta-1 mb-30 font-sm text-muted">
-                                                <span><i class="fi-rs-user"></i> @(author?.FullName ?? "Không rõ")</span>
-                                                <span class="ml-20"><i class="fi-rs-calendar"></i> @blog.CreatedAt?.ToString("dd/MM/yyyy")</span>
+                                                <span class="blog-author"><i class="fi-rs-user"></i> @(author?.FullName ?? "Không rõ")</span>
+                                                <span class="ml-20 blog-date"><i class="fi-rs-calendar"></i> @blog.CreatedAt?.ToString("dd/MM/yyyy")</span>
                                                 <span class="ml-20">
                                                     <button class="btn-favorite @(isFavorited ? "favorited" : "")"
                                                             style="background: none; border: none; padding: 0;"
@@ -105,6 +100,7 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+            // Toggle yêu thích
             $(".btn-favorite").click(function (e) {
                 e.preventDefault();
                 var button = $(this);
@@ -129,6 +125,23 @@
                     error: function () {
                         alert("Đã xảy ra lỗi.");
                     }
+                });
+            });
+
+            // Tìm kiếm
+            $("#searchInput").on("input", function () {
+                var value = $(this).val().toLowerCase();
+
+                $(".blog-item").each(function () {
+                    var title = $(this).find(".post-title").text().toLowerCase();
+                    var author = $(this).find(".blog-author").text().toLowerCase();
+                    var date = $(this).find(".blog-date").text().toLowerCase();
+
+                    $(this).toggle(
+                        title.includes(value) ||
+                        author.includes(value) ||
+                        date.includes(value)
+                    );
                 });
             });
         });

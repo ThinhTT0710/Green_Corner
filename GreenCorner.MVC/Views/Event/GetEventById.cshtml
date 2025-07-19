@@ -38,7 +38,17 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Trạng thái</label>
-                            <div class="form-control bg-light">@Model.Status</div>
+                            <div class="form-control bg-light">
+                                @{
+                                    string statusDisplay = Model.Status switch
+                                    {
+                                        "Open" => "Đang mở",
+                                        "Close" => "Đã đóng",
+                                        _ => "Không xác định"
+                                    };
+                                }
+                                @statusDisplay
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Số lượng tham gia</label>
@@ -141,12 +151,17 @@
                                class="btn btn-sm btn-outline-success">
                                 Điểm Danh <i class="fi-rs-arrow-small-right ms-1"></i>
                             </a>
+                            <a asp-controller="BlogPost"
+                               asp-action="SubmitReport"
+                               class="btn btn-sm btn-outline-danger">
+                                Gửi Báo cáo <i class="fi fi-rs-warning ms-1"></i>
+                            </a>
                         </div>
                     }
 
                     @if (string.IsNullOrEmpty(approvedRole))
                     {
-                        if (isFull)
+                        if (isFull && !isVolunteer && !isTeamLeader)
                         {
                             <div class="alert alert-warning text-center">
                                 Sự kiện đã đủ số lượng đăng ký (@current / @max).

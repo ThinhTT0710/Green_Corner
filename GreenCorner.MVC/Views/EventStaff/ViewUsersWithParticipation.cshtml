@@ -10,21 +10,19 @@
 <section class="content-main">
     <div class="content-header d-flex justify-content-between align-items-center">
         <h2 class="content-title mb-4">Người dùng đã tham gia hoạt động</h2>
-        <div></div>
     </div>
 
     <div class="card mb-4">
         <header class="card-header">
             <div class="row gx-3">
-                <div class="col-lg-4 col-md-6 me-auto">
-                    <input type="text" placeholder="Tìm kiếm tên hoặc email..." class="form-control" />
+                <div class="col-md-6 col-lg-4 me-auto">
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm tên hoặc email..." class="form-control" />
                 </div>
-                <div class="col-lg-2 col-md-3 col-6">
-                    <select class="form-select">
-                        <option>Trạng thái</option>
-                        <option>Đã tham gia</option>
-                        <option>Chưa tham gia</option>
-                        <option>Tất cả</option>
+                <div class="col-md-3 col-lg-2">
+                    <select id="itemsPerPage" class="form-select">
+                        <option value="10">Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
+                        <option value="all">Tất cả</option>
                     </select>
                 </div>
             </div>
@@ -40,7 +38,7 @@
             else
             {
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover" id="userTable">
                         <thead class="table-light">
                             <tr>
                                 <th>Người dùng</th>
@@ -51,12 +49,11 @@
                         <tbody>
                             @foreach (var item in Model.Registrations)
                             {
-                                <tr>
+                                <tr class="user-row"
+                                    data-name="@item.User.FullName.ToLower()"
+                                    data-email="@item.User.Email.ToLower()">
                                     <td width="40%">
                                         <a href="#" class="itemside">
-                                            <div class="left">
-                                                <img src="~/assets/imgs/people/avatar-1.png" class="img-sm img-avatar" alt="Avatar" />
-                                            </div>
                                             <div class="info pl-3">
                                                 <h6 class="mb-0 title">@item.User.FullName</h6>
                                                 <small class="text-muted">User ID: @item.User.ID</small>
@@ -77,7 +74,61 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="pagination-area mt-3 text-center" id="pagination"></div>
             }
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const normalize = str => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+            function filterAndPaginate() {
+                const keyword = normalize($('#searchInput').val());
+                const perPage = $('#itemsPerPage').val();
+                const rows = $('.user-row');
+                let filtered = rows.filter(function () {
+                    const name = normalize($(this).data('name'));
+                    const email = normalize($(this).data('email'));
+                    return name.includes(keyword) || email.includes(keyword);
+                });
+
+                rows.hide();
+                let total = filtered.length;
+
+                if (perPage === 'all') {
+                    filtered.show();
+                    $('#pagination').html('');
+                    return;
+                }
+
+                const limit = parseInt(perPage);
+                const pages = Math.ceil(total / limit);
+
+                // Hiển thị trang đầu
+                filtered.slice(0, limit).show();
+
+                // Tạo phân trang
+                let html = '';
+                for (let i = 1; i <= pages; i++) {
+                    html += `<button class="btn btn-sm btn-outline-primary me-1 page-btn" data-page="${i}">${i}</button>`;
+                }
+                $('#pagination').html(html);
+
+                // Sự kiện phân trang
+                $('.page-btn').click(function () {
+                    const page = parseInt($(this).data('page'));
+                    const start = (page - 1) * limit;
+                    const end = start + limit;
+                    filtered.hide().slice(start, end).show();
+                });
+            }
+
+            $('#searchInput, #itemsPerPage').on('input change', filterAndPaginate);
+            filterAndPaginate();
+        });
+    </script>
+}

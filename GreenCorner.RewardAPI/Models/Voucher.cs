@@ -19,5 +19,11 @@ public partial class Voucher
 
     public string? Code { get; set; }
 
+    public string? Address { get; set; }
+
+    public int Quantity { get; set; }
+
+    public bool IsActive { get; set; }
+
     public virtual ICollection<UserVoucherRedemption> UserVoucherRedemptions { get; set; } = new List<UserVoucherRedemption>();
 }
