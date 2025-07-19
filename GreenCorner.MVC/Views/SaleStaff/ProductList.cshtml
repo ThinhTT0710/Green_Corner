@@ -98,7 +98,6 @@
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Lấy các phần tử DOM cần thiết
             const searchInput = document.getElementById("searchInput");
             const statusFilter = document.getElementById("statusFilter");
             const itemsPerPageFilter = document.getElementById("itemsPerPageFilter");
@@ -106,7 +105,6 @@
             const paginationContainer = document.getElementById("pagination");
             const noResultMessage = document.getElementById("noResultMessage");
 
-            // Lấy tất cả các sản phẩm ban đầu (thẻ <article>)
             const allProducts = Array.from(productContainer.getElementsByTagName("article"));
             let filteredProducts = [...allProducts];
             let currentPage = 1;
@@ -116,28 +114,23 @@
                 const searchTerm = searchInput.value.toLowerCase();
                 const selectedStatus = statusFilter.value.toLowerCase();
 
-                // Lọc danh sách sản phẩm dựa trên ô tìm kiếm và bộ lọc trạng thái
                 filteredProducts = allProducts.filter(product => {
-                    // Lấy thông tin từ mỗi sản phẩm bằng cách dùng querySelector
                     const name = product.querySelector(".col-name .info h6").innerText.toLowerCase();
                     const price = product.querySelector(".col-price").innerText.toLowerCase();
                     const statusText = product.querySelector(".col-status span").innerText.toLowerCase();
 
-                    // Kiểm tra điều kiện tìm kiếm
                     const matchesSearch =
                         name.includes(searchTerm) ||
                         price.includes(searchTerm) ||
                         statusText.includes(searchTerm);
 
-                    // Kiểm tra điều kiện lọc trạng thái
                     const matchesStatus = (selectedStatus === "trạng thái" || statusText === selectedStatus);
 
                     return matchesSearch && matchesStatus;
                 });
 
-                // Xử lý khi không có kết quả
                 if (filteredProducts.length === 0) {
-                    renderProductItems(); // Gọi để xóa các sản phẩm cũ
+                    renderProductItems(); 
                     paginationContainer.innerHTML = "";
                     noResultMessage.classList.remove("d-none");
                     return;
@@ -154,11 +147,9 @@
                 const endIndex = startIndex + itemsPerPage;
                 const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
 
-                // Xóa tất cả các article cũ trước khi hiển thị các article mới
                 const currentArticles = productContainer.querySelectorAll('article.itemlist');
                 currentArticles.forEach(article => article.remove());
 
-                // Thêm các sản phẩm đã được phân trang vào container
                 paginatedProducts.forEach(product => productContainer.appendChild(product));
             }
 
@@ -169,13 +160,11 @@
 
                 if (totalPages <= 1) return;
 
-                // Nút Previous
                 const prevLi = document.createElement("li");
                 prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-                prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}"><i class="material-icons md-chevron_left"></i></a>`;
+                prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}" style="padding: 6px;"><i class="material-icons md-chevron_left"></i></a>`;
                 paginationContainer.appendChild(prevLi);
 
-                // Các nút số trang
                 for (let i = 1; i <= totalPages; i++) {
                     const pageLi = document.createElement("li");
                     pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
@@ -183,25 +172,21 @@
                     paginationContainer.appendChild(pageLi);
                 }
 
-                // Nút Next
                 const nextLi = document.createElement("li");
                 nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-                nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}"><i class="material-icons md-chevron_right"></i></a>`;
+                nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}" style="padding: 6px;"><i class="material-icons md-chevron_right"></i></a>`;
                 paginationContainer.appendChild(nextLi);
             }
 
-            // Hàm gọi lại khi có thay đổi trên bộ lọc
             function triggerFilter() {
                 currentPage = 1;
                 updateDisplay();
             }
 
-            // Gán sự kiện cho các bộ lọc
             searchInput.addEventListener("input", triggerFilter);
             statusFilter.addEventListener("change", triggerFilter);
             itemsPerPageFilter.addEventListener("change", triggerFilter);
 
-            // Gán sự kiện cho phân trang
             paginationContainer.addEventListener("click", function (e) {
                 e.preventDefault();
                 const target = e.target.closest("a.page-link");
@@ -215,7 +200,6 @@
                 }
             });
 
-            // Gọi hàm để hiển thị lần đầu
             updateDisplay();
         });
     </script>
