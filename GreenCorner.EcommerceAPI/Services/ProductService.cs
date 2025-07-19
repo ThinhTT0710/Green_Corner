@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using GreenCorner.EcommerceAPI.Models;
 using GreenCorner.EcommerceAPI.Models.DTO;
+using GreenCorner.EcommerceAPI.Repositories;
 using GreenCorner.EcommerceAPI.Repositories.Interface;
 using GreenCorner.EcommerceAPI.Services.Interface;
 using System.Globalization;
@@ -11,12 +12,14 @@ namespace GreenCorner.EcommerceAPI.Services
     public class ProductService : IProductService
     {
         private readonly IProductRepository _productRepository;
+        private readonly IOrderDetailRepository _orderDetailRepository;
         private readonly IMapper _mapper;
 
-        public ProductService(IProductRepository productRepository, IMapper mapper)
+        public ProductService(IProductRepository productRepository, IMapper mapper, IOrderDetailRepository orderDetailRepository)
         {
             _productRepository = productRepository;
             _mapper = mapper;
+            _orderDetailRepository = orderDetailRepository;
         }
         public async Task<ProductDTO> AddProduct(ProductDTO productDto)
         {
@@ -27,6 +30,12 @@ namespace GreenCorner.EcommerceAPI.Services
 
         public async Task DeleteProduct(int id)
         {
+            bool isInRestrictedOrder = await _orderDetailRepository.HasRestrictedOrdersByProductId(id);
+            if (isInRestrictedOrder)
+            {
+                throw new Exception("Không thể xóa sản phẩm vì có đơn hàng liên quan đang chờ xác nhận.");
+            }
+
             await _productRepository.DeleteProduct(id);
         }
 

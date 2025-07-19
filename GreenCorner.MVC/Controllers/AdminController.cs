@@ -175,7 +175,7 @@ namespace GreenCorner.MVC.Controllers
                 ResponseDTO? pointTransactionResponse = await _pointTransactionService.GetUserPointTransactions(userId);
                 if (pointTransactionResponse != null && pointTransactionResponse.IsSuccess)
                 {
-                    userPointTransactions = JsonConvert.DeserializeObject<List<PointTransactionDTO>>(pointTransactionResponse.Result.ToString());
+                    userPointTransactions = JsonConvert.DeserializeObject<List<PointTransactionDTO>>(pointTransactionResponse.Result.ToString()) ?? new List<PointTransactionDTO>();
                 }
                 else
                 {
@@ -185,7 +185,7 @@ namespace GreenCorner.MVC.Controllers
                 ResponseDTO? orderResponse = await _orderService.GetOrderByUserID(userId);
 				if (orderResponse != null && orderResponse.IsSuccess)
 				{
-					orderHistory = JsonConvert.DeserializeObject<List<OrderDTO>>(orderResponse.Result.ToString());
+					orderHistory = JsonConvert.DeserializeObject<List<OrderDTO>>(orderResponse.Result.ToString()) ?? new List<OrderDTO>();
 				}
 				else
 				{
@@ -194,7 +194,7 @@ namespace GreenCorner.MVC.Controllers
                 ResponseDTO? participatedResponse = await _volunteerService.GetParticipatedActivitiesByUserId(userId);
                 if (participatedResponse != null && participatedResponse.IsSuccess)
 				{
-                    participatedActivities = JsonConvert.DeserializeObject<List<VolunteerDTO>>(participatedResponse.Result.ToString());
+                    participatedActivities = JsonConvert.DeserializeObject<List<VolunteerDTO>>(participatedResponse.Result.ToString()) ?? new List<VolunteerDTO>();
 				}
 				else 
 				{ 

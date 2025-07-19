@@ -143,7 +143,7 @@ namespace GreenCorner.MVC.Controllers
 					ActionType = "Xóa",
 					ObjectType = "Sản phẩm",
 					ObjectId = productDto.ProductId,
-					Description = $"Nhân viên {StaffName} đã thêm mới sản phẩm {productDto.Name} với ID {productDto.ProductId}",
+					Description = $"Nhân viên {StaffName} đã xóa sản phẩm {productDto.Name} với ID {productDto.ProductId}",
 					CreatedAt = DateTime.Now,
 				};
 				var logResponse = await _adminService.AddLogStaff(log);
@@ -152,6 +152,7 @@ namespace GreenCorner.MVC.Controllers
             else
             {
                 TempData["error"] = response?.Message;
+                return RedirectToAction("ProductList", "SaleStaff");
             }
             return View(productDto);
         }

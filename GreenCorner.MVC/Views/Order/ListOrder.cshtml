@@ -162,7 +162,7 @@
 
                 const prevLi = document.createElement("li");
                 prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-                prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}"><i class="material-icons md-chevron_left"></i></a>`;
+                prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}"  style="padding: 6px;"><i class="material-icons md-chevron_left"></i></a>`;
                 paginationContainer.appendChild(prevLi);
 
                 for (let i = 1; i <= totalPages; i++) {
@@ -174,7 +174,7 @@
 
                 const nextLi = document.createElement("li");
                 nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-                nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}"><i class="material-icons md-chevron_right"></i></a>`;
+                nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}"  style="padding: 6px;"><i class="material-icons md-chevron_right"></i></a>`;
                 paginationContainer.appendChild(nextLi);
             }
 

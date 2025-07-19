@@ -251,7 +251,7 @@
                                             <span class="badge badge-pill badge-soft-warning">@order.Status</span>
                                         </td>
                                     }
-                                    @if (order.Status == "Từ chối đơn hàng" || order.Status == "Không hoàn thành" || order.Status == "Hủy đơn hàng")
+                                    else if (order.Status == "Đã từ chối" || order.Status == "Không hoàn thành" || order.Status == "Hủy đơn hàng")
                                     {
                                         <td>
                                             <span class="badge badge-pill badge-soft-danger">@order.Status</span>
