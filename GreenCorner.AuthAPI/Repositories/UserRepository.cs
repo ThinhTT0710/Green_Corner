@@ -18,22 +18,24 @@ namespace GreenCorner.AuthAPI.Repositories
             _userManager = userManager;
         }
 
-        public Task<bool> ChangePassword(ChangePasswordRequestDTO changePasswordRequest)
+        public async Task<bool> ChangePassword(ChangePasswordRequestDTO changePasswordRequest)
         {
-            var user = _dbContext.Users.Where(u => u.Email == changePasswordRequest.Email).FirstOrDefault();
-            if (user == null || user.Id != changePasswordRequest.UserID)
+            var user = _dbContext.Users.FirstOrDefault(u => u.Id == changePasswordRequest.UserID);
+            if (user == null)
             {
-                return Task.FromResult(false);
+                return false;
             }
 
-            var isPasswordValid = _userManager.CheckPasswordAsync(user, changePasswordRequest.OldPassword).GetAwaiter().GetResult();
-            if (!isPasswordValid)
+            var result = await _userManager.ChangePasswordAsync(user, changePasswordRequest.OldPassword, changePasswordRequest.NewPassword);
+
+            if (result.Succeeded)
             {
-                return Task.FromResult(false);
+                // Rất quan trọng: Cập nhật Security Stamp
+                await _userManager.UpdateSecurityStampAsync(user);
+                return true;
             }
 
-            var result = _userManager.ChangePasswordAsync(user, changePasswordRequest.OldPassword, changePasswordRequest.NewPassword).GetAwaiter().GetResult();
-            return Task.FromResult(true);
+            return false;
         }
 
         public Task<UserDTO> GetUserById(string userId)

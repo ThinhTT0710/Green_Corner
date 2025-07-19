@@ -24,10 +24,10 @@ namespace GreenCorner.EcommerceAPI.Repositories
             var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
-                throw new Exception($"Product with ID {id} not found.");
+                throw new Exception($"Sản phẩm với {id} không tìm thấy.");
             }
-            //product.IsDeleted = true;
-            _context.Products.Remove(product);
+            product.IsDeleted = true;
+            _context.Products.Update(product);
             await _context.SaveChangesAsync();
         }
 
@@ -40,7 +40,7 @@ namespace GreenCorner.EcommerceAPI.Repositories
         {
             return await _context.Products
                 .FirstOrDefaultAsync(p => p.ProductId == id)
-                ?? throw new Exception($"Product with ID {id} not found.");
+                ?? throw new Exception($"Sản phẩm với {id} không tìm thấy..");
         }
 
         public async Task UpdateProduct(Product item)
@@ -48,7 +48,7 @@ namespace GreenCorner.EcommerceAPI.Repositories
             var product = await _context.Products.FindAsync(item.ProductId);
             if (product == null)
             {
-                throw new Exception($"Product with ID {item.ProductId} not found.");
+                throw new Exception($"Sản phẩm với {item.ProductId} không tìm thấy..");
             }
             _context.Entry(product).CurrentValues.SetValues(item);
             product.UpdatedAt = DateTime.Now;

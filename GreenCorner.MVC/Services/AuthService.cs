@@ -156,5 +156,20 @@ namespace GreenCorner.MVC.Services
 				Url = SD.AuthAPIBase + "/api/Admin/unblock-staff/" + id
 			});
 		}
-	}
+
+        public async Task<string> GetSecurityStampAsync(string userId)
+        {
+            var response = await _baseService.SendAsync(new RequestDTO()
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.AuthAPIBase + "/api/auth/GetSecurityStamp/" + userId
+            });
+
+            if (response != null && response.IsSuccess)
+            {
+                return Convert.ToString(response.Result);
+            }
+            return null;
+        }
+    }
 }

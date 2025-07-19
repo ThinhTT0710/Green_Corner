@@ -26,7 +26,8 @@ namespace GreenCorner.AuthAPI.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Name, user.FullName)
+                new Claim(JwtRegisteredClaimNames.Name, user.FullName),
+                new Claim("security_stamp", user.SecurityStamp)
             };
             claimList.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
             var tokenDescriptor = new SecurityTokenDescriptor
