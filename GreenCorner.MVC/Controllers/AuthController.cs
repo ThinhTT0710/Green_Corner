@@ -75,10 +75,10 @@ namespace GreenCorner.MVC.Controllers
                 assignRole = await _authService.AssignRoleAsync(registerationRequest);
                 if(assignRole != null && assignRole.IsSuccess)
                 {
-                    TempData["success"] = "Register successfully. Please confirm email before logging in.";
+                    TempData["success"] = "Đăng ký thành công. Vui lòng xác nhận email trước khi đăng nhập.";
                     return RedirectToAction("Login");
                 }
-                TempData["error"] = "Register failed. Please try again.";
+                TempData["error"] = "Đăng ký không thành công. Vui lòng thử lại.";
             }
             TempData["error"] = result.Message;
             return View(registerationRequest);
@@ -89,7 +89,7 @@ namespace GreenCorner.MVC.Controllers
         {
             if (userId == null || token == null)
             {
-                TempData["error"] = "Invalid confirmation request.";
+                TempData["error"] = "Yêu cầu xác nhận không hợp lệ.";
                 return RedirectToAction("Login");
             }
             var result = await _authService.ConfirmEmailAsync(userId, token);
@@ -207,11 +207,11 @@ namespace GreenCorner.MVC.Controllers
                 var loginResponse = JsonConvert.DeserializeObject<LoginResponseDTO>(response.Result.ToString());
                 await SignInUser(loginResponse);
                 _tokenProvider.SetToken(loginResponse.Token);
-                TempData["success"] = "Login with Google successfully.";
+                TempData["success"] = "Đăng nhập với Google thành công.";
                 return RedirectToAction("Index", "Home");
             }
 
-            TempData["error"] = response?.Message ?? "Login failed.";
+            TempData["error"] = response?.Message ?? "Đăng nhập với Google không thành công.";
             return RedirectToAction("Login", "Auth");
         }
 
@@ -250,10 +250,11 @@ namespace GreenCorner.MVC.Controllers
                 var loginResponse = JsonConvert.DeserializeObject<LoginResponseDTO>(response.Result.ToString());
                 await SignInUser(loginResponse);
                 _tokenProvider.SetToken(loginResponse.Token);
+                TempData["success"] = "Đăng nhập với Facebook thành công.";
                 return Redirect(returnUrl);
             }
 
-            TempData["error"] = response?.Message ?? "Login failed.";
+            TempData["error"] = response?.Message ?? "Đăng nhập với Facebook không thành công.";
             return RedirectToAction("Login");
         }
         private async Task SignInUser(LoginResponseDTO loginResponse)

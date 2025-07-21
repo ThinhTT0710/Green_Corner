@@ -22,7 +22,7 @@ namespace GreenCorner.MVC.Controllers
             if (!User.Identity.IsAuthenticated)
             {
                 TempData["loginError"] = "Vui lòng đăng nhập để xem giỏ hàng của bạn";
-                return Redirect(Request.Headers["Referer"].ToString());
+                return RedirectToAction("Login", "Auth");
             }
             try
             {
@@ -44,7 +44,6 @@ namespace GreenCorner.MVC.Controllers
                 TempData["error"] = ex.Message;
                 return RedirectToAction("Index", "Home");
             }
-            return View(new List<CartDTO>());
         }
 
 
@@ -56,6 +55,7 @@ namespace GreenCorner.MVC.Controllers
                 if (!User.Identity.IsAuthenticated)
                 {
                     return Json(new { isSuccess = false, message = "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng." });
+                    return RedirectToAction("Login", "Auth");
                 }
 
                 var userID = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;

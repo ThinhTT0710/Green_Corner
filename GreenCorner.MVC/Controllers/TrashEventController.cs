@@ -124,7 +124,7 @@ namespace GreenCorner.MVC.Controllers
                 ResponseDTO response = await _trashEventService.AddTrashEvent(trashEventDTO);
                 if (response != null && response.IsSuccess)
                 {
-                    TempData["success"] = "Trash event reported successfully!";
+                    TempData["success"] = "Sự kiện rác đã được báo cáo thành công!";
                     return RedirectToAction(nameof(Index));
                 }
                 else
@@ -157,7 +157,7 @@ namespace GreenCorner.MVC.Controllers
             ResponseDTO response = await _trashEventService.DeleteTrashEvent(trashEventDTO.TrashReportId);
             if (response != null && response.IsSuccess)
             {
-                TempData["success"] = "Trash Event deleted successfully!";
+                TempData["success"] = "Sự kiện Thùng rác đã được xóa thành công!";
                 return RedirectToAction(nameof(Index));
             }
             else
@@ -224,7 +224,7 @@ namespace GreenCorner.MVC.Controllers
             ResponseDTO response = await _trashEventService.UpdateTrashEvent(trashEventDTO);
             if (response != null && response.IsSuccess)
             {
-                TempData["success"] = "Trash event updated successfully!";
+                TempData["success"] = "Sự kiện rác đã được cập nhật thành công!";
                 return RedirectToAction("ReportHistory", "User");
             }
             else
@@ -288,7 +288,7 @@ namespace GreenCorner.MVC.Controllers
             }
             catch (Exception ex)
             {
-                TempData["error"] = "An error occurred while approving the trash event: " + ex.Message;
+                TempData["error"] = "Đã xảy ra lỗi khi chấp thuận sự kiện rác: " + ex.Message;
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -347,7 +347,7 @@ namespace GreenCorner.MVC.Controllers
             }
             catch (Exception ex)
             {
-                TempData["error"] = "An error occurred while approving the trash event: " + ex.Message;
+                TempData["error"] = "Đã xảy ra lỗi khi từ chối sự kiện rác: " + ex.Message;
                 return RedirectToAction(nameof(Index));
             }
         }

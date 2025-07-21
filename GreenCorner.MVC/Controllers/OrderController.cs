@@ -33,8 +33,8 @@ namespace GreenCorner.MVC.Controllers
         {
             if (!User.Identity.IsAuthenticated)
             {
-                TempData["loginError"] = "Please login to checkout";
-                return Redirect(Request.Headers["Referer"].ToString());
+                TempData["loginError"] = "Vui lòng đăng nhập để thanh toán";
+                return RedirectToAction("Login", "Auth");
             }
             try
             {
@@ -218,7 +218,7 @@ namespace GreenCorner.MVC.Controllers
                 var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
                 if (userId == null)
                 {
-                    TempData["error"] = "User not found";
+                    TempData["error"] = "Không tìm thấy lịch sử đơn hàng";
                     return RedirectToAction("Index", "Home");
                 }
                 var orders = await _orderService.GetOrderByUserID(userId);
@@ -311,7 +311,6 @@ namespace GreenCorner.MVC.Controllers
                 var response = await _orderService.UpdateOrderStatus(order.OrderId, order.Status);
                 if (response != null && response.IsSuccess)
                 {
-                    TempData["success"] = "Cập nhật trạng thái đơn hàng thành công";
                     var notification = new NotificationDTO
                     {
                         UserId = order.UserId,
@@ -321,7 +320,7 @@ namespace GreenCorner.MVC.Controllers
                     var sendNotification = await _notificationService.SendNotification(notification);
                     if (sendNotification != null && sendNotification.IsSuccess)
                     {
-                        TempData["success"] = "Đã từ chối sự kiện và gửi thông báo cho người dùng!";
+                        TempData["success"] = "Đã cập nhật tình trạng đơn hàng và gửi thông báo cho người dùng!";
                         var StaffName = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Name).FirstOrDefault()?.Value;
                         var log = new SystemLogDTO()
                         {
