@@ -21,7 +21,7 @@ namespace GreenCorner.MVC.Controllers
         {
             if (!User.Identity.IsAuthenticated)
             {
-                TempData["loginError"] = "Vui lòng đăng nhập để xem sự kiện của bạn";
+                TempData["loginError"] = "Vui lòng đăng nhập để có thể nhắn tin trong sự kiện";
                 return RedirectToAction("Error404", "Home");
             }
             try

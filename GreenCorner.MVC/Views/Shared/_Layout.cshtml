@@ -50,7 +50,8 @@
                                         <i class="fi-rs-marker mr-5"></i>Báo cáo
                                     </a>
                                 </div>
-
+                                @if (!User.Identity.IsAuthenticated)
+                                {
                                 <div class="header-action-icon-2" style="margin: 8px 8px 8px 0px;">
                                     <a class="nav-link position-relative" href="#" id="notificationDropdown"
                                        data-bs-toggle="dropdown">
@@ -78,6 +79,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                }
                                 <div class="header-action-icon-2" style="padding: 0 3px;">
                                     <a href="/WishList">
                                         <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-heart.svg" />
@@ -92,10 +94,10 @@
                                     
                                 </div>
                                 <div class="header-action-icon-2" style="padding: 0 3px;">
-                                    <a href="page-account.html">
+                                    <a href="/User/Profile">
                                         <img class="svgInject" alt="Nest" src="~/imgs/theme/icons/icon-user.svg" />
                                     </a>
-                                    <a href="page-account.html"><span class="lable ml-0" style="margin : 2px;">Tài khoản</span></a>
+                                    <a href="/User/Profile"><span class="lable ml-0" style="margin : 2px;">Tài khoản</span></a>
                                     <div class="cart-dropdown-wrap cart-dropdown-hm2 account-dropdown">
                                         <ul>
                                             @if (!User.Identity.IsAuthenticated)
