@@ -1,7 +1,26 @@
 ﻿@model List<GreenCorner.MVC.Models.BlogPostDTO>
+@using System.Text.RegularExpressions
 
 @{
-    ViewData["Title"] = "Bài viết đang chờ duyệt";
+    ViewData["Title"] = "Bài viết của tôi";
+}
+
+@functions {
+    public string TruncateAndStripHtml(string htmlContent, int maxLength = 100)
+    {
+        if (string.IsNullOrEmpty(htmlContent)) return "";
+
+        // Loại bỏ các thẻ HTML
+        var plainText = Regex.Replace(htmlContent, "<.*?>", string.Empty);
+        plainText = System.Net.WebUtility.HtmlDecode(plainText);
+
+        if (plainText.Length > maxLength)
+        {
+            return plainText.Substring(0, maxLength) + "...";
+        }
+
+        return plainText;
+    }
 }
 
 <main class="main">
@@ -81,7 +100,6 @@
                                                         </div>
                                                     }
                                                 </div>
-
                                             </a>
                                         </div>
                                         <div class="entry-content-2">
@@ -102,22 +120,31 @@
                                                     _ => "text-muted"
                                                 };
                                             }
+
                                             <h6 class="mb-10 font-sm fw-semibold @statusClass">@statusText</h6>
 
                                             <h4 class="post-title mb-15">
                                                 <a asp-controller="BlogPost" asp-action="ViewBlogDetail" asp-route-id="@blog.BlogId">@blog.Title</a>
                                             </h4>
+
                                             <div class="font-xs color-grey mt-10 pb-10" style="max-height: 45px; overflow: hidden;">
-                                                @((!string.IsNullOrEmpty(blog.Content) && blog.Content.Length > 100)
-                                                    ? blog.Content.Substring(0, 100) + "..."
-                                                    : blog.Content)
+                                                @Html.Raw(TruncateAndStripHtml(blog.Content, 100))
                                             </div>
+
                                             <div class="entry-meta font-xs color-grey">
                                                 <span class="post-on">@blog.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</span>
                                             </div>
+
                                             <div class="mt-2 d-flex justify-content-center gap-2">
-                                                <a asp-controller="BlogPost" asp-action="UpdateBlog" asp-route-blogId="@blog.BlogId" class="btn btn-sm btn-outline-success">Sửa</a>
-                                                <a asp-action="DeleteBlog" asp-route-id="@blog.BlogId" class="btn btn-sm btn-outline-danger">Xoá</a>
+                                                @if (blog.Status == "Pending")
+                                                {
+                                                    <a asp-controller="BlogPost" asp-action="UpdateBlog" asp-route-blogId="@blog.BlogId" class="btn btn-sm btn-outline-success">Sửa</a>
+                                                    <a asp-action="DeleteBlog" asp-route-id="@blog.BlogId" class="btn btn-sm btn-outline-danger">Xoá</a>
+                                                }
+                                                else if (blog.Status == "Published")
+                                                {
+                                                    <a asp-action="DeleteBlog" asp-route-id="@blog.BlogId" class="btn btn-sm btn-outline-danger">Xoá</a>
+                                                }
                                             </div>
                                         </div>
                                     </article>
@@ -131,11 +158,8 @@
                             Bạn chưa có bài viết nào đang chờ duyệt.
                         </div>
                     }
-
                 </div>
             </div>
         </div>
     </div>
 </main>
-
-

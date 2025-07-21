@@ -150,5 +150,23 @@ namespace GreenCorner.EventAPI.Controllers
                 return _responseDTO;
             }
         }
+
+        [HttpGet("monthly-analytics")]
+        public async Task<ResponseDTO> GetMonthlyAnalytics()
+        {
+            try
+            {
+                int currentYear = DateTime.Now.Year;
+                var analytics = await _trashEventService.GetMonthlyEventAnalytics(currentYear);
+                _responseDTO.Result = analytics;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
     }
 }

@@ -58,6 +58,33 @@ namespace GreenCorner.MVC.Services
                 Url = SD.RewardAPIBase + "/api/Voucher/"+id
             });
         }
-    }
 
+        public async Task<ResponseDTO?> GetTop10ValidVouchersAsync()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.RewardAPIBase + "/api/Voucher/top10voucher"
+            });
+        }
+
+        public async Task<ResponseDTO?> RedeemVoucher(int voucherId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.POST,
+                Url = SD.RewardAPIBase + "/api/Voucher/redeem/" + voucherId
+            });
+        }
+
+        public async Task<ResponseDTO?> CleanUpVouchers()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.DELETE,
+                Url = SD.RewardAPIBase + "/api/Voucher/cleanup"
+            });
+        }
+
+    }
 }

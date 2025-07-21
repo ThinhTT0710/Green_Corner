@@ -1,48 +1,162 @@
-﻿@{
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-}
-
-@model List<RewardPointDTO>
-
+﻿@model List<GreenCorner.MVC.ViewModels.RewardPointWithUserViewModel>
 @{
-    ViewData["Title"] = "Reward Point List";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Danh sách điểm thưởng";
 }
 
 <section class="content-main">
-    <div class="row">
-        <div class="col-12">
-            <div class="card mt-4 shadow-sm">
-                <div class="card-header bg-secondary text-white text-center">
-                    <h3 class="mb-0">@ViewData["Title"]</h3>
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Danh sách điểm thưởng</h2>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Tìm kiếm..." class="form-control" id="searchInput" />
                 </div>
-                <div class="card-body">
-                    <table class="table table-bordered table-striped">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Reward ID</th>
-                                <th>User ID</th>
-                                <th>Total Points</th>
-                                <th class="text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td>@item.RewardPointsId</td>
-                                    <td>@item.UserId</td>
-                                    <td>@item.TotalPoints</td>
-                                    <td class="text-center">
-                                        <a asp-action="AwardPoints" asp-route-userId="@item.UserId" class="btn btn-sm btn-success me-2">Award</a>
-                                        <a asp-action="GetTotalRewardPoints" asp-route-userId="@item.UserId" class="btn btn-sm btn-info">View</a>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                <div class="col-lg-2 col-6 col-md-3">
+                    <select class="form-select" id="itemsPerPageFilter">
+                        <option value="10" selected>Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
+                        <option value="50">Hiển thị 50</option>
+                    </select>
                 </div>
             </div>
+        </header>
+
+        <div class="card-body" id="rewardListContainer">
+            <!-- Dòng tiêu đề -->
+            <div class="row fw-bold mb-2 px-2 text-muted small">
+                <div class="col-lg-5 col-sm-5 col-6">Họ tên</div>
+                <div class="col-lg-5 col-sm-5 col-6">Email</div>
+                <div class="col-lg-2 col-sm-2 col-6 text-end">Tổng điểm</div>
+            </div>
+
+            @foreach (var item in Model)
+            {
+                <article class="itemlist reward-item border-top py-2"
+                         data-name="@item.User?.FullName?.ToLower()"
+                         data-email="@item.User?.Email?.ToLower()">
+                    <div class="row align-items-center">
+                        <div class="col-lg-5 col-sm-5 col-6">
+                            <h6 class="mb-0">@item.User?.FullName</h6>
+                        </div>
+                        <div class="col-lg-5 col-sm-5 col-6">
+                            <span>@item.User?.Email</span>
+                        </div>
+                        <div class="col-lg-2 col-sm-2 col-6 text-end">
+                            <span>@item.Reward.TotalPoints</span>
+                        </div>
+                    </div>
+                </article>
+            }
+
+            <div id="noResultMessage" class="text-center text-muted my-4 d-none">Không tìm thấy kết quả phù hợp.</div>
         </div>
+    </div>
+
+    <div class="pagination-area mt-30 mb-50">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-start" id="pagination"></ul>
+        </nav>
     </div>
 </section>
 
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const itemsPerPageFilter = document.getElementById("itemsPerPageFilter");
+            const rewardContainer = document.getElementById("rewardListContainer");
+            const paginationContainer = document.getElementById("pagination");
+            const allItems = Array.from(rewardContainer.getElementsByClassName("reward-item"));
+            const noResultMessage = document.getElementById("noResultMessage");
+            let currentPage = 1;
+            let filteredItems = [...allItems];
+
+            function updateDisplay() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const searchTerm = searchInput.value.toLowerCase();
+
+                filteredItems = allItems.filter(item => {
+                    const name = item.dataset.name || "";
+                    const email = item.dataset.email || "";
+
+                    return name.includes(searchTerm) || email.includes(searchTerm);
+                });
+
+                if (filteredItems.length === 0) {
+                    rewardContainer.querySelectorAll("article.itemlist").forEach(item => item.remove());
+                    noResultMessage.classList.remove("d-none");
+                    paginationContainer.innerHTML = "";
+                    return;
+                }
+
+                noResultMessage.classList.add("d-none");
+                renderPagination();
+                renderRewardItems();
+            }
+
+            function renderRewardItems() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const start = (currentPage - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                const paginated = filteredItems.slice(start, end);
+
+                rewardContainer.querySelectorAll("article.itemlist").forEach(item => item.remove());
+                paginated.forEach(item => rewardContainer.appendChild(item));
+            }
+
+            function renderPagination() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+                paginationContainer.innerHTML = "";
+
+                if (totalPages <= 1) return;
+
+                const prevLi = document.createElement("li");
+                prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+                prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}"><i class="material-icons md-chevron_left"></i></a>`;
+                paginationContainer.appendChild(prevLi);
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageLi = document.createElement("li");
+                    pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                    pageLi.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+                    paginationContainer.appendChild(pageLi);
+                }
+
+                const nextLi = document.createElement("li");
+                nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+                nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}"><i class="material-icons md-chevron_right"></i></a>`;
+                paginationContainer.appendChild(nextLi);
+            }
+
+            function triggerFilter() {
+                currentPage = 1;
+                updateDisplay();
+            }
+
+            searchInput.addEventListener("input", triggerFilter);
+            itemsPerPageFilter.addEventListener("change", triggerFilter);
+
+            paginationContainer.addEventListener("click", function (e) {
+                e.preventDefault();
+                const target = e.target.closest("a.page-link");
+                if (target && !target.parentElement.classList.contains('disabled')) {
+                    const page = parseInt(target.dataset.page, 10);
+                    if (!isNaN(page)) {
+                        currentPage = page;
+                        renderRewardItems();
+                        renderPagination();
+                    }
+                }
+            });
+
+            updateDisplay();
+        });
+    </script>
+}

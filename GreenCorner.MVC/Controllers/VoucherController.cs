@@ -56,8 +56,11 @@ namespace GreenCorner.MVC.Controllers
 
             var response = await _voucherService.AddVoucher(voucherDTO);
             if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = "Tạo Voucher thành công";
                 return RedirectToAction(nameof(Index));
-
+            }
+            TempData["error"] = "Tạo Voucher thất bại. Vui lòng thử lại!";
             return View(voucherDTO);
         }
 
@@ -83,11 +86,11 @@ namespace GreenCorner.MVC.Controllers
             var response = await _voucherService.UpdateVoucher(voucherDTO);
             if (response != null && response.IsSuccess)
             {
-                TempData["success"] = "Voucher updated successfully!";
+                TempData["success"] = "Cập nhật Voucher thành công!";
                 return RedirectToAction(nameof(Index));
             }
 
-            TempData["error"] = response?.Message;
+            TempData["error"] = "Cập nhật Voucher thất bại. Vui lòng thử lại!";
             return View(voucherDTO);
         }
 
@@ -108,12 +111,12 @@ namespace GreenCorner.MVC.Controllers
             ResponseDTO response = await _voucherService.DeleteVoucher(voucherDTO.VoucherId);
             if (response != null && response.IsSuccess)
             {
-                TempData["success"] = "Voucher deleted successfully!";
+                TempData["success"] = "Xóa Voucher thành công.";
                 return RedirectToAction(nameof(Index));
             }
             else
             {
-                TempData["error"] = response?.Message;
+                TempData["error"] = "Xóa Voucher thất bại. Vui lòng thử lại";
             }
             return View(voucherDTO);
         }

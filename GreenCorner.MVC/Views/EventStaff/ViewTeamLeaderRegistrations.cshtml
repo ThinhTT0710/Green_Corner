@@ -1,33 +1,25 @@
-﻿@{
+﻿@model VolunteerRegistrationsViewModel
+@{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Danh sách đơn đăng ký làm Đội trưởng";
 }
-@model VolunteerRegistrationsViewModel
 
 <section class="content-main">
     <div class="content-header">
-        <h2 class="content-title mb-4">Danh sách đơn đăng ký làm Đội trưởng</h2>
+        <h2 class="content-title mb-4">@ViewData["Title"]</h2>
     </div>
 
     <div class="card mb-4">
         <header class="card-header">
-            <div class="row gx-3">
+            <div class="row gx-3 align-items-center">
                 <div class="col-lg-4 col-md-6 me-auto">
-                    <input type="text" class="form-control" placeholder="Tìm kiếm..." />
+                    <input type="text" class="form-control" placeholder="Tìm kiếm..." id="searchInput" />
                 </div>
                 <div class="col-lg-2 col-md-3 col-6">
-                    <select class="form-select">
-                        <option>Trạng thái</option>
-                        <option>Chờ duyệt</option>
-                        <option>Đã duyệt</option>
-                        <option>Đã từ chối</option>
-                        <option>Tất cả</option>
-                    </select>
-                </div>
-                <div class="col-lg-2 col-md-3 col-6">
-                    <select class="form-select">
-                        <option>Hiển thị 10</option>
-                        <option>Hiển thị 20</option>
-                        <option>Hiển thị 50</option>
+                    <select class="form-select" id="itemsPerPageFilter">
+                        <option value="10" selected>Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
+                        <option value="30">Hiển thị 30</option>
                     </select>
                 </div>
             </div>
@@ -46,52 +38,151 @@
                             <th>Thao tác</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach (var item in Model.Registrations)
+                    <tbody id="registrationTableBody">
+                        @if (!Model.Registrations.Any())
                         {
                             <tr>
-                                <td class="text-center">@item.Volunteer.VolunteerId</td>
-                                <td>@item.User.FullName</td>
-                                <td class="text-center">@item.Volunteer.CleanEventId</td>
-                                <td class="text-center">@item.Volunteer.ApplicationType</td>
-                                <td class="text-center">
-                                    @{
-                                        var status = item.Volunteer.Status;
-
-                                        string statusDisplay = status switch
-                                        {
-                                            "Pending" => "Đang chờ duyệt",
-                                            "Approved" => "Đã duyệt",
-                                            "Removed" => "Đã bị hủy",
-                                            _ => "Không xác định"
-                                        };
-
-                                        string statusClass = status switch
-                                        {
-                                            "Pending" => "text-warning",
-                                            "Approved" => "text-success",
-                                            "Removed" => "text-danger",
-                                            _ => "text-muted"
-                                        };
-                                    }
-                                    <span class="@statusClass fw-semibold">@statusDisplay</span>
-                                </td>
-
-
-                                <td class="text-end">
-                                    <a asp-action="ViewTeamLeaderRegistrationDetail" asp-route-id="@item.Volunteer.VolunteerId" class="btn btn-sm btn-info me-1">Chi tiết</a>
-                                    <form asp-action="ApproveTeamLeader" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
-                                        <button type="submit" class="btn btn-sm btn-success me-1">Phê duyệt</button>
-                                    </form>
-                                    <form asp-action="RejectTeamLeader" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
-                                        <button type="submit" class="btn btn-sm btn-danger">Từ chối</button>
-                                    </form>
-                                </td>
+                                <td colspan="6" class="text-center text-muted">Không có đơn đăng ký nào.</td>
                             </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model.Registrations)
+                            {
+                                <tr>
+                                    <td class="text-center">@item.Volunteer.VolunteerId</td>
+                                    <td class="text-center">@item.User.FullName</td>
+                                    <td class="text-center">@item.Volunteer.CleanEventId</td>
+                                    <td class="text-center">@item.Volunteer.ApplicationType</td>
+                                    <td class="text-center">
+                                        @{
+                                            var status = item.Volunteer.Status;
+                                            string statusDisplay = status switch
+                                            {
+                                                "Pending" => "Đang chờ duyệt",
+                                                "Approved" => "Đã duyệt",
+                                                "Removed" => "Đã bị hủy",
+                                                _ => "Không xác định"
+                                            };
+                                            string statusClass = status switch
+                                            {
+                                                "Pending" => "text-warning",
+                                                "Approved" => "text-success",
+                                                "Removed" => "text-danger",
+                                                _ => "text-muted"
+                                            };
+                                        }
+                                        <span class="@statusClass fw-semibold">@statusDisplay</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a asp-action="ViewTeamLeaderRegistrationDetail" asp-route-id="@item.Volunteer.VolunteerId" class="btn btn-sm btn-info me-1">Chi tiết</a>
+                                        <form asp-action="ApproveTeamLeader" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-success me-1">Phê duyệt</button>
+                                        </form>
+                                        <form asp-action="RejectTeamLeader" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-danger">Từ chối</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
                         }
                     </tbody>
                 </table>
             </div>
+
+            <div class="pagination-area mt-3">
+                <nav>
+                    <ul class="pagination justify-content-start" id="pagination"></ul>
+                </nav>
+            </div>
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const itemsPerPageFilter = document.getElementById("itemsPerPageFilter");
+            const tableBody = document.getElementById("registrationTableBody");
+            const paginationContainer = document.getElementById("pagination");
+
+            const allRows = Array.from(tableBody.getElementsByTagName("tr"));
+            let filteredRows = [...allRows];
+            let currentPage = 1;
+
+            function getItemsPerPage() {
+                return parseInt(itemsPerPageFilter.value, 10);
+            }
+
+            function updateDisplay() {
+                const searchTerm = searchInput.value.toLowerCase();
+                filteredRows = allRows.filter(row => {
+                    return Array.from(row.cells).some(cell =>
+                        cell.innerText.toLowerCase().includes(searchTerm)
+                    );
+                });
+                renderPagination();
+                renderTableRows();
+            }
+
+            function renderTableRows() {
+                const itemsPerPage = getItemsPerPage();
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const paginatedRows = filteredRows.slice(startIndex, endIndex);
+
+                tableBody.innerHTML = "";
+                paginatedRows.forEach(row => tableBody.appendChild(row));
+            }
+
+            function renderPagination() {
+                const itemsPerPage = getItemsPerPage();
+                const totalPages = Math.ceil(filteredRows.length / itemsPerPage);
+                paginationContainer.innerHTML = "";
+
+                if (totalPages <= 1) return;
+
+                const prevLi = document.createElement("li");
+                prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+                prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}">&laquo;</a>`;
+                paginationContainer.appendChild(prevLi);
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageLi = document.createElement("li");
+                    pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                    pageLi.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+                    paginationContainer.appendChild(pageLi);
+                }
+
+                const nextLi = document.createElement("li");
+                nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+                nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}">&raquo;</a>`;
+                paginationContainer.appendChild(nextLi);
+            }
+
+            function triggerFilter() {
+                currentPage = 1;
+                updateDisplay();
+            }
+
+            searchInput.addEventListener("input", triggerFilter);
+            itemsPerPageFilter.addEventListener("change", triggerFilter);
+
+            paginationContainer.addEventListener("click", function (e) {
+                e.preventDefault();
+                const target = e.target.closest("a.page-link");
+                if (target && !target.parentElement.classList.contains("disabled")) {
+                    const page = parseInt(target.dataset.page, 10);
+                    if (!isNaN(page)) {
+                        currentPage = page;
+                        renderTableRows();
+                        renderPagination();
+                    }
+                }
+            });
+
+            updateDisplay();
+        });
+    </script>
+}

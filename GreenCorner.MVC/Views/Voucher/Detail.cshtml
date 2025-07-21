@@ -19,38 +19,61 @@
         <div class="col-lg-8">
             <div class="card mb-4">
                 <div class="card-body">
-                    <!-- Title -->
+                    <!-- Tiêu đề -->
                     <div class="mb-4">
                         <label class="form-label">Tiêu đề voucher</label>
                         <input class="form-control" value="@Model.Title" readonly />
                     </div>
 
+                    <!-- Mã khuyến mãi -->
                     <div class="mb-4">
-                        <label asp-for="Code" class="form-label">Mã Khuyến Mãi</label>
-                        <input asp-for="Code" class="form-control text-uppercase" readonly />
+                        <label class="form-label">Mã khuyến mãi</label>
+                        <input class="form-control text-uppercase" value="@Model.Code" readonly />
                     </div>
 
-                    <!-- Description -->
+                    <!-- Mô tả -->
                     <div class="mb-4">
                         <label class="form-label">Mô tả</label>
                         <textarea class="form-control" style="min-height: 150px;" readonly>@Model.Description</textarea>
                     </div>
 
-                    <!-- Points -->
+                    <!-- Điểm -->
                     <div class="mb-4">
                         <label class="form-label">Điểm yêu cầu</label>
                         <input class="form-control" value="@Model.PointsRequired" readonly />
                     </div>
 
-                    <!-- Expiration -->
+                    <!-- Số lượng -->
+                    <div class="mb-4">
+                        <label class="form-label">Số lượng</label>
+                        <input class="form-control" value="@Model.Quantity" readonly />
+                    </div>
+
+                    <!-- Địa chỉ -->
+                    <div class="mb-4">
+                        <label class="form-label">Địa chỉ</label>
+                        <input class="form-control" value="@Model.Address ?? " Không có địa chỉ"" readonly />
+                    </div>
+
+                    <!-- Trạng thái hoạt động -->
+                    <div class="mb-4">
+                        <label class="form-label">Trạng thái hoạt động</label>
+                        <input class="form-control" value="@(Model.IsActive ? "Có" : "Không")" readonly />
+                    </div>
+
+                    <!-- Ngày bắt đầu -->
+                    <div class="mb-4">
+                        <label class="form-label">Ngày bắt đầu</label>
+                        <input class="form-control" value="@Model.StartDate?.ToString("dd/MM/yyyy HH:mm")" readonly />
+                    </div>
+
+                    <!-- Ngày hết hạn -->
                     <div class="mb-4">
                         <label class="form-label">Ngày hết hạn</label>
-                        <input class="form-control" value="@Model.ExpirationDate?.ToString("dd/MM/yyyy")" readonly />
+                        <input class="form-control" value="@Model.ExpirationDate?.ToString("dd/MM/yyyy HH:mm")" readonly />
                     </div>
                 </div>
             </div>
-
-
         </div>
 
         <!-- Phần phải -->
@@ -68,4 +91,3 @@
         </div>
     </div>
 </section>
-

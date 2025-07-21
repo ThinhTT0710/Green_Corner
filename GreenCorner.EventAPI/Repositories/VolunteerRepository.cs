@@ -14,6 +14,11 @@ namespace GreenCorner.EventAPI.Repositories
             _context = context;
         }
 
+        public async Task<IEnumerable<Volunteer>> GetAllVolunteers()
+        {
+            return await _context.Volunteers.ToListAsync();
+        }
+
         public async Task<bool> IsVolunteer(int eventId, string userId)
         {
             return await _context.Volunteers
@@ -22,7 +27,7 @@ namespace GreenCorner.EventAPI.Repositories
         public async Task<bool> IsConfirmVolunteer(int eventId, string userId)
         {
             return await _context.Volunteers
-                .AnyAsync(v => v.CleanEventId == eventId && v.UserId == userId  && v.Status == "Đã xác nhận");
+                .AnyAsync(v => v.CleanEventId == eventId && v.UserId == userId  && v.Status == "Approved");
         }
         public async Task<bool> IsTeamLeader(int eventId, string userId)
         {

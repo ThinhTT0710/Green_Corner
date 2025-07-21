@@ -4,6 +4,7 @@ using GreenCorner.EventAPI.Models.DTO;
 using GreenCorner.EventAPI.Repositories;
 using GreenCorner.EventAPI.Repositories.Interface;
 using GreenCorner.EventAPI.Services.Interface;
+using Microsoft.Extensions.Logging;
 
 namespace GreenCorner.EventAPI.Services
 {
@@ -43,11 +44,11 @@ namespace GreenCorner.EventAPI.Services
         {
             await _eventRepository.CloseCleanupEvent(id);
         }
-		public async Task OpenCleanupEvent(int id)
-		{
-			await _eventRepository.OpenCleanupEvent(id);
-		}
-		public async Task UpdateCleanupEvent(EventDTO eventDTO)
+		    public async Task OpenCleanupEvent(int id)
+		    {
+			  await _eventRepository.OpenCleanupEvent(id);
+		    }
+		    public async Task UpdateCleanupEvent(EventDTO eventDTO)
         {
             CleanupEvent cleanup = _mapper.Map<CleanupEvent>(eventDTO);
             await _eventRepository.UpdateCleanupEvent(cleanup);
@@ -87,6 +88,10 @@ namespace GreenCorner.EventAPI.Services
         {
             await _eventRepository.UpdateVolunteerStatusToParticipated(eventId);
         }
-
+        public async Task<IEnumerable<EventDTO>> GetTop3OpenEventsAsync()
+        {
+            var events = await _eventRepository.GetTop3OpenEventsAsync();
+            return _mapper.Map<List<EventDTO>>(events);
+        }
     }
 }

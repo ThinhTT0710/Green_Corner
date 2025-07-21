@@ -28,6 +28,12 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
+                                     <a class="nav-link" id="achievements-tab" href="/User/Achievements" role="tab"
+                                         aria-controls="achievements" aria-selected="true">
+                                          <i class="fi fi-rs-trophy mr-10"></i>Thành tích của tôi
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link" asp-controller="Order" asp-action="History">
                                         <i class="fi-rs-shopping-bag mr-10"></i>Đơn hàng
                                     </a>
@@ -40,6 +46,29 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="#">
                                         <i class="fi-rs-marker mr-10"></i>Lịch sử đổi thưởng
+                                    </a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="feedbackReportDropdown" role="button" data-bs-toggle="dropdown"
+                                       aria-expanded="false">
+                                        <i class="fi fi-rs-comment-alt mr-10"></i> Góp ý & Báo cáo
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="feedbackReportDropdown">
+                                        <li>
+                                            <a class="dropdown-item" href="/BlogPost/SubmitFeedback">
+                                                <i class="fi fi-rs-bubble-dots mr-10"></i> Gửi phản hồi
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="/BlogPost/SubmitReport">
+                                                <i class="fi fi-rs-warning mr-10"></i> Gửi báo cáo
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/User/ViewParticipatedActivities">
+                                        <i class="fi fi-rs-browser mr-10"></i> Lịch sử hoạt động
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -71,6 +100,9 @@
                                     </div>
                                     <div class="card-body">
                                         <img src="@Model.Avatar" alt="" class="avatar-profile" />
+                                        <div class="alert alert-success">
+                                            <strong>Điểm tích lũy:</strong> @ViewBag.TotalPoints điểm
+                                        </div>
                                         <form method="post">
                                             <div class="row">
                                                 <div class="form-group col-md-12">

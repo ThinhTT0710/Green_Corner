@@ -22,37 +22,52 @@
             <div class="col-lg-8">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <!-- Title -->
                         <div class="mb-4">
                             <label asp-for="Title" class="form-label">Tiêu đề voucher</label>
                             <input asp-for="Title" class="form-control" readonly />
                         </div>
 
                         <div class="mb-4">
-                            <label asp-for="Code" class="form-label">Mã Khuyến Mãi</label>
+                            <label asp-for="Code" class="form-label">Mã khuyến mãi</label>
                             <input asp-for="Code" class="form-control text-uppercase" readonly />
                         </div>
 
-                        <!-- Description -->
                         <div class="mb-4">
                             <label asp-for="Description" class="form-label">Mô tả</label>
                             <textarea asp-for="Description" class="form-control" style="min-height: 150px;" readonly></textarea>
                         </div>
 
-                        <!-- Points -->
                         <div class="mb-4">
                             <label asp-for="PointsRequired" class="form-label">Điểm yêu cầu</label>
                             <input asp-for="PointsRequired" class="form-control" readonly />
                         </div>
 
-                        <!-- Expiration -->
+                        <div class="mb-4">
+                            <label asp-for="Quantity" class="form-label">Số lượng</label>
+                            <input asp-for="Quantity" class="form-control" readonly />
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Address" class="form-label">Địa chỉ</label>
+                            <input asp-for="Address" class="form-control" readonly />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Trạng thái hoạt động</label>
+                            <input class="form-control" readonly value="@(Model.IsActive ? "Có" : "Không")" />
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="StartDate" class="form-label">Ngày bắt đầu</label>
+                            <input asp-for="StartDate" class="form-control" readonly />
+                        </div>
+
                         <div class="mb-4">
                             <label asp-for="ExpirationDate" class="form-label">Ngày hết hạn</label>
                             <input asp-for="ExpirationDate" class="form-control" readonly />
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <!-- Phần phải -->
@@ -77,4 +92,3 @@
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
 }
-

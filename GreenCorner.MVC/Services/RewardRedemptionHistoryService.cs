@@ -20,6 +20,16 @@ namespace GreenCorner.MVC.Services
                 Url = SD.RewardAPIBase + $"/api/RewardRedemptionHistory?userId={userId}"
             });
         }
+
+        public async Task<ResponseDTO?> GetUserRewardRedemption()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.RewardAPIBase + $"/api/RewardRedemptionHistory/userredemp"
+            });
+        }
+
         public async Task<ResponseDTO?> SaveRedemptionAsync(string userId, int voucherId)
         {
             var dto = new UserVoucherRedemptionDTO
@@ -35,5 +45,15 @@ namespace GreenCorner.MVC.Services
                 Data = dto
             });
         }
+
+        public async Task<ResponseDTO?> MarkAsUsedAsync(int userVoucherId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.PUT,
+                Url = SD.RewardAPIBase + $"/api/RewardRedemptionHistory/markused/{userVoucherId}"
+            });
+        }
+
     }
 }

@@ -31,6 +31,11 @@ namespace GreenCorner.MVC.Models
         [Required(ErrorMessage = "Mã khuyến mãi không được để trống")]
         [StringLength(50, ErrorMessage = "Mã khuyến mãi không được vượt quá 50 ký tự")]
         public string? Code { get; set; }
+        public string? Address { get; set; }
+
+        public int Quantity { get; set; }
+
+        public bool IsActive { get; set; }
 
         // Kiểm tra StartDate <= ExpirationDate
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

@@ -238,5 +238,24 @@ namespace GreenCorner.AuthAPI.Controllers
                 return BadRequest(_response);
             }
         }
+
+        [HttpGet("GetSecurityStamp/{userId}")]
+        public async Task<IActionResult> GetSecurityStamp(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                _response.IsSuccess = false;
+                _response.Message = "Không tìm thấy người dùng.";
+                return NotFound(_response);
+            }
+            else
+            {
+                _response.IsSuccess = true;
+                _response.Result = user.SecurityStamp;
+                _response.Message = "Password reset successfully.";
+                return Ok(_response);
+            }
+        }
     }
 }

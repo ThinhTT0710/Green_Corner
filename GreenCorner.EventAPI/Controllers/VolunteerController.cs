@@ -18,6 +18,22 @@ namespace GreenCorner.EventAPI.Controllers
             _responseDTO = new ResponseDTO();
         }
 
+        [HttpGet("get-all")]
+        public async Task<ResponseDTO> GetAll()
+        {
+            try
+            {
+                var volunteers = await _volunteerService.GetAllVolunteer();
+                _responseDTO.Result = volunteers;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = "Lấy danh sách tình nguyện viên thất bại! ";
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
         [HttpPost("register")]
         public async Task<ResponseDTO> RegisterVolunteer([FromBody] VolunteerDTO volunteerDto)
         {

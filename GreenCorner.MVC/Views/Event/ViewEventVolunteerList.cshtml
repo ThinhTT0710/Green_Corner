@@ -50,23 +50,49 @@
                                        onclick="return confirm('Bạn có chắc chắn muốn loại tình nguyện viên này khỏi sự kiện?');">
                                         Kick
                                     </a>
-                                    <form asp-action="EarnPoints"
-                                          asp-controller="PointTransaction"
-                                          method="post"
-                                          class="d-inline"
-                                          onsubmit="return confirm('Bạn có chắc chắn muốn thưởng điểm cho tình nguyện viên này?');">
-                                        <input type="hidden" name="userId" value="@item.Volunteer.UserId" />
-                                        <input type="hidden" name="points" value="@item.Volunteer.PointsAwarded" />
-                                        <input type="hidden" name="eventId" value="@item.Volunteer.CleanEventId" />
-                                        <button type="submit" class="btn btn-outline-success btn-sm">
-                                            Thưởng Điểm
-                                        </button>
-                                    </form>
+                                <!-- Nút mở modal -->
+                                <button type="button"
+                                        class="btn btn-outline-success btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#confirmModal-@item.Volunteer.UserId">
+                                    Thưởng Điểm
+                                </button>
+
                                 </td>
                             </tr>
+                        <!-- Modal xác nhận thưởng điểm -->
+                        <div class="modal fade" id="confirmModal-@item.Volunteer.UserId" tabindex="-1" aria-labelledby="modalLabel-@item.Volunteer.UserId" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <form asp-action="EarnPoints"
+                                          asp-controller="PointTransaction"
+                                          method="post">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modalLabel-@item.Volunteer.UserId">Xác nhận thưởng điểm</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            @{
+                                                var calculatedPoints = item.Volunteer.IsTeamLeader == true ? item.Volunteer.PointsAwarded * 3 : item.Volunteer.PointsAwarded;
+                                            }
+                                            Bạn có chắc chắn muốn thưởng <strong>@calculatedPoints</strong> điểm cho tình nguyện viên <strong>@item.Volunteer.UserId</strong>?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <input type="hidden" name="userId" value="@item.Volunteer.UserId" />
+                                            <input type="hidden" name="points" value="@calculatedPoints" />
+                                            <input type="hidden" name="eventId" value="@item.Volunteer.CleanEventId" />
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                            <button type="submit" class="btn btn-success">Xác nhận</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     }
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
+

@@ -6,5 +6,8 @@ namespace GreenCorner.MVC.ViewModels
     {
         public List<ProductDTO> BestSellingProducts { get; set; }
         public List<ProductDTO> NewestProducts { get; set; }
+
+        public List<EventDTO> Top3OpenEvents { get; set; }
+        public List<VoucherDTO> Top10Vouchers { get; set; }
     }
 }

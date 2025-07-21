@@ -18,7 +18,8 @@ namespace GreenCorner.MVC.Controllers
         private readonly ITrashEventService _trashEventService;
         private readonly IRewardRedemptionHistoryService _rewardRedemptionHistoryService;
         private readonly IVoucherService _voucherService;
-        public UserController(IUserService userService, IVolunteerService volunteerService, IEventService eventService, ITrashEventService trashEventService, IRewardRedemptionHistoryService rewardRedemptionHistoryService, IVoucherService voucherService)
+        private readonly IRewardPointService _rewardPointService;
+        public UserController(IUserService userService, IVolunteerService volunteerService, IEventService eventService, ITrashEventService trashEventService, IRewardRedemptionHistoryService rewardRedemptionHistoryService, IVoucherService voucherService, IRewardPointService rewardPointService)
         {
             _userService = userService;
             _volunteerService = volunteerService;
@@ -26,6 +27,7 @@ namespace GreenCorner.MVC.Controllers
             _trashEventService = trashEventService;
             _voucherService = voucherService;
             _rewardRedemptionHistoryService = rewardRedemptionHistoryService;
+            this._rewardPointService = rewardPointService;
         }
 
         [HttpGet]
@@ -39,6 +41,25 @@ namespace GreenCorner.MVC.Controllers
 
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
             var userViewModel = new UserDTO();
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var pointResponse = await _rewardPointService.GetUserTotalPoints(userId);
+                if (pointResponse != null && pointResponse.IsSuccess)
+                {
+                    var rewardPoint = JsonConvert.DeserializeObject<RewardPointDTO>(pointResponse.Result.ToString());
+                    ViewBag.TotalPoints = rewardPoint.TotalPoints;
+                }
+                else
+                {
+                    ViewBag.TotalPoints = 0;
+                }
+            }
+            else
+            {
+                ViewBag.TotalPoints = 0;
+            }
+
             var response = await _userService.GetUserById(userId);
             if (response != null && response.IsSuccess)
             {
@@ -138,7 +159,7 @@ namespace GreenCorner.MVC.Controllers
                 if (response != null && response.IsSuccess)
                 {
                     TempData["success"] = "Đổi mật khẩu thành công!";
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Login", "Auth");
                 }
                 else
                 {
@@ -340,5 +361,52 @@ namespace GreenCorner.MVC.Controllers
             TempData["error"] = response?.Message ?? "Không thể tải lịch sử đổi điểm.";
             return View(new List<UserVoucherRedemptionViewModel>());
         }
+
+        public async Task<IActionResult> GetUserRewardRedemptionHistory(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["error"] = "Bạn cần đăng nhập để xem các hoạt động đã tham gia.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var response = await _rewardRedemptionHistoryService.GetRewardRedemptionHistory(userId);
+
+            if (response != null && response.IsSuccess)
+            {
+                var redemptionList = JsonConvert.DeserializeObject<List<UserVoucherRedemptionDTO>>(response.Result?.ToString());
+                var result = new List<UserVoucherRedemptionViewModel>();
+
+                // Lấy thông tin User 1 lần duy nhất
+                var userResponse = await _userService.GetUserById(userId);
+                UserDTO? user = null;
+
+                if (userResponse != null && userResponse.IsSuccess)
+                {
+                    user = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result?.ToString());
+                }
+
+                foreach (var redemption in redemptionList!)
+                {
+                    var voucherRes = await _voucherService.GetVoucherById(redemption.VoucherId);
+                    var voucher = voucherRes != null && voucherRes.IsSuccess
+                        ? JsonConvert.DeserializeObject<VoucherDTO>(voucherRes.Result?.ToString()!)
+                        : new VoucherDTO();
+
+                    result.Add(new UserVoucherRedemptionViewModel
+                    {
+                        Redemption = redemption,
+                        Voucher = voucher!,
+                        User = user! 
+                    });
+                }
+
+                return View(result);
+            }
+
+            TempData["error"] = response?.Message ?? "Không thể tải lịch sử đổi điểm.";
+            return View(new List<UserVoucherRedemptionViewModel>());
+        }
+
     }
 }

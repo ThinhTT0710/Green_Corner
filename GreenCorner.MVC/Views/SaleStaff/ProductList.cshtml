@@ -1,89 +1,206 @@
-﻿@model IEnumerable<ProductDTO>
-@{
-    ViewData["Title"] = "Product List";
-    Layout = "_LayoutAdmin";
-}﻿
+﻿    @model IEnumerable<ProductDTO>
+    @{
+        ViewData["Title"] = "Product List";
+        Layout = "_LayoutAdmin";
+    }﻿
 
-<section class="content-main">
-    <div class="content-header">
-        <div>
-            <h2 class="content-title card-title">Danh sách sản phẩm</h2>
-        </div>
-        <div>
-            <a asp-action="ExportToExcel" class="btn btn-light rounded font-md"> Export Excel</a>
-            <a href="#" class="btn btn-primary btn-sm rounded">Create new</a>
-        </div>
-    </div>
-    <div class="card mb-4">
-        <header class="card-header">
-            <div class="row align-items-center">
-                <div class="col-md-2 col-6">
-                    <select class="form-select">
-                        <option selected>Status</option>
-                        <option>Active</option>
-                        <option>Disabled</option>
-                        <option>Show all</option>
-                    </select>
-                </div>
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Danh sách sản phẩm</h2>
             </div>
-        </header>
-        <!-- card-header end// -->
-        <div class="card-body">
-            @foreach (var item in Model)
-            {
-                <article class="itemlist">
-                    <div class="row align-items-center">
-                    <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                        <a class="itemside" href="#">
-                            <div class="left">
-                            @{
-                                List<string> images = item.ImageUrl.Split('&').ToList();
-                            }
-                                <img src="@images[0]" class="img-sm img-thumbnail" alt="Item" />
-                            </div>
-                            <div class="info">
-                                <h6 class="mb-0">@item.Name</h6>
-                            </div>
-                        </a>
+            <div>
+                <a asp-action="ExportToExcel" class="btn btn-light rounded font-md">Xuất file Excel</a>
+                <a asp-action="CreateNewProduct" asp-controller="Product" class="btn btn-primary btn-sm rounded">Tạo mới</a>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <header class="card-header">
+                <div class="row gx-3">
+                    <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Tìm kiếm..." class="form-control" id="searchInput" />
                     </div>
-                        <div class="col-lg-2 col-sm-2 col-4 col-price"><span>@item.Price.ToString("N0", new CultureInfo("vi-VN"))đ</span></div>
-                        @if (item.IsDeleted == true)
-                        {
-                            <div class="col-lg-2 col-sm-2 col-4 col-status">
-                                <span class="badge rounded-pill badge-soft-warning">Đã xóa</span>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-lg-2 col-sm-2 col-4 col-status">
-                                <span class="badge rounded-pill badge-soft-success">Hoạt động</span>
-                            </div>
-                        }
-
-                    <div class="col-lg-1 col-sm-2 col-4 col-date">
-                        <span>@item.CreatedAt?.ToString("dd/MM/yyyy")</span>
+                    <div class="col-lg-2 col-6 col-md-3">
+                    <select class="form-select" id="statusFilter">
+                            <option>Trạng thái</option>
+                            <option>Hoạt động</option>
+                            <option>Đã xóa</option>
+                        </select>
                     </div>
-                    <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
-                        <a href="#" class="btn btn-sm font-sm rounded btn-brand"> <i class="material-icons md-edit"></i> Edit </a>
-                        <a href="#" class="btn btn-sm font-sm btn-light rounded"> <i class="material-icons md-delete_forever"></i> Delete </a>
+                <div class="col-lg-2 col-6 col-md-3" >
+                    <select class="form-select" id="itemsPerPageFilter">
+                        <option value="10" selected>Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
+                        <option value="30">Hiển thị 30</option>
+                        <option value="40">Hiển thị 40</option>
+                        </select>
                     </div>
                 </div>
-            </article>
-            }
+            </header>
+            <!-- card-header end// -->
+        <div class="card-body" id="productListContainer">
+                @foreach (var item in Model)
+                {
+                    <article class="itemlist">
+                        <div class="row align-items-center">
+                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                            <a class="itemside" href="#">
+                                <div class="left">
+                                @{
+                                    List<string> images = item.ImageUrl.Split('&').ToList();
+                                }
+                                    <img src="@images[0]" class="img-sm img-thumbnail" alt="Item" />
+                                </div>
+                                <div class="info">
+                                    <h6 class="mb-0">@item.Name</h6>
+                                </div>
+                            </a>
+                        </div>
+                            <div class="col-lg-2 col-sm-2 col-4 col-price"><span>@item.Price.ToString("N0", new CultureInfo("vi-VN"))đ</span></div>
+                            @if (item.IsDeleted == true)
+                            {
+                                <div class="col-lg-2 col-sm-2 col-4 col-status">
+                                    <span class="badge rounded-pill badge-soft-warning">Đã xóa</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-lg-2 col-sm-2 col-4 col-status">
+                                    <span class="badge rounded-pill badge-soft-success">Hoạt động</span>
+                                </div>
+                            }
+
+                        <div class="col-lg-1 col-sm-2 col-4 col-date">
+                            <span>@item.CreatedAt?.ToString("dd/MM/yyyy")</span>
+                        </div>
+                            <div class="col-lg-2 col-sm-2 col-4 col-action text-end dropdown">
+                                <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" asp-action="ProductDetails" asp-route-productId="@item.ProductId">Xem chi tiết</a>
+                                    <a class="dropdown-item" asp-action="UpdateProduct" asp-controller="Product" asp-route-productId="@item.ProductId">Cập nhật</a>
+                                    <a class="dropdown-item text-danger" asp-controller="Product" asp-action="DeleteProduct"
+                                       asp-route-productId="@item.ProductId">Xóa</a>
+                                </div>
+                            </div>
+                    </div>
+                </article>
+                }
+            <div id="noResultMessage" class="text-center text-muted my-4 d-none">Không tìm thấy sản phẩm phù hợp.</div>
+            </div>
         </div>
-    </div>
-    <div class="pagination-area mt-30 mb-50">
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-start">
-                <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                <li class="page-item"><a class="page-link" href="#">02</a></li>
-                <li class="page-item"><a class="page-link" href="#">03</a></li>
-                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                <li class="page-item"><a class="page-link" href="#">16</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-</section>
+        <div class="pagination-area mt-30 mb-50">
+            <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start" id="pagination">
+                </ul>
+            </nav>
+        </div>
+    </section>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const statusFilter = document.getElementById("statusFilter");
+            const itemsPerPageFilter = document.getElementById("itemsPerPageFilter");
+            const productContainer = document.getElementById("productListContainer");
+            const paginationContainer = document.getElementById("pagination");
+            const noResultMessage = document.getElementById("noResultMessage");
+
+            const allProducts = Array.from(productContainer.getElementsByTagName("article"));
+            let filteredProducts = [...allProducts];
+            let currentPage = 1;
+
+            function updateDisplay() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedStatus = statusFilter.value.toLowerCase();
+
+                filteredProducts = allProducts.filter(product => {
+                    const name = product.querySelector(".col-name .info h6").innerText.toLowerCase();
+                    const price = product.querySelector(".col-price").innerText.toLowerCase();
+                    const statusText = product.querySelector(".col-status span").innerText.toLowerCase();
+
+                    const matchesSearch =
+                        name.includes(searchTerm) ||
+                        price.includes(searchTerm) ||
+                        statusText.includes(searchTerm);
+
+                    const matchesStatus = (selectedStatus === "trạng thái" || statusText === selectedStatus);
+
+                    return matchesSearch && matchesStatus;
+                });
+
+                if (filteredProducts.length === 0) {
+                    renderProductItems(); 
+                    paginationContainer.innerHTML = "";
+                    noResultMessage.classList.remove("d-none");
+                    return;
+                }
+
+                noResultMessage.classList.add("d-none");
+                renderPagination();
+                renderProductItems();
+            }
+
+            function renderProductItems() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+
+                const currentArticles = productContainer.querySelectorAll('article.itemlist');
+                currentArticles.forEach(article => article.remove());
+
+                paginatedProducts.forEach(product => productContainer.appendChild(product));
+            }
+
+            function renderPagination() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+                paginationContainer.innerHTML = "";
+
+                if (totalPages <= 1) return;
+
+                const prevLi = document.createElement("li");
+                prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+                prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}" style="padding: 6px;"><i class="material-icons md-chevron_left"></i></a>`;
+                paginationContainer.appendChild(prevLi);
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageLi = document.createElement("li");
+                    pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                    pageLi.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+                    paginationContainer.appendChild(pageLi);
+                }
+
+                const nextLi = document.createElement("li");
+                nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+                nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}" style="padding: 6px;"><i class="material-icons md-chevron_right"></i></a>`;
+                paginationContainer.appendChild(nextLi);
+            }
+
+            function triggerFilter() {
+                currentPage = 1;
+                updateDisplay();
+            }
+
+            searchInput.addEventListener("input", triggerFilter);
+            statusFilter.addEventListener("change", triggerFilter);
+            itemsPerPageFilter.addEventListener("change", triggerFilter);
+
+            paginationContainer.addEventListener("click", function (e) {
+                e.preventDefault();
+                const target = e.target.closest("a.page-link");
+                if (target && !target.parentElement.classList.contains('disabled')) {
+                    const page = parseInt(target.dataset.page, 10);
+                    if (!isNaN(page)) {
+                        currentPage = page;
+                        renderProductItems();
+                        renderPagination();
+                    }
+                }
+            });
+
+            updateDisplay();
+        });
+    </script>
+}

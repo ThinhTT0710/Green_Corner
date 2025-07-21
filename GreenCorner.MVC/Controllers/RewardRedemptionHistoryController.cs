@@ -11,11 +11,13 @@ namespace GreenCorner.MVC.Controllers
     {
         private readonly IRewardRedemptionHistoryService _rewardRedemptionHistoryService;
         private readonly IVoucherService _voucherService;
+        private readonly IUserService _userService;
 
-        public RewardRedemptionHistoryController(IRewardRedemptionHistoryService rewardRedemptionHistoryService, IVoucherService voucherService)
+        public RewardRedemptionHistoryController(IRewardRedemptionHistoryService rewardRedemptionHistoryService, IVoucherService voucherService, IUserService userService)
         {
             _rewardRedemptionHistoryService = rewardRedemptionHistoryService;
             _voucherService = voucherService;
+            _userService = userService;
         }
         public async Task<IActionResult> GetRewardRedemptionHistory()
         {
@@ -49,6 +51,62 @@ namespace GreenCorner.MVC.Controllers
             return View(new List<UserVoucherRedemptionViewModel>());
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ViewUsersRedeemedReward()
+        {
+            var response = await _rewardRedemptionHistoryService.GetUserRewardRedemption();
 
+            if (response == null || !response.IsSuccess)
+            {
+                TempData["error"] = response?.Message ?? "Không thể lấy danh sách người dùng đã đổi thưởng.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var userIds = JsonConvert.DeserializeObject<List<string>>(response.Result.ToString());
+
+            if (userIds == null || !userIds.Any())
+            {
+                TempData["error"] = "Không có người dùng nào đã đổi thưởng.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var viewModelList = new List<UserWithVoucherRedemptionViewModel>();
+
+            foreach (var userId in userIds.Distinct()) // bỏ trùng nếu có
+            {
+                var userResponse = await _userService.GetUserById(userId);
+
+                if (userResponse != null && userResponse.IsSuccess)
+                {
+                    var user = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result?.ToString() ?? "");
+
+                    viewModelList.Add(new UserWithVoucherRedemptionViewModel
+                    {
+                        User = user
+                    });
+                }
+                else
+                {
+                    TempData["warning"] = $"Không thể lấy thông tin người dùng có ID: {userId}";
+                }
+            }
+
+            return View(viewModelList);
+        }
+        [HttpPost]
+        public async Task<IActionResult> MarkAsUsed(int userVoucherId, string userId)
+        {
+            var response = await _rewardRedemptionHistoryService.MarkAsUsedAsync(userVoucherId);
+
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = "Sử dụng Voucher thành công.";
+            }
+            else
+            {
+                TempData["error"] = response?.Message ?? "Cập nhật trạng thái thất bại!";
+            }
+            return RedirectToAction("GetUserRewardRedemptionHistory", "User", new { userId });
+        }
     }
 }

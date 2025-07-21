@@ -4,6 +4,7 @@ namespace GreenCorner.EventAPI.Repositories.Interface
 {
     public interface IVolunteerRepository
     {
+        Task<IEnumerable<Volunteer>> GetAllVolunteers();
         Task RegisteredVolunteer(Volunteer volunteer);
         Task<bool> IsVolunteer(int eventId, string userId);
         Task<bool> IsConfirmVolunteer(int eventId, string userId);

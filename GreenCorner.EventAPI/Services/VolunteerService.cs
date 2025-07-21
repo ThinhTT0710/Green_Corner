@@ -16,6 +16,12 @@ namespace GreenCorner.EventAPI.Services
             _mapper = mapper;
         }
 
+        public async Task<IEnumerable<VolunteerDTO>> GetAllVolunteer()
+        {
+            var volunteers = await _volunteerRepository.GetAllVolunteers();
+            return _mapper.Map<List<VolunteerDTO>>(volunteers);
+        }
+
         public async Task ApproveTeamLeaderRegistration(int id)
         {
             await _volunteerRepository.ApproveTeamLeaderRegistration(id);
@@ -94,7 +100,7 @@ namespace GreenCorner.EventAPI.Services
 
         public async Task<bool> IsConfirmVolunteer(int eventId, string userId)
         {
-            return await _volunteerRepository.IsVolunteer(eventId, userId);
+            return await _volunteerRepository.IsConfirmVolunteer(eventId, userId);
         }
 
         public async Task<string> RegisterVolunteer(VolunteerDTO volunteerDto)

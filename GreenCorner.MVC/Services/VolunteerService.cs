@@ -21,6 +21,15 @@ namespace GreenCorner.MVC.Services
             });
         }
 
+        public async Task<ResponseDTO?> GetAllVolunteer()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/get-all"
+            });
+        }
+
         public async Task<ResponseDTO?> ApproveVolunteerRegistration(int id)
         {
             return await _baseService.SendAsync(new RequestDTO

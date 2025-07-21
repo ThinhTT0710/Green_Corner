@@ -10,5 +10,6 @@ namespace GreenCorner.EcommerceAPI.Repositories.Interface
         Task Update(OrderDetail orderDetail);
         Task Delete(int id);
         Task<IEnumerable<OrderDetail>> GetByOrderID(int OrderDetailId);
+        Task<bool> HasRestrictedOrdersByProductId(int productId);
     }
 }

@@ -10,9 +10,11 @@ namespace GreenCorner.MVC.Controllers
     public class ChatController : Controller
     {
         private readonly IChatService _chatService;
-        public ChatController(IChatService chatService)
+        private readonly IVolunteerService _volunteerService;
+        public ChatController(IChatService chatService, IVolunteerService volunteerService)
         {
             _chatService = chatService;
+            _volunteerService = volunteerService;
         }
 
         public async Task<IActionResult> Index(int eventId)
@@ -30,30 +32,37 @@ namespace GreenCorner.MVC.Controllers
                     return RedirectToAction("Index", "Home");
                 }
                 var userID = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
-                var response = await _chatService.GetChatMessagesAsync(eventId);
-                if (response != null || response.IsSuccess)
+                var checkConfirmVolunteer = await _volunteerService.IsConfirmVolunteer(eventId, userID);
+                if (checkConfirmVolunteer != null && checkConfirmVolunteer.IsSuccess)
                 {
-                    var chatHistory = JsonConvert.DeserializeObject<List<ChatMessageDTO>>(Convert.ToString(response.Result));
-                    ViewBag.EventId = eventId;
-                    ViewBag.SenderId = userID;
-                    ViewBag.SenderName = User.FindFirst(ClaimTypes.Name)?.Value;
-                    ViewBag.SenderAvatar = User.FindFirst("avatar")?.Value ?? "/imgs/avatars/default.png";
+                    var response = await _chatService.GetChatMessagesAsync(eventId);
+                    if (response != null || response.IsSuccess)
+                    {
+                        var chatHistory = JsonConvert.DeserializeObject<List<ChatMessageDTO>>(Convert.ToString(response.Result));
+                        ViewBag.EventId = eventId;
+                        ViewBag.SenderId = userID;
+                        ViewBag.SenderName = User.FindFirst(ClaimTypes.Name)?.Value;
+                        ViewBag.SenderAvatar = User.FindFirst("avatar")?.Value ?? "/imgs/avatars/default.png";
 
-                    return View(chatHistory);
+                        return View(chatHistory);
+                    }
+                    else
+                    {
+                        TempData["error"] = response?.Message;
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
                 else
-                {
-                    TempData["error"] = response?.Message;
-                    return RedirectToAction("Index", "Home");
-                }
+                    {
+                        TempData["error"] = "Bạn chưa đăng ký tham gia sự kiện này hoặc chưa được phê duyệt làm tình nguyện viên.";
+                        return RedirectToAction("Index", "Home");
+                    }
             }
             catch (Exception ex)
             {
                 TempData["error"] = "Đã xảy ra lỗi: " + ex.Message;
                 return RedirectToAction("Error404", "Home");
             }
-                
-
         }
     }
 }

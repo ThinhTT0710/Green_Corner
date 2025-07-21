@@ -1,4 +1,7 @@
-﻿@model List<GreenCorner.MVC.ViewModels.FeedbackWithUserViewModel>
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@model List<GreenCorner.MVC.ViewModels.FeedbackWithUserViewModel>
 
 @{
     ViewData["Title"] = "Danh sách phản hồi";
@@ -10,30 +13,26 @@
             <h2 class="content-title card-title mb-4">@ViewData["Title"]</h2>
             <p>Danh sách phản hồi từ người dùng</p>
         </div>
-        <div>
-            <input type="text" placeholder="Tìm theo tên người gửi..." class="form-control bg-white" />
-        </div>
     </div>
 
     <div class="card mb-4">
         <header class="card-header">
             <div class="row gx-3">
                 <div class="col-lg-4 col-md-6 me-auto">
-                    <input type="text" placeholder="Tìm kiếm..." class="form-control" />
+                    <input type="text" id="searchInput" placeholder="Tìm theo tên hoặc tiêu đề..." class="form-control" />
                 </div>
                 <div class="col-lg-2 col-md-3 col-6">
-                    <select class="form-select">
-                        <option>Trạng thái</option>
-                        <option>Đã xử lý</option>
-                        <option>Chưa xử lý</option>
-                        <option>Tất cả</option>
+                    <select class="form-select" id="statusFilter">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="true">Đã xử lý</option>
+                        <option value="false">Chưa xử lý</option>
                     </select>
                 </div>
                 <div class="col-lg-2 col-md-3 col-6">
-                    <select class="form-select">
-                        <option>Hiển thị 10</option>
-                        <option>Hiển thị 20</option>
-                        <option>Hiển thị 50</option>
+                    <select class="form-select" id="itemsPerPage">
+                        <option value="10">Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
+                        <option value="50">Hiển thị 50</option>
                     </select>
                 </div>
             </div>
@@ -41,7 +40,7 @@
 
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-hover align-middle" id="feedbackTable">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -49,33 +48,22 @@
                             <th>Tiêu đề</th>
                             <th>Nội dung</th>
                             <th>Thời gian</th>
-                            <th class="text-end">Thao tác</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="feedbackBody">
                         @if (Model.Any())
                         {
                             foreach (var item in Model)
                             {
-                                <tr>
+                                <tr class="feedback-row"
+                                    data-name="@item.User?.FullName?.ToLower()"
+                                    data-title="@item.Feedback.Title.ToLower()"
+                                    data-status="@item.Feedback.ToString().ToLower()">
                                     <td>@item.Feedback.FeedBackId</td>
                                     <td>@(item.User?.FullName ?? "Không rõ")</td>
                                     <td>@item.Feedback.Title</td>
                                     <td>@item.Feedback.Content</td>
                                     <td>@item.Feedback.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
-                                    <td class="text-end d-flex justify-content-end gap-3">
-                                        <a href="#" class="btn btn-md rounded font-sm">Chi tiết</a>
-                                        <div class="dropdown">
-                                            <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm">
-                                                <i class="material-icons md-more_horiz"></i>
-                                            </a>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="#">Xem chi tiết</a>
-                                                <a class="dropdown-item" href="#">Xử lý</a>
-                                                <a class="dropdown-item text-danger" href="#">Xóa</a>
-                                            </div>
-                                        </div>
-                                    </td>
                                 </tr>
                             }
                         }
@@ -88,7 +76,89 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="pagination-area mt-3">
+                <nav>
+                    <ul class="pagination justify-content-start" id="pagination"></ul>
+                </nav>
+            </div>
         </div>
     </div>
 </section>
 
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const statusFilter = document.getElementById("statusFilter");
+            const itemsPerPage = document.getElementById("itemsPerPage");
+            const feedbackBody = document.getElementById("feedbackBody");
+            const pagination = document.getElementById("pagination");
+
+            const allRows = Array.from(document.querySelectorAll(".feedback-row"));
+            let currentPage = 1;
+
+            function filterRows() {
+                const keyword = searchInput.value.toLowerCase();
+                const selectedStatus = statusFilter.value;
+
+                return allRows.filter(row => {
+                    const name = row.dataset.name || "";
+                    const title = row.dataset.title || "";
+                    const status = row.dataset.status;
+
+                    const matchesText = name.includes(keyword) || title.includes(keyword);
+                    const matchesStatus = selectedStatus === "" || status === selectedStatus;
+
+                    return matchesText && matchesStatus;
+                });
+            }
+
+            function renderTable() {
+                const perPage = parseInt(itemsPerPage.value);
+                const filtered = filterRows();
+                const totalPages = Math.ceil(filtered.length / perPage);
+
+                const start = (currentPage - 1) * perPage;
+                const end = start + perPage;
+
+                feedbackBody.innerHTML = "";
+                filtered.slice(start, end).forEach(row => feedbackBody.appendChild(row));
+
+                renderPagination(totalPages);
+            }
+
+            function renderPagination(totalPages) {
+                pagination.innerHTML = "";
+
+                if (totalPages <= 1) return;
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const li = document.createElement("li");
+                    li.className = `page-item ${i === currentPage ? "active" : ""}`;
+                    li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                    li.addEventListener("click", e => {
+                        e.preventDefault();
+                        currentPage = i;
+                        renderTable();
+                    });
+                    pagination.appendChild(li);
+                }
+            }
+
+            [searchInput, statusFilter].forEach(el => {
+                el.addEventListener("input", () => {
+                    currentPage = 1;
+                    renderTable();
+                });
+            });
+
+            itemsPerPage.addEventListener("change", () => {
+                currentPage = 1;
+                renderTable();
+            });
+
+            renderTable();
+        });
+    </script>
+}

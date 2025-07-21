@@ -13,6 +13,7 @@ namespace GreenCorner.EventAPI.Services.Interface
         Task ApproveTrashEvent(int id);
 		Task RejectTrashEvent(int id);
         Task<IEnumerable<TrashEventDTO>> GetByUserId(string userId);
+        Task<MonthlyEventAnalyticsDTO> GetMonthlyEventAnalytics(int year);
     }
 }
 

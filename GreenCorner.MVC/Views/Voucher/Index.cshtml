@@ -1,53 +1,207 @@
-﻿@{
+﻿@model IEnumerable<VoucherDTO>
+@{
+    ViewData["Title"] = "Danh sách Voucher";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
-@model IEnumerable<VoucherDTO>
 
-<div class="card shadow border-0 mt-4">
-    <div class="card-header bg-secondary bg-gradient py-3">
-        <div class="row">
-            <div class="col-12 text-center">
-                <h1 class="text-white">Voucher List</h1>
-            </div>
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Danh sách Voucher</h2>
+        </div>
+        <div>
+            <a asp-action="ExportToExcel" class="btn btn-light rounded font-md">Xuất file Excel</a>
+            <a asp-action="Create" class="btn btn-primary btn-sm rounded">Tạo mới</a>
         </div>
     </div>
 
-    <div class="card-body p-4">
-        <div class="row pb-3">
-            <div class="col-6">
-                <a asp-action="Create" class="btn btn-success">+ Add New Voucher</a>
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Tìm kiếm..." class="form-control" id="searchInput" />
+                </div>
+                <div class="col-lg-2 col-6 col-md-3">
+                    <select class="form-select" id="statusFilter">
+                        <option value="">Trạng thái</option>
+                        <option value="có">Hoạt động</option>
+                        <option value="không">Ngừng hoạt động</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-6 col-md-3">
+                    <select class="form-select" id="itemsPerPageFilter">
+                        <option value="10" selected>Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
+                        <option value="30">Hiển thị 30</option>
+                        <option value="all">Tất cả</option>
+                    </select>
+                </div>
             </div>
-        </div>
+        </header>
 
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Points</th>
-                    <th>Start Date</th>
-                    <th>Expiration Date</th>
-                    <th class="text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.Title</td>
-                        <td>@item.Description</td>
-                        <td>@item.PointsRequired</td>
-                        <td>@item.StartDate?.ToString("dd/MM/yyyy")</td>
-                        <td>@item.ExpirationDate?.ToString("dd/MM/yyyy")</td>
-                        <td class="text-center">
-                            <a asp-action="Detail" asp-route-voucherId="@item.VoucherId" class="btn btn-sm btn-info">Detail</a>
-                            <a asp-action="Edit" asp-route-voucherId="@item.VoucherId" class="btn btn-sm btn-warning mx-1">Edit</a>
-                            <a asp-action="Delete" asp-route-voucherId="@item.VoucherId" class="btn btn-sm btn-danger">Delete</a>
-                        </td>
-                    </tr>
+        <div class="card-body" id="voucherListContainer">
+            <!-- Dòng tiêu đề -->
+            <div class="row fw-bold mb-2 px-2 text-muted small">
+                <div class="col-lg-4 col-sm-4 col-8">Tiêu đề & Địa chỉ</div>
+                <div class="col-lg-1 col-sm-2 col-4">Điểm yêu cầu</div>
+                <div class="col-lg-1 col-sm-2 col-4">Số lượng</div>
+                <div class="col-lg-2 col-sm-2 col-4">Trạng thái</div>
+                <div class="col-lg-2 col-sm-2 col-4">Ngày hết hạn</div>
+                <div class="col-lg-2 col-sm-2 col-4 text-end">Thao tác</div>
+            </div>
+
+            @foreach (var item in Model)
+            {
+                <article class="itemlist voucher-item py-2 border-top"
+                         data-title="@item.Title?.ToLower()"
+                         data-address="@item.Address?.ToLower()"
+                         data-active="@(item.IsActive ? "có" : "không")">
+                    <div class="row align-items-center">
+                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                            <div class="info">
+                                <h6 class="mb-1 fw-bold">@item.Title</h6>
+                                <p class="text-muted mb-0">Địa chỉ: @(item.Address ?? "Không có")</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-1 col-sm-2 col-4">
+                            <span>@item.PointsRequired</span>
+                        </div>
+                        <div class="col-lg-1 col-sm-2 col-4">
+                            <span>@item.Quantity</span>
+                        </div>
+                        <div class="col-lg-2 col-sm-2 col-4 col-status">
+                            @if (item.IsActive)
+                            {
+                                <span class="badge rounded-pill badge-soft-success">Hoạt động</span>
+                            }
+                            else
+                            {
+                                <span class="badge rounded-pill badge-soft-warning">Ngừng hoạt động</span>
+                            }
+                        </div>
+                        <div class="col-lg-2 col-sm-2 col-4">
+                            <span>@item.ExpirationDate?.ToString("HH:mm dd/MM/yyyy")</span>
+                        </div>
+                        <div class="col-lg-2 col-sm-2 col-4 text-end dropdown">
+                            <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm">
+                                <i class="material-icons md-more_horiz"></i>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" asp-action="Detail" asp-route-voucherId="@item.VoucherId">Chi tiết</a>
+                                <a class="dropdown-item" asp-action="Edit" asp-route-voucherId="@item.VoucherId">Sửa</a>
+                                <a class="dropdown-item text-danger" asp-action="Delete" asp-route-voucherId="@item.VoucherId">Xóa</a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            }
+            <div id="noResultMessage" class="text-center text-muted my-4 d-none">Không tìm thấy voucher phù hợp.</div>
+        </div>
+    </div>
+
+    <div class="pagination-area mt-30 mb-50">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-start" id="pagination"></ul>
+        </nav>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const statusFilter = document.getElementById("statusFilter");
+            const itemsPerPageFilter = document.getElementById("itemsPerPageFilter");
+            const voucherContainer = document.getElementById("voucherListContainer");
+            const paginationContainer = document.getElementById("pagination");
+            const noResultMessage = document.getElementById("noResultMessage");
+
+            const allVouchers = Array.from(voucherContainer.getElementsByClassName("voucher-item"));
+            let filteredVouchers = [...allVouchers];
+            let currentPage = 1;
+
+            function updateDisplay() {
+                const itemsPerPage = itemsPerPageFilter.value;
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedStatus = statusFilter.value.toLowerCase();
+
+                filteredVouchers = allVouchers.filter(item => {
+                    const title = item.dataset.title || "";
+                    const address = item.dataset.address || "";
+                    const active = item.dataset.active || "";
+
+                    const matchSearch = title.includes(searchTerm) || address.includes(searchTerm);
+                    const matchStatus = !selectedStatus || active === selectedStatus;
+
+                    return matchSearch && matchStatus;
+                });
+
+                noResultMessage.classList.toggle("d-none", filteredVouchers.length > 0);
+
+                if (itemsPerPage === "all") {
+                    renderVouchers(filteredVouchers);
+                    paginationContainer.innerHTML = "";
+                } else {
+                    renderPagination(filteredVouchers.length, parseInt(itemsPerPage));
+                    renderVouchers(filteredVouchers);
                 }
-            </tbody>
-        </table>
-    </div>
-</div>
+            }
 
+            function renderVouchers(data) {
+                const itemsPerPage = itemsPerPageFilter.value === "all" ? data.length : parseInt(itemsPerPageFilter.value);
+                const start = (currentPage - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                const currentItems = data.slice(start, end);
+
+                const currentArticles = voucherContainer.querySelectorAll("article.voucher-item");
+                currentArticles.forEach(el => el.remove());
+
+                currentItems.forEach(item => voucherContainer.insertBefore(item, noResultMessage));
+            }
+
+            function renderPagination(totalItems, itemsPerPage) {
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+                paginationContainer.innerHTML = "";
+
+                if (totalPages <= 1) return;
+
+                const createPage = (page, label, disabled = false, active = false) => {
+                    const li = document.createElement("li");
+                    li.className = `page-item ${disabled ? "disabled" : ""} ${active ? "active" : ""}`;
+                    li.innerHTML = `<a class="page-link" href="#" data-page="${page}">${label}</a>`;
+                    return li;
+                };
+
+                paginationContainer.appendChild(createPage(currentPage - 1, "<", currentPage === 1));
+
+                for (let i = 1; i <= totalPages; i++) {
+                    paginationContainer.appendChild(createPage(i, i, false, i === currentPage));
+                }
+
+                paginationContainer.appendChild(createPage(currentPage + 1, ">", currentPage === totalPages));
+            }
+
+            paginationContainer.addEventListener("click", function (e) {
+                e.preventDefault();
+                const link = e.target.closest("a.page-link");
+                if (!link) return;
+
+                const page = parseInt(link.dataset.page);
+                if (!isNaN(page)) {
+                    currentPage = page;
+                    renderVouchers(filteredVouchers);
+                    renderPagination(filteredVouchers.length, parseInt(itemsPerPageFilter.value));
+                }
+            });
+
+            [searchInput, statusFilter, itemsPerPageFilter].forEach(input =>
+                input.addEventListener("input", () => {
+                    currentPage = 1;
+                    updateDisplay();
+                })
+            );
+
+            updateDisplay();
+        });
+    </script>
+}

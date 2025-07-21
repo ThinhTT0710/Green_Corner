@@ -1,0 +1,156 @@
+﻿@model List<GreenCorner.MVC.ViewModels.UserVoucherRedemptionViewModel>
+
+@{
+    ViewData["Title"] = "Lịch sử đổi voucher của người dùng";
+}
+
+<section class="content-main">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mt-4 shadow-sm">
+                <div class="card-header text-white text-center" style="background-color: #3BB77E">
+                    <h3 class="mb-0">@ViewData["Title"]</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h5>Người dùng: <strong class="text-success">@Model.FirstOrDefault()?.User.FullName</strong></h5>
+                        <p>Email: <strong>@Model.FirstOrDefault()?.User.Email</strong></p>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 mb-2">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Tìm tên, mã voucher, trạng thái..." />
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <select id="itemsPerPage" class="form-select">
+                                <option value="10">Hiển thị 10</option>
+                                <option value="20">Hiển thị 20</option>
+                                <option value="all">Tất cả</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle text-center" id="redemptionTable">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>Mã đổi</th>
+                                    <th>Tên voucher</th>
+                                    <th>Mã voucher</th>
+                                    <th>Điểm đã đổi</th>
+                                    <th>Ngày hết hạn</th>
+                                    <th>Thời gian đổi</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        var statusText = item.Redemption.IsUsed ? "đã dùng" : "chưa dùng";
+                                        <tr class="history-row"
+                                            data-title="@item.Voucher.Title?.ToLower()"
+                                            data-code="@item.Voucher.Code?.ToLower()"
+                                            data-status="@statusText">
+                                            <td>@item.Redemption.UserVoucherId</td>
+                                            <td>@item.Voucher.Title</td>
+                                            <td><span class="badge bg-info text-dark">@item.Voucher.Code</span></td>
+                                            <td class="text-danger fw-bold">@item.Voucher.PointsRequired</td>
+                                            <td>@item.Voucher.ExpirationDate?.ToString("dd/MM/yyyy")</td>
+                                            <td>@item.Redemption.RedeemedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                @if (!item.Redemption.IsUsed)
+                                                {
+                                                    <form asp-action="MarkAsUsed" asp-controller="RewardHistory" method="post" class="d-inline">
+                                                        <input type="hidden" name="userVoucherId" value="@item.Redemption.UserVoucherId" />
+                                                        <input type="hidden" name="userId" value="@item.Redemption.UserId" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-primary">Sử dụng</button>
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-success fw-bold">Đã sử dụng</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-4">
+                                            Không có lịch sử đổi voucher nào được tìm thấy.
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination-area mt-3" id="pagination"></div>
+
+                    <a asp-action="ViewUsersRedeemedReward" asp-controller="RewardRedemptionHistory" class="btn btn-secondary mt-3">← Quay về danh sách</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            function filterRedemptions() {
+                let keyword = $('#searchInput').val().toLowerCase();
+                let rows = $('.history-row');
+
+                rows.hide().filter(function () {
+                    let title = $(this).data('title');
+                    let code = $(this).data('code');
+                    let status = $(this).data('status');
+
+                    return !keyword ||
+                        (title && title.includes(keyword)) ||
+                        (code && code.includes(keyword)) ||
+                        (status && status.includes(keyword));
+                }).show();
+
+                paginate();
+            }
+
+            function paginate() {
+                let perPage = $('#itemsPerPage').val();
+                let items = $('.history-row:visible');
+                let total = items.length;
+
+                if (perPage === "all") {
+                    items.show();
+                    $('#pagination').html('');
+                    return;
+                }
+
+                let limit = parseInt(perPage);
+                let totalPages = Math.ceil(total / limit);
+                let paginationHtml = '';
+
+                for (let i = 1; i <= totalPages; i++) {
+                    paginationHtml += `<button class="btn btn-sm btn-outline-success me-1 page-btn" data-page="${i}">${i}</button>`;
+                }
+
+                $('#pagination').html(paginationHtml);
+                items.hide().slice(0, limit).show();
+
+                $('.page-btn').click(function () {
+                    let page = parseInt($(this).data('page'));
+                    let start = (page - 1) * limit;
+                    let end = start + limit;
+
+                    items.hide().slice(start, end).show();
+                });
+            }
+
+            $('#searchInput, #itemsPerPage').on('input change', filterRedemptions);
+            filterRedemptions();
+        });
+    </script>
+}

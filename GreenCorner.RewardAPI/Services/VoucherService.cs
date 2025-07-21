@@ -57,7 +57,34 @@ namespace GreenCorner.RewardAPI.Services
             var vouchers = await _voucherRepository.GetAllVouchers();
             return _mapper.Map<List<VoucherDTO>>(vouchers);
         }
-    }
 
+        public async  Task<IEnumerable<VoucherDTO>> GetTop10ValidVouchersAsync()
+        {
+            var vouchers = await _voucherRepository.GetTop10ValidVouchersAsync();
+            return _mapper.Map<List<VoucherDTO>>(vouchers);
+        }
+
+        public async Task<bool> RedeemVoucherAsync(int voucherId)
+        {
+            var voucher = await _voucherRepository.GetRewardDetail(voucherId);
+
+            if (voucher == null || !voucher.IsActive || voucher.Quantity <= 0)
+                return false;
+
+            voucher.Quantity--;
+
+            if (voucher.Quantity == 0)
+                voucher.IsActive = false;
+
+            await _voucherRepository.UpdateVoucher(voucher);
+            return true;
+        }
+
+        public async Task CleanUpExpiredOrEmptyVouchersAsync()
+        {
+            await _voucherRepository.CleanUpExpiredOrEmptyVouchersAsync();
+        }
+
+    }
 }
 

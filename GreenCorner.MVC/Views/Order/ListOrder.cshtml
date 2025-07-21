@@ -32,7 +32,8 @@
                 </div>
                 <div class="col-lg-2 col-6 col-md-3">
                     <select class="form-select" id="itemsPerPageFilter">
-                        <option value="20" selected>Hiển thị 20</option>
+                        <option value="10" selected>Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
                         <option value="30">Hiển thị 30</option>
                         <option value="40">Hiển thị 40</option>
                     </select>
@@ -92,7 +93,6 @@
         </nav>
     </div>
 </section>
-
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -104,24 +104,15 @@
             const noResultMessage = document.getElementById("noResultMessage");
 
             const allRows = Array.from(tableBody.getElementsByTagName("tr"));
+            let filteredRows = [...allRows];
             let currentPage = 1;
-            let itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
-            let isFiltering = false;
 
-            function renderAllRows() {
-                tableBody.innerHTML = "";
-                allRows.forEach(row => tableBody.appendChild(row));
-                paginationContainer.innerHTML = "";
-                noResultMessage.classList.add("d-none");
-            }
-
-            function updateTableDisplay() {
-                isFiltering = true;
-                itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+            function updateDisplay() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
                 const searchTerm = searchInput.value.toLowerCase();
                 const selectedStatus = statusFilter.value.toLowerCase();
 
-                const filteredRows = allRows.filter(row => {
+                filteredRows = allRows.filter(row => {
                     const id = row.cells[0].innerText.toLowerCase();
                     const name = row.cells[1].innerText.toLowerCase();
                     const email = row.cells[2].innerText.toLowerCase();
@@ -132,8 +123,8 @@
                         id.includes(searchTerm) ||
                         name.includes(searchTerm) ||
                         email.includes(searchTerm) ||
-                        total.includes(searchTerm) ||
-                        statusText.includes(searchTerm);
+                        total.includes(searchTerm) || 
+                        statusText.includes(searchTerm);  
 
                     const matchesStatus = (selectedStatus === "trạng thái" || statusText === selectedStatus);
 
@@ -148,11 +139,12 @@
                 }
 
                 noResultMessage.classList.add("d-none");
-                renderPagination(filteredRows.length);
-                renderTableRows(filteredRows);
+                renderPagination();
+                renderTableRows();
             }
 
-            function renderTableRows(filteredRows) {
+            function renderTableRows() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
                 const startIndex = (currentPage - 1) * itemsPerPage;
                 const endIndex = startIndex + itemsPerPage;
                 const paginatedRows = filteredRows.slice(startIndex, endIndex);
@@ -161,15 +153,16 @@
                 paginatedRows.forEach(row => tableBody.appendChild(row));
             }
 
-            function renderPagination(totalItems) {
-                const totalPages = Math.ceil(totalItems / itemsPerPage);
+            function renderPagination() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const totalPages = Math.ceil(filteredRows.length / itemsPerPage);
                 paginationContainer.innerHTML = "";
 
                 if (totalPages <= 1) return;
 
                 const prevLi = document.createElement("li");
                 prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-                prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}"><i class="material-icons md-chevron_left"></i></a>`;
+                prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}"  style="padding: 6px;"><i class="material-icons md-chevron_left"></i></a>`;
                 paginationContainer.appendChild(prevLi);
 
                 for (let i = 1; i <= totalPages; i++) {
@@ -181,32 +174,34 @@
 
                 const nextLi = document.createElement("li");
                 nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-                nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}"><i class="material-icons md-chevron_right"></i></a>`;
+                nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}"  style="padding: 6px;"><i class="material-icons md-chevron_right"></i></a>`;
                 paginationContainer.appendChild(nextLi);
             }
 
-            function triggerFiltering() {
+
+            function triggerFilter() {
                 currentPage = 1;
-                updateTableDisplay();
+                updateDisplay();
             }
 
-            searchInput.addEventListener("input", triggerFiltering);
-            statusFilter.addEventListener("change", triggerFiltering);
-            itemsPerPageFilter.addEventListener("change", triggerFiltering);
+            searchInput.addEventListener("input", triggerFilter);
+            statusFilter.addEventListener("change", triggerFilter);
+            itemsPerPageFilter.addEventListener("change", triggerFilter);
 
             paginationContainer.addEventListener("click", function (e) {
                 e.preventDefault();
                 const target = e.target.closest("a.page-link");
                 if (target && !target.parentElement.classList.contains('disabled')) {
                     const page = parseInt(target.dataset.page, 10);
-                    if (page) {
+                    if (!isNaN(page)) {
                         currentPage = page;
-                        updateTableDisplay();
+                        renderTableRows();
+                        renderPagination();
                     }
                 }
             });
 
-            renderAllRows();
+            updateDisplay();
         });
     </script>
 }
