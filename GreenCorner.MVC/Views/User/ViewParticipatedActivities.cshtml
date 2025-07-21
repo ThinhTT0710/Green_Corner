@@ -9,22 +9,21 @@
         <header class="card-header">
             <div class="row gx-3">
                 <div class="col-lg-4 col-md-6 me-auto">
-                    <input type="text" placeholder="Tìm kiếm sự kiện..." class="form-control" />
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm sự kiện..." class="form-control" />
                 </div>
                 <div class="col-lg-2 col-md-3 col-6">
-                    <select class="form-select">
-                        <option>Trạng thái sự kiện</option>
-                        <option>Active</option>
-                        <option>Pending</option>
-                        <option>Completed</option>
-                        <option>Tất cả</option>
+                    <select class="form-select" id="statusFilter">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="Approved">Đã duyệt</option>
+                        <option value="Pending">Đang chờ duyệt</option>
+                        <option value="Removed">Đã bị hủy</option>
                     </select>
                 </div>
                 <div class="col-lg-2 col-md-3 col-6">
-                    <select class="form-select">
-                        <option>Hiển thị 10</option>
-                        <option>Hiển thị 20</option>
-                        <option>Hiển thị 50</option>
+                    <select class="form-select" id="itemsPerPage">
+                        <option value="10">Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
+                        <option value="50">Hiển thị 50</option>
                     </select>
                 </div>
             </div>
@@ -40,7 +39,7 @@
             else
             {
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+                    <table class="table table-hover align-middle" id="participationTable">
                         <thead class="table-light">
                             <tr>
                                 <th>Tên sự kiện</th>
@@ -54,72 +53,39 @@
                                 <th>Ngày đăng ký</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tableBody">
                             @foreach (var item in Model.Participations)
                             {
-                                <tr>
+                                var eventStatus = item.Event.Status;
+                                var eventStatusText = eventStatus switch
+                                {
+                                    "Approved" => "Đã duyệt",
+                                    "Pending" => "Đang chờ duyệt",
+                                    "Removed" => "Đã bị hủy",
+                                    _ => "Không xác định"
+                                };
+
+                                var volunteerStatus = item.Volunteer.Status;
+                                var volunteerStatusText = volunteerStatus switch
+                                {
+                                    "Approved" => "Đã duyệt",
+                                    "Pending" => "Đang chờ duyệt",
+                                    "Rejected" => "Đã bị từ chối",
+                                    _ => "Không xác định"
+                                };
+                                <tr class="participation-row"
+                                    data-title="@item.Event.Title.ToLower()"
+                                    data-status="@eventStatus.ToLower()">
                                     <td>@item.Event.Title</td>
                                     <td>@item.Event.StartDate?.ToString("dd/MM/yyyy")</td>
                                     <td>@item.Event.EndDate?.ToString("dd/MM/yyyy")</td>
-                                    <td>
-                                        @{
-                                            var status = item.Event.Status;
-
-                                            var eventBg = status switch
-                                            {
-                                                "Approved" => "#28a745", // xanh lá
-                                                "Pending" => "#ffc107",  // vàng
-                                                "Removed" => "#dc3545",  // đỏ
-                                                _ => "#6c757d"           // xám
-                                            };
-
-                                            var eventColor = status == "Pending" ? "#212529" : "#fff";
-
-                                            var statusText = status switch
-                                            {
-                                                "Approved" => "Đã duyệt",
-                                                "Pending" => "Đang chờ duyệt",
-                                                "Removed" => "Đã bị hủy",
-                                                _ => "Không xác định"
-                                            };
-                                        }
-                                        <span class="badge rounded-pill" style="background-color:@(eventBg); color:@(eventColor);">
-                                            @statusText
-                                        </span>
-                                    </td>
-
+                                    <td>@eventStatusText</td>
                                     <td>@item.Volunteer.ApplicationType</td>
                                     <td>@item.Volunteer.Assignment</td>
                                     <td>@item.Volunteer.CarryItems</td>
-                                    <td>
-                                        @{
-                                            var statusVL = item.Volunteer.Status;
-
-                                            var volunteerBg = statusVL switch
-                                            {
-                                                "Approved" => "#28a745",  // Xanh lá
-                                                "Pending" => "#ffc107",   // Vàng
-                                                "Rejected" => "#dc3545",  // Đỏ
-                                                _ => "#6c757d"            // Xám
-                                            };
-
-                                            var volunteerColor = statusVL == "Pending" ? "#212529" : "#fff";
-
-                                            var statusTextVL = statusVL switch
-                                            {
-                                                "Approved" => "Đã duyệt",
-                                                "Pending" => "Đang chờ duyệt",
-                                                "Rejected" => "Đã bị từ chối",
-                                                _ => "Không xác định"
-                                            };
-                                        }
-                                        <span class="badge rounded-pill" style="background-color:@(volunteerBg); color:@(volunteerColor);">
-                                            @statusTextVL
-                                        </span>
-                                    </td>
+                                    <td>@volunteerStatusText</td>
                                     <td>@item.Volunteer.CreatedAt?.ToString("dd/MM/yyyy")</td>
                                 </tr>
-
                             }
                         </tbody>
                     </table>
@@ -129,17 +95,77 @@
     </div>
 
     <div class="pagination-area mt-15 mb-50">
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-start">
-                <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                <li class="page-item"><a class="page-link" href="#">02</a></li>
-                <li class="page-item"><a class="page-link" href="#">03</a></li>
-                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                <li class="page-item"><a class="page-link" href="#">10</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
-                </li>
-            </ul>
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-start" id="pagination"></ul>
         </nav>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const statusFilter = document.getElementById("statusFilter");
+            const itemsPerPage = document.getElementById("itemsPerPage");
+            const tableBody = document.getElementById("tableBody");
+            const pagination = document.getElementById("pagination");
+
+            const allRows = Array.from(document.querySelectorAll(".participation-row"));
+            let filteredRows = [...allRows];
+            let currentPage = 1;
+
+            function filterRows() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedStatus = statusFilter.value.toLowerCase();
+
+                return allRows.filter(row => {
+                    const title = row.dataset.title;
+                    const status = row.dataset.status;
+
+                    return title.includes(searchTerm) && (selectedStatus === "" || status === selectedStatus);
+                });
+            }
+
+            function renderTable() {
+                const perPage = parseInt(itemsPerPage.value);
+                const rows = filterRows();
+                const totalPages = Math.ceil(rows.length / perPage);
+
+                const start = (currentPage - 1) * perPage;
+                const end = start + perPage;
+
+                tableBody.innerHTML = "";
+                rows.slice(start, end).forEach(row => tableBody.appendChild(row));
+
+                pagination.innerHTML = "";
+                if (totalPages > 1) {
+                    for (let i = 1; i <= totalPages; i++) {
+                        const li = document.createElement("li");
+                        li.className = `page-item ${i === currentPage ? "active" : ""}`;
+                        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                        li.addEventListener("click", e => {
+                            e.preventDefault();
+                            currentPage = i;
+                            renderTable();
+                        });
+                        pagination.appendChild(li);
+                    }
+                }
+            }
+
+            [searchInput, statusFilter].forEach(input =>
+                input.addEventListener("input", () => {
+                    currentPage = 1;
+                    renderTable();
+                })
+            );
+
+            itemsPerPage.addEventListener("change", () => {
+                currentPage = 1;
+                renderTable();
+            });
+
+            renderTable();
+        });
+    </script>
+}

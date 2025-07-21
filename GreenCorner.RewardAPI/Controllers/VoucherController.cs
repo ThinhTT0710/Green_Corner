@@ -164,5 +164,21 @@ namespace GreenCorner.RewardAPI.Controllers
             }
         }
 
+        [HttpDelete("cleanup")]
+        public async Task<ResponseDTO> CleanUpExpiredOrEmptyVouchers()
+        {
+            try
+            {
+                await _voucherService.CleanUpExpiredOrEmptyVouchersAsync();
+                _responseDTO.Message = "Dọn dẹp thành công các voucher hết hạn hoặc đã hết số lượng.";
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = "Dọn dẹp thất bại: " + ex.Message;
+                return _responseDTO;
+            }
+        }
     }
 }

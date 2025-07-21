@@ -77,6 +77,14 @@ namespace GreenCorner.MVC.Services
             });
         }
 
-    }
+        public async Task<ResponseDTO?> CleanUpVouchers()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.DELETE,
+                Url = SD.RewardAPIBase + "/api/Voucher/cleanup"
+            });
+        }
 
+    }
 }

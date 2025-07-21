@@ -23,7 +23,9 @@ namespace GreenCorner.RewardAPI.Repositories
             var today = DateTime.Today;
 
             return await _context.Vouchers
-                .Where(v => v.ExpirationDate > today && v.IsActive == true)
+                .Where(v => v.IsActive == true)
+                .OrderBy(v => v.ExpirationDate < today) 
+                .ThenBy(v => v.ExpirationDate)          
                 .ToListAsync();
         }
         public async Task<IEnumerable<Voucher>> GetAllVouchers()
@@ -39,12 +41,8 @@ namespace GreenCorner.RewardAPI.Repositories
         }
         public async Task CreateVoucher(Voucher voucher)
         {
-
-
-         
             await _context.Vouchers.AddAsync(voucher);
-            await _context.SaveChangesAsync();
-        
+            await _context.SaveChangesAsync();       
         }
        
 
@@ -74,11 +72,47 @@ namespace GreenCorner.RewardAPI.Repositories
         public async Task<IEnumerable<Voucher>> GetTop10ValidVouchersAsync()
         {
             var now = DateTime.Today;
-            return await _context.Vouchers
+
+            var validVouchers = await _context.Vouchers
                 .Where(v => v.ExpirationDate >= now && v.IsActive)
                 .OrderBy(v => v.ExpirationDate)
                 .Take(10)
                 .ToListAsync();
+
+            if (!validVouchers.Any())
+            {
+                validVouchers = await _context.Vouchers
+                    .OrderBy(v => Guid.NewGuid())
+                    .Take(10)
+                    .ToListAsync();
+            }
+
+            return validVouchers;
         }
+
+        public async Task CleanUpExpiredOrEmptyVouchersAsync()
+        {
+            var today = DateTime.Today;
+
+            var vouchersToDeactivate = await _context.Vouchers
+                .Where(v =>
+                    v.IsActive && 
+                    (
+                        (v.ExpirationDate != null && EF.Functions.DateDiffDay(v.ExpirationDate, today) > 2) ||
+                        v.Quantity == 0
+                    ))
+                .ToListAsync();
+
+            if (vouchersToDeactivate.Any())
+            {
+                foreach (var voucher in vouchersToDeactivate)
+                {
+                    voucher.IsActive = false;
+                }
+
+                await _context.SaveChangesAsync();
+            }
+        }
+
     }
 }

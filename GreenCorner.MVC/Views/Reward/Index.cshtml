@@ -50,6 +50,8 @@
             <div class="row voucher-grid" id="voucherContainer">
                 @foreach (var item in Model)
                 {
+                    var isVoucherValid = item.ExpirationDate != null && item.ExpirationDate >= DateTime.Now;
+
                     <div class="col-lg-3 col-md-6 col-sm-6 voucher-item"
                          data-title="@item.Title.ToLower()"
                          data-address="@(item.Address?.ToLower() ?? "")"
@@ -78,7 +80,13 @@
                                     <h4 class="mb-5">
                                         <a asp-action="ViewDetailVoucher" asp-route-voucherId="@item.VoucherId">@item.Title</a>
                                     </h4>
-                                    <p class="font-sm text-muted">@item.Description</p>
+                                    <p class="font-sm text-muted">
+                                        @(string.IsNullOrEmpty(item.Description)
+                                            ? ""
+                                            : (item.Description.Length > 100
+                                            ? item.Description.Substring(0, 100) + "..."
+                                            : item.Description))
+                                    </p>
                                 </div>
                                 <div class="mb-10">
                                     <span class="font-small d-block"><strong>Điểm:</strong> @item.PointsRequired</span>
@@ -87,38 +95,43 @@
                                     <span class="font-small d-block"><i class="bi bi-box-seam me-1"></i>Còn lại: <strong>@item.Quantity</strong></span>
                                 </div>
 
-                                <button type="button"
-                                        class="btn btn-lg btn-success w-100 mb-2"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#confirmRedeemModal-@item.VoucherId">
-                                    Đổi @item.PointsRequired điểm
-                                </button>
+                                @if (isVoucherValid)
+                                {
+                                    <button type="button"
+                                            class="btn btn-lg btn-success w-100 mb-2"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#confirmRedeemModal-@item.VoucherId">
+                                        Đổi @item.PointsRequired điểm
+                                    </button>
+                                }
                             </div>
                         </div>
                     </div>
 
-                    <!-- Modal xác nhận -->
-                    <div class="modal fade" id="confirmRedeemModal-@item.VoucherId" tabindex="-1">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header text-white" style="background-color: #3BB77E;">
-                                    <h5 class="modal-title">Xác nhận đổi điểm</h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    Bạn có chắc muốn đổi <strong>@item.PointsRequired</strong> điểm để nhận voucher <strong>@item.Title</strong> không?
-                                </div>
-                                <div class="modal-footer">
-                                    <form asp-action="ExchangePoints" asp-controller="PointTransaction" method="post">
-                                        <input type="hidden" name="points" value="@item.PointsRequired" />
-                                        <input type="hidden" name="voucherId" value="@item.VoucherId" />
-                                        <button type="submit" class="btn btn-success">Xác nhận đổi</button>
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
-                                    </form>
+                    @if (isVoucherValid)
+                    {
+                        <div class="modal fade" id="confirmRedeemModal-@item.VoucherId" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header text-white" style="background-color: #3BB77E;">
+                                        <h5 class="modal-title">Xác nhận đổi điểm</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Bạn có chắc muốn đổi <strong>@item.PointsRequired</strong> điểm để nhận voucher <strong>@item.Title</strong> không?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <form asp-action="ExchangePoints" asp-controller="PointTransaction" method="post">
+                                            <input type="hidden" name="points" value="@item.PointsRequired" />
+                                            <input type="hidden" name="voucherId" value="@item.VoucherId" />
+                                            <button type="submit" class="btn btn-success">Xác nhận đổi</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 }
             </div>
 
