@@ -406,5 +406,23 @@ namespace GreenCorner.EventAPI.Controllers
             }
         }
 
+        [HttpGet("get-teamleader-userid/{eventId}")]
+        public async Task<ResponseDTO> GetTeamLeaderByEventId(int eventId)
+        {
+            try
+            {
+                var result = await _volunteerService.GetTeamLeaderByEventId(eventId);
+                _responseDTO.Result = result;
+                _responseDTO.IsSuccess = true;
+                _responseDTO.Message = "Lấy leaderId thành công";
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = "Lấy thông tin vai trò thất bại!";
+            }
+            return _responseDTO;
+        }
+
     }
 }

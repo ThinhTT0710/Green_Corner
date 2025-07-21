@@ -1,39 +1,56 @@
-@model IEnumerable<EventDTO>
+﻿@model IEnumerable<EventDTO>
 @{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
-<div class="card shadow border-0 mt-4">
-		<div class="row">
-				<h2 class="content-title card-title">All Event List</h2>
-		</div>
-	<div class="card-body p-4">
-	<div class="row pb-3">
-		<div class="col-6">
-		</div>
-		<div class="col-6 text-end">
-			<a asp-action="CreateCleanupEvent" class="btn btn-outline-primary"><i class="bi bi-plus-square"></i> Create Cleanup Event</a>
-		</div>
-	</div>
-	<div class="card-body">
-	<div class="table-responsive">
-		<table class="table table-hover">
+<section class="content-main">
+    <div class="content-header">
+        <h2 class="content-title">Danh sách sự kiện</h2>
+    </div>
+	<div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm..." class="form-control" />
+                </div>
+				
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select id="statusFilter" class="form-select">
+                         <option value="">Trạng thái</option>
+    <option value="Open">Đang mở</option>
+    <option value="Close">Đã đóng</option>
+    <option value="Is Going On">Đang hoạt động</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+			<a asp-action="CreateCleanupEvent" class="btn btn-outline-primary"><i class="bi bi-plus-square"></i> Tạo sự kiện mới</a>
+		 </div>
+            </div>
+        </header>
+        <!-- card-header end// -->
+        <div class="card-body">
+            <div class="table-responsive">
+		<table class="table table-hover" id="eventTable">
 			<thead>
 				<tr>
-					<th>Title</th>
-					<th>Description</th>
-					<th>Start Date</th>
-					<th>Max Parti</th>
-					<th>Status</th>
-					<th class="text-end">Action</th>
+					<th>Tiêu đề</th>
+					<th>Mô tả</th>
+					<th>Ngày bắt đầu</th>
+					<th>Ngày kết thúc</th>
+					<th>Số lượng tnv tối đa</th>
+					<th>Tình trạng</th>
+					<th>Cập nhật</th>
+					<th class="text-end"></th>
 				</tr>
 			</thead>
 			
 			<tbody>
 				@foreach (var item in Model)
 				{
-				<tr>
-					<td>
-						@item.Title
+				<tr data-status="@item.Status.ToLower()">
+					<td width="40%">
+						  <div class="info pl-3">
+						<h6 class="mb-0 title">@item.Title</h6>
+						</div>
 					</td>
 					<td>
 						@item.Description
@@ -42,42 +59,100 @@
 						@item.StartDate
 					</td>
 					<td>
-						@item.MaxParticipants
+						@item.EndDate
 					</td>
 					<td>
-						@item.Status
+						@item.MaxParticipants
 					</td>
-					<td class="text-end d-flex justify-content-end gap-3">
-						<div class="dropdown">
-							<a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-							<div class="dropdown-menu">
-								<a class="btn btn-success" asp-action="UpdateCleanupEvent" asp-route-eventId="@item.CleanEventId">
-									Update Info
+					
+									@{
+										if (@item.Status == "Open")
+										{
+											<td>
+						Đang mở
+										</td>
+									}else if (item.Status == "Close")
+									{
+										<td>
+											Đã đóng
+										</td>
+									}
+									else
+									{
+										<td>
+											Đang diễn ra
+										</td>
+									}
+								}
+					
+					<td class="text-end">
+									<a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="UpdateCleanupEvent" asp-route-eventId="@item.CleanEventId">
+									Cập nhật thông tin
 							</a>
-							<a class="btn btn-success" asp-action="UpdateCleanupEventStatus" asp-route-eventId="@item.CleanEventId">
-									Update Status
+									<a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="UpdateCleanupEventStatus" asp-route-eventId="@item.CleanEventId">
+									Cập nhật tình trạng
 							</a>
 							@{if(@item.Status=="Open"){
-									<a  class="btn btn-danger" asp-action="CloseCleanupEvent" asp-route-eventId="@item.CleanEventId">
-										Close Event
+											<a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="CloseCleanupEvent" asp-route-eventId="@item.CleanEventId">
+										Đóng sự kiện
 													</a>
 												}else if (item.Status == "Close")
 												{
-													<a  class="btn btn-danger" asp-action="OpenCleanupEvent" asp-route-eventId="@item.CleanEventId">
-										Open Event
+											<a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="OpenCleanupEvent" asp-route-eventId="@item.CleanEventId">
+										Mở sự kiện
 													</a>
 												}
 											}
-							</div>
-
-						</div>
+							
 					</td>
 				</tr>
 				}
 			</tbody>
 		</table
 	</div>
-	</div>
-</div>
-</div>
+        </div>
+    </div>
+	<div class="pagination-area mt-15 mb-50">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                <li class="page-item"><a class="page-link" href="#">02</a></li>
+                <li class="page-item"><a class="page-link" href="#">03</a></li>
+                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                <li class="page-item"><a class="page-link" href="#">16</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</section>
+@section Scripts {
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const statusSelect = document.getElementById("statusFilter");
+        const rows = document.querySelectorAll("#eventTable tbody tr");
+
+        function filterTable() {
+            const searchValue = searchInput.value.toLowerCase();
+            const selectedStatus = statusSelect.value.toLowerCase();
+
+            rows.forEach(row => {
+                const title = row.querySelector("td h6.title")?.textContent.toLowerCase() || "";
+                const rowStatus = row.getAttribute("data-status");
+
+                const matchTitle = title.includes(searchValue);
+                const matchStatus = !selectedStatus || rowStatus === selectedStatus;
+
+                row.style.display = (matchTitle && matchStatus) ? "" : "none";
+            });
+        }
+
+        searchInput.addEventListener("keyup", filterTable);
+        statusSelect.addEventListener("change", filterTable);
+    });
+
+</script>
+}
 

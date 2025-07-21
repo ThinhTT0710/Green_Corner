@@ -17,5 +17,8 @@ namespace GreenCorner.EventAPI.Services.Interface
         Task<List<EventDTO>> GetEventsByIdsAsync(List<int> eventIds);
         Task<(int currentCount, int max)> GetEventParticipationInfoAsync(int eventId);
         Task<bool> IsEventFullAsync(int eventId);
+
+        Task DeleteVolunteersByEventId(int eventId);
+        Task UpdateVolunteerStatusToParticipated(int eventId);
     }
 }

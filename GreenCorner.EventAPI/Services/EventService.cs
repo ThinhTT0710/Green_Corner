@@ -79,5 +79,14 @@ namespace GreenCorner.EventAPI.Services
             var (current, max) = await GetEventParticipationInfoAsync(eventId);
             return current >= max;
         }
+        public async Task DeleteVolunteersByEventId(int eventId)
+        {
+            await _eventRepository.DeleteVolunteersByEventId(eventId);
+        }
+        public async Task UpdateVolunteerStatusToParticipated(int eventId)
+        {
+            await _eventRepository.UpdateVolunteerStatusToParticipated(eventId);
+        }
+
     }
 }

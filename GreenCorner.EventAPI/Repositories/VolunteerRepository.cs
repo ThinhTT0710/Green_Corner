@@ -223,5 +223,14 @@ namespace GreenCorner.EventAPI.Repositories
                         .Where(v => v.UserId == userId && v.Status == "Approved")
                         .ToListAsync();
         }
+        public async Task<string> GetTeamLeaderByEventId(int eventId)
+        {
+            var record = await _context.Volunteers
+            .FirstOrDefaultAsync(v =>
+                v.CleanEventId == eventId &&
+                v.ApplicationType == "Team Leader");
+
+            return record == null ? null : record.UserId;
+        }
     }
 }

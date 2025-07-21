@@ -207,5 +207,37 @@ namespace GreenCorner.EventAPI.Controllers
             return response;
         }
 
+        [HttpGet("delete-eventVolunteer/{eventId}")]
+        public async Task<ResponseDTO> DeleteVolunteersByEventId(int eventId)
+        {
+            try
+            {
+                await _eventService.DeleteVolunteersByEventId(eventId);
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = "Xóa danh sách tình nguyện viên thất bại!";
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
+        [HttpGet("update-volunteerStatus/{eventId}")]
+        public async Task<ResponseDTO> UpdateVolunteerStatusToParticipated(int eventId)
+        {
+            try
+            {
+                await _eventService.UpdateVolunteerStatusToParticipated(eventId);
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = "Cập nhật tình nguyện viên thất bại!";
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
     }
 }

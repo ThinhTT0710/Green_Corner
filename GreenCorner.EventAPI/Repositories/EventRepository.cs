@@ -93,5 +93,34 @@ namespace GreenCorner.EventAPI.Repositories
             return await _context.EventVolunteers
                 .CountAsync(ev => ev.CleanEventId == cleanEventId);
         }
+
+        public async Task DeleteVolunteersByEventId(int eventId)
+        {
+            var volunteers = await _context.EventVolunteers
+                .Where(ev => ev.CleanEventId == eventId)
+                .ToListAsync();
+
+            if (volunteers.Any())
+            {
+                _context.EventVolunteers.RemoveRange(volunteers);
+                await _context.SaveChangesAsync();
+            }
+        }
+        public async Task UpdateVolunteerStatusToParticipated(int eventId)
+        {
+            var volunteers = await _context.Volunteers
+                .Where(v => v.CleanEventId == eventId)
+                .ToListAsync();
+
+            if (volunteers.Any())
+            {
+                foreach (var volunteer in volunteers)
+                {
+                    volunteer.Status = "Participated";
+                }
+
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

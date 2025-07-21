@@ -157,5 +157,9 @@ namespace GreenCorner.EventAPI.Services
             Volunteer volunteer = _mapper.Map<Volunteer>(volunteerDto);
             await _volunteerRepository.UpdateRegister(volunteer);
         }
+        public async Task<string> GetTeamLeaderByEventId(int eventId)
+        {
+            return await _volunteerRepository.GetTeamLeaderByEventId(eventId);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using GreenCorner.MVC.Models;
+using GreenCorner.MVC.Models.Notification;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
 using GreenCorner.MVC.ViewModels;
@@ -15,11 +16,13 @@ namespace GreenCorner.MVC.Controllers
         private readonly IEventService _eventService;
         private readonly IVolunteerService _volunteerService;
         private readonly IUserService _userService;
-        public EventController(IEventService eventService, IVolunteerService volunteerService, IUserService userService)
+        private readonly INotificationService _notificationService;
+        public EventController(IEventService eventService, INotificationService notificationService, IVolunteerService volunteerService, IUserService userService)
         {
             _eventService = eventService;
             _volunteerService = volunteerService;
             _userService = userService;
+            _notificationService = notificationService;
         }
         public async Task<IActionResult> Index()
         {
@@ -123,8 +126,9 @@ namespace GreenCorner.MVC.Controllers
             return NotFound();
         }
 
-        public async Task<IActionResult> RateEvent()
+        public async Task<IActionResult> RateEvent(int eventId)
         {
+            ViewBag.EventId = eventId;
             return View();
         }
 
@@ -138,7 +142,6 @@ namespace GreenCorner.MVC.Controllers
             }
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
             eventReviewDTO.UserId = userId;
-            eventReviewDTO.CleanEventId = 1;
             eventReviewDTO.CreatedAt = DateTime.Now;
             if (ModelState.IsValid)
             {
@@ -146,7 +149,7 @@ namespace GreenCorner.MVC.Controllers
                 if (response != null && response.IsSuccess)
                 {
                     TempData["success"] = "Đánh giá sự kiện thành công!";
-                    return RedirectToAction(nameof(EventReviewHistory));
+                    return RedirectToAction("ViewEventVolunteerListCheck", "User");
                 }
                 else
                 {
@@ -238,8 +241,10 @@ namespace GreenCorner.MVC.Controllers
             }
             return View(eventReviewDTO);
         }
-        public async Task<IActionResult> LeaderReview()
+        public async Task<IActionResult> LeaderReview(int eventId, string userId)
         {
+            ViewBag.EventId = eventId;
+            ViewBag.UserId = userId;
             return View();
         }
 
@@ -255,15 +260,13 @@ namespace GreenCorner.MVC.Controllers
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
             leaderReviewDTO.CreatedAt = DateTime.Now;
             leaderReviewDTO.ReviewerId = userId;
-            leaderReviewDTO.CleanEventId = 1;
-            leaderReviewDTO.LeaderId = "1";
             if (ModelState.IsValid)
             {
                 ResponseDTO response = await _eventService.LeaderReview(leaderReviewDTO);
                 if (response != null && response.IsSuccess)
                 {
                     TempData["success"] = "Đánh giá đội trưởng thành công!";
-                    return RedirectToAction(nameof(LeaderReviewHistory));
+                    return RedirectToAction("ViewEventVolunteerListCheck","User");
                 }
                 else
                 {
@@ -610,11 +613,10 @@ namespace GreenCorner.MVC.Controllers
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
             eventDTO.CreatedAt = DateTime.Now;
             eventDTO.Status = "Open";
-
             var files = Request.Form.Files;
             var (isSuccess, imagePaths, errorMessage) = await FileUploadHelper.UploadImagesStrictAsync(
                 files, folderName: "event", filePrefix: "event");
-
+           
             if (!isSuccess)
             {
                 ModelState.AddModelError("Image", errorMessage);
@@ -628,6 +630,21 @@ namespace GreenCorner.MVC.Controllers
                 ResponseDTO response = await _eventService.CreateCleanupEvent(eventDTO);
                 if (response != null && response.IsSuccess)
                 {
+                    var listUser = await _userService.GetActiveUser();
+                    if (listUser != null && listUser.IsSuccess)
+                    {
+                        List<UserDTO> users = listUser.Result != null ? Newtonsoft.Json.JsonConvert.DeserializeObject<List<UserDTO>>(listUser.Result.ToString()) : new List<UserDTO>();
+                        foreach (UserDTO user in users)
+                        {
+                            var notification = new NotificationDTO
+                            {
+                                UserId = user.ID,
+                                Title = "Sự kiện dòn rác vừa được tạo",
+                                Message = $"Hãy tham gia và chia sẻ sự kiện này để thu hút thêm tình nguyện viên cùng tham gia bảo vệ môi trường!."
+                            };
+                            var sendNotification = await _notificationService.SendNotification(notification);
+                        }
+                    }
                     TempData["success"] = "Tạo sự kiện dọn dẹp thành công!";
                     return RedirectToAction(nameof(GetAllEvent));
                 }
@@ -738,15 +755,42 @@ namespace GreenCorner.MVC.Controllers
         {
 			try
 			{
-				var response = await _eventService.CloseCleanupEvent(eventId);
-				if (response != null && response.IsSuccess)
-				{
-					TempData["success"] = "Két thúc sự kiện dọn dẹp thành công!";
-				}
-				else
-				{
-					TempData["error"] = response?.Message;
-				}
+                
+                var responseDate = await _eventService.GetByEventId(eventId);
+                EventDTO eventDTO = JsonConvert.DeserializeObject<EventDTO>(responseDate.Result.ToString());
+                if (DateTime.Now < eventDTO.EndDate)
+                {
+                    TempData["success"] = "Chưa đến thời gian kết thúc sự kiện!";
+                }
+                else
+                {
+                    var responseDeleteCleanEvent = await _eventService.DeleteVolunteersByEventId(eventId);
+                    if(responseDeleteCleanEvent!=null && responseDeleteCleanEvent.IsSuccess)
+                    {
+                        var updateVolunteerStatus = await _eventService.UpdateVolunteerStatusToParticipated(eventId);
+                        if(updateVolunteerStatus != null && updateVolunteerStatus.IsSuccess)
+                        {
+                            var response = await _eventService.CloseCleanupEvent(eventId);
+                            if (response != null && response.IsSuccess)
+                            {
+                                TempData["success"] = "Kết thúc sự kiện dọn dẹp thành công!";
+                            }
+                            else
+                            {
+                                TempData["error"] = response?.Message;
+                            }
+                        }
+                        else
+                        {
+                            TempData["error"] = responseDeleteCleanEvent?.Message;
+                        }
+                    }
+                    else
+                    {
+                        TempData["error"] = responseDeleteCleanEvent?.Message;
+                    }
+
+                }
 				return RedirectToAction("GetAllEvent", "Event");
 			}
 			catch (Exception ex)

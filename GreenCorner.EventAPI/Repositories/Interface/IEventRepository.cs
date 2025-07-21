@@ -15,5 +15,8 @@ namespace GreenCorner.EventAPI.Repositories.Interface
 		Task OpenCleanupEvent(int id);
         Task<List<CleanupEvent>> GetEventsByIdsAsync(List<int> eventIds);
         Task<int> CountVolunteersByEventIdAsync(int cleanEventId);
+        Task DeleteVolunteersByEventId(int eventId);
+        Task UpdateVolunteerStatusToParticipated(int eventId);
+
     }
 }
