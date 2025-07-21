@@ -39,43 +39,52 @@
                         </tr>
                     </thead>
                     <tbody id="registrationTableBody">
-                        @foreach (var item in Model.Registrations)
+                        @if (!Model.Registrations.Any())
                         {
                             <tr>
-                                <td class="text-center">@item.Volunteer.VolunteerId</td>
-                                <td>@item.User.FullName</td>
-                                <td class="text-center">@item.Volunteer.CleanEventId</td>
-                                <td class="text-center">@item.Volunteer.ApplicationType</td>
-                                <td class="text-center">
-                                    @{
-                                        var status = item.Volunteer.Status;
-                                        string statusDisplay = status switch
-                                        {
-                                            "Pending" => "Đang chờ duyệt",
-                                            "Approved" => "Đã duyệt",
-                                            "Removed" => "Đã bị hủy",
-                                            _ => "Không xác định"
-                                        };
-                                        string statusClass = status switch
-                                        {
-                                            "Pending" => "text-warning",
-                                            "Approved" => "text-success",
-                                            "Removed" => "text-danger",
-                                            _ => "text-muted"
-                                        };
-                                    }
-                                    <span class="@statusClass fw-semibold">@statusDisplay</span>
-                                </td>
-                                <td class="text-end">
-                                    <a asp-action="ViewTeamLeaderRegistrationDetail" asp-route-id="@item.Volunteer.VolunteerId" class="btn btn-sm btn-info me-1">Chi tiết</a>
-                                    <form asp-action="ApproveTeamLeader" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
-                                        <button type="submit" class="btn btn-sm btn-success me-1">Phê duyệt</button>
-                                    </form>
-                                    <form asp-action="RejectTeamLeader" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
-                                        <button type="submit" class="btn btn-sm btn-danger">Từ chối</button>
-                                    </form>
-                                </td>
+                                <td colspan="6" class="text-center text-muted">Không có đơn đăng ký nào.</td>
                             </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model.Registrations)
+                            {
+                                <tr>
+                                    <td class="text-center">@item.Volunteer.VolunteerId</td>
+                                    <td class="text-center">@item.User.FullName</td>
+                                    <td class="text-center">@item.Volunteer.CleanEventId</td>
+                                    <td class="text-center">@item.Volunteer.ApplicationType</td>
+                                    <td class="text-center">
+                                        @{
+                                            var status = item.Volunteer.Status;
+                                            string statusDisplay = status switch
+                                            {
+                                                "Pending" => "Đang chờ duyệt",
+                                                "Approved" => "Đã duyệt",
+                                                "Removed" => "Đã bị hủy",
+                                                _ => "Không xác định"
+                                            };
+                                            string statusClass = status switch
+                                            {
+                                                "Pending" => "text-warning",
+                                                "Approved" => "text-success",
+                                                "Removed" => "text-danger",
+                                                _ => "text-muted"
+                                            };
+                                        }
+                                        <span class="@statusClass fw-semibold">@statusDisplay</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a asp-action="ViewTeamLeaderRegistrationDetail" asp-route-id="@item.Volunteer.VolunteerId" class="btn btn-sm btn-info me-1">Chi tiết</a>
+                                        <form asp-action="ApproveTeamLeader" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-success me-1">Phê duyệt</button>
+                                        </form>
+                                        <form asp-action="RejectTeamLeader" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-danger">Từ chối</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
                         }
                     </tbody>
                 </table>

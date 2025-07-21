@@ -44,11 +44,11 @@ namespace GreenCorner.EventAPI.Services
         {
             await _eventRepository.CloseCleanupEvent(id);
         }
-		public async Task OpenCleanupEvent(int id)
-		{
-			await _eventRepository.OpenCleanupEvent(id);
-		}
-		public async Task UpdateCleanupEvent(EventDTO eventDTO)
+		    public async Task OpenCleanupEvent(int id)
+		    {
+			  await _eventRepository.OpenCleanupEvent(id);
+		    }
+		    public async Task UpdateCleanupEvent(EventDTO eventDTO)
         {
             CleanupEvent cleanup = _mapper.Map<CleanupEvent>(eventDTO);
             await _eventRepository.UpdateCleanupEvent(cleanup);
@@ -80,7 +80,14 @@ namespace GreenCorner.EventAPI.Services
             var (current, max) = await GetEventParticipationInfoAsync(eventId);
             return current >= max;
         }
-
+        public async Task DeleteVolunteersByEventId(int eventId)
+        {
+            await _eventRepository.DeleteVolunteersByEventId(eventId);
+        }
+        public async Task UpdateVolunteerStatusToParticipated(int eventId)
+        {
+            await _eventRepository.UpdateVolunteerStatusToParticipated(eventId);
+        }
         public async Task<IEnumerable<EventDTO>> GetTop3OpenEventsAsync()
         {
             var events = await _eventRepository.GetTop3OpenEventsAsync();

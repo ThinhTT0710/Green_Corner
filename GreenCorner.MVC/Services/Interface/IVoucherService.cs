@@ -12,6 +12,6 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> DeleteVoucher(int id);
         Task<ResponseDTO?> GetTop10ValidVouchersAsync();
         Task<ResponseDTO?> RedeemVoucher(int voucherId);
+        Task<ResponseDTO?> CleanUpVouchers();
     }
-
 }

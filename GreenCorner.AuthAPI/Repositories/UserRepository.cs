@@ -4,6 +4,7 @@ using GreenCorner.AuthAPI.Models.DTO;
 using GreenCorner.AuthAPI.Repositories.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace GreenCorner.AuthAPI.Repositories
 {
@@ -161,5 +162,63 @@ namespace GreenCorner.AuthAPI.Repositories
 			}
 			return userDTOs;
 		}
-	}
+        public async Task<List<UserDTO>> GetActiveUser()
+        {
+            var users = await _dbContext.Users.ToListAsync();
+            List<UserDTO> userDTOs = new List<UserDTO>();
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Contains("CUSTOMER"))
+                {
+                    UserDTO userDTO = new UserDTO
+                    {
+                        ID = user.Id,
+                        FullName = user.FullName,
+                        Email = user.Email,
+                        Address = user.Address,
+                        Avatar = user.Avatar,
+                        PhoneNumber = user.PhoneNumber
+                    };
+
+                    if (!user.LockoutEnd.HasValue)
+                    {
+                        userDTOs.Add(userDTO);
+                    }
+                    
+                }
+            }
+            return userDTOs;
+        }
+        public async Task<List<UserDTO>> GetUserNearTrashReport(string address)
+        {
+            var users = await _dbContext.Users
+        .Where(u => u.Address != null && u.Address.ToLower().Contains(address.ToLower()))
+        .ToListAsync();
+            List<UserDTO> userDTOs = new List<UserDTO>();
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Contains("CUSTOMER"))
+                {
+                    UserDTO userDTO = new UserDTO
+                    {
+                        ID = user.Id,
+                        FullName = user.FullName,
+                        Email = user.Email,
+                        Address = user.Address,
+                        Avatar = user.Avatar,
+                        PhoneNumber = user.PhoneNumber
+                    };
+
+                    if (!user.LockoutEnd.HasValue)
+                    {
+                        userDTOs.Add(userDTO);
+                    }
+
+                }
+            }
+            return userDTOs;
+        }
+    }
 }

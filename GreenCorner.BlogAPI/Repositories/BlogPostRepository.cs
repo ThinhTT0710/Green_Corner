@@ -43,7 +43,7 @@ namespace GreenCorner.BlogAPI.Repositories
                 throw new KeyNotFoundException($"Blog with ID {id} not found.");
             }
 
-            product.Status = "Removed";
+            _context.BlogPosts.Remove(product);
             await _context.SaveChangesAsync();
 
         }
@@ -66,7 +66,7 @@ namespace GreenCorner.BlogAPI.Repositories
 
         public  async Task<IEnumerable<BlogPost>> GetBlogCreate(string userId)
         {
-            return await _context.BlogPosts.Where(b => b.AuthorId == userId && b.Status == "Pending").ToListAsync();
+            return await _context.BlogPosts.Where(b => b.AuthorId == userId).ToListAsync();
         }
 
         public async Task<BlogPost> GetByBlogId(int id)

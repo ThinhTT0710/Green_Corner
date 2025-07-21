@@ -1,4 +1,4 @@
-﻿@model GreenCorner.MVC.ViewModels.VolunteerEventListViewModel
+@model GreenCorner.MVC.ViewModels.VolunteerEventListViewModel
 
 <section class="content-main">
     <div class="content-header">
@@ -9,24 +9,26 @@
         <header class="card-header">
             <div class="row gx-3">
                 <div class="col-lg-4 col-md-6 me-auto">
-                    <input type="text" placeholder="Tìm kiếm sự kiện..." class="form-control" />
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm sự kiện..." class="form-control" />
                 </div>
                 <div class="col-lg-2 col-md-3 col-6">
-                    <select class="form-select">
-                        <option>Trạng thái sự kiện</option>
-                        <option>Active</option>
-                        <option>Pending</option>
-                        <option>Completed</option>
-                        <option>Tất cả</option>
+                    <select id="eventStatusFilter" class="form-select">
+                       <option value="">Trạng thái sự kiện</option>
+    <option value="open">Đang mở</option>
+    <option value="close">Đã đóng</option>
+    <option value="is going on">Đang diễn ra</option>
                     </select>
-                </div>
-                <div class="col-lg-2 col-md-3 col-6">
-                    <select class="form-select">
-                        <option>Hiển thị 10</option>
-                        <option>Hiển thị 20</option>
-                        <option>Hiển thị 50</option>
+                    <select id="registerStatusFilter" class="form-select">
+                        <option value="">Trạng thái đăng ký</option>
+    <option value="approved">Đã duyệt</option>
+    <option value="pending">Đang chờ duyệt</option>
+    <option value="rejected">Đã bị từ chối</option>
+    <option value="participated">Đã tham gia</option>
                     </select>
-                </div>
+                </div
+               
+                    
+                
             </div>
         </header>
 
@@ -47,6 +49,7 @@
                                 <th>Ngày bắt đầu</th>
                                 <th>Ngày kết thúc</th>
                                 <th>Trạng thái sự kiện</th>
+                                <th>Đánh giá sự kiện</th>
                                 <th>Loại đơn</th>
                                 <th>Phân công</th>
                                 <th>Vật dụng mang theo</th>
@@ -57,7 +60,9 @@
                         <tbody>
                             @foreach (var item in Model.Participations)
                             {
-                                <tr>
+                                <tr data-title="@item.Event.Title.ToLower()"
+    data-eventstatus="@item.Event.Status.ToLower()"
+    data-volunteerstatus="@item.Volunteer.Status.ToLower()">
                                     <td>@item.Event.Title</td>
                                     <td>@item.Event.StartDate?.ToString("dd/MM/yyyy")</td>
                                     <td>@item.Event.EndDate?.ToString("dd/MM/yyyy")</td>
@@ -67,9 +72,8 @@
 
                                             var eventBg = status switch
                                             {
-                                                "Approved" => "#28a745", // xanh lá
-                                                "Pending" => "#ffc107",  // vàng
-                                                "Removed" => "#dc3545",  // đỏ
+                                                "Open" => "#28a745", // xanh lá
+                                                "Close" => "#ffc107",  // vàng  // đỏ
                                                 _ => "#6c757d"           // xám
                                             };
 
@@ -77,17 +81,39 @@
 
                                             var statusText = status switch
                                             {
-                                                "Approved" => "Đã duyệt",
-                                                "Pending" => "Đang chờ duyệt",
-                                                "Removed" => "Đã bị hủy",
-                                                _ => "Không xác định"
+                                                "Open" => "Đang mở",
+                                                "Close" => "Đã đóng",
+                                                "Is Going On" => "Đang diễn ra",
+                                                        _ => "Không xác định"
                                             };
-                                        }
+                                        
                                         <span class="badge rounded-pill" style="background-color:@(eventBg); color:@(eventColor);">
                                             @statusText
-                                        </span>
+                                            </span>
+                                            }
                                     </td>
-
+                                    <td>
+                                        @{
+                                            if (@item.Event.Status == "Close")
+                                            {
+                                                <span class="badge rounded-pill" style="background-color:#28a745; color:@(eventColor);">
+                                                    <a asp-controller="Event" asp-action="RateEvent" asp-route-eventId="@item.Event.CleanEventId">
+                                                        Rate Event
+                                                    </a>
+                                                </span>
+                                                <span class="badge rounded-pill" style="background-color:#28a745; color:@(eventColor);">
+                                                    <a asp-controller="Event" asp-action="LeaderReview" asp-route-eventId="@item.Event.CleanEventId" asp-route-leaderId="@item.TeamLeaderId">
+                                                        Review Leader
+                                                    </a>
+                                                </span>
+                                            }else{
+                                                <span class="badge rounded-pill" style="background-color:@(eventBg); color:@(eventColor);">
+                                                   Chưa thể đánh giá
+                                                </span>
+                                            }
+                                        }
+                                            
+                                    </td>
                                     <td>@item.Volunteer.ApplicationType</td>
                                     <td>@item.Volunteer.Assignment</td>
                                     <td>@item.Volunteer.CarryItems</td>
@@ -110,6 +136,7 @@
                                                 "Approved" => "Đã duyệt",
                                                 "Pending" => "Đang chờ duyệt",
                                                 "Rejected" => "Đã bị từ chối",
+                                                "Participated" => "Đã tham gia",
                                                 _ => "Không xác định"
                                             };
                                         }
@@ -143,3 +170,35 @@
         </nav>
     </div>
 </section>
+@section Scripts {
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const eventStatusFilter = document.getElementById("eventStatusFilter");
+        const registerStatusFilter = document.getElementById("registerStatusFilter");
+        const rows = document.querySelectorAll("table tbody tr");
+
+        function filterTable() {
+            const keyword = searchInput.value.toLowerCase();
+            const selectedEventStatus = eventStatusFilter.value;
+            const selectedRegisterStatus = registerStatusFilter.value;
+
+            rows.forEach(row => {
+                const title = row.getAttribute("data-title") || "";
+                const eventStatus = row.getAttribute("data-eventstatus") || "";
+                const volunteerStatus = row.getAttribute("data-volunteerstatus") || "";
+
+                const matchTitle = title.includes(keyword);
+                const matchEventStatus = !selectedEventStatus || eventStatus === selectedEventStatus;
+                const matchRegisterStatus = !selectedRegisterStatus || volunteerStatus === selectedRegisterStatus;
+
+                row.style.display = (matchTitle && matchEventStatus && matchRegisterStatus) ? "" : "none";
+            });
+        }
+
+        searchInput.addEventListener("keyup", filterTable);
+        eventStatusFilter.addEventListener("change", filterTable);
+        registerStatusFilter.addEventListener("change", filterTable);
+    });
+</script>
+}

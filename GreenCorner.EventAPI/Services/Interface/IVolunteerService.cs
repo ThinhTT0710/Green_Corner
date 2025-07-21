@@ -31,5 +31,6 @@ namespace GreenCorner.EventAPI.Services.Interface
         Task<IEnumerable<string>> GetUserWithParticipation();
 
         Task<List<VolunteerDTO>> GetApprovedVolunteersByUserIdAsync(string userId);
+        Task<string> GetTeamLeaderByEventId(int eventId);
     }
 }

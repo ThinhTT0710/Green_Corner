@@ -193,6 +193,14 @@ namespace GreenCorner.MVC.Services
                 Url = $"{SD.EventAPIBase}/api/Volunteer/approved/{userId}"
             });
         }
+        public async Task<ResponseDTO?> GetTeamLeaderByEventId(int eventId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/Volunteer/get-teamleader-userid/{eventId}"
+            });
+        }
 
     }
 }

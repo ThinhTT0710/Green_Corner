@@ -24,6 +24,7 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> HasApprovedTeamLeaderAsync(int eventId);
         Task<ResponseDTO?> GetUserWithParticipation();
         Task<ResponseDTO?> GetApprovedVolunteersByUserIdAsync(string userId);
+        Task<ResponseDTO?> GetTeamLeaderByEventId(int eventId);
 
     }
 }

@@ -39,45 +39,52 @@
                         </tr>
                     </thead>
                     <tbody id="registrationTableBody">
-                        @foreach (var item in Model.Registrations)
+                        @if (!Model.Registrations.Any())
                         {
-                            <tr>
-                                <td class="text-center">@item.Volunteer.VolunteerId</td>
-                                <td class="text-center">@item.User.FullName</td>
-                                <td class="text-center">@item.Volunteer.CleanEventId</td>
-                                <td class="text-center">@item.Volunteer.ApplicationType</td>
-                                <td class="text-center">
-                                    @{
-                                        var status = item.Volunteer.Status;
-
-                                        string statusDisplay = status switch
-                                        {
-                                            "Pending" => "Đang chờ duyệt",
-                                            "Approved" => "Đã duyệt",
-                                            "Removed" => "Đã bị hủy",
-                                            _ => "Không xác định"
-                                        };
-
-                                        string statusClass = status switch
-                                        {
-                                            "Pending" => "text-warning",
-                                            "Approved" => "text-success",
-                                            "Removed" => "text-danger",
-                                            _ => "text-muted"
-                                        };
-                                    }
-                                    <span class="@statusClass fw-semibold">@statusDisplay</span>
-                                </td>
-                                <td class="text-end">
-                                    <a asp-action="ViewVolunteerRegistrationDetail" asp-route-id="@item.Volunteer.VolunteerId" class="btn btn-sm btn-info me-1">Chi tiết</a>
-                                    <form asp-action="ApproveVolunteer" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
-                                        <button type="submit" class="btn btn-sm btn-success me-1">Phê duyệt</button>
-                                    </form>
-                                    <form asp-action="RejectVolunteer" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
-                                        <button type="submit" class="btn btn-sm btn-danger">Từ chối</button>
-                                    </form>
-                                </td>
+                            <tr class="no-data">
+                                <td colspan="6" class="text-center text-muted">Không có đơn đăng ký nào.</td>
                             </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model.Registrations)
+                            {
+                                <tr>
+                                    <td class="text-center">@item.Volunteer.VolunteerId</td>
+                                    <td class="text-center">@item.User.FullName</td>
+                                    <td class="text-center">@item.Volunteer.CleanEventId</td>
+                                    <td class="text-center">@item.Volunteer.ApplicationType</td>
+                                    <td class="text-center">
+                                        @{
+                                            var status = item.Volunteer.Status;
+                                            string statusDisplay = status switch
+                                            {
+                                                "Pending" => "Đang chờ duyệt",
+                                                "Approved" => "Đã duyệt",
+                                                "Removed" => "Đã bị hủy",
+                                                _ => "Không xác định"
+                                            };
+                                            string statusClass = status switch
+                                            {
+                                                "Pending" => "text-warning",
+                                                "Approved" => "text-success",
+                                                "Removed" => "text-danger",
+                                                _ => "text-muted"
+                                            };
+                                        }
+                                        <span class="@statusClass fw-semibold">@statusDisplay</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a asp-action="ViewVolunteerRegistrationDetail" asp-route-id="@item.Volunteer.VolunteerId" class="btn btn-sm btn-info me-1">Chi tiết</a>
+                                        <form asp-action="ApproveVolunteer" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-success me-1">Phê duyệt</button>
+                                        </form>
+                                        <form asp-action="RejectVolunteer" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-danger">Từ chối</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
                         }
                     </tbody>
                 </table>
@@ -100,7 +107,7 @@
             const tableBody = document.getElementById("registrationTableBody");
             const paginationContainer = document.getElementById("pagination");
 
-            const allRows = Array.from(tableBody.getElementsByTagName("tr"));
+            let allRows = Array.from(tableBody.querySelectorAll("tr")).filter(r => !r.classList.contains("no-data"));
             let filteredRows = [...allRows];
             let currentPage = 1;
 
@@ -128,7 +135,15 @@
                 const paginatedRows = filteredRows.slice(startIndex, endIndex);
 
                 tableBody.innerHTML = "";
-                paginatedRows.forEach(row => tableBody.appendChild(row));
+
+                if (paginatedRows.length === 0) {
+                    const noDataRow = document.createElement("tr");
+                    noDataRow.className = "no-data";
+                    noDataRow.innerHTML = `<td colspan="6" class="text-center text-muted">Không tìm thấy dữ liệu phù hợp.</td>`;
+                    tableBody.appendChild(noDataRow);
+                } else {
+                    paginatedRows.forEach(row => tableBody.appendChild(row));
+                }
             }
 
             function renderPagination() {

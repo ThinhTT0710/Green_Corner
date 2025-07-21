@@ -17,42 +17,44 @@
                 <div class="alert alert-danger">@TempData["error"]</div>
             }
 
-            @if (!Model.Any())
-            {
-                <div class="alert alert-info">Không có dữ liệu giao dịch điểm.</div>
-            }
-            else
-            {
-                <!-- Search & Page Size -->
-                <div class="row mb-3">
-                    <div class="col-md-4 mb-2">
-                        <input type="text" id="searchInput" class="form-control" placeholder="Tìm theo tên, email hoặc loại giao dịch..." />
-                    </div>
-                    <div class="col-md-2 mb-2">
-                        <select id="itemsPerPage" class="form-select">
-                            <option value="10">Hiển thị 10</option>
-                            <option value="20">Hiển thị 20</option>
-                            <option value="all">Tất cả</option>
-                        </select>
-                    </div>
+            <!-- Search & Page Size -->
+            <div class="row mb-3">
+                <div class="col-md-4 mb-2">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Tìm theo tên, email hoặc loại giao dịch..." />
                 </div>
+                <div class="col-md-2 mb-2">
+                    <select id="itemsPerPage" class="form-select">
+                        <option value="10">Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
+                        <option value="all">Tất cả</option>
+                    </select>
+                </div>
+            </div>
 
-                <!-- Table -->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-bordered">
-                                <thead class="table-light">
+            <!-- Table -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Họ tên</th>
+                                    <th>Email</th>
+                                    <th>Loại</th>
+                                    <th>Số điểm</th>
+                                    <th>Ngày tạo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionTable">
+                                @if (!Model.Any())
+                                {
                                     <tr>
-                                        <th>Họ tên</th>
-                                        <th>Email</th>
-                                        <th>Loại</th>
-                                        <th>Số điểm</th>
-                                        <th>Ngày tạo</th>
+                                        <td colspan="5" class="text-center text-muted">Không có dữ liệu giao dịch điểm.</td>
                                     </tr>
-                                </thead>
-                                <tbody id="transactionTable">
-                                    @foreach (var item in Model)
+                                }
+                                else
+                                {
+                                    foreach (var item in Model)
                                     {
                                         <tr class="point-row"
                                             data-name="@item.User.FullName?.ToLower()"
@@ -74,15 +76,15 @@
                                             <td>@item.Transaction.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
                                         </tr>
                                     }
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Pagination -->
-                        <div class="pagination-area mt-3" id="pagination"></div>
+                                }
+                            </tbody>
+                        </table>
                     </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination-area mt-3" id="pagination"></div>
                 </div>
-            }
+            </div>
         </div>
     </div>
 </section>

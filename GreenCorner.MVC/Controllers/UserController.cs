@@ -190,10 +190,13 @@ namespace GreenCorner.MVC.Controllers
                     if (eventResponse != null && eventResponse.IsSuccess)
                     {
                         var evt = JsonConvert.DeserializeObject<EventDTO>(eventResponse.Result.ToString());
+                        var teamLeaderIdReponse = await _volunteerService.GetTeamLeaderByEventId(v.CleanEventId);
+                        string leaderId = Convert.ToString(teamLeaderIdReponse.Result);
                         list.Add(new VolunteerWithEventViewModel
                         {
                             Volunteer = v,
-                            Event = evt
+                            Event = evt,
+                            TeamLeaderId = leaderId
                         });
                     }
                 }
