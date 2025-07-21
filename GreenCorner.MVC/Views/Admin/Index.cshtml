@@ -6,11 +6,7 @@
 <section class="content-main">
     <div class="content-header">
         <div>
-            <h2 class="content-title card-title">Dashboard</h2>
-            <p>Whole data about your business here</p>
-        </div>
-        <div>
-            <a href="#" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Create report</a>
+            <h2 class="content-title card-title">Thống kê bán hàng</h2>
         </div>
     </div>
     <div class="row">
@@ -21,7 +17,7 @@
                     <div class="text">
                         <h6 class="mb-1 card-title">Doanh thu</h6>
                         <span>@Model.TotalSales.ToString("N0", new CultureInfo("vi-VN"))đ</span>
-                        <span class="text-sm">Không gồm phí vận chuyển</span>
+                        <span class="text-sm">Không gồm phí vận chuyển.</span>
                     </div>
                 </article>
             </div>
@@ -33,7 +29,7 @@
                     <div class="text">
                         <h6 class="mb-1 card-title">Thu nhập tháng</h6>
                         <span>@Model.TotalMoneyByMonth.ToString("N0", new CultureInfo("vi-VN"))đ</span>
-                        <span class="text-sm"> Based in your local time. </span>
+                        <span class="text-sm">Tổng thu nhập của tháng này.</span>
                     </div>
                 </article>
             </div>
@@ -45,7 +41,7 @@
                     <div class="text">
                         <h6 class="mb-1 card-title">Đơn hàng</h6>
                         <span>@Model.TotalOrdersComplete</span>
-                        <span class="text-sm"> Đơn hàng đã hoàn thành </span>
+                        <span class="text-sm">Đơn hàng đã hoàn thành.</span>
                     </div>
                 </article>
             </div>
@@ -57,7 +53,7 @@
                     <div class="text">
                         <h6 class="mb-1 card-title">Đơn hàng</h6>
                         <span>@Model.TotalOrdersWaiting</span>
-                        <span class="text-sm"> Đơn hàng chờ xác nhận </span>
+                        <span class="text-sm">Đơn hàng chờ xác nhận.</span>
                     </div>
                 </article>
             </div>
@@ -67,7 +63,7 @@
         <div class="col-xl-8 col-lg-12">
             <div class="card mb-4">
                 <article class="card-body">
-                    <h5 class="card-title">Sale statistics</h5>
+                    <h5 class="card-title">Thống kê đơn hàng</h5>
                     <canvas id="myChart" height="120"></canvas>
                 </article>
             </div>

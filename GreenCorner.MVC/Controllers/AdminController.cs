@@ -1,4 +1,5 @@
-﻿using GreenCorner.MVC.Models;
+﻿using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using GreenCorner.MVC.Models;
 using GreenCorner.MVC.Models.Admin;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.ViewModels;
@@ -17,8 +18,9 @@ namespace GreenCorner.MVC.Controllers
 		private readonly IRewardPointService _rewardPointService;
 		private readonly IPointTransactionService _pointTransactionService;
         private readonly IVolunteerService _volunteerService;
-
-        public AdminController(IUserService userService, IAdminService adminService, IOrderService orderService, IProductService productservice, IRewardPointService rewardPointService, IPointTransactionService pointTransactionService, IVolunteerService volunteerService)
+		private readonly IEventService _eventService;
+        private readonly ITrashEventService _trashEventService;
+        public AdminController(IUserService userService, IAdminService adminService, IOrderService orderService, IProductService productservice, IRewardPointService rewardPointService, IPointTransactionService pointTransactionService, IVolunteerService volunteerService, IEventService eventService, ITrashEventService trashEventService)
         {
             _userService = userService;
             _adminService = adminService;
@@ -27,6 +29,8 @@ namespace GreenCorner.MVC.Controllers
             _rewardPointService = rewardPointService;
             _pointTransactionService = pointTransactionService;
             _volunteerService = volunteerService;
+            _eventService = eventService;
+            _trashEventService = trashEventService;
         }
 
         public async Task<IActionResult> Index()
@@ -132,6 +136,89 @@ namespace GreenCorner.MVC.Controllers
             };
 
 			return View(viewModel);
+        }
+
+        public async Task<IActionResult> Eventstatistic()
+        {
+            var viewModel = new EventAnalyticViewModel
+            {
+                TotalEvent = 0,
+                TotalOpenEvent = 0,
+                TotalVolunteer = 0,
+                TotalPedingVolunteer = 0,
+                EventOpenList = new List<EventDTO>(),
+                TrashEventList = new List<TrashEventDTO>(),
+                ChartData = new EventMonthlyAnalyticsDto()
+            };
+
+            var responseTotalEvents = await _eventService.GetAllEvent();
+
+            if (responseTotalEvents != null && responseTotalEvents.IsSuccess)
+            {
+                var eventListJson = responseTotalEvents.Result?.ToString();
+
+                if (!string.IsNullOrEmpty(eventListJson))
+                {
+                    var eventList = JsonConvert.DeserializeObject<List<EventDTO>>(eventListJson);
+                    if (eventList != null)
+                    {
+                        viewModel.TotalEvent = eventList.Count;
+                        viewModel.TotalOpenEvent = eventList.Count(e => e.Status == "Closed");
+                    }
+                }
+            }
+
+            var responseTotalVolunteers = await _volunteerService.GetAllVolunteer();
+
+            if (responseTotalVolunteers != null && responseTotalVolunteers.IsSuccess)
+            {
+                var volunteerListJson = responseTotalVolunteers.Result?.ToString();
+
+                if (!string.IsNullOrEmpty(volunteerListJson))
+                {
+                    var volunteerList = JsonConvert.DeserializeObject<List<EventDTO>>(volunteerListJson);
+                    if (volunteerList != null)
+                    {
+                        viewModel.TotalVolunteer = volunteerList.Count;
+                        viewModel.TotalPedingVolunteer = volunteerList.Count(v => v.Status == "Pending");
+                    }
+                }
+            }
+
+            ResponseDTO? responseEventOpen = await _eventService.GetOpenEvent();
+            if (responseEventOpen != null && responseEventOpen.IsSuccess)
+            {
+                var eventOpenList = JsonConvert.DeserializeObject<List<EventDTO>>(responseEventOpen.Result.ToString());
+                viewModel.EventOpenList = eventOpenList;
+            }
+            else
+            {
+                TempData["error"] = responseEventOpen.Message == null ? "Error" : responseEventOpen.Message;
+                return RedirectToAction("Index", "Admin");
+            }
+
+            ResponseDTO? response = await _trashEventService.GetAllTrashEvent();
+            if (response != null && response.IsSuccess)
+            {
+                var trashEvents = JsonConvert.DeserializeObject<List<TrashEventDTO>>(response.Result.ToString());
+                var pendingTrashEvents = trashEvents
+                .Where(e => e.Status != null && e.Status.Equals("Chờ xác nhận", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+                viewModel.TrashEventList = pendingTrashEvents;
+            }
+
+            ResponseDTO? responseChart = await _adminService.EventMonthlyAnalytics();
+            if (responseChart != null && responseChart.IsSuccess)
+            {
+                var chartData = JsonConvert.DeserializeObject<EventMonthlyAnalyticsDto>(Convert.ToString(responseChart.Result));
+                viewModel.ChartData = chartData;
+            }
+            else
+            {
+                TempData["error"] = responseChart?.Message ?? "Error fetching chart data";
+            }
+
+            return View(viewModel);
         }
 
         public async Task<IActionResult> UserList()
