@@ -59,5 +59,9 @@ namespace GreenCorner.EventAPI.Services
         {
             await _trashEventRepository.RejectTrashEvent(id);
         }
+        public async Task<MonthlyEventAnalyticsDTO> GetMonthlyEventAnalytics(int year)
+        {
+            return await _trashEventRepository.GetMonthlyEventAnalytics(year);
+        }
     }
 }

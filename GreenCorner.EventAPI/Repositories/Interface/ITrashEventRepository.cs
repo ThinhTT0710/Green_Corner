@@ -1,4 +1,5 @@
 ﻿using GreenCorner.EventAPI.Models;
+using GreenCorner.EventAPI.Models.DTO;
 
 namespace GreenCorner.EventAPI.Repositories.Interface
 {
@@ -12,5 +13,6 @@ namespace GreenCorner.EventAPI.Repositories.Interface
         Task ApproveTrashEvent(int id);
 		Task RejectTrashEvent(int id);
         Task<IEnumerable<TrashEvent>> GetByUserId(string userId);
+        Task<MonthlyEventAnalyticsDTO> GetMonthlyEventAnalytics(int year);
     }
 }

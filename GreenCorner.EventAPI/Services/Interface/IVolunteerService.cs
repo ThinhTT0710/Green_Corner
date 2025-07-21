@@ -5,6 +5,7 @@ namespace GreenCorner.EventAPI.Services.Interface
 {
     public interface IVolunteerService
     {
+        Task<IEnumerable<VolunteerDTO>> GetAllVolunteer();
         Task<string> RegisterVolunteer(VolunteerDTO dto);
         Task<string> UnregisterAsync(int eventId, string userId, string role);
         Task<bool> CheckRegisteredAsync(int eventId, string userId, string applicationType);

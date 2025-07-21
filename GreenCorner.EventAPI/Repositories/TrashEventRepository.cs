@@ -1,5 +1,6 @@
 ﻿using GreenCorner.EventAPI.Data;
 using GreenCorner.EventAPI.Models;
+using GreenCorner.EventAPI.Models.DTO;
 using GreenCorner.EventAPI.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
 
@@ -88,7 +89,46 @@ namespace GreenCorner.EventAPI.Repositories
         {
             return await _context.TrashEvents
                 .Where(t => t.UserId == userId)
-                .ToListAsync();
+            .ToListAsync();
         }
+
+        public async Task<MonthlyEventAnalyticsDTO> GetMonthlyEventAnalytics(int year)
+        {
+            var completedEventsByMonth = new int[12];
+            var completedTrashByMonth = new int[12];
+            var pendingTrashByMonth = new int[12];
+
+            var cleanupEvents = await _context.CleanupEvents
+                .Where(e => e.CreatedAt.HasValue && e.CreatedAt.Value.Year == year)
+                .ToListAsync();
+
+            var trashReports = await _context.TrashEvents
+                .Where(r => r.CreatedAt.HasValue && r.CreatedAt.Value.Year == year)
+                .ToListAsync();
+
+            var groupedCleanupEvents = cleanupEvents.GroupBy(e => e.CreatedAt.Value.Month);
+            var groupedTrashReports = trashReports.GroupBy(r => r.CreatedAt.Value.Month);
+
+            foreach (var group in groupedCleanupEvents)
+            {
+                int monthIndex = group.Key - 1;
+                completedEventsByMonth[monthIndex] = group.Count(e => e.Status == "Closed");
+            }
+
+            foreach (var group in groupedTrashReports)
+            {
+                int monthIndex = group.Key - 1;
+                completedTrashByMonth[monthIndex] = group.Count(r => r.Status == "Đã xác nhận");
+                pendingTrashByMonth[monthIndex] = group.Count(r => r.Status == "Chờ xác nhận");
+            }
+
+            return new MonthlyEventAnalyticsDTO
+            {
+                CompletedEvents = completedEventsByMonth.ToList(),
+                CompletedTrashReports = completedTrashByMonth.ToList(),
+                PendingTrashReports = pendingTrashByMonth.ToList()
+            };
+        }
+
     }
 }

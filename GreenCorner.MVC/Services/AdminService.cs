@@ -41,6 +41,15 @@ namespace GreenCorner.MVC.Services
             });
         }
 
+        public async Task<ResponseDTO?> EventMonthlyAnalytics()
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.EventAPIBase + "/api/trashevent/monthly-analytics"
+            });
+        }
+
         public async Task<ResponseDTO?> GetSalesByCategory()
         {
             return await _baseService.SendAsync(new RequestDTO
