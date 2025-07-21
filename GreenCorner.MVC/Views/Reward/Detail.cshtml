@@ -44,18 +44,16 @@
                         <input class="form-control" value="@Model.Quantity" readonly />
                     </div>
 
-                    <!-- Start Date -->
                     <div class="mb-4">
                         <label class="form-label">Ngày bắt đầu</label>
-                        <input class="form-control" value="@Model.StartDate?.ToString("dd/MM/yyyy HH:mm")" readonly />
+                        <input class="form-control" value="@Model.StartDate?.ToString("HH:mm dd/MM/yyyy")" readonly />
                     </div>
 
-
-                    <!-- Expiration -->
                     <div class="mb-4">
                         <label class="form-label">Ngày hết hạn</label>
-                        <input class="form-control" value="@Model.ExpirationDate?.ToString("dd/MM/yyyy HH:mm")" readonly />
+                        <input class="form-control" value="@Model.ExpirationDate?.ToString("HH:mm dd/MM/yyyy")" readonly />
                     </div>
+
                 </div>
             </div>
 

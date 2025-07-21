@@ -115,8 +115,16 @@
                                                 <strong>Địa chỉ:</strong> <span>@item.Address</span>
                                             </li>
                                             <li class="mt-1">
-                                                <strong>Mô tả:</strong> <span>@item.Description</span>
+                                                <strong>Mô tả:</strong>
+                                                <span>
+                                                    @(string.IsNullOrEmpty(item.Description)
+                                                        ? ""
+                                                        : (item.Description.Length > 100
+                                                        ? item.Description.Substring(0, 100) + "..."
+                                                        : item.Description))
+                                                </span>
                                             </li>
+
                                         </ul>
                                     </div>
                                 </div>

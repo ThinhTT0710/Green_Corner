@@ -1,9 +1,21 @@
 ﻿@model List<GreenCorner.MVC.ViewModels.BlogWithAuthorViewModel>
+@using System.Text.RegularExpressions
+
 @{
     ViewData["Title"] = "Góc chia sẻ";
     var favoriteBlogIds = ViewBag.FavoriteBlogIds as List<int> ?? new();
     string actionName = ViewContext.RouteData.Values["action"]?.ToString();
     bool isFavoritePage = actionName == "MyFavoriteBlogs";
+}
+
+@functions {
+    public string TruncateAndStripHtml(string htmlContent, int maxLength = 100)
+    {
+        if (string.IsNullOrEmpty(htmlContent)) return "";
+        var plainText = Regex.Replace(htmlContent, "<.*?>", string.Empty);
+        plainText = System.Net.WebUtility.HtmlDecode(plainText);
+        return plainText.Length > maxLength ? plainText.Substring(0, maxLength) + "..." : plainText;
+    }
 }
 
 <main class="main">
@@ -63,7 +75,7 @@
                                                 <a asp-action="ViewBlogDetail" asp-route-id="@blog.BlogId">@blog.Title</a>
                                             </h2>
                                             <p class="post-exerpt font-medium text-muted mb-30">
-                                                @((blog.Content?.Length > 100 ? blog.Content.Substring(0, 100) + "..." : blog.Content))
+                                                @Html.Raw(TruncateAndStripHtml(blog.Content, 100))
                                             </p>
                                             <div class="entry-meta meta-1 mb-30 font-sm text-muted">
                                                 <span class="blog-author"><i class="fi-rs-user"></i> @(author?.FullName ?? "Không rõ")</span>

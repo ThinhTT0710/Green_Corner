@@ -80,7 +80,11 @@ namespace GreenCorner.RewardAPI.Services
             return true;
         }
 
-    }
+        public async Task CleanUpExpiredOrEmptyVouchersAsync()
+        {
+            await _voucherRepository.CleanUpExpiredOrEmptyVouchersAsync();
+        }
 
+    }
 }
 

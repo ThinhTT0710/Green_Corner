@@ -1,4 +1,9 @@
 ﻿@model IEnumerable<ChatMessageDTO>
+<div class="mb-3 text-start">
+    <a asp-controller="Event" asp-action="GetEventById" asp-route-eventId="@ViewBag.EventId" class="btn btn-outline-secondary">
+        ← Quay lại sự kiện
+    </a>
+</div>
 
 <div class="chat-container">
     <div id="messageList" class="messages">

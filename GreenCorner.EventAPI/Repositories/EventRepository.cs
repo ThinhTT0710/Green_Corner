@@ -97,11 +97,21 @@ namespace GreenCorner.EventAPI.Repositories
 
         public async Task<IEnumerable<CleanupEvent>> GetTop3OpenEventsAsync()
         {
-            return await _context.CleanupEvents
-                .Where(e => e.Status == "Open")
-                .OrderBy(e => e.StartDate)
-                .Take(3)
-                .ToListAsync();
+            var openEvents = await _context.CleanupEvents
+                            .Where(e => e.Status == "Open")
+                            .OrderBy(e => e.StartDate)
+                            .Take(3)
+                            .ToListAsync();
+
+            if (!openEvents.Any())
+            {
+                openEvents = await _context.CleanupEvents
+                    .OrderBy(e => Guid.NewGuid()) 
+                    .Take(3)
+                    .ToListAsync();
+            }
+
+            return openEvents;
         }
     }
 }

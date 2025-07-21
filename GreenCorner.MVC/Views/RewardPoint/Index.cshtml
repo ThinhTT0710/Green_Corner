@@ -5,54 +5,63 @@
 }
 
 <section class="content-main">
-    <div class="row">
-        <div class="col-12">
-            <div class="card mt-4 shadow-sm">
-                <div class="card-header bg-secondary text-white text-center">
-                    <h3 class="mb-0">@ViewData["Title"]</h3>
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Danh sách điểm thưởng</h2>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Tìm kiếm..." class="form-control" id="searchInput" />
                 </div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <input type="text" id="searchInput" class="form-control" placeholder="Tìm theo tên hoặc email..." />
-                        </div>
-                        <div class="col-md-2">
-                            <select class="form-select" id="itemsPerPage">
-                                <option value="10">Hiển thị 10</option>
-                                <option value="20">Hiển thị 20</option>
-                                <option value="50">Hiển thị 50</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <table class="table table-bordered table-striped" id="rewardTable">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Họ tên</th>
-                                <th>Email</th>
-                                <th class="text-end">Tổng điểm</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                            @foreach (var item in Model)
-                            {
-                                <tr class="reward-row"
-                                    data-name="@item.User?.FullName?.ToLower()"
-                                    data-email="@item.User?.Email?.ToLower()">
-                                    <td>@item.User?.FullName ?? "Không rõ"</td>
-                                    <td>@item.User?.Email ?? "Không rõ"</td>
-                                    <td class="text-end">@item.Reward.TotalPoints</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-
-                    <nav>
-                        <ul class="pagination justify-content-center" id="pagination"></ul>
-                    </nav>
+                <div class="col-lg-2 col-6 col-md-3">
+                    <select class="form-select" id="itemsPerPageFilter">
+                        <option value="10" selected>Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
+                        <option value="50">Hiển thị 50</option>
+                    </select>
                 </div>
             </div>
+        </header>
+
+        <div class="card-body" id="rewardListContainer">
+            <!-- Dòng tiêu đề -->
+            <div class="row fw-bold mb-2 px-2 text-muted small">
+                <div class="col-lg-5 col-sm-5 col-6">Họ tên</div>
+                <div class="col-lg-5 col-sm-5 col-6">Email</div>
+                <div class="col-lg-2 col-sm-2 col-6 text-end">Tổng điểm</div>
+            </div>
+
+            @foreach (var item in Model)
+            {
+                <article class="itemlist reward-item border-top py-2"
+                         data-name="@item.User?.FullName?.ToLower()"
+                         data-email="@item.User?.Email?.ToLower()">
+                    <div class="row align-items-center">
+                        <div class="col-lg-5 col-sm-5 col-6">
+                            <h6 class="mb-0">@item.User?.FullName</h6>
+                        </div>
+                        <div class="col-lg-5 col-sm-5 col-6">
+                            <span>@item.User?.Email</span>
+                        </div>
+                        <div class="col-lg-2 col-sm-2 col-6 text-end">
+                            <span>@item.Reward.TotalPoints</span>
+                        </div>
+                    </div>
+                </article>
+            }
+
+            <div id="noResultMessage" class="text-center text-muted my-4 d-none">Không tìm thấy kết quả phù hợp.</div>
         </div>
+    </div>
+
+    <div class="pagination-area mt-30 mb-50">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-start" id="pagination"></ul>
+        </nav>
     </div>
 </section>
 
@@ -60,57 +69,94 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const searchInput = document.getElementById("searchInput");
-            const itemsPerPageSelect = document.getElementById("itemsPerPage");
-            const tableBody = document.getElementById("tableBody");
-            const pagination = document.getElementById("pagination");
-            const allRows = Array.from(document.querySelectorAll(".reward-row"));
+            const itemsPerPageFilter = document.getElementById("itemsPerPageFilter");
+            const rewardContainer = document.getElementById("rewardListContainer");
+            const paginationContainer = document.getElementById("pagination");
+            const allItems = Array.from(rewardContainer.getElementsByClassName("reward-item"));
+            const noResultMessage = document.getElementById("noResultMessage");
             let currentPage = 1;
+            let filteredItems = [...allItems];
 
-            function filterRows() {
+            function updateDisplay() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
                 const searchTerm = searchInput.value.toLowerCase();
-                return allRows.filter(row =>
-                    row.dataset.name.includes(searchTerm) ||
-                    row.dataset.email.includes(searchTerm)
-                );
+
+                filteredItems = allItems.filter(item => {
+                    const name = item.dataset.name || "";
+                    const email = item.dataset.email || "";
+
+                    return name.includes(searchTerm) || email.includes(searchTerm);
+                });
+
+                if (filteredItems.length === 0) {
+                    rewardContainer.querySelectorAll("article.itemlist").forEach(item => item.remove());
+                    noResultMessage.classList.remove("d-none");
+                    paginationContainer.innerHTML = "";
+                    return;
+                }
+
+                noResultMessage.classList.add("d-none");
+                renderPagination();
+                renderRewardItems();
             }
 
-            function renderTable() {
-                const rowsPerPage = parseInt(itemsPerPageSelect.value);
-                const filtered = filterRows();
-                const totalPages = Math.ceil(filtered.length / rowsPerPage);
-                const start = (currentPage - 1) * rowsPerPage;
-                const end = start + rowsPerPage;
+            function renderRewardItems() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const start = (currentPage - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                const paginated = filteredItems.slice(start, end);
 
-                tableBody.innerHTML = "";
-                filtered.slice(start, end).forEach(row => tableBody.appendChild(row));
+                rewardContainer.querySelectorAll("article.itemlist").forEach(item => item.remove());
+                paginated.forEach(item => rewardContainer.appendChild(item));
+            }
 
-                pagination.innerHTML = "";
-                if (totalPages > 1) {
-                    for (let i = 1; i <= totalPages; i++) {
-                        const li = document.createElement("li");
-                        li.className = `page-item ${i === currentPage ? "active" : ""}`;
-                        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-                        li.addEventListener("click", e => {
-                            e.preventDefault();
-                            currentPage = i;
-                            renderTable();
-                        });
-                        pagination.appendChild(li);
+            function renderPagination() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+                paginationContainer.innerHTML = "";
+
+                if (totalPages <= 1) return;
+
+                const prevLi = document.createElement("li");
+                prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+                prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}"><i class="material-icons md-chevron_left"></i></a>`;
+                paginationContainer.appendChild(prevLi);
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageLi = document.createElement("li");
+                    pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                    pageLi.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+                    paginationContainer.appendChild(pageLi);
+                }
+
+                const nextLi = document.createElement("li");
+                nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+                nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}"><i class="material-icons md-chevron_right"></i></a>`;
+                paginationContainer.appendChild(nextLi);
+            }
+
+            function triggerFilter() {
+                currentPage = 1;
+                updateDisplay();
+            }
+
+            searchInput.addEventListener("input", triggerFilter);
+            itemsPerPageFilter.addEventListener("change", triggerFilter);
+
+            paginationContainer.addEventListener("click", function (e) {
+                e.preventDefault();
+                const target = e.target.closest("a.page-link");
+                if (target && !target.parentElement.classList.contains('disabled')) {
+                    const page = parseInt(target.dataset.page, 10);
+                    if (!isNaN(page)) {
+                        currentPage = page;
+                        renderRewardItems();
+                        renderPagination();
                     }
                 }
-            }
-
-            searchInput.addEventListener("input", () => {
-                currentPage = 1;
-                renderTable();
             });
 
-            itemsPerPageSelect.addEventListener("change", () => {
-                currentPage = 1;
-                renderTable();
-            });
-
-            renderTable();
+            updateDisplay();
         });
     </script>
 }

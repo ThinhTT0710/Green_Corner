@@ -10,13 +10,20 @@ namespace GreenCorner.MVC.Controllers
     {
         private readonly IRewardService _rewardService;
         private readonly IRewardPointService _rewardPointService;
-        public RewardController(IRewardService rewardService, IRewardPointService rewardPointService)
+        private readonly IVoucherService _voucherService;
+        public RewardController(IRewardService rewardService, IRewardPointService rewardPointService, IVoucherService voucherService)
         {
             _rewardService = rewardService;
             _rewardPointService = rewardPointService;
+            _voucherService = voucherService;
         }
         public async Task<IActionResult> Index()
         {
+            var cleanResponse = await _voucherService.CleanUpVouchers();
+            if (cleanResponse != null && !cleanResponse.IsSuccess)
+            {
+                TempData["error"] = "Không thể hiển thị danh sách voucher: " + cleanResponse.Message;
+            }
             List<VoucherDTO> listVoucher = new();
             ResponseDTO? response = await _rewardService.GetAllReward();
 
