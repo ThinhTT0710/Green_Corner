@@ -1,4 +1,4 @@
-﻿@model GreenCorner.MVC.ViewModels.VolunteerEventListViewModel
+@model GreenCorner.MVC.ViewModels.VolunteerEventListViewModel
 
 <section class="content-main">
     <div class="content-header">
@@ -12,20 +12,23 @@
                     <input type="text" id="searchInput" placeholder="Tìm kiếm sự kiện..." class="form-control" />
                 </div>
                 <div class="col-lg-2 col-md-3 col-6">
-                    <select class="form-select" id="statusFilter">
-                        <option value="">Tất cả trạng thái</option>
-                        <option value="Approved">Đã duyệt</option>
-                        <option value="Pending">Đang chờ duyệt</option>
-                        <option value="Removed">Đã bị hủy</option>
+                    <select id="eventStatusFilter" class="form-select">
+                       <option value="">Trạng thái sự kiện</option>
+    <option value="open">Đang mở</option>
+    <option value="close">Đã đóng</option>
+    <option value="is going on">Đang diễn ra</option>
                     </select>
-                </div>
-                <div class="col-lg-2 col-md-3 col-6">
-                    <select class="form-select" id="itemsPerPage">
-                        <option value="10">Hiển thị 10</option>
-                        <option value="20">Hiển thị 20</option>
-                        <option value="50">Hiển thị 50</option>
+                    <select id="registerStatusFilter" class="form-select">
+                        <option value="">Trạng thái đăng ký</option>
+    <option value="approved">Đã duyệt</option>
+    <option value="pending">Đang chờ duyệt</option>
+    <option value="rejected">Đã bị từ chối</option>
+    <option value="participated">Đã tham gia</option>
                     </select>
-                </div>
+                </div
+               
+                    
+                
             </div>
         </header>
 
@@ -39,13 +42,14 @@
             else
             {
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle" id="participationTable">
+                    <table class="table table-hover align-middle">
                         <thead class="table-light">
                             <tr>
                                 <th>Tên sự kiện</th>
                                 <th>Ngày bắt đầu</th>
                                 <th>Ngày kết thúc</th>
                                 <th>Trạng thái sự kiện</th>
+                                <th>Đánh giá sự kiện</th>
                                 <th>Loại đơn</th>
                                 <th>Phân công</th>
                                 <th>Vật dụng mang theo</th>
@@ -53,39 +57,96 @@
                                 <th>Ngày đăng ký</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody">
+                        <tbody>
                             @foreach (var item in Model.Participations)
                             {
-                                var eventStatus = item.Event.Status;
-                                var eventStatusText = eventStatus switch
-                                {
-                                    "Approved" => "Đã duyệt",
-                                    "Pending" => "Đang chờ duyệt",
-                                    "Removed" => "Đã bị hủy",
-                                    _ => "Không xác định"
-                                };
-
-                                var volunteerStatus = item.Volunteer.Status;
-                                var volunteerStatusText = volunteerStatus switch
-                                {
-                                    "Approved" => "Đã duyệt",
-                                    "Pending" => "Đang chờ duyệt",
-                                    "Rejected" => "Đã bị từ chối",
-                                    _ => "Không xác định"
-                                };
-                                <tr class="participation-row"
-                                    data-title="@item.Event.Title.ToLower()"
-                                    data-status="@eventStatus.ToLower()">
+                                <tr data-title="@item.Event.Title.ToLower()"
+    data-eventstatus="@item.Event.Status.ToLower()"
+    data-volunteerstatus="@item.Volunteer.Status.ToLower()">
                                     <td>@item.Event.Title</td>
                                     <td>@item.Event.StartDate?.ToString("dd/MM/yyyy")</td>
                                     <td>@item.Event.EndDate?.ToString("dd/MM/yyyy")</td>
-                                    <td>@eventStatusText</td>
+                                    <td>
+                                        @{
+                                            var status = item.Event.Status;
+
+                                            var eventBg = status switch
+                                            {
+                                                "Open" => "#28a745", // xanh lá
+                                                "Close" => "#ffc107",  // vàng  // đỏ
+                                                _ => "#6c757d"           // xám
+                                            };
+
+                                            var eventColor = status == "Pending" ? "#212529" : "#fff";
+
+                                            var statusText = status switch
+                                            {
+                                                "Open" => "Đang mở",
+                                                "Close" => "Đã đóng",
+                                                "Is Going On" => "Đang diễn ra",
+                                                        _ => "Không xác định"
+                                            };
+                                        
+                                        <span class="badge rounded-pill" style="background-color:@(eventBg); color:@(eventColor);">
+                                            @statusText
+                                            </span>
+                                            }
+                                    </td>
+                                    <td>
+                                        @{
+                                            if (@item.Event.Status == "Close")
+                                            {
+                                                <span class="badge rounded-pill" style="background-color:#28a745; color:@(eventColor);">
+                                                    <a asp-controller="Event" asp-action="RateEvent" asp-route-eventId="@item.Event.CleanEventId">
+                                                        Rate Event
+                                                    </a>
+                                                </span>
+                                                <span class="badge rounded-pill" style="background-color:#28a745; color:@(eventColor);">
+                                                    <a asp-controller="Event" asp-action="LeaderReview" asp-route-eventId="@item.Event.CleanEventId" asp-route-leaderId="@item.TeamLeaderId">
+                                                        Review Leader
+                                                    </a>
+                                                </span>
+                                            }else{
+                                                <span class="badge rounded-pill" style="background-color:@(eventBg); color:@(eventColor);">
+                                                   Chưa thể đánh giá
+                                                </span>
+                                            }
+                                        }
+                                            
+                                    </td>
                                     <td>@item.Volunteer.ApplicationType</td>
                                     <td>@item.Volunteer.Assignment</td>
                                     <td>@item.Volunteer.CarryItems</td>
-                                    <td>@volunteerStatusText</td>
+                                    <td>
+                                        @{
+                                            var statusVL = item.Volunteer.Status;
+
+                                            var volunteerBg = statusVL switch
+                                            {
+                                                "Approved" => "#28a745",  // Xanh lá
+                                                "Pending" => "#ffc107",   // Vàng
+                                                "Rejected" => "#dc3545",  // Đỏ
+                                                _ => "#6c757d"            // Xám
+                                            };
+
+                                            var volunteerColor = statusVL == "Pending" ? "#212529" : "#fff";
+
+                                            var statusTextVL = statusVL switch
+                                            {
+                                                "Approved" => "Đã duyệt",
+                                                "Pending" => "Đang chờ duyệt",
+                                                "Rejected" => "Đã bị từ chối",
+                                                "Participated" => "Đã tham gia",
+                                                _ => "Không xác định"
+                                            };
+                                        }
+                                        <span class="badge rounded-pill" style="background-color:@(volunteerBg); color:@(volunteerColor);">
+                                            @statusTextVL
+                                        </span>
+                                    </td>
                                     <td>@item.Volunteer.CreatedAt?.ToString("dd/MM/yyyy")</td>
                                 </tr>
+
                             }
                         </tbody>
                     </table>
@@ -95,77 +156,49 @@
     </div>
 
     <div class="pagination-area mt-15 mb-50">
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-start" id="pagination"></ul>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                <li class="page-item"><a class="page-link" href="#">02</a></li>
+                <li class="page-item"><a class="page-link" href="#">03</a></li>
+                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                <li class="page-item"><a class="page-link" href="#">10</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
+                </li>
+            </ul>
         </nav>
     </div>
 </section>
-
 @section Scripts {
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const searchInput = document.getElementById("searchInput");
-            const statusFilter = document.getElementById("statusFilter");
-            const itemsPerPage = document.getElementById("itemsPerPage");
-            const tableBody = document.getElementById("tableBody");
-            const pagination = document.getElementById("pagination");
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const eventStatusFilter = document.getElementById("eventStatusFilter");
+        const registerStatusFilter = document.getElementById("registerStatusFilter");
+        const rows = document.querySelectorAll("table tbody tr");
 
-            const allRows = Array.from(document.querySelectorAll(".participation-row"));
-            let filteredRows = [...allRows];
-            let currentPage = 1;
+        function filterTable() {
+            const keyword = searchInput.value.toLowerCase();
+            const selectedEventStatus = eventStatusFilter.value;
+            const selectedRegisterStatus = registerStatusFilter.value;
 
-            function filterRows() {
-                const searchTerm = searchInput.value.toLowerCase();
-                const selectedStatus = statusFilter.value.toLowerCase();
+            rows.forEach(row => {
+                const title = row.getAttribute("data-title") || "";
+                const eventStatus = row.getAttribute("data-eventstatus") || "";
+                const volunteerStatus = row.getAttribute("data-volunteerstatus") || "";
 
-                return allRows.filter(row => {
-                    const title = row.dataset.title;
-                    const status = row.dataset.status;
+                const matchTitle = title.includes(keyword);
+                const matchEventStatus = !selectedEventStatus || eventStatus === selectedEventStatus;
+                const matchRegisterStatus = !selectedRegisterStatus || volunteerStatus === selectedRegisterStatus;
 
-                    return title.includes(searchTerm) && (selectedStatus === "" || status === selectedStatus);
-                });
-            }
-
-            function renderTable() {
-                const perPage = parseInt(itemsPerPage.value);
-                const rows = filterRows();
-                const totalPages = Math.ceil(rows.length / perPage);
-
-                const start = (currentPage - 1) * perPage;
-                const end = start + perPage;
-
-                tableBody.innerHTML = "";
-                rows.slice(start, end).forEach(row => tableBody.appendChild(row));
-
-                pagination.innerHTML = "";
-                if (totalPages > 1) {
-                    for (let i = 1; i <= totalPages; i++) {
-                        const li = document.createElement("li");
-                        li.className = `page-item ${i === currentPage ? "active" : ""}`;
-                        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-                        li.addEventListener("click", e => {
-                            e.preventDefault();
-                            currentPage = i;
-                            renderTable();
-                        });
-                        pagination.appendChild(li);
-                    }
-                }
-            }
-
-            [searchInput, statusFilter].forEach(input =>
-                input.addEventListener("input", () => {
-                    currentPage = 1;
-                    renderTable();
-                })
-            );
-
-            itemsPerPage.addEventListener("change", () => {
-                currentPage = 1;
-                renderTable();
+                row.style.display = (matchTitle && matchEventStatus && matchRegisterStatus) ? "" : "none";
             });
+        }
 
-            renderTable();
-        });
-    </script>
+        searchInput.addEventListener("keyup", filterTable);
+        eventStatusFilter.addEventListener("change", filterTable);
+        registerStatusFilter.addEventListener("change", filterTable);
+    });
+</script>
 }

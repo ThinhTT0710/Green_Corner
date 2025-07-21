@@ -6,6 +6,9 @@ namespace GreenCorner.MVC.ViewModels
     {
         public VolunteerDTO Volunteer { get; set; }
         public EventDTO Event { get; set; }
+
+        public string TeamLeaderId { get; set; }
+        
     }
     public class VolunteerEventListViewModel
     {

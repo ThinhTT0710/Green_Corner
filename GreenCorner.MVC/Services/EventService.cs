@@ -203,7 +203,7 @@ namespace GreenCorner.MVC.Services
 			return await _baseService.SendAsync(new RequestDTO
 			{
 				APIType = SD.APIType.GET,
-				Url = SD.EventAPIBase + "/api/Event/open-event" + id
+				Url = SD.EventAPIBase + "/api/Event/open-event/" + id
 			});
 		}
 		public async Task<ResponseDTO?> KickVolunteer(string userId, int eventId)
@@ -244,13 +244,28 @@ namespace GreenCorner.MVC.Services
                 Url = $"{SD.EventAPIBase}/api/Event/is-full/{eventId}"
             });
         }
-
+        public async Task<ResponseDTO?> DeleteVolunteersByEventId(int eventId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+              APIType = SD.APIType.GET,
+              Url = SD.EventAPIBase + "/api/Event/delete-eventVolunteer/" + eventId
+            });
+         }
+        public async Task<ResponseDTO?> UpdateVolunteerStatusToParticipated(int eventId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+              APIType = SD.APIType.GET,
+              Url = SD.EventAPIBase + "/api/Event/update-volunteerStatus/" + eventId
+            });
+        }
         public async Task<ResponseDTO?> GetTop3OpenEventsAsync()
         {
             return await _baseService.SendAsync(new RequestDTO
             {
-                APIType = SD.APIType.GET,
-                Url = SD.EventAPIBase + "/api/Event/top3event"
+              APIType = SD.APIType.GET,
+              Url = SD.EventAPIBase + "/api/Event/top3event"
             });
         }
     }

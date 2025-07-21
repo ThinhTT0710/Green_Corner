@@ -23,10 +23,15 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" id="achievements-tab" href="/User/Achievements" role="tab"
-                                       aria-controls="achievements" aria-selected="true">
-                                        <i class="fi fi-rs-trophy mr-10"></i>Thành tích của tôi
-                                        </a>
+                                    <a class="nav-link" asp-controller="Event" asp-action="GetOpenEventsByTeamLeader" asp-route-userId="@Model.ID">
+                                        <i class="fi-rs-settings-sliders mr-10"></i>Sự kiện bạn quản lý
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                     <a class="nav-link" id="achievements-tab" href="/User/Achievements" role="tab"
+                                         aria-controls="achievements" aria-selected="true">
+                                          <i class="fi fi-rs-trophy mr-10"></i>Thành tích của tôi
+                                    </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Order" asp-action="History">

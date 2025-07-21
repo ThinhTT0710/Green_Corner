@@ -11,5 +11,7 @@ namespace GreenCorner.AuthAPI.Repositories.Interface
 		Task<UserDTO> BanUser(string id);
 		Task<UserDTO> UnBanUser(string id);
 		Task<List<UserDTO>> GetAllUser();
-	}
+        Task<List<UserDTO>> GetActiveUser();
+        Task<List<UserDTO>> GetUserNearTrashReport(string address);
+    }
 }

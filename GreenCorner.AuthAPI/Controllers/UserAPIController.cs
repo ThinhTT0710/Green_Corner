@@ -81,8 +81,34 @@ namespace GreenCorner.AuthAPI.Controllers
 			_response.Result = users;
 			return _response;
 		}
+        [HttpGet("get-active-user")]
+        public async Task<ResponseDTO> GetActiveUser()
+        {
+            var users = await _userService.GetActiveUser();
+            if (users == null)
+            {
+                _response.Message = "No user found";
+                _response.IsSuccess = false;
+                return _response;
+            }
+            _response.Result = users;
+            return _response;
+        }
+        [HttpGet("get-near-user/{address}")]
+        public async Task<ResponseDTO> GetNearUser(string address)
+        {
+            var users = await _userService.GetUserNearTrashReport(address);
+            if (users == null)
+            {
+                _response.Message = "No user found";
+                _response.IsSuccess = false;
+                return _response;
+            }
+            _response.Result = users;
+            return _response;
+        }
 
-		[HttpGet("ban-user/{id}")]
+        [HttpGet("ban-user/{id}")]
 		public async Task<ResponseDTO> BanUser(string id)
 		{
 			try

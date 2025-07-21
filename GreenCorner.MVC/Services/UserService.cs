@@ -49,6 +49,22 @@ namespace GreenCorner.MVC.Services
                 Url = SD.AuthAPIBase + "/api/user/get-all-user"
             });
         }
+        public async Task<ResponseDTO?> GetActiveUser()
+        {
+            return await _baseService.SendAsync(new RequestDTO()
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.AuthAPIBase + "/api/user/get-active-user"
+            });
+        }
+        public async Task<ResponseDTO?> GetNearUser(string address)
+        {
+            return await _baseService.SendAsync(new RequestDTO()
+            {
+                APIType = SD.APIType.GET,
+                Url = SD.AuthAPIBase + "/api/user/get-near-user/"+address
+            });
+        }
 
         public async Task<ResponseDTO?> BanUser(string id)
         {

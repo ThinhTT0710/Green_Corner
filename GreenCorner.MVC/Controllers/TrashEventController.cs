@@ -1,4 +1,5 @@
-﻿using GreenCorner.MVC.Models;
+﻿using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using GreenCorner.MVC.Models;
 using GreenCorner.MVC.Models.Notification;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
+using System.Text.RegularExpressions;
 
 namespace GreenCorner.MVC.Controllers
 {
@@ -121,9 +123,28 @@ namespace GreenCorner.MVC.Controllers
                 trashEventDTO.UserId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
                 trashEventDTO.CreatedAt = DateTime.Now;
                 trashEventDTO.Status = "Chờ xác nhận";
+               
+
                 ResponseDTO response = await _trashEventService.AddTrashEvent(trashEventDTO);
                 if (response != null && response.IsSuccess)
                 {
+                    var pattern = @"\b(Phường|Xã)\s+[^,]+";
+                    var match = Regex.Match(trashEventDTO.Address, pattern, RegexOptions.IgnoreCase);
+                    var listUser = await _userService.GetNearUser(match.Value);
+                    if (listUser != null && listUser.IsSuccess)
+                    {
+                        List<UserDTO> users = listUser.Result != null ? Newtonsoft.Json.JsonConvert.DeserializeObject<List<UserDTO>>(listUser.Result.ToString()) : new List<UserDTO>();
+                        foreach (UserDTO user in users)
+                        {
+                            var notification = new NotificationDTO
+                            {
+                                UserId = user.ID,
+                                Title = "Có báo cáo rác gần nơi bạn sinh sống",
+                                Message = $"Có báo cáo điểm rác ở '{trashEventDTO.Address}' hãy kiểm tra xác nhận hộ chúng mình nhé!."
+                            };
+                            var sendNotification = await _notificationService.SendNotification(notification);
+                        }
+                    }
                     TempData["success"] = "Trash event reported successfully!";
                     return RedirectToAction(nameof(Index));
                 }

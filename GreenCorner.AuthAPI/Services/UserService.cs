@@ -32,19 +32,29 @@ namespace GreenCorner.AuthAPI.Services
             return await _userRepository.CheckPhoneNumber(phoneNumber, userId);
         }
 
-		public async Task<UserDTO> BanUser(string id)
-		{
+        public async Task<UserDTO> BanUser(string id)
+        {
             return await _userRepository.BanUser(id);
-		}
+        }
 
-		public async Task<UserDTO> UnBanUser(string id)
-		{
-			return await _userRepository.UnBanUser(id);
-	}
+        public async Task<UserDTO> UnBanUser(string id)
+        {
+            return await _userRepository.UnBanUser(id);
+        }
 
-		public async Task<List<UserDTO>> GetAllUser()
-		{
+        public async Task<List<UserDTO>> GetAllUser()
+        {
             return await _userRepository.GetAllUser();
-		}
-	}
+        }
+
+        public async Task<List<UserDTO>> GetActiveUser()
+        {
+            return await _userRepository.GetActiveUser();
+        }
+        public async Task<List<UserDTO>> GetUserNearTrashReport(string address)
+        {
+            return await _userRepository.GetUserNearTrashReport(address);
+        }
+
+    }
 }
