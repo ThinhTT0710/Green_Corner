@@ -7,7 +7,6 @@
     <input type="hidden" asp-for="CleanEventId" />
     <input type="hidden" asp-for="CreatedAt" />
     <input type="hidden" asp-for="Status" />
-    <input type="hidden" asp-for="EndDate" />
     <input type="hidden" asp-for="ImageUrl" />
 
     <section class="content-main">
@@ -184,9 +183,9 @@
                 // Kiểm tra nếu EndDate đã nhập mà StartDate > EndDate thì reset EndDate
                 if (endInput.value && isValidDateTimeLocal(endInput.value)) {
                     const endDate = new Date(endInput.value);
-                    if (startDate >= endDate) {
+                    if (startDate.getTime() >= endDate.getTime()) {
                         endInput.value = "";
-                        endErrorDiv.textContent = "Ngày kết thúc phải sau ngày bắt đầu.";
+                        endErrorDiv.textContent = "Thời gian kết thúc phải sau thời gian bắt đầu.";
                     }
                 }
 
@@ -208,8 +207,8 @@
 
                 if (startInput.value && isValidDateTimeLocal(startInput.value)) {
                     const startDate = new Date(startInput.value);
-                    if (endDate <= startDate) {
-                        endErrorDiv.textContent = "Ngày kết thúc phải sau ngày bắt đầu.";
+                    if (endDate.getTime() <= startDate.getTime()) {
+                        endErrorDiv.textContent = "Thời gian kết thúc phải sau thời gian bắt đầu.";
                         return false;
                     }
                 }

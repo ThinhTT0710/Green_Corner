@@ -2,6 +2,9 @@
 
 @{
     ViewData["Title"] = "Chi tiết Reward";
+    var isVoucherValid = Model.ExpirationDate != null
+                         && Model.ExpirationDate >= DateTime.Now
+                         && Model.IsActive;
 }
 
 <section class="content-main">
@@ -67,17 +70,16 @@
                     <h5 class="mb-3 text-success">🎯 Thao tác</h5>
                     <p class="text-muted">Bạn có thể xem chi tiết voucher hoặc quay lại danh sách voucher.</p>
 
-                    <!-- Nút Đổi điểm -->
-                    <!-- Nút mở modal -->
-                    <button type="button"
-                            class="btn btn-lg btn-success w-100 mb-2"
-                            data-bs-toggle="modal"
-                            data-bs-target="#confirmRedeemModal">
-                        Đổi @Model.PointsRequired điểm
-                    </button>
+                    @if (isVoucherValid)
+                    {
+                        <button type="button"
+                                class="btn btn-lg btn-success w-100 mb-2"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmRedeemModal">
+                            Đổi @Model.PointsRequired điểm
+                        </button>
+                    }
 
-
-                    <!-- Nút quay lại -->
                     <a asp-action="Index"
                        class="btn btn-outline-secondary w-100 rounded font-sm text-body hover-up">
                         ← Quay lại danh sách
@@ -88,25 +90,28 @@
 
     </div>
 </section>
-<!-- Modal xác nhận đổi điểm -->
-<div class="modal fade" id="confirmRedeemModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header text-white" style="background-color: #3BB77E;">
-                <h5 class="modal-title text-white" id="confirmModalLabel">Xác nhận đổi điểm</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
-            </div>
-            <div class="modal-body">
-                Bạn có chắc muốn đổi <strong>@Model.PointsRequired</strong> điểm để nhận voucher <strong>@Model.Title</strong> không?
-            </div>
-            <div class="modal-footer">
-                <form asp-action="ExchangePoints" asp-controller="PointTransaction" method="post">
-                    <input type="hidden" name="points" value="@Model.PointsRequired" />
-                    <input type="hidden" name="voucherId" value="@Model.VoucherId" />
-                    <button type="submit" class="btn btn-success">Xác nhận đổi</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
-                </form>
+@if (isVoucherValid)
+{
+    <div class="modal fade" id="confirmRedeemModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header text-white" style="background-color: #3BB77E;">
+                    <h5 class="modal-title text-white" id="confirmModalLabel">Xác nhận đổi điểm</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn có chắc muốn đổi <strong>@Model.PointsRequired</strong> điểm để nhận voucher <strong>@Model.Title</strong> không?
+                </div>
+                <div class="modal-footer">
+                    <form asp-action="ExchangePoints" asp-controller="PointTransaction" method="post">
+                        <input type="hidden" name="points" value="@Model.PointsRequired" />
+                        <input type="hidden" name="voucherId" value="@Model.VoucherId" />
+                        <button type="submit" class="btn btn-success">Xác nhận đổi</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+}
+
