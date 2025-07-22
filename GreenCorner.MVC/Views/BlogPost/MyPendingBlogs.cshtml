@@ -123,8 +123,15 @@
 
                                             <h6 class="mb-10 font-sm fw-semibold @statusClass">@statusText</h6>
 
-                                            <h4 class="post-title mb-15">
-                                                <a asp-controller="BlogPost" asp-action="ViewBlogDetail" asp-route-id="@blog.BlogId">@blog.Title</a>
+                                            <h4 class="post-title mb-15" style="height: 48px; overflow: hidden;">
+                                                <a asp-controller="BlogPost"
+                                                   asp-action="ViewBlogDetail"
+                                                   asp-route-id="@blog.BlogId"
+                                                   class="d-block text-truncate"
+                                                   style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                                   title="@blog.Title">
+                                                    @blog.Title
+                                                </a>
                                             </h4>
 
                                             <div class="font-xs color-grey mt-10 pb-10" style="max-height: 45px; overflow: hidden;">

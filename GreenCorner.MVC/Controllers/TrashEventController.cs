@@ -18,12 +18,14 @@ namespace GreenCorner.MVC.Controllers
         private readonly IUserService _userService;
         private readonly INotificationService _notificationService;
         private readonly IAdminService _adminService;
-        public TrashEventController(ITrashEventService trashEventService, IUserService userService, INotificationService notificationService, IAdminService adminService)
+        private readonly IPointTransactionService _pointTransactionService;
+        public TrashEventController(ITrashEventService trashEventService, IUserService userService, INotificationService notificationService, IAdminService adminService, IPointTransactionService pointTransactionService)
         {
             _trashEventService = trashEventService;
             _userService = userService;
             _notificationService = notificationService;
             _adminService = adminService;
+            _pointTransactionService = pointTransactionService;
         }
 
         [Authorize(Roles = "ADMIN,EVENTSTAFF")]
@@ -294,6 +296,22 @@ namespace GreenCorner.MVC.Controllers
                                 CreatedAt = DateTime.Now,
                             };
                             var logResponse = await _adminService.AddLogStaff(log);
+                            var pointDto = new PointTransactionDTO
+                            {
+                                UserId = trashEventDto.UserId,
+                                Points = 50, 
+                                Type = "Thưởng" 
+                            };
+
+                            var rewardResponse = await _pointTransactionService.TransactionPoints(pointDto);
+                            if (rewardResponse != null && rewardResponse.IsSuccess)
+                            {
+                                TempData["success"] += $" Bạn đã thưởng {pointDto.Points} điểm cho người dùng.";
+                            }
+                            else
+                            {
+                                TempData["error"] = "Xác nhận thành công, nhưng thưởng điểm thất bại.";
+                            }
                         }
                         else
                         {

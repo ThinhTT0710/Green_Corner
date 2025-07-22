@@ -16,7 +16,12 @@
                         <h5>Người dùng: <strong class="text-success">@Model.FirstOrDefault()?.User.FullName</strong></h5>
                         <p>Email: <strong>@Model.FirstOrDefault()?.User.Email</strong></p>
                     </div>
-
+                    <form asp-action="ExportToExcel" asp-controller="RewardHistory" method="post" class="mb-3">
+                        <input type="hidden" name="userId" value="@Model.FirstOrDefault()?.User.ID" />
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-file-earmark-excel"></i> Xuất Excel
+                        </button>
+                    </form>
                     <div class="row mb-3">
                         <div class="col-md-4 mb-2">
                             <input type="text" id="searchInput" class="form-control" placeholder="Tìm tên, mã voucher, trạng thái..." />

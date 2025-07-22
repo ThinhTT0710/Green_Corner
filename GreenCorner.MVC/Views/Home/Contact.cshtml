@@ -1,0 +1,73 @@
+﻿<main class="main pages">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a asp-controller="Home" asp-action="Index" rel="nofollow"><i class="fi-rs-home mr-5"></i>Trang chủ</a>
+                <span></span> Góp ý & Liên hệ
+            </div>
+        </div>
+    </div>
+
+    <div class="page-content pt-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-10 col-lg-12 m-auto">
+                    <section class="row align-items-end mb-50">
+                        <div class="col-lg-5 mb-lg-0 mb-4">
+                            <h4 class="mb-20 text-brand">🌱 Về GreenCorner</h4>
+                            <h1 class="mb-30">Cùng nhau giữ gìn môi trường sống</h1>
+                            <p class="mb-20">GreenCorner là nền tảng giúp người dân báo cáo các điểm rác và tham gia các hoạt động dọn dẹp môi trường. Mỗi hành động của bạn sẽ được ghi nhận bằng điểm thưởng có thể quy đổi thành voucher ưu đãi.</p>
+                            <p>Liên hệ với chúng tôi nếu bạn có góp ý, thắc mắc, hoặc muốn tổ chức một sự kiện vì môi trường tại địa phương của mình.</p>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="contact-from-area padding-20-row-col">
+                                <h5 class="text-brand mb-10">📬 Gửi góp ý hoặc liên hệ</h5>
+                                <p class="text-muted mb-20 font-sm">Thông tin của bạn sẽ được giữ kín. Các trường có dấu * là bắt buộc.</p>
+
+                                <form class="contact-form-style mt-20" id="contact-form" asp-action="SendContact" method="post">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="input-style mb-20">
+                                                <input name="name" placeholder="Họ tên *" type="text" required />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="input-style mb-20">
+                                                <input name="email" placeholder="Email *" type="email" required />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="input-style mb-20">
+                                                <input name="phone" placeholder="Số điện thoại" type="tel" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="input-style mb-20">
+                                                <input name="subject" placeholder="Chủ đề" type="text" />
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="textarea-style mb-30">
+                                                <textarea name="message" placeholder="Nội dung góp ý hoặc tin nhắn của bạn *" required></textarea>
+                                            </div>
+                                            <button class="submit submit-auto-width btn btn-success" type="submit">Gửi liên hệ</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <p class="form-messege text-success mt-2"></p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bản đồ -->
+        <section class="container mb-50 d-none d-md-block">
+            <div class="border-radius-15 overflow-hidden">
+                <div id="map-panes" class="leaflet-map" style="height: 400px;"></div>
+            </div>
+        </section>
+    </div>
+</main>
