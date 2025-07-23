@@ -50,7 +50,7 @@
                                         <i class="fi-rs-marker mr-5"></i>Báo cáo
                                     </a>
                                 </div>
-                                @if (!User.Identity.IsAuthenticated)
+                                @if (User.Identity.IsAuthenticated)
                                 {
                                 <div class="header-action-icon-2" style="margin: 8px 8px 8px 0px;">
                                     <a class="nav-link position-relative" href="#" id="notificationDropdown"

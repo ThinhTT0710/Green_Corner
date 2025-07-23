@@ -31,6 +31,14 @@ namespace GreenCorner.MVC.Services
                 Url = SD.EcommerceAPIBase + "/api/wishlist/" + id
             });
         }
+        public async Task<ResponseDTO?> DeleteByUserId(string userId, int productId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.DELETE,
+                Url = SD.EcommerceAPIBase + "/api/wishlist/delete-by-user/" + userId + "/" + productId
+            });
+        }
 
         public async Task<ResponseDTO?> GetUserWishList(string userId)
         {

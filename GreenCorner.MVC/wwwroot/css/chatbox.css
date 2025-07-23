@@ -649,3 +649,9 @@
     text-align: center;
     color: #6c757d;
 }
+
+.product-action-1 .action-btn.active i.fi-rs-heart,
+.product-extra-link2 .action-btn.active i.fi-rs-heart {
+    color: red;
+    font-weight: 900; 
+}

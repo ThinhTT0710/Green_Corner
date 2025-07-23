@@ -7,5 +7,6 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> AddToWishList(WishListDTO wishListDTO);
         Task<ResponseDTO?> GetUserWishList(string userId);
         Task<ResponseDTO?> Delete(int id);
+        Task<ResponseDTO?> DeleteByUserId(string userId, int productId);
     }
 }

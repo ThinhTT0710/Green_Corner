@@ -1,4 +1,4 @@
-﻿using GreenCorner.EcommerceAPI.Models.DTO;
+﻿    using GreenCorner.EcommerceAPI.Models.DTO;
 using GreenCorner.EcommerceAPI.Services.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -96,6 +96,23 @@ namespace GreenCorner.EcommerceAPI.Controllers
                 return _responseDTO;
             }
         }
+
+        [HttpDelete("delete-by-user/{userId}/{productId}")]
+        public async Task<ResponseDTO> DeleteByUserId(string userId, int productId)
+        {
+            try
+            {
+                await _wishListService.DeleteByUserId(userId, productId);
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = ex.Message;
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
 
         [HttpGet("get-user-wishlist/{userId}")]
         public async Task<ResponseDTO> GetUserWishList(string userId)
