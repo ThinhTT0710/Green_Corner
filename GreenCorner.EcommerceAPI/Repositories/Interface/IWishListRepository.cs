@@ -9,6 +9,7 @@ namespace GreenCorner.EcommerceAPI.Repositories.Interface
         Task Add(WishList item);
         Task Update(WishList item);
         Task Delete(int id);
+        Task DeleteByUserId(string userId, int productId);
         Task<IEnumerable<WishList>> GetByUserId(string userID);
     }
 }

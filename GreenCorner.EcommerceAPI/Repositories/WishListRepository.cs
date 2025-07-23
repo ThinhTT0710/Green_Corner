@@ -42,7 +42,7 @@ namespace GreenCorner.EcommerceAPI.Repositories
             var WishList = await GetById(item.WishListId);
             if (WishList == null)
             {
-                throw new Exception("WishList not found");
+                throw new Exception("Không tìm thấy sản phẩm");
             }
             _context.WishLists.Update(item);
             await _context.SaveChangesAsync();
@@ -54,7 +54,18 @@ namespace GreenCorner.EcommerceAPI.Repositories
             var item = await GetById(id);
             if (item == null)
             {
-                throw new Exception("WishList not found");
+                throw new Exception("Không tìm thấy sản phẩm");
+            }
+            _context.WishLists.Remove(item);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteByUserId(string userId, int productId)
+        {
+            var item = await _context.WishLists.FirstOrDefaultAsync(w => w.UserId == userId && w.ProductId == productId);
+            if (item == null)
+            {
+                throw new Exception("Không tìm thấy sản phẩm");
             }
             _context.WishLists.Remove(item);
             await _context.SaveChangesAsync();
