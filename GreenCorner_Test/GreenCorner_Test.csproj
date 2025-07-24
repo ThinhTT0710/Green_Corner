@@ -21,8 +21,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GreenCorner.AuthAPI\GreenCorner.AuthAPI.csproj" />
+    <ProjectReference Include="..\GreenCorner.BlogAPI\GreenCorner.BlogAPI.csproj" />
     <ProjectReference Include="..\GreenCorner.EcommerceAPI\GreenCorner.EcommerceAPI.csproj" />
     <ProjectReference Include="..\GreenCorner.EventAPI\GreenCorner.EventAPI.csproj" />
+    <ProjectReference Include="..\GreenCorner.MVC\GreenCorner.MVC.csproj" />
+    <ProjectReference Include="..\GreenCorner.RewardAPI\GreenCorner.RewardAPI.csproj" />
   </ItemGroup>
 
   <ItemGroup>

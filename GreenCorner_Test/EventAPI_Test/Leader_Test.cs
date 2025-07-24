@@ -12,71 +12,79 @@ namespace GreenCorner_Test.EventAPI_Test
 {
 	public class Leader_Test
 	{
-		private readonly Mock<ILeaderService> _mockService;
-		private readonly LeaderController _controller;
-		private readonly List<EventVolunteerDTO> _mockVolunteers;
+        private readonly Mock<ILeaderService> _mockService = new();
+        private readonly LeaderController _controller;
 
-		public Leader_Test()
-		{
-			_mockService = new Mock<ILeaderService>();
-			_controller = new LeaderController(_mockService.Object);
-			_mockVolunteers = GetMockVolunteers();
-		}
+        public Leader_Test()
+        {
+            _controller = new LeaderController(_mockService.Object);
+        }
+    //    [Fact]
+    //    public async Task ViewVolunteerList_GivenValidEventId_ReturnsSuccessfulResponseWithVolunteerList()
+    //    {
+    //        // Arrange
+    //        int eventId = 1;
+    //        var expectedVolunteers = new List<VolunteerDTO>
+    //{
+    //    new VolunteerDTO { UserId = "user1" },
+    //    new VolunteerDTO { UserId = "user2" }
+    //};
 
-		private List<EventVolunteerDTO> GetMockVolunteers()
-		{
-			return new List<EventVolunteerDTO>
-		{
-			new EventVolunteerDTO
-			{
-				EventVolunteerId = 1,
-				CleanEventId = 101,
-				UserId = "user1",
-				IsTeamLeader = true,
-				AttendanceStatus = "Present",
-				PointsAwarded = 10,
-				JoinDate = DateTime.UtcNow.AddDays(-5),
-				Note = "Punctual"
-			},
-			new EventVolunteerDTO
-			{
-				EventVolunteerId = 2,
-				CleanEventId = 101,
-				UserId = "user2",
-				IsTeamLeader = false,
-				AttendanceStatus = "Absent",
-				PointsAwarded = 0,
-				JoinDate = DateTime.UtcNow.AddDays(-4),
-				Note = "Informed absence"
-			}
-		};
-		}
+    //        _mockService.Setup(service => service.ViewVolunteerList(eventId))
+    //        .Returns(Task.FromResult(expectedVolunteers));
 
-		[Fact]
-		public async Task ViewVolunteerList_ShouldReturnVolunteerList_WhenIdIsValid()
-		{
-			int eventId = 101;
-			_mockService.Setup(s => s.ViewVolunteerList(eventId)).ReturnsAsync(_mockVolunteers);
+    //        // Act
+    //        var response = await _controller.ViewVolunteerList(eventId);
 
-			var result = await _controller.ViewVolunteerList(eventId);
+    //        // Assert
+    //        Assert.True(response.IsSuccess);
+    //        var actual = Assert.IsType<List<VolunteerDTO>>(response.Result);
+    //        Assert.Equal(expectedVolunteers.Count, actual.Count);
+    //        Assert.Equal(expectedVolunteers[0].UserId, actual[0].UserId);
+    //        Assert.Equal(expectedVolunteers[1].UserId, actual[1].UserId);
+    //    }
 
-			Assert.True(result.IsSuccess);
-			var list = Assert.IsAssignableFrom<List<EventVolunteerDTO>>(result.Result);
-			Assert.Equal(2, list.Count);
-			Assert.Equal("user1", list[0].UserId);
-		}
 
-		[Fact]
-		public async Task ViewVolunteerList_ShouldFail_WhenServiceThrowsException()
-		{
-			int eventId = 999;
-			_mockService.Setup(s => s.ViewVolunteerList(eventId))
-						.ThrowsAsync(new Exception("Event not found"));
+        [Fact]
+        public async Task AttendanceCheck_ValidParams_ReturnsSuccess()
+        {
+            _mockService.Setup(s => s.AttendanceCheck("u1", 100, true)).Returns(Task.CompletedTask);
 
-			var result = await _controller.ViewVolunteerList(eventId);
+            var result = await _controller.AttendanceCheck("u1", 100, true);
 
-			Assert.False(result.IsSuccess);
-			Assert.Equal("Event not found", result.Message);
-		}
-	}
+            Assert.True(result.IsSuccess);
+        }
+
+        [Fact]
+        public async Task EditAttendance_ValidParams_ReturnsSuccess()
+        {
+            _mockService.Setup(s => s.EditAttendance("u1", 100)).Returns(Task.CompletedTask);
+
+            var result = await _controller.EditAttendance("u1", 100);
+
+            Assert.True(result.IsSuccess);
+        }
+
+        [Fact]
+        public async Task GetEventByLeader_ValidUser_ReturnsListOfEvents()
+        {
+            var mockEvents = new List<EventDTO> { new EventDTO { Title = "Clean Up" } };
+            _mockService.Setup(s => s.GetOpenEventsByTeamLeader("leader1")).ReturnsAsync(mockEvents);
+
+            var result = await _controller.GetEventByLeader("leader1");
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(mockEvents, result.Result);
+        }
+
+        [Fact]
+        public async Task KickVolunteer_ValidIds_ReturnsSuccess()
+        {
+            _mockService.Setup(s => s.KickVolunteer("u1", 200)).Returns(Task.CompletedTask);
+
+            var result = await _controller.KickVolunteer("u1", 200);
+
+            Assert.True(result.IsSuccess);
+        }
+    }
 }

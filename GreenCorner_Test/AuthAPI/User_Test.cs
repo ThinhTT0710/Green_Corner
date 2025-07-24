@@ -135,5 +135,66 @@ namespace GreenCorner_Test.AuthAPI
 			Assert.False(((ResponseDTO)result.Value).IsSuccess);
 			Assert.Equal("Change password failed. Please try again", ((ResponseDTO)result.Value).Message);
 		}
-	}
+        [Fact]
+        public async Task GetAllUser_ReturnsUsers()
+        {
+            var users = new List<UserDTO> { new UserDTO { ID = "1", FullName = "Test User" } };
+            _mockService.Setup(x => x.GetAllUser()).ReturnsAsync(users);
+
+            var result = await _controller.GetAllUser();
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(users, result.Result);
+        }
+
+        [Fact]
+        public async Task GetActiveUser_ReturnsActiveUsers()
+        {
+            var users = new List<UserDTO> { new UserDTO { ID = "2", FullName = "Active User" } };
+            _mockService.Setup(x => x.GetActiveUser()).ReturnsAsync(users);
+
+            var result = await _controller.GetActiveUser();
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(users, result.Result);
+        }
+
+        [Fact]
+        public async Task GetNearUser_ReturnsNearbyUsers()
+        {
+            var users = new List<UserDTO> { new UserDTO { ID = "3", Address = "123 Street" } };
+            _mockService.Setup(x => x.GetUserNearTrashReport("123 Street")).ReturnsAsync(users);
+
+            var result = await _controller.GetNearUser("123 Street");
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(users, result.Result);
+        }
+
+        [Fact]
+        public async Task BanUser_ValidId_ReturnsLockedUser()
+        {
+            var user = new UserDTO { ID = "4", FullName = "Locked User" };
+            _mockService.Setup(x => x.BanUser("4")).ReturnsAsync(user);
+
+            var result = await _controller.BanUser("4");
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal("User has been locked for 30 days", result.Message);
+            Assert.Equal(user, result.Result);
+        }
+
+        [Fact]
+        public async Task UnBanUser_ValidId_ReturnsUnlockedUser()
+        {
+            var user = new UserDTO { ID = "5", FullName = "Unlocked User" };
+            _mockService.Setup(x => x.UnBanUser("5")).ReturnsAsync(user);
+
+            var result = await _controller.UnBanUser("5");
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal("User has been unlocked", result.Message);
+            Assert.Equal(user, result.Result);
+        }
+    }
 }
