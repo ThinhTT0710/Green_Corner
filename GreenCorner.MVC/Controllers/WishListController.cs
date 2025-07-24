@@ -86,9 +86,37 @@ namespace GreenCorner.MVC.Controllers
             }
         }
 
-        [HttpGet]
-        [Authorize(Roles = "CUSTOMER")]
-        public async Task<IActionResult> Remove(int wishListId)
+
+        [HttpPost]
+        public async Task<IActionResult> Remove(int productId)
+        {
+            try
+            {
+                var userID = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
+                if (string.IsNullOrEmpty(userID))
+                {
+                    return Json(new { isSuccess = false, message = "Vui lòng đăng nhập để thực hiện hành động này." });
+                }
+
+                var response = await _wishListService.DeleteByUserId(userID, productId);
+
+                if (response != null && response.IsSuccess)
+                {
+                    return Json(new { isSuccess = true, message = "Sản phẩm đã được xóa khỏi danh sách yêu thích." });
+                }
+                else
+                {
+                    return Json(new { isSuccess = false, message = response?.Message ?? "Không thể xóa sản phẩm." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isSuccess = false, message = $"Lỗi hệ thống: {ex.Message}" });
+            }
+        }
+
+       [HttpGet]
+        public async Task<IActionResult> RemoveItem(int wishListId)
         {
             try
             {

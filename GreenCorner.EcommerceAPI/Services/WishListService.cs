@@ -58,6 +58,11 @@ namespace GreenCorner.EcommerceAPI.Services
             await _wishListRepository.Delete(id);
         }
 
+        public async Task DeleteByUserId(string userId, int productId)
+        {
+            await _wishListRepository.DeleteByUserId(userId, productId);
+        }
+
         public async Task<List<WishListDTO>> GetByUserId(string userID)
         {
             var wishLists = await _wishListRepository.GetByUserId(userID);
