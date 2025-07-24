@@ -1,4 +1,7 @@
 ﻿@model IEnumerable<ChatMessageDTO>
+@{
+    ViewData["Title"] = "Kênh trò chuyện";
+}
 <div class="mb-3 text-start">
     <a asp-controller="Event" asp-action="GetEventById" asp-route-eventId="@ViewBag.EventId" class="btn btn-outline-secondary">
         ← Quay lại sự kiện

@@ -319,7 +319,7 @@ namespace GreenCorner.MVC.Controllers
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Cập nhật Blog thành công!";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(MyPendingBlogs));
             }
             else
             {
@@ -352,7 +352,7 @@ namespace GreenCorner.MVC.Controllers
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Xóa Blog thành công!";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(MyPendingBlogs));
             }
             else
             {

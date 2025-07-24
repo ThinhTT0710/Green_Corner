@@ -16,7 +16,7 @@ namespace GreenCorner.MVC.Services
             return await _baseService.SendAsync(new RequestDTO
             {
                 APIType = SD.APIType.GET,
-                Url = SD.RewardAPIBase + "/api/Voucher"
+                Url = SD.RewardAPIBase + "/api/Voucher/getAllRewards"
             });
         }
         public async Task<ResponseDTO?> GetVoucherById(int id)

@@ -28,7 +28,7 @@ namespace GreenCorner.MVC.Controllers
             _pointTransactionService = pointTransactionService;
         }
 
-        [Authorize(Roles = "ADMIN,EVENTSTAFF")]
+        
         public async Task<IActionResult> Index()
         {
             List<TrashReportListViewModel> viewModelList = new();
@@ -148,7 +148,7 @@ namespace GreenCorner.MVC.Controllers
                         }
                     }
                     TempData["success"] = "Sự kiện rác đã được báo cáo thành công!";
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {

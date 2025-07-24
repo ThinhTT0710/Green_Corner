@@ -94,7 +94,9 @@
                                     <div class="mb-10">
                                         <span class="font-small d-block"><strong>Điểm:</strong> @item.PointsRequired</span>
                                         <span class="font-small d-block expiration"><strong>HSD:</strong> @item.ExpirationDate?.ToString("dd/MM/yyyy")</span>
-                                        <span class="font-small d-block text-truncate address"><i class="bi bi-geo-alt-fill me-1"></i>@(item.Address ?? "Không có địa chỉ")</span>
+                                        <span class="font-small d-block text-truncate address" title="@item.Address">
+                                            <i class="bi bi-geo-alt-fill me-1"></i>@(item.Address ?? "Không có địa chỉ")
+                                        </span>
                                         <span class="font-small d-block"><i class="bi bi-box-seam me-1"></i>Còn lại: <strong>@item.Quantity</strong></span>
                                     </div>
                                 </div>

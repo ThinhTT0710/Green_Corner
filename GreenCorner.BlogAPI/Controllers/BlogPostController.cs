@@ -1,6 +1,7 @@
 ﻿using GreenCorner.BlogAPI.Models.DTO;
 using GreenCorner.BlogAPI.Models.DTOs;
 using GreenCorner.BlogAPI.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Numerics;
@@ -38,6 +39,7 @@ namespace GreenCorner.BlogAPI.Controllers
         }
 
         [HttpGet("pending")]
+        [Authorize(Roles = "ADMIN, EVENTSTAFF")]
         public async Task<ResponseDTO> ViewPendingPosts()
         {
             try
@@ -134,6 +136,7 @@ namespace GreenCorner.BlogAPI.Controllers
         }
 
         [HttpGet("blogcreate")]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> ViewBlogCreate(string userId)
         {
             try

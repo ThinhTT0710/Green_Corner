@@ -1,7 +1,7 @@
 ﻿@model List<GreenCorner.MVC.ViewModels.UserVoucherRedemptionViewModel>
 
 @{
-    ViewData["Title"] = "Lịch sử đổi voucher";
+    ViewData["Title"] = "Lịch sử đổi thưởng";
 }
 
 <section class="content-main">
@@ -24,7 +24,11 @@
                             </select>
                         </div>
                     </div>
-
+                    <div class="mb-3">
+                        <a asp-controller="User" asp-action="Profile" class="btn btn-outline-secondary">
+                            ← Quay lại trang cá nhân
+                        </a>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover align-middle text-center" id="historyTable">
                             <thead class="table-success">

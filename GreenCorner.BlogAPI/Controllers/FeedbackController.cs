@@ -2,6 +2,7 @@
 using GreenCorner.BlogAPI.Models.DTO;
 using GreenCorner.BlogAPI.Models.DTOs;
 using GreenCorner.BlogAPI.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,6 +37,7 @@ namespace GreenCorner.BlogAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "ADMIN")]
         public async Task<ResponseDTO> GetAllFeedback()
         {
             try

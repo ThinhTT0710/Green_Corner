@@ -27,7 +27,7 @@ namespace GreenCorner.AuthAPI.Controllers
             var user = await _userService.GetUserById(id);
             if (user == null)
             {
-                _response.Message = "User not found";
+                _response.Message = "Không tìm thấy người dùng";
                 _response.IsSuccess = false;
                 return _response;
             }
@@ -40,14 +40,14 @@ namespace GreenCorner.AuthAPI.Controllers
             var checkPhoneNumber =  await _userService.CheckPhoneNumber(userDTO.PhoneNumber, userDTO.ID);
             if (!checkPhoneNumber)
             {
-                _response.Message = "Phone number already exists";
+                _response.Message = "Số điện thoại đã tồn tại!";
                 _response.IsSuccess = false;
                 return _response;
             }
             var response = await _userService.UpdateUser(userDTO);
             if (response == null)
             {
-                _response.Message = "Update profile failed. Please try again";
+                _response.Message = "Cập nhật hồ sơ thất bại. Vui lòng thử lại!";
                 _response.IsSuccess = false;
                 return _response;
             }
@@ -61,7 +61,7 @@ namespace GreenCorner.AuthAPI.Controllers
             var response = await _userService.ChangePassword(changePasswordRequest);
             if (!response)
             {
-                _response.Message = "Change password failed. Please try again";
+                _response.Message = "Thay đổi mật khẩu thất bại. Vui lòng thử lại!";
                 _response.IsSuccess = false;
                 return BadRequest(_response);
             }
@@ -74,7 +74,7 @@ namespace GreenCorner.AuthAPI.Controllers
 			var users = await _userService.GetAllUser();
 			if (users == null)
 			{
-				_response.Message = "No user found";
+				_response.Message = "Không tìm thấy người dùng!";
 				_response.IsSuccess = false;
 				return _response;
 			}
@@ -87,7 +87,7 @@ namespace GreenCorner.AuthAPI.Controllers
             var users = await _userService.GetActiveUser();
             if (users == null)
             {
-                _response.Message = "No user found";
+                _response.Message = "Không tìm thấy người dùng!";
                 _response.IsSuccess = false;
                 return _response;
             }
@@ -100,7 +100,7 @@ namespace GreenCorner.AuthAPI.Controllers
             var users = await _userService.GetUserNearTrashReport(address);
             if (users == null)
             {
-                _response.Message = "No user found";
+                _response.Message = "Không tìm thấy người dùng!";
                 _response.IsSuccess = false;
                 return _response;
             }
@@ -116,11 +116,11 @@ namespace GreenCorner.AuthAPI.Controllers
 				var user = await _userService.BanUser(id);
 				if (user == null)
 				{
-					_response.Message = "User not found";
+					_response.Message = "Không tìm thấy người dùng!";
 					_response.IsSuccess = false;
 					return _response;
 				}
-				_response.Message = "User has been locked for 30 days";
+				_response.Message = "Người dùng đã bị khóa tài khoản 30 ngày!";
 				_response.Result = user;
 				return _response;
 			}
@@ -140,11 +140,11 @@ namespace GreenCorner.AuthAPI.Controllers
 				var user = await _userService.UnBanUser(id);
 				if (user == null)
 				{
-					_response.Message = "User not found";
+					_response.Message = "Không tìm thấy người dùng!";
 					_response.IsSuccess = false;
 					return _response;
 				}
-				_response.Message = "User has been unlocked";
+				_response.Message = "Người dùng đã được mở khóa tài khoản.";
 				_response.Result = user;
 				return _response;
 			}

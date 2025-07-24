@@ -86,7 +86,7 @@ namespace GreenCorner.MVC.Controllers
                 var response = await _productService.AddProduct(productDTO);
                 if (response != null && response.IsSuccess)
                 {
-                    TempData["success"] = "Product created successfully!";
+                    TempData["success"] = "Tạo sản phẩm thành công!";
 					ProductDTO product = JsonConvert.DeserializeObject<ProductDTO>(response.Result.ToString());
                     var StaffName = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Name).FirstOrDefault()?.Value;
                     var log = new SystemLogDTO()
@@ -99,7 +99,7 @@ namespace GreenCorner.MVC.Controllers
                         CreatedAt = DateTime.Now,
                     };
 					var logResponse = await _adminService.AddLogStaff(log);
-                    return RedirectToAction("ViewAllProduct", "SaleStaff");
+                    return RedirectToAction("ProductList", "SaleStaff");
                 }
 
                 TempData["error"] = response?.Message ?? "Có lỗi xảy ra.";
@@ -147,7 +147,7 @@ namespace GreenCorner.MVC.Controllers
 					CreatedAt = DateTime.Now,
 				};
 				var logResponse = await _adminService.AddLogStaff(log);
-                return RedirectToAction("ViewAllProduct", "SaleStaff");
+                return RedirectToAction("ProductList", "SaleStaff");
             }
             else
             {
@@ -226,7 +226,7 @@ namespace GreenCorner.MVC.Controllers
 					CreatedAt = DateTime.Now,
 				};
 				var logResponse = await _adminService.AddLogStaff(log);
-                return RedirectToAction("ViewAllProduct", "SaleStaff");
+                return RedirectToAction("ProductList", "SaleStaff");
             }
 
             TempData["error"] = response?.Message;
@@ -243,7 +243,7 @@ namespace GreenCorner.MVC.Controllers
                 var products = JsonConvert.DeserializeObject<List<ProductDTO>>(res.Result.ToString());
                 return Json(new { success = true, products = products });
             }
-            return Json(new { success = false, message = "No product found" });
+            return Json(new { success = false, message = "Không tìm thấy sản phẩm!" });
         }
     }
 }

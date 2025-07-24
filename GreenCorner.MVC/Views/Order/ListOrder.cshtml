@@ -1,6 +1,6 @@
 ﻿@model List<OrderDTO>
 @{
-	ViewData["Title"] = "Order List";
+	ViewData["Title"] = "Danh sách đơn hàng";
 	Layout = "_LayoutAdmin";
 }﻿
 
@@ -66,13 +66,13 @@
                                 <td><span class="badge rounded-pill badge-soft-success">@item.Status</span></td>
                                 <td>@item.CreatedAt</td>
                                 <td class="text-end d-flex justify-content-end gap-3">
-                                    <a asp-controller="Order" asp-action="OrderDetail" asp-route-id="@item.OrderId" class="btn btn-md rounded font-sm">Detail</a>
+                                    <a asp-controller="Order" asp-action="OrderDetail" asp-route-id="@item.OrderId" class="btn btn-md rounded font-sm">Chi tiết</a>
                                     <div class="dropdown">
                                         <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
                                         <div class="dropdown-menu">
-                                            <a class="dropdown-item" asp-controller="Order" asp-action="OrderDetail" asp-route-id="@item.OrderId">View detail</a>
-                                            <a class="dropdown-item" href="#">Edit info</a>
-                                            <a class="dropdown-item text-danger" href="#">Delete</a>
+                                            <a class="dropdown-item" asp-controller="Order" asp-action="OrderDetail" asp-route-id="@item.OrderId">Xem chi tiết</a>
+                                            <a class="dropdown-item" href="#">Sửa thông tin</a>
+                                            <a class="dropdown-item text-danger" href="#">Xóa</a>
                                         </div>
                                     </div>
                                 </td>

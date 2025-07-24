@@ -80,7 +80,7 @@ namespace GreenCorner.AuthAPI.Controllers
                 var confirmationLink = $"https://localhost:7000/Auth/ConfirmEmail?userId={userEntity.Id}&token={encodeToken}";
 
                 await _emailService.SendEmailAsync(staff.Email, "Verify Your Email", $"<h1>Welcome to GreenCorner</h1><p>Please confirm your email by <a href='{confirmationLink}'>clicking here</a></p>");
-                _response.Message = "Account created successfully, please check email.";
+                _response.Message = "Tạo tài khoản thành công, vui lòng kiểm tra email!";
                 return Ok(_responseDTO);
 			}
 			catch (Exception ex)
@@ -118,11 +118,11 @@ namespace GreenCorner.AuthAPI.Controllers
 				var user = await _adminService.BlockStaffAccount(id);
 				if (user == null)
 				{
-					_responseDTO.Message = "Staff not found";
+					_responseDTO.Message = "Không tìm thấy nhân viên";
 					_responseDTO.IsSuccess = false;
 					return _responseDTO;
 				}
-				_responseDTO.Message = "Staff has been banned forever";
+				_responseDTO.Message = "Nhân viên đã bị khóa tài khoản vĩnh viễn.";
 				_responseDTO.Result = user;
 				return _responseDTO;
 			}
@@ -143,11 +143,11 @@ namespace GreenCorner.AuthAPI.Controllers
 				var user = await _adminService.UnBlockStaffAccount(id);
 				if (user == null)
 				{
-					_responseDTO.Message = "Staff not found";
+					_responseDTO.Message = "Không tìm thấy nhân viên";
 					_responseDTO.IsSuccess = false;
 					return _responseDTO;
 				}
-				_responseDTO.Message = "Staff has been unban";
+				_responseDTO.Message = "Nhân viên đã được mở khóa tài khoản.";
 				_responseDTO.Result = user;
 				return _responseDTO;
 			}

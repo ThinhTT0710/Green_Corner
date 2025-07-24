@@ -149,7 +149,7 @@ namespace GreenCorner.MVC.Controllers
                 if (response != null && response.IsSuccess)
                 {
                     TempData["success"] = "Đánh giá sự kiện thành công!";
-                    return RedirectToAction("ViewEventVolunteerListCheck", "User");
+                    return RedirectToAction("ViewParticipatedActivities", "User");
                 }
                 else
                 {
