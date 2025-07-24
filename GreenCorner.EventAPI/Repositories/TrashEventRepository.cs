@@ -112,7 +112,7 @@ namespace GreenCorner.EventAPI.Repositories
             foreach (var group in groupedCleanupEvents)
             {
                 int monthIndex = group.Key - 1;
-                completedEventsByMonth[monthIndex] = group.Count(e => e.Status == "Closed");
+                completedEventsByMonth[monthIndex] = group.Count(e => e.Status == "Close");
             }
 
             foreach (var group in groupedTrashReports)

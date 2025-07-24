@@ -1,5 +1,7 @@
 ﻿@model UserDTO
-
+@{
+    ViewData["Title"] = "Tài khoản người dùng";
+}
 <div class="page-header breadcrumb-wrap">
     <div class="container">
         <div class="breadcrumb">
@@ -44,7 +46,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">
+                                    <a class="nav-link" href="~/User/GetRewardRedemptionHistory">
                                         <i class="fi-rs-marker mr-10"></i>Lịch sử đổi thưởng
                                     </a>
                                 </li>
@@ -72,8 +74,8 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">
-                                        <i class="fi-rs-marker mr-10"></i>Lịch sử Tham gia
+                                    <a class="nav-link" href="/Event/EventReviewHistory">
+                                        <i class="fi fi-rs-browser mr-10"></i> Lịch sử hoạt động đánh giá
                                     </a>
                                 </li>
                                 <li class="nav-item">

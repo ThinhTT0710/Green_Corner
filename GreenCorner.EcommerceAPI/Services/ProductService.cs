@@ -72,13 +72,25 @@ namespace GreenCorner.EcommerceAPI.Services
         {
             var products = await _productRepository.GetAllProduct();
             var searchedProducts = _mapper.Map<List<ProductDTO>>(products);
+
             if (string.IsNullOrEmpty(keyword))
             {
-                throw new Exception("No product found");
+                return new List<ProductDTO>();
             }
 
-            string normalizedKeyword = RemoveDiacritics(keyword.ToLower());
-            return searchedProducts.Where(p => RemoveDiacritics(p.Name.ToLower()).Contains(normalizedKeyword));
+            string normalizedKeyword = RemoveDiacritics(keyword.ToLower().Trim());
+
+            return searchedProducts.Where(p =>
+                (p.Name != null && RemoveDiacritics(p.Name.ToLower()).Contains(normalizedKeyword)) ||
+
+                (p.Category != null && RemoveDiacritics(p.Category.ToLower()).Contains(normalizedKeyword)) ||
+
+                (p.Brand != null && RemoveDiacritics(p.Brand.ToLower()).Contains(normalizedKeyword)) ||
+
+                (p.Origin != null && RemoveDiacritics(p.Origin.ToLower()).Contains(normalizedKeyword)) ||
+
+                (p.Price.ToString().Contains(normalizedKeyword))
+            );
         }
 
         private static string RemoveDiacritics(string text)

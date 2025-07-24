@@ -2,6 +2,7 @@
 using GreenCorner.BlogAPI.Models.DTOs;
 using GreenCorner.BlogAPI.Services;
 using GreenCorner.BlogAPI.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +19,7 @@ namespace GreenCorner.BlogAPI.Controllers
             _blogFavoriteService = blogFavoriteService;
             _responseDTO = new ResponseDTO();
         }
+
         [HttpPost("add")]
         public async Task<ResponseDTO> AddFavorite([FromBody] BlogFavoriteAddDTO dto)
         {
@@ -69,6 +71,7 @@ namespace GreenCorner.BlogAPI.Controllers
         }
 
         [HttpGet("by-user")]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> GetFavoritesByUser(string userId)
         {
             try
