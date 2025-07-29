@@ -1,5 +1,6 @@
 using GreenCorner.MVC.Models;
 using GreenCorner.MVC.Services.Interface;
+using GreenCorner.MVC.Utility;
 using GreenCorner.MVC.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -23,6 +24,15 @@ namespace GreenCorner.MVC.Controllers
 
         public async Task<IActionResult> Index()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                if (User.IsInRole(SD.RoleAdmin) ||
+                    User.IsInRole(SD.RoleSaleStaff) ||
+                    User.IsInRole(SD.RoleEventStaff))
+                {
+                    return RedirectToAction("Index", "Admin");
+                }
+            }
             List<ProductDTO>? listTrendingProduct = new();
             List<ProductDTO>? listNewestProduct = new();
             List<EventDTO>? listOpenEvents = new();
