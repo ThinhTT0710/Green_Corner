@@ -233,8 +233,8 @@
                                             <div class="modal-footer">
                                                 <form asp-controller="Event" asp-action="UnregisterVolunteer" method="post">
                                                     <input type="hidden" name="eventId" value="@Model.CleanEventId" />
-                                                    <button type="submit" class="btn btn-danger">Hủy đăng ký</button>
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                                                    <button type="submit" class="btn btn-danger" style=" font-weight: 700; font-size: 14px; padding: 12px 30px; ">Hủy đăng ký</button>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style=" border-radius: 10px; ">Hủy bỏ</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -269,8 +269,8 @@
                                             <div class="modal-footer">
                                                 <form asp-controller="Event" asp-action="UnregisterTeamLeader" method="post">
                                                     <input type="hidden" name="eventId" value="@Model.CleanEventId" />
-                                                    <button type="submit" class="btn btn-warning">Hủy đăng ký</button>
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                                                    <button type="submit" class="btn btn-warning" style=" font-weight: 700; font-size: 14px; padding: 12px 30px; ">Hủy đăng ký</button>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style=" border-radius: 10px; ">Hủy bỏ</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -283,20 +283,18 @@
                 </div>
                 
             </div>
-
+             @if (approvedRole == "TeamLeader" || approvedRole == "Volunteer")
+                    {
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    @if (approvedRole == "TeamLeader" || approvedRole == "Volunteer")
-                    {
                         <div class="text-center">
                             <a href="/Chat?eventId=@Model.CleanEventId" class="btn btn-outline-primary w-100">
                                 Trò chuyện với sự kiện <i class="fi fi-rs-comment ms-1"></i>
                             </a>
                         </div>
-                    }
                 </div>
             </div>
-
+            }
 
             <div class="card shadow-sm mb-4">
                 <div class="card-body">

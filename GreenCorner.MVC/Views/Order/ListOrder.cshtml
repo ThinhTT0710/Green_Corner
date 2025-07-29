@@ -15,7 +15,7 @@
         <header class="card-header">
             <div class="row gx-3">
                 <div class="col-lg-4 col-md-6 me-auto">
-                    <input type="text" placeholder="Search..." class="form-control" id="searchInput" />
+                    <input type="text" placeholder="Tìm kiếm..." class="form-control" id="searchInput" />
                 </div>
                 <div class="col-lg-2 col-6 col-md-3">
                     <select class="form-select" id="statusFilter">
@@ -47,12 +47,12 @@
                     <thead>
                         <tr>
                             <th>#ID</th>
-                            <th scope="col">Name</th>
+                            <th scope="col">Họ và tên</th>
                             <th scope="col">Email</th>
-                            <th scope="col">Total</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Date</th>
-                            <th scope="col" class="text-end">Action</th>
+                            <th scope="col">Tổng cộng</th>
+                            <th scope="col">Trạng thái</th>
+                            <th scope="col">Ngày đặt hàng</th>
+                            <th scope="col">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="orderTableBody">
@@ -66,14 +66,18 @@
                                 <td><span class="badge rounded-pill badge-soft-success">@item.Status</span></td>
                                 <td>@item.CreatedAt</td>
                                 <td class="text-end d-flex justify-content-end gap-3">
+                                    <a asp-controller="Order" asp-action="OrderDetail" asp-route-id="@item.OrderId" class="btn btn-md rounded font-sm">Xem chi tiết</a>
                                     <div class="dropdown">
                                         <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
                                         <div class="dropdown-menu">
-                                            <a class="dropdown-item" asp-controller="Order" asp-action="OrderDetail" asp-route-id="@item.OrderId">Xem chi tiết</a>
-                                            <a class="dropdown-item" href="#">Sửa thông tin</a>
-                                            <a class="dropdown-item text-danger" href="#">Xóa</a>
+                                            <a class="dropdown-item" asp-controller="Order" asp-action="OrderDetail" asp-route-id="@item.OrderId">Cập nhật</a>
+                                            @if (item.Status == "Chờ xác nhận" || item.Status == "Đã thanh toán")
+                                            {
+                                                <a class="dropdown-item text-success approve-btn" asp-controller="Order" asp-action="ApproveOrder" asp-route-orderId="@item.OrderId">Xác nhận</a>
+                                                <a class="dropdown-item text-danger reject-btn" asp-controller="Order" asp-action="RejectOrder" asp-route-orderId="@item.OrderId">Từ chối</a>
+                                            }
                                         </div>
-                                    </div>
+                                        </div>
                                 </td>
                             </tr>
                         }
@@ -93,6 +97,55 @@
     </div>
 </section>
 @section Scripts {
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        document.querySelectorAll('.approve-btn').forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+                const href = this.getAttribute('href');
+
+                Swal.fire({
+                    title: 'Bạn chắc chắn không?',
+                    text: "Bạn có muốn xác nhận đơn hàng này không?",
+                    icon: 'success',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3BB77E',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Đồng ý!',
+                    cancelButtonText: 'Hủy bỏ'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = href;
+                    }
+                });
+            });
+        });
+
+        document.querySelectorAll('.reject-btn').forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+                const href = this.getAttribute('href');
+
+                Swal.fire({
+                    title: 'Bạn chắc chắn không?',
+                    text: "Bạn có muốn từ chối đơn hàng này không?",
+                    icon: 'error',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3BB77E',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Đồng ý',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = href; 
+                    }
+                });
+            });
+        });
+
+    });
+</script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const searchInput = document.getElementById("searchInput");

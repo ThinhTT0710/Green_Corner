@@ -114,13 +114,13 @@
 
             <!-- Nút hành động -->
             <div class="card mb-4">
-                <div class="d-flex card-body text-center gap-3">
+                <div class="d-flex card-body text-center gap-1" style=" align-items: center; justify-content: center;">
                     <a asp-action="ViewVolunteerRegistrations" class="btn btn-light rounded font-sm text-body hover-up">← Quay lại</a>
-                    <form asp-action="ApproveVolunteer" asp-route-id="@Model.Volunteer.VolunteerId" method="post">
-                        <button type="submit" class="btn btn-success mb-2">Phê duyệt</button>
+                    <form asp-action="ApproveVolunteer" asp-route-id="@Model.Volunteer.VolunteerId" method="post" class="approve-form">
+                        <button type="submit" class="btn btn-md rounded font-sm">Phê duyệt</button>
                     </form>
-                    <form asp-action="RejectVolunteer" asp-route-id="@Model.Volunteer.VolunteerId" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-danger">Từ chối</button>
+                    <form asp-action="RejectVolunteer" asp-route-id="@Model.Volunteer.VolunteerId" method="post" style="display:inline;" class="reject-form">
+                        <button type="submit" class="btn btn-md rounded font-sm" style="background-color: rgb(220, 53, 69);">Từ chối</button>
                     </form>
                 </div>
             </div>
@@ -129,5 +129,51 @@
 </section>
 
 @section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.approve-form').forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    Swal.fire({
+                        title: 'Bạn chắc chắn không?',
+                        text: "Bạn có muốn duyệt cho người dùng này làm đội trưởng sự kiện ?",
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3BB77E',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Đồng ý',
+                        cancelButtonText: 'Hủy'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+            document.querySelectorAll('.reject-form').forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    Swal.fire({
+                        title: 'Bạn chắc chắn không?',
+                        text: "Bạn có muốn từ chối cho người dùng này làm đội trưởng sự kiện ?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3BB77E',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Đồng ý',
+                        cancelButtonText: 'Hủy'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+        });
+    </script>
     @await Html.PartialAsync("_ValidationScriptsPartial")
 }
