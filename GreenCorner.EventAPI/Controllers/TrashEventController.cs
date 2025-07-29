@@ -38,8 +38,31 @@ namespace GreenCorner.EventAPI.Controllers
             }
         }
 
+        [HttpPost("uploadImage")]
+        public async Task<IActionResult> UploadImage(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("File không hợp lệ");
+
+            // Tạo thư mục nếu chưa có
+            var folderPath = Path.Combine("..", "GreenCorner.MVC", "wwwroot", "imgs", "reporttrash");
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
+
+            // Tạo đường dẫn file đích
+            var fileName = Path.GetFileName(file.FileName);
+            var filePath = Path.Combine(folderPath, fileName);
+
+            // Ghi file
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            // Trả lại đường dẫn truy cập file
+            var fileUrl = $"{Request.Scheme}://{Request.Host}/imgs/reporttrash/{fileName}";
+            return Ok(new { fileName = fileName, url = fileUrl });
+        }
+
         [HttpGet("{id}")]
-        [Authorize(Roles = "ADMIN,EVENTSTAFF")]
         public async Task<ResponseDTO> GetTrashEventById(int id)
         {
             try
@@ -90,7 +113,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
         }
         [HttpDelete("{id}")]
-        [Authorize(Roles = "ADMIN,EVENTSTAFF")]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> DeleteTrashEvent(int id)
         {
             try

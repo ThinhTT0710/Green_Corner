@@ -1,65 +1,65 @@
-﻿﻿
-@model IEnumerable<UserDTO>
+﻿    @model List<UserDTO>
 @{
-    ViewData["Title"] = "Quản lí nhân viên";
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-}
+    ViewData["Title"] = "User List";
+    Layout = "_LayoutAdmin";
+}﻿
 <section class="content-main">
     <div class="content-header">
         <h2 class="content-title">Danh sách nhân viên</h2>
     </div>
-	<div class="card mb-4">
+    <div class="card mb-4">
         <header class="card-header">
             <div class="row gx-3">
                 <div class="col-lg-4 col-md-6 me-auto">
-                    <input type="text" id="searchInput" placeholder="Tìm kiếm..." class="form-control" />
+                    <input type="text" placeholder="Tìm kiếm..." class="form-control" id="searchInput" />
                 </div>
                 <div class="col-lg-2 col-md-3 col-6">
-                    <select id="statusFilter" class="form-select">
-    <option value="">Trạng thái</option>
-    <option value="false">Hoạt động</option>
-    <option value="true">Bị chặn</option>
-</select>
+                    <select class="form-select" id="statusFilter">
+                        <option disable selected>Trạng thái</option>
+                        <option>Hoạt động</option>
+                        <option>Bị chặn</option>
+                    </select>
                 </div>
                 <div class="col-lg-2 col-md-3 col-6">
-			<a asp-action="CreateStaff" class="btn btn-outline-primary"><i class="bi bi-plus-square"></i> Tạo nhân viên mới</a>
+                    <select class="form-select" id="itemsPerPageFilter">
+                        <option value="10" selected>Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
+                        <option value="30">Hiển thị 30</option>
+                        <option value="40">Hiển thị 40</option>
+                    </select>
                 </div>
             </div>
         </header>
         <!-- card-header end// -->
         <div class="card-body">
             <div class="table-responsive">
-		<table class="table table-hover">
-			<thead>
-				<tr>
-					<th>Họ và tên</th>
-					<th>Địa chỉ</th>
-					<th>Email</th>
-					<th>Số điện thoại</th>
-					<th>Trạng thái</th>
-					<th class="text-end"></th>
-				</tr>
-			</thead>
-			
-			<tbody>
-				@foreach (var item in Model)
-				{
-				<tr data-fullname="@item.FullName.ToLower()" data-status="@item.IsBan.ToString().ToLower()">
-					<td width="40%">
-						  <div class="info pl-3">
-                                        <h6 class="mb-0 title">@item.FullName</h6>
-										</div>
-					</td>
-					<td>
-						@item.Address
-					</td>
-					<td>
-						@item.Email
-					</td>
-					<td>
-						@item.PhoneNumber
-					</td>
-					 @if (!item.IsBan)
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Họ và tên</th>
+                            <th>Email</th>
+                            <th>Trạng thái</th>
+                            <th>Số điện thoại</th>
+                            <th class="text-end"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td width="40%">
+                                    <a asp-controller="Admin" asp-action="UserDetail" asp-route-userId="@item.ID" class="itemside">
+                                        <div class="left">
+                                            <img src="@item.Avatar" class="img-sm img-avatar" alt="Userpic" />
+                                        </div>
+                                        <div class="info pl-3">
+                                            <h6 class="mb-0 title">@item.FullName</h6>
+                                            <small class="text-muted">#@item.ID</small>
+                                        </div>
+                                    </a>
+                                </td>
+                                <td>@item.Email</td>
+                                @if (!item.IsBan)
                                 {
                                     <td><span class="badge rounded-pill badge-soft-success">Hoạt động</span></td>
                                 }
@@ -67,59 +67,147 @@
                                 {
                                     <td><span class="badge rounded-pill badge-soft-danger">Bị khóa</span></td>
                                 }
-					<td class="text-end">
-									<a class="btn btn-sm btn-brand rounded font-sm mt-15"  asp-action="UpdateStaff" asp-route-userId="@item.ID" >
-									Cập nhật
-							</a>
-							@{if(@item.IsBan){
-											<a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="UnBlockStaff" asp-route-staffID="@item.ID">
-										Bỏ chặn
-							</a>
-							}else{
-											<a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="BlockStaff" asp-route-staffID="@item.ID">
-									Chặn
-							</a>
-							}
-							}
-					</td>
-				</tr>
-				}
-			</tbody>
-		</table
-	</div>
+                                <td>@item.PhoneNumber</td>
+                                <td class="text-end">
+                                    <a asp-action="UpdateStaff" asp-route-userId="@item.ID" class="btn btn-sm btn-brand rounded font-sm mt-15">Cập nhật</a>
+                                    @if (!item.IsBan)
+                                    {
+                                        <a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-controller="Admin" asp-action="BlockUser" asp-route-userId="@item.ID">
+                                            Chặn
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="UnblockUser" asp-controller="Admin" asp-route-userId="@item.ID">
+                                            Mở chặn
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+                <div id="noResultMessage" class="text-center text-muted my-4 d-none">
+                    Không tìm thấy nhân viên nào phù hợp.
+                </div>
+            </div>
         </div>
     </div>
-<div class="pagination-area mt-15 mb-50">
+    <div class="pagination-area mt-15 mb-50">
         <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-start">
+            <ul class="pagination justify-content-start" id="pagination">
             </ul>
         </nav>
     </div>
 </section>
+
 @section Scripts {
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const searchInput = document.getElementById("searchInput");
-        const statusFilter = document.getElementById("statusFilter");
-        const rows = document.querySelectorAll("table tbody tr");
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const statusFilter = document.getElementById("statusFilter");
+            const itemsPerPageFilter = document.getElementById("itemsPerPageFilter");
+            const tableBody = document.getElementById("userTableBody");
+            const paginationContainer = document.getElementById("pagination");
+            const noResultMessage = document.getElementById("noResultMessage");
 
-        function filterTable() {
-            const keyword = searchInput.value.toLowerCase();
-            const selectedStatus = statusFilter.value;
+            const allRows = Array.from(tableBody.getElementsByTagName("tr"));
+            let filteredRows = [...allRows];
+            let currentPage = 1;
 
-            rows.forEach(row => {
-                const fullName = row.getAttribute("data-fullname");
-                const status = row.getAttribute("data-status"); // "true" or "false"
+            function updateDisplay() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedStatus = statusFilter.value.toLowerCase();
 
-                const matchName = fullName.includes(keyword);
-                const matchStatus = !selectedStatus || status === selectedStatus;
+                filteredRows = allRows.filter(row => {
+                    const fullNameAndId = row.cells[0].innerText.toLowerCase();
+                    const email = row.cells[1].innerText.toLowerCase();
+                    const statusText = row.cells[2].innerText.toLowerCase();
+                    const phone = row.cells[3].innerText.toLowerCase();
 
-                row.style.display = (matchName && matchStatus) ? "" : "none";
+                    const matchesSearch =
+                        fullNameAndId.includes(searchTerm) ||
+                        email.includes(searchTerm) ||
+                        statusText.includes(searchTerm) ||
+                        phone.includes(searchTerm);
+
+                    const matchesStatus = (selectedStatus === "trạng thái" || statusText === selectedStatus);
+
+                    return matchesSearch && matchesStatus;
+                });
+
+                if (filteredRows.length === 0) {
+                    tableBody.innerHTML = "";
+                    paginationContainer.innerHTML = "";
+                    noResultMessage.classList.remove("d-none");
+                    return;
+                }
+
+                noResultMessage.classList.add("d-none");
+                renderPagination();
+                renderTableRows();
+            }
+
+            function renderTableRows() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const paginatedRows = filteredRows.slice(startIndex, endIndex);
+
+                tableBody.innerHTML = "";
+                paginatedRows.forEach(row => tableBody.appendChild(row));
+            }
+
+            function renderPagination() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const totalPages = Math.ceil(filteredRows.length / itemsPerPage);
+                paginationContainer.innerHTML = "";
+
+                if (totalPages <= 1) return;
+
+                const prevLi = document.createElement("li");
+                prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+                prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}"  style="padding: 6px;"><i class="material-icons md-chevron_left"></i></a>`;
+                paginationContainer.appendChild(prevLi);
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageLi = document.createElement("li");
+                    pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                    pageLi.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+                    paginationContainer.appendChild(pageLi);
+                }
+
+                const nextLi = document.createElement("li");
+                nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+                nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}"  style="padding: 6px;"><i class="material-icons md-chevron_right"></i></a>`;
+                paginationContainer.appendChild(nextLi);
+            }
+
+            function triggerFilter() {
+                currentPage = 1;
+                updateDisplay();
+            }
+
+            searchInput.addEventListener("input", triggerFilter);
+            statusFilter.addEventListener("change", triggerFilter);
+            itemsPerPageFilter.addEventListener("change", triggerFilter);
+
+            paginationContainer.addEventListener("click", function (e) {
+                e.preventDefault();
+                const target = e.target.closest("a.page-link");
+                if (target && !target.parentElement.classList.contains('disabled')) {
+                    const page = parseInt(target.dataset.page, 10);
+                    if (!isNaN(page)) {
+                        currentPage = page;
+                        renderTableRows();
+                        renderPagination();
+                    }
+                }
             });
-        }
 
-        searchInput.addEventListener("keyup", filterTable);
-        statusFilter.addEventListener("change", filterTable);
-    });
-</script>
+            updateDisplay();
+        });
+    </script>
 }

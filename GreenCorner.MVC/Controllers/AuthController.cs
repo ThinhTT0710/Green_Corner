@@ -41,7 +41,7 @@ namespace GreenCorner.MVC.Controllers
                     _tokenProvider.SetToken(loginResponse.Token);
                     TempData["success"] = "Đăng nhập thành công.";
                     var role = User.Claims.Where(u => u.Type == ClaimTypes.Role)?.FirstOrDefault()?.Value;
-                    if (role == SD.RoleAdmin)
+                    if (role == SD.RoleAdmin || role == SD.RoleSaleStaff || role == SD.RoleEventStaff)
                     {
                         return RedirectToAction("Index", "Admin");
                     }
@@ -70,10 +70,10 @@ namespace GreenCorner.MVC.Controllers
             ResponseDTO result = await _authService.RegisterAsync(registerationRequest);
             ResponseDTO assignRole;
 
-            if(result != null && result.IsSuccess) 
-            { 
+            if (result != null && result.IsSuccess)
+            {
                 assignRole = await _authService.AssignRoleAsync(registerationRequest);
-                if(assignRole != null && assignRole.IsSuccess)
+                if (assignRole != null && assignRole.IsSuccess)
                 {
                     TempData["success"] = "Đăng ký thành công. Vui lòng xác nhận email trước khi đăng nhập.";
                     return RedirectToAction("Login");
@@ -109,7 +109,7 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ResendConfirmEmail(IFormCollection form) 
+        public async Task<IActionResult> ResendConfirmEmail(IFormCollection form)
         {
             var email = form["email-forgot"];
             var response = await _authService.ResendConfirmEmailAsync(email);
@@ -128,7 +128,7 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EmailForgotPassword(IFormCollection form) 
+        public async Task<IActionResult> EmailForgotPassword(IFormCollection form)
         {
             var email = form["email-forgot"];
             var response = await _authService.EmailForgotPasswordAsync(email);
@@ -141,7 +141,7 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpGet]
-        public IActionResult ForgotPassword(string userId, string token) 
+        public IActionResult ForgotPassword(string userId, string token)
         {
             var forgotpasswordRequest = new ForgotPasswordRequestDTO
             {
@@ -169,7 +169,7 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Logout() 
+        public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
             _tokenProvider.ClearToken();
@@ -178,11 +178,11 @@ namespace GreenCorner.MVC.Controllers
 
         public IActionResult GoogleLogin()
         {
-                var properties = new AuthenticationProperties
-                {
-                    RedirectUri = Url.Action("GoogleResponse")
-                };
-                return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("GoogleResponse")
+            };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
         public async Task<IActionResult> GoogleResponse()
@@ -282,34 +282,34 @@ namespace GreenCorner.MVC.Controllers
             HttpContext.User = principal;
         }
 
-		public async Task<IActionResult> GetStaffList()
-		{
-			List<UserDTO> listStaff = new();
-			ResponseDTO? response = await _authService.GetAllStaff();
-			if (response != null && response.IsSuccess)
-			{
-				listStaff = JsonConvert.DeserializeObject<List<UserDTO>>(response.Result.ToString());
-			}
-			else
-			{
-				TempData["error"] = response?.Message;
-			}
-			return View(listStaff);
-		}
-        
-		public async Task<IActionResult> CreateStaff()
-		{
-			return View();
-		}
+        public async Task<IActionResult> GetStaffList()
+        {
+            List<UserDTO> listStaff = new();
+            ResponseDTO? response = await _authService.GetAllStaff();
+            if (response != null && response.IsSuccess)
+            {
+                listStaff = JsonConvert.DeserializeObject<List<UserDTO>>(response.Result.ToString());
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+            return View(listStaff);
+        }
 
-		[HttpPost]
-		public async Task<IActionResult> CreateStaff(StaffDTO staffDTO)
-		{
-			if (!User.Identity.IsAuthenticated)
-			{
-				TempData["loginError"] = "Vui lòng đăng nhập!";
-				return RedirectToAction("Login", "Auth");
-			}
+        public async Task<IActionResult> CreateStaff()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateStaff(StaffDTO staffDTO)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["loginError"] = "Vui lòng đăng nhập!";
+                return RedirectToAction("Login", "Auth");
+            }
 
             var file = Request.Form.Files.FirstOrDefault(); // Lấy file đầu tiên
 
@@ -337,21 +337,21 @@ namespace GreenCorner.MVC.Controllers
             }
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
             staffDTO.ID = userId;
-			if (ModelState.IsValid)
-			{
-				ResponseDTO response = await _authService.CreateStaff(staffDTO);
-				if (response != null && response.IsSuccess)
-				{
-					TempData["success"] = "Tạo nhân viên thành công!";
-					return RedirectToAction(nameof(GetStaffList));
-				}
-				else
-				{
-					TempData["error"] = response?.Message;
-				}
-			}
-			return View(staffDTO);
-		}
+            if (ModelState.IsValid)
+            {
+                ResponseDTO response = await _authService.CreateStaff(staffDTO);
+                if (response != null && response.IsSuccess)
+                {
+                    TempData["success"] = "Tạo nhân viên thành công!";
+                    return RedirectToAction(nameof(GetStaffList));
+                }
+                else
+                {
+                    TempData["error"] = response?.Message;
+                }
+            }
+            return View(staffDTO);
+        }
         public async Task<IActionResult> UpdateStaff(string userId)
         {
             ResponseDTO response = await _authService.GetStaffById(userId);
@@ -395,19 +395,19 @@ namespace GreenCorner.MVC.Controllers
                 {
                     await file.CopyToAsync(stream);
                 }
-                if(existingStaff.Avatar!= fileName)
+                if (existingStaff.Avatar != fileName)
                 {
                     existingStaff.Avatar = fileName;
                 }
                 // Gán tên file vào thuộc tính
                 staffDTO.Avatar = existingStaff.Avatar;
             }
-            
+
             ResponseDTO response = await _authService.UpdateStaff(staffDTO);
 
             if (response != null && response.IsSuccess)
             {
-                
+
                 TempData["success"] = "Cập nhật thông tin nhân viên thành công!";
                 return RedirectToAction(nameof(GetStaffList));
             }
@@ -418,7 +418,7 @@ namespace GreenCorner.MVC.Controllers
             return View(staffDTO);
         }
         public async Task<IActionResult> BlockStaff(string staffID)
-		{
+        {
             ResponseDTO response = await _authService.BlockStaffAccount(staffID);
             if (response != null && response.IsSuccess)
             {
@@ -432,20 +432,20 @@ namespace GreenCorner.MVC.Controllers
             return NotFound();
         }
 
-		public async Task<IActionResult> UnBlockStaff(string staffID)
-		{
-			ResponseDTO response = await _authService.UnBlockStaffAccount(staffID);
-			if (response != null && response.IsSuccess)
-			{
+        public async Task<IActionResult> UnBlockStaff(string staffID)
+        {
+            ResponseDTO response = await _authService.UnBlockStaffAccount(staffID);
+            if (response != null && response.IsSuccess)
+            {
                 TempData["success"] = "Đã mở khóa tài khoản thành công.";
                 return RedirectToAction(nameof(GetStaffList));
-			}
-			else
-			{
-				TempData["error"] = response?.Message;
-			}
-			return NotFound();
-		}
+            }
+            else
+            {
+                TempData["error"] = response?.Message;
+            }
+            return NotFound();
+        }
 
         public IActionResult AccessDenied()
         {

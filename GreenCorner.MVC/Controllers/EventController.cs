@@ -40,17 +40,34 @@ namespace GreenCorner.MVC.Controllers
         }
         public async Task<IActionResult> GetAllEvent()
         {
+            List<GetAllEventViewModel> viewModelList = new();
             List<EventDTO> listEvent = new();
             ResponseDTO? response = await _eventService.GetAllEvent();
             if (response != null && response.IsSuccess)
             {
                 listEvent = JsonConvert.DeserializeObject<List<EventDTO>>(response.Result.ToString());
+                foreach (var events in listEvent)
+                {
+                    ResponseDTO? eventResponse = await _eventService.GetParticipationInfoAsync(events.CleanEventId);
+
+                    ParticipationInfoResponse participation = new();
+                    if (eventResponse != null && eventResponse.IsSuccess)
+                    {
+                        participation = JsonConvert.DeserializeObject<ParticipationInfoResponse>(eventResponse.Result.ToString());
+                    }
+
+                    viewModelList.Add(new GetAllEventViewModel
+                    {
+                        Event = events,
+                        Participation = participation
+                    });
+                }
             }
             else
             {
                 TempData["error"] = response?.Message;
             }
-            return View(listEvent);
+            return View(viewModelList);
         }
         public async Task<IActionResult> GetEventById(int eventId)
         {
@@ -373,7 +390,6 @@ namespace GreenCorner.MVC.Controllers
                 {
                     UserDTO? user = null;
 
-                    // Lấy thông tin user từ service
                     var userResponse = await _userService.GetUserById(ev.UserId);
                     if (userResponse != null && userResponse.IsSuccess && userResponse.Result != null)
                     {
@@ -871,9 +887,15 @@ namespace GreenCorner.MVC.Controllers
             }
             return NotFound();
         }
-        public async Task<IActionResult> GetOpenEventsByTeamLeader(string userId)
+        public async Task<IActionResult> GetOpenEventsByTeamLeader()
         {
-            List<EventDTO> listEvent = new();
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["loginError"] = "Vui lòng đăng nhập để xem các sự kiện do bạn quản lý!";
+                return RedirectToAction("Login", "Auth");
+            }
+                var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+                List<EventDTO> listEvent = new();
             ResponseDTO? response = await _eventService.GetOpenEventsByTeamLeader(userId);
             if (response != null && response.IsSuccess)
             {

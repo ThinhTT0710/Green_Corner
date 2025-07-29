@@ -40,9 +40,9 @@
                                 <tr>
                                     <th>Họ tên</th>
                                     <th>Email</th>
-                                    <th>Loại</th>
                                     <th>Số điểm</th>
-                                    <th>Ngày tạo</th>
+                                    <th>Loại</th>
+                                    <th>Thời gian</th>
                                 </tr>
                             </thead>
                             <tbody id="transactionTable">
@@ -60,20 +60,30 @@
                                             data-name="@item.User.FullName?.ToLower()"
                                             data-email="@item.User.Email?.ToLower()"
                                             data-type="@item.Transaction.Type?.ToLower()">
-                                            <td>@item.User.FullName</td>
+                                            <td width="37%">
+                                                <a asp-controller="Admin" asp-action="UserDetail" asp-route-userId="@item.User.ID" class="itemside">
+                                                    <div class="left">
+                                                        <img src="@item.User.Avatar" class="img-sm img-avatar" alt="Userpic" />
+                                                    </div>
+                                                    <div class="info pl-3">
+                                                        <h6 class="mb-0 title">@item.User.FullName</h6>
+                                                        <small class="text-muted">#@item.User.ID</small>
+                                                    </div>
+                                                </a>
+                                            </td>
                                             <td>@item.User.Email</td>
+                                            <td>@item.Transaction.Points</td>
                                             <td>
                                                 @if (item.Transaction.Type == "Thưởng")
                                                 {
-                                                    <span class="badge bg-success">@item.Transaction.Type</span>
+                                                    <span class="badge rounded-pill badge-soft-success">@item.Transaction.Type</span>
                                                 }
                                                 else
                                                 {
-                                                    <span class="badge bg-secondary">@item.Transaction.Type</span>
+                                                    <span class="badge rounded-pill badge-soft-danger">@item.Transaction.Type</span>
                                                 }
                                             </td>
-                                            <td>@item.Transaction.Points</td>
-                                            <td>@item.Transaction.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>@item.Transaction.CreatedAt?.ToString("HH:mm:ss dd/MM/yyyy")</td>
                                         </tr>
                                     }
                                 }

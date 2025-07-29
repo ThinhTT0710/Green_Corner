@@ -86,32 +86,51 @@ namespace GreenCorner.MVC.Controllers
             }
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> Remove(int wishListId)
-        //{
-        //    try
-        //    {
-        //        var userID = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
-        //        if (string.IsNullOrEmpty(userID))
-        //        {
-        //            return Json(new { isSuccess = false, message = "Vui lòng đăng nhập để thực hiện hành động này." });
-        //        }
 
-        //        var response = await _wishListService.DeleteByUserId(userID, productId);
+        [HttpPost]
+        public async Task<IActionResult> Remove(int productId)
+        {
+            try
+            {
+                var userID = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
+                if (string.IsNullOrEmpty(userID))
+                {
+                    return Json(new { isSuccess = false, message = "Vui lòng đăng nhập để thực hiện hành động này." });
+                }
+                if (response != null && response.IsSuccess)
+                {
+                    return Json(new { isSuccess = true, message = "Sản phẩm đã được xóa khỏi danh sách yêu thích." });
+                }
+                else
+                {
+                    return Json(new { isSuccess = false, message = response?.Message ?? "Không thể xóa sản phẩm." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isSuccess = false, message = $"Lỗi hệ thống: {ex.Message}" });
+            }
+        }
 
-        //        if (response != null && response.IsSuccess)
-        //        {
-        //            return Json(new { isSuccess = true, message = "Sản phẩm đã được xóa khỏi danh sách yêu thích." });
-        //        }
-        //        else
-        //        {
-        //            return Json(new { isSuccess = false, message = response?.Message ?? "Không thể xóa sản phẩm." });
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Json(new { isSuccess = false, message = $"Lỗi hệ thống: {ex.Message}" });
-        //    }
-        //}
+        [HttpGet]
+        public async Task<IActionResult> RemoveItem(int wishListId)
+        {
+            try
+            {
+                var response = await _wishListService.Delete(wishListId);
+                if (response != null && response.IsSuccess)
+                {
+                    return Json(new { isSuccess = true, message = "Sản phẩm đã được xóa khỏi danh sách yêu thích." });
+                }
+                else
+                {
+                    return Json(new { isSuccess = false, message = response?.Message ?? "Không thể xóa sản phẩm khỏi danh sách yêu thích." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isSuccess = false, message = $"Đã xảy ra lỗi: {ex.Message}" });
+            }
+        }
     }
 }

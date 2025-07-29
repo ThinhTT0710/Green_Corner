@@ -19,39 +19,77 @@
 						<div class="dashboard-menu">
 							<ul class="nav flex-column" role="tablist">
 								<li class="nav-item">
-									<a class="nav-link" href="User/Profile">
+									<a class="nav-link" asp-controller="User" asp-action="Profile">
 										<i class="fi-rs-user mr-10"></i>Thông tin
 										tài khoản
 									</a>
 								</li>
 								<li class="nav-item">
-									<a class="nav-link" href="#">
-										<i class="fi-rs-settings-sliders mr-10"></i>Thành tích
+									<a class="nav-link" asp-controller="Event" asp-action="GetOpenEventsByTeamLeader">
+										<i class="fi-rs-settings-sliders mr-10"></i>Sự kiện bạn quản lý
 									</a>
 								</li>
 								<li class="nav-item">
-									<a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab"
-										aria-controls="orders" aria-selected="false">
+									<a class="nav-link" id="achievements-tab" href="/User/Achievements" role="tab"
+									   aria-controls="achievements" aria-selected="true">
+										<i class="fi fi-rs-trophy mr-10"></i>Thành tích của tôi
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link " asp-controller="Order" asp-action="History">
 										<i class="fi-rs-shopping-bag mr-10"></i>Đơn hàng
 									</a>
 								</li>
 								<li class="nav-item">
-									<a class="nav-link active" href="#">
-										<i class="fi-rs-shopping-cart-check mr-10"></i>Báo cáo
+									<a class="nav-link active" asp-controller="User" asp-action="ReportHistory">
+										<i class="fi-rs-shopping-cart-check mr-10"></i>Lịch sử báo cáo
 									</a>
 								</li>
 								<li class="nav-item">
-									<a class="nav-link" href="#" >
+									<a class="nav-link" href="~/User/GetRewardRedemptionHistory">
 										<i class="fi-rs-marker mr-10"></i>Lịch sử đổi thưởng
 									</a>
 								</li>
+								<li class="nav-item dropdown">
+									<a class="nav-link dropdown-toggle" href="#" id="feedbackReportDropdown" role="button" data-bs-toggle="dropdown"
+									   aria-expanded="false">
+										<i class="fi fi-rs-comment-alt mr-10"></i> Góp ý & Báo cáo
+									</a>
+									<ul class="dropdown-menu" aria-labelledby="feedbackReportDropdown">
+										<li>
+											<a class="dropdown-item" href="/BlogPost/SubmitFeedback">
+												<i class="fi fi-rs-bubble-dots mr-10"></i> Gửi góp ý
+											</a>
+										</li>
+										<li>
+											<a class="dropdown-item" href="/BlogPost/SubmitReport">
+												<i class="fi fi-rs-warning mr-10"></i> Gửi báo cáo
+											</a>
+										</li>
+									</ul>
+								</li>
 								<li class="nav-item">
-									<a class="nav-link" href="#">
-										<i class="fi-rs-marker mr-10"></i>Lịch sử Tham gia
+									<a class="nav-link" href="/User/ViewParticipatedActivities">
+										<i class="fi fi-rs-browser mr-10"></i> Lịch sử hoạt động
 									</a>
 								</li>
 								<li class="nav-item">
-									<a class="nav-link" href="/Auth/Logout">
+									<a class="nav-link" href="/Event/EventReviewHistory">
+										<i class="fi fi-rs-browser mr-10"></i> Lịch sử hoạt động đánh giá
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" href="/Event/LeaderReviewHistory">
+										<i class="fi fi-rs-browser mr-10"></i> Lịch sử đánh giá đội trưởng
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" asp-controller="User" asp-action="ChangePassword">
+										<i class="fi-rs-marker mr-10"></i>Thay đổi mật khẩu
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" asp-controller="Auth" asp-action="Logout">
 										<i class="fi-rs-sign-out mr-10"></i>Đăng
 										xuất
 									</a>
@@ -104,9 +142,14 @@
 																	@if (item.Status == "Chờ xác nhận")
 																	{
 																		<a class="btn-small d-block" asp-action="UpdateTrashEvent"
-																			asp-controller="TrashEvent"
-																			asp-route-trashReportId="@item.TrashReportId">
+																		   asp-controller="TrashEvent"
+																		   asp-route-trashReportId="@item.TrashReportId">
 																			Cập nhật
+																		</a>
+																		<a class="btn-small d-block" asp-action="DeleteTrashEvent"
+																		   asp-controller="TrashEvent"
+																		   asp-route-trashReportId="@item.TrashReportId">
+																			Xóa
 																		</a>
 																	}
 																</td>
