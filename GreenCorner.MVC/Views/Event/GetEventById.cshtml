@@ -11,7 +11,7 @@
 }
 
 <section class="content-main">
-    <div class="row">
+    <div class="row" style="margin: 30px 10px;">
         <div class="col-12">
             <div class="content-header mb-3">
                 <h2 class="content-title text-center">Chi tiết sự kiện</h2>
@@ -145,12 +145,7 @@
                     <h5 class="mb-3">Thao tác đăng ký</h5>
                     @if (approvedRole == "TeamLeader")
                     {
-                        <a asp-controller="Event"
-                           asp-action="GetOpenEventsByTeamLeader"
-                           asp-route-userId="@User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value"
-                           class="btn btn-primary w-100 mt-3">
-                            Xem sự kiện đang phụ trách
-                        </a>
+                        
                         <div class="d-flex justify-content-start gap-2 mt-2">
                             <a asp-action="ViewEventVolunteerList"
                                asp-route-eventId="@Model.CleanEventId"
@@ -169,6 +164,12 @@
                                 Gửi Báo cáo <i class="fi fi-rs-warning ms-1"></i>
                             </a>
                         </div>
+                        <a asp-controller="Event"
+                           asp-action="GetOpenEventsByTeamLeader"
+                           asp-route-userId="@User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value"
+                           class="btn btn-primary w-100 mt-3">
+                            Xem sự kiện đang phụ trách
+                        </a>
                     }
 
                     @if (string.IsNullOrEmpty(approvedRole))

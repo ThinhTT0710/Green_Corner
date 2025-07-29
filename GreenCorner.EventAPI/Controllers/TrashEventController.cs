@@ -39,7 +39,6 @@ namespace GreenCorner.EventAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "ADMIN,EVENTSTAFF")]
         public async Task<ResponseDTO> GetTrashEventById(int id)
         {
             try
@@ -90,7 +89,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
         }
         [HttpDelete("{id}")]
-        [Authorize(Roles = "ADMIN,EVENTSTAFF")]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> DeleteTrashEvent(int id)
         {
             try

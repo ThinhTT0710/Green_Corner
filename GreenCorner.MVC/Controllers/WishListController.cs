@@ -86,8 +86,8 @@ namespace GreenCorner.MVC.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Remove(int wishListId)
+        [HttpPost]
+        public async Task<IActionResult> Remove(int productId)
         {
             try
             {
@@ -111,6 +111,27 @@ namespace GreenCorner.MVC.Controllers
             catch (Exception ex)
             {
                 return Json(new { isSuccess = false, message = $"Lỗi hệ thống: {ex.Message}" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> RemoveItem(int wishListId)
+        {
+            try
+            {
+                var response = await _wishListService.Delete(wishListId);
+                if (response != null && response.IsSuccess)
+                {
+                    return Json(new { isSuccess = true, message = "Sản phẩm đã được xóa khỏi danh sách yêu thích." });
+                }
+                else
+                {
+                    return Json(new { isSuccess = false, message = response?.Message ?? "Không thể xóa sản phẩm khỏi danh sách yêu thích." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isSuccess = false, message = $"Đã xảy ra lỗi: {ex.Message}" });
             }
         }
     }

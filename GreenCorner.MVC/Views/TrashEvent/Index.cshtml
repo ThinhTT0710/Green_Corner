@@ -19,7 +19,7 @@
                 </div>
                 <div class="col-lg-2 col-6 col-md-3"  >
                     <select class="form-select" id="statusFilter">
-                        <option>Status</option>
+                        <option>Trạng thái</option>
                         <option>Chờ xác nhận</option>
                         <option>Đã xác nhận</option>
                         <option>Đã từ chối</option>
@@ -153,7 +153,7 @@ section Scripts {
                     statusText.includes(searchTerm) ||
                     date.includes(searchTerm);
 
-                const matchesStatus = (selectedStatus === "status" || statusText === selectedStatus);
+                const matchesStatus = (selectedStatus === "trạng thái" || statusText === selectedStatus);
 
                 return matchesSearch && matchesStatus;
             });

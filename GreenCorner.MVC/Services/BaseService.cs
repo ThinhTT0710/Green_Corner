@@ -58,13 +58,13 @@ namespace GreenCorner.MVC.Services
                 switch (apiResponse.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
-                        return new() { IsSuccess = false, Message = "Not Found" };
+                        return new() { IsSuccess = false, Message = "Không tìm thấy" };
                     case HttpStatusCode.Forbidden:
-                        return new() { IsSuccess = false, Message = "Access Denied" };
+                        return new() { IsSuccess = false, Message = "Từ chối truy cập do bạn không được cấp quyền" };
                     case HttpStatusCode.Unauthorized:
-                        return new() { IsSuccess = false, Message = "Unauthorized" };
+                        return new() { IsSuccess = false, Message = "Không được phép" };
                     case HttpStatusCode.InternalServerError:
-                        return new() { IsSuccess = false, Message = "Internal Server Error" };
+                        return new() { IsSuccess = false, Message = "Lỗi khi kết nối với máy chủ" };
                     default:
                         var apiContent = await apiResponse.Content.ReadAsStringAsync();
                         var apiResponseDto = JsonConvert.DeserializeObject<ResponseDTO>(apiContent);

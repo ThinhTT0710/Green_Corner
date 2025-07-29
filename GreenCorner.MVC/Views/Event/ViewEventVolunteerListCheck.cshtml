@@ -1,8 +1,8 @@
 ﻿@model IEnumerable<GreenCorner.MVC.ViewModels.EventVolunteerWithUserViewModel>
 @{
-    ViewData["Title"] = "Sự kiện";
+    ViewData["Title"] = "Điểm danh tình nguyện viên";
 }
-<div class="card shadow border-0 mt-4">
+<div class="card shadow border-0 mt-4" style="padding: 30px;">
     <div class="row">
         <h2 class="content-title card-title">Điểm Danh</h2>
     </div>
@@ -15,20 +15,29 @@
                             <th>Sự kiện</th>
                             <th>Họ tên</th>
                             <th>Trạng thái điểm danh</th>
-                            <th class="text-end">Thao tác</th>
+                            <th>Thao tác</th>
                             <th class="text-end"></th>
                         </tr>
                     </thead>
-                    <tbody>
                     <tbody>
                             @foreach (var item in Model)
                             {
                             <tr>
                                 <td>@item.Volunteer.CleanEventId</td>
                                 <td>@item.User?.FullName</td>
-                                <td>@item.Volunteer.AttendanceStatus</td>
-
-                                <td class="text-center">
+                            @if (item.Volunteer.AttendanceStatus == "Present")
+                                    {
+                                    <td class="text-success">Có mặt</td>
+                                    }
+                                    else if (item.Volunteer.AttendanceStatus == "Absent")
+                                    {
+                                    <td class="text-danger">Vắng mặt</td>
+                                    }
+                                    else
+                                    {
+                                    <td class="text-warning">Chưa điểm danh</td>
+                                    }
+                                    <td class="text-center">
                                         @if (item.Volunteer.AttendanceStatus == "Present" || item.Volunteer.AttendanceStatus == "Absent")
                                         {
                                         <span class="text-success"><i class="bi bi-check-circle-fill"></i> Đã điểm danh</span>
@@ -55,19 +64,12 @@
                                 <td class="text-end">
                                         @if (item.Volunteer.AttendanceStatus == "Present" || item.Volunteer.AttendanceStatus == "Absent")
                                         {
-                                        <div class="dropdown">
-                                            <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm">
-                                                <i class="material-icons md-more_horiz"></i>
-                                            </a>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item text-success"
+                                        <a class="btn btn-success btn-sm me-1"
                                                    asp-action="EditAttendance"
                                                    asp-route-userId="@item.Volunteer.UserId"
                                                    asp-route-eventId="@item.Volunteer.CleanEventId">
                                                     Sửa điểm danh
                                                 </a>
-                                            </div>
-                                        </div>
                                         }
                                 </td>
                             </tr>
@@ -75,6 +77,7 @@
                     </tbody>
                 </table>
             </div>
+            <a class="btn" asp-action="GetOpenEventsByTeamLeader" asp-controller="Event">Trở về</a>
         </div>
     </div>
 </div>
