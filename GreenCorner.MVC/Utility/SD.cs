@@ -13,7 +13,7 @@
 
         public const string RoleAdmin = "ADMIN";
         public const string RoleSaleStaff = "SALESTAFF";
-        public const string RoleEVentStaff = "EVENTSTAFF";
+        public const string RoleEventStaff = "EVENTSTAFF";
 
 
         public static string TokenCookie = "JWTToken";
