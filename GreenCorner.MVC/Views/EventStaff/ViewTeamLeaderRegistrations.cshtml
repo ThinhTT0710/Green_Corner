@@ -84,13 +84,13 @@
                                                     <i class="bi bi-eye me-2"></i> Chi tiết
                                                 </a>
 
-                                                <form asp-action="ApproveTeamLeader" asp-route-id="@item.Volunteer.VolunteerId" method="post" class="dropdown-item m-0 p-0">
+                                                <form asp-action="ApproveTeamLeader" asp-route-id="@item.Volunteer.VolunteerId" method="post" class="dropdown-item m-0 p-0 approve-form">
                                                     <button type="submit" class="dropdown-item text-success">
                                                         <i class="bi bi-check-circle me-2"></i> Phê duyệt
                                                     </button>
                                                 </form>
 
-                                                <form asp-action="RejectTeamLeader" asp-route-id="@item.Volunteer.VolunteerId" method="post" class="dropdown-item m-0 p-0">
+                                                <form asp-action="RejectTeamLeader" asp-route-id="@item.Volunteer.VolunteerId" method="post" class="dropdown-item m-0 p-0 reject-form">
                                                     <button type="submit" class="dropdown-item text-danger">
                                                         <i class="bi bi-x-circle me-2"></i> Từ chối
                                                     </button>
@@ -116,6 +116,52 @@
 </section>
 
 @section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.approve-form').forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    Swal.fire({
+                        title: 'Bạn chắc chắn không?',
+                        text: "Bạn có muốn duyệt cho người dùng này làm đội trưởng sự kiện ?",
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3BB77E',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Đồng ý',
+                        cancelButtonText: 'Hủy'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+            document.querySelectorAll('.reject-form').forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    Swal.fire({
+                        title: 'Bạn chắc chắn không?',
+                        text: "Bạn có muốn từ chối cho người dùng này làm đội trưởng sự kiện ?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3BB77E',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Đồng ý',
+                        cancelButtonText: 'Hủy'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+        });
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const searchInput = document.getElementById("searchInput");

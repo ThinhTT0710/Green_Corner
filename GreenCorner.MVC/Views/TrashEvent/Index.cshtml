@@ -85,9 +85,9 @@
                                             <a class="dropdown-item" asp-action="Detail" asp-controller="TrashEvent" asp-route-trashReportId="@item.TrashEvent.TrashReportId">Xem chi tiết</a>
                                             @if (item.TrashEvent.Status == "Chờ xác nhận")
                                             {
-                                                <a class="dropdown-item" asp-action="ApproveTrashEvent"
+                                                <a class="dropdown-item text-success approve-event-btn" asp-action="ApproveTrashEvent"
                                                     asp-route-trashReportId="@item.TrashEvent.TrashReportId">Chấp nhận</a>
-                                                <a class="dropdown-item text-danger" asp-action="RejectrashEvent"
+                                                <a class="dropdown-item text-danger reject-event-btn" asp-action="RejectrashEvent"
                                                     asp-route-trashReportId="@item.TrashEvent.TrashReportId">Từ chối</a>
                                             }
                                             @if (item.TrashEvent.Status == "Đã xác nhận")
@@ -115,7 +115,54 @@
     </div>
 </section>
 
-section Scripts {
+@section Scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.approve-event-btn').forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+
+                Swal.fire({
+                    title: 'Bạn chắc chắn không?',
+                    text: "Bạn có muốn xác nhận báo cáo này không?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3BB77E',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Đồng ý!',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = href; 
+                    }
+                });
+            });
+        });
+
+        document.querySelectorAll('.reject-event-btn').forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+
+                Swal.fire({
+                    title: 'Bạn chắc chắn không?',
+                    text: "Bạn có muốn từ chối báo cáo này không?",
+                    icon: 'error',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3BB77E',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Đồng ý',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = href;
+                    }
+                });
+            });
+        });
+    });
+</script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const searchInput = document.getElementById("searchInput");

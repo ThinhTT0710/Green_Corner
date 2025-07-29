@@ -6,10 +6,13 @@
 ﻿
 <section class="content-main">
     <div class="content-header">
-        <div>
+            <div>
             <h2 class="content-title card-title">Danh sách sự kiện</h2>
-            <p>Danh sách tất cả các sự kiện.</p>
-        </div>
+            </div>
+            <div>
+                <a asp-action="ExportToExcel" class="btn btn-light rounded font-md">Xuất file Excel</a>
+            <a asp-action="CreateCleanupEvent" asp-controller="Event" class="btn btn-primary btn-sm rounded">Tạo mới</a>
+            </div>
     </div>
     <div class="card mb-4">
         <header class="card-header">

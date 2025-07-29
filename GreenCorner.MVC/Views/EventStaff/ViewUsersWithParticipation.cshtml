@@ -1,9 +1,7 @@
-﻿@{
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-}
-@model GreenCorner.MVC.ViewModels.VolunteerRegistrationsViewModel
+﻿@model VolunteerRegistrationsViewModel
 
 @{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     ViewData["Title"] = "Người dùng đã tham gia hoạt động";
 }
 
@@ -43,7 +41,8 @@
                             <tr>
                                 <th>Người dùng</th>
                                 <th>Email</th>
-                                <th class="text-end">Lịch sử tham gia</th>
+                                <th>Trạng thái</th>
+                                <th>Lịch sử tham gia</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -53,19 +52,30 @@
                                     data-name="@item.User.FullName.ToLower()"
                                     data-email="@item.User.Email.ToLower()">
                                     <td width="40%">
-                                        <a href="#" class="itemside">
+                                        <a asp-controller="Admin" asp-action="UserDetail" asp-route-userId="@item.User.ID" class="itemside">
+                                            <div class="left">
+                                                <img src="@item.User.Avatar" class="img-sm img-avatar" alt="Userpic" />
+                                            </div>
                                             <div class="info pl-3">
                                                 <h6 class="mb-0 title">@item.User.FullName</h6>
-                                                <small class="text-muted">User ID: @item.User.ID</small>
+                                                <small class="text-muted">#@item.User.ID</small>
                                             </div>
                                         </a>
                                     </td>
                                     <td>@item.User.Email</td>
-                                    <td class="text-end">
+                                    @if (!item.User.IsBan)
+                                    {
+                                        <td><span class="badge rounded-pill badge-soft-success">Hoạt động</span></td>
+                                    }
+                                    else
+                                    {
+                                        <td><span class="badge rounded-pill badge-soft-danger">Bị khóa</span></td>
+                                    }
+                                    <td >
                                         <a asp-action="ViewActivities"
                                            asp-controller="User"
                                            asp-route-userId="@item.User.ID"
-                                           class="btn btn-sm btn-outline-primary">
+                                           class="btn btn-md rounded font-sm">
                                             Xem lịch sử
                                         </a>
                                     </td>
@@ -75,7 +85,7 @@
                     </table>
                 </div>
 
-                <div class="pagination-area mt-3 text-center" id="pagination"></div>
+                <div class="pagination justify-content-start" id="pagination"></div>
             }
         </div>
     </div>
@@ -114,7 +124,7 @@
                 // Tạo phân trang
                 let html = '';
                 for (let i = 1; i <= pages; i++) {
-                    html += `<button class="btn btn-sm btn-outline-primary me-1 page-btn" data-page="${i}">${i}</button>`;
+                    html += `<button class="btn btn-sm btn-outline-success me-1 page-btn" data-page="${i}">${i}</button>`;
                 }
                 $('#pagination').html(html);
 

@@ -263,6 +263,52 @@ namespace GreenCorner.MVC.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ApproveOrder(int orderId)
+        {
+            try
+            {
+                var response = await _orderService.UpdateOrderStatus(orderId, "Đã xác nhận");
+                if (response != null && response.IsSuccess)
+                {
+                    TempData["success"] = "Xác nhận đơn hàng thành công";
+                }
+                else
+                {
+                    TempData["error"] = response?.Message;
+                }
+                return RedirectToAction("ListOrder", "Order");
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isSuccess = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> RejectOrder(int orderId)
+        {
+            try
+            {
+                var response = await _orderService.UpdateOrderStatus(orderId, "Đã từ chối");
+                if (response != null && response.IsSuccess)
+                {
+                    TempData["success"] = "Từ chối đơn hàng thành công";
+                }
+                else
+                {
+                    TempData["error"] = response?.Message;
+                }
+                return RedirectToAction("ListOrder", "Order");
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isSuccess = false, message = ex.Message });
+            }
+        }
+
         public async Task<IActionResult> ListOrder()
         {
             List<OrderDTO> orders = new();
