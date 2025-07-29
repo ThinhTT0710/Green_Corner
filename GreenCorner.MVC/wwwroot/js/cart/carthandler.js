@@ -259,7 +259,122 @@ $(document).ready(function () {
     });
 });
 
+    $(document).ready(function () {
+        $('.remove-wishlist-item').off('click').on('click', function (e) {
+            e.preventDefault();
+            var wishListId = $(this).data('wishlist-id');
+
+            Swal.fire({
+                title: 'Bạn có chắc chắn muốn xóa?',
+                text: "Sản phẩm này sẽ bị xóa khỏi danh sách yêu thích của bạn!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Có, xóa nó đi!',
+                cancelButtonText: 'Không, hủy bỏ!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/WishList/RemoveItem',
+                        type: 'GET',
+                        data: { wishListId: wishListId },
+                        success: function (response) {
+                            if (response.isSuccess) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Đã xóa!',
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Lỗi!',
+                                    text: response.message || 'Có lỗi xảy ra khi xóa sản phẩm.',
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi!',
+                                text: 'Không thể kết nối đến máy chủ để xóa sản phẩm.',
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+
 $(document).ready(function () {
+    $(document).on('click', '.wishlist-toggle-btn', function (e) {
+        e.preventDefault();
+
+        var $button = $(this);
+        var productId = $button.data('product-id');
+
+        var isWishlisted = $button.hasClass('active');
+
+        var url = isWishlisted ? '/WishList/Remove' : '/WishList/AddToWishList';
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { productId: productId },
+            success: function (response) {
+                if (response.isSuccess) {
+                    $button.toggleClass('active');
+
+                    if ($button.hasClass('active')) {
+                        $button.attr('aria-label', 'Remove from Wishlist');
+                    } else {
+                        $button.attr('aria-label', 'Add To Wishlist');
+                    }
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: response.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+
+                } else {
+                    if (response.message.includes("đăng nhập")) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Yêu cầu đăng nhập',
+                            text: response.message,
+                            confirmButtonText: 'Đăng nhập ngay'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = "/Auth/Login";
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: response.message,
+                        });
+                    }
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi kết nối!',
+                    text: 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.',
+                });
+            }
+        });
+    });
+
     $('.remove-wishlist-item').off('click').on('click', function (e) {
         e.preventDefault();
         var wishListId = $(this).data('wishlist-id');
@@ -276,7 +391,7 @@ $(document).ready(function () {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '/WishList/Remove',
+                    url: '/WishList/RemoveItem',
                     type: 'GET',
                     data: { wishListId: wishListId },
                     success: function (response) {
@@ -291,54 +406,10 @@ $(document).ready(function () {
                                 location.reload();
                             });
                         } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Lỗi!',
-                                text: response.message || 'Có lỗi xảy ra khi xóa sản phẩm.',
-                            });
                         }
                     },
-                    error: function (xhr, status, error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi!',
-                            text: 'Không thể kết nối đến máy chủ để xóa sản phẩm.',
-                        });
+                    error: function () {
                     }
-                });
-            }
-        });
-    });
-});
-
-$(document).ready(function () {
-    $('.add-to-wishlist-btn').off('click').on('click', function (e) {
-        e.preventDefault();
-        var productId = $(this).data('product-id');
-
-        $.ajax({
-            url: '/WishList/AddToWishList',
-            type: 'POST',
-            data: { productId: productId },
-            success: function (response) {
-                Swal.fire({
-                    icon: response.icon,
-                    title: response.isSuccess ? 'Thành công!' : 'Lỗi!',
-                    text: response.message,
-                    showConfirmButton: true,
-                    timer: response.isSuccess ? 1500 : undefined
-                }).then(() => {
-                    if (response.isSuccess) {
-                    } else if (response.message === "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.") {
-                        window.location.href = "/Auth/Login";
-                    }
-                });
-            },
-            error: function (xhr, status, error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi!',
-                    text: 'Không thể thêm sản phẩm vào danh sách yêu thích. Vui lòng thử lại sau.',
                 });
             }
         });

@@ -1,5 +1,7 @@
 ﻿@model IEnumerable<EventVolunteerWithUserViewModel>
-
+@{
+    ViewData["Title"] = "Sự kiện";
+}
 <div class="card shadow border-0 mt-4">
     <div class="row">
         <h2 class="content-title card-title">Volunteer List</h2>
@@ -75,7 +77,7 @@
                                             @{
                                                 var calculatedPoints = item.Volunteer.IsTeamLeader == true ? item.Volunteer.PointsAwarded * 3 : item.Volunteer.PointsAwarded;
                                             }
-                                            Bạn có chắc chắn muốn thưởng <strong>@calculatedPoints</strong> điểm cho tình nguyện viên <strong>@item.Volunteer.UserId</strong>?
+                                            Bạn có chắc chắn muốn thưởng <strong>@calculatedPoints</strong> điểm cho tình nguyện viên <strong>@item.User.FullName</strong>?
                                         </div>
                                         <div class="modal-footer">
                                             <input type="hidden" name="userId" value="@item.Volunteer.UserId" />

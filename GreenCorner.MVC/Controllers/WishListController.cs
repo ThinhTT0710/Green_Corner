@@ -91,19 +91,26 @@ namespace GreenCorner.MVC.Controllers
         {
             try
             {
-                var response = await _wishListService.Delete(wishListId);
+                var userID = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
+                if (string.IsNullOrEmpty(userID))
+                {
+                    return Json(new { isSuccess = false, message = "Vui lòng đăng nhập để thực hiện hành động này." });
+                }
+
+                var response = await _wishListService.DeleteByUserId(userID, productId);
+
                 if (response != null && response.IsSuccess)
                 {
                     return Json(new { isSuccess = true, message = "Sản phẩm đã được xóa khỏi danh sách yêu thích." });
                 }
                 else
                 {
-                    return Json(new { isSuccess = false, message = response?.Message ?? "Không thể xóa sản phẩm khỏi danh sách yêu thích." });
+                    return Json(new { isSuccess = false, message = response?.Message ?? "Không thể xóa sản phẩm." });
                 }
             }
             catch (Exception ex)
             {
-                return Json(new { isSuccess = false, message = $"Đã xảy ra lỗi: {ex.Message}" });
+                return Json(new { isSuccess = false, message = $"Lỗi hệ thống: {ex.Message}" });
             }
         }
     }

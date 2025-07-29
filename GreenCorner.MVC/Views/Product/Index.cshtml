@@ -1,8 +1,9 @@
 ﻿@model IEnumerable<ProductDTO>
+@using System.Globalization
 @{
 	ViewData["Title"] = "Product";
 	Layout = "_LayoutCart";
-}﻿
+}
 <div class="page-header mt-30 mb-50">
 	<div class="container">
 		<div class="archive-header">
@@ -19,128 +20,117 @@
 	</div>
 </div>
 <div class="container mb-30">
-	<div class="row">
-		<div class="col-12">
-			<div class="shop-product-fillter">
-				<div class="totall-product">
-					<p>Chúng tôi có <strong class="text-brand">@Model.Count()</strong> sản phẩm dành cho bạn!</p>
-				</div>
-				<div class="sort-by-product-area">
-					<div class="sort-by-cover mr-10">
-						<div class="sort-by-product-wrap">
-							<div class="sort-by">
-								<span><i class="fi-rs-apps"></i>Hiển thị:</span>
-							</div>
-							<div class="sort-by-dropdown-wrap">
-								<span> 50 <i class="fi-rs-angle-small-down"></i></span>
-							</div>
-						</div>
-						<div class="sort-by-dropdown">
-							<ul>
-								<li><a class="active" href="#">50</a></li>
-								<li><a href="#">100</a></li>
-								<li><a href="#">150</a></li>
-								<li><a href="#">200</a></li>
-								<li><a href="#">All</a></li>
-							</ul>
-						</div>
-					</div>
-					<div class="sort-by-cover">
-						<div class="sort-by-product-wrap">
-							<div class="sort-by">
-								<span><i class="fi-rs-apps-sort"></i>Sắp xếp:</span>
-							</div>
-							<div class="sort-by-dropdown-wrap">
-								<span> Mặc định <i class="fi-rs-angle-small-down"></i></span>
-							</div>
-						</div>
-						<div class="sort-by-dropdown">
-							<ul>
-								<li><a class="active" href="#">Mặc định</a></li>
-								<li><a href="#">Price: Low to High</a></li>
-								<li><a href="#">Price: High to Low</a></li>
-								<li><a href="#">Release Date</a></li>
-								<li><a href="#">Avg. Rating</a></li>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row product-grid">
-				@foreach (var item in Model)
-				{
-					<div class="col-lg-1-5 col-md-4 col-12 col-sm-6">
-						<div class="product-cart-wrap mb-30">
-							<div class="product-img-action-wrap">
-								<div class="product-img product-img-zoom">
-									@{
-										List<string> images = item.ImageUrl.Split('&').ToList();
-									}
-									<a href="/Product/Detail/@item.ProductId">
-										<img class="default-img" src="@images[0]" alt="" />
-										<img class="hover-img" src="@images[1]" alt="" />
-									</a>
-								</div>
-								<div class="product-action-1">
-									<a aria-label="Add To Wishlist" class="action-btn add-to-wishlist-btn" href="#" data-product-id="@item.ProductId">
-										<i class="fi-rs-heart"></i></a>
-									<a aria-label="Add To Cart" class="action-btn add-to-cart-btn" href="#" data-product-id="@item.ProductId">
-										<i class="fi-rs-shopping-cart"></i></a>
-									<a aria-label="Quick view" class="action-btn" href="/Product/Detail/@item.ProductId"><i
-											class=" fi-rs-eye"></i></a>
-								</div>
-								<div class="product-badges product-badges-position product-badges-mrg">
-									<span class="hot">Hot</span>
-								</div>
-							</div>
-							<div class="product-content-wrap">
-								<div class="product-category">
-									<a href="shop-grid-right.html">@item.Category</a>
-								</div>
-								<h2><a href="/Product/Detail/@item.ProductId">@item.Name</a></h2>
-								<div>
-									<span class="font-small text-muted">By <a
-											href="vendor-details-1.html">@item.Brand</a></span>
-								</div>
-								<div class="product-card-bottom">
-									@{
-										int price = (int)item.Price;
-										int priceDiscount = price - (item.Discount.HasValue ? (price * item.Discount.Value /
-										100) : 0);
-									}
-									<div class="product-price">
-										<span>@priceDiscount.ToString("N0", new CultureInfo("vi-VN"))đ</span>
-										<span class="old-price">@item.Price.ToString("N0", new CultureInfo("vi-VN"))đ</span>
-									</div>
-									<div class="add-cart">
-										<a class="add add-to-cart-btn" href="#" data-product-id="@item.ProductId">
-											<i class="fi-rs-shopping-cart mr-5"></i>Add
-										</a>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				}
-			</div>
-			<!--product grid-->
-			<div class="pagination-area mt-20 mb-20">
-				<nav aria-label="Page navigation example">
-					<ul class="pagination justify-content-start">
-						<li class="page-item">
-							<a class="page-link" href="#"><i class="fi-rs-arrow-small-left"></i></a>
-						</li>
-						<li class="page-item"><a class="page-link" href="#">1</a></li>
-						<li class="page-item active"><a class="page-link" href="#">2</a></li>
-						<li class="page-item"><a class="page-link" href="#">3</a></li>
-						<li class="page-item"><a class="page-link dot" href="#">...</a></li>
-						<li class="page-item"><a class="page-link" href="#">6</a></li>
-						<li class="page-item">
-							<a class="page-link" href="#"><i class="fi-rs-arrow-small-right"></i></a>
-						</li>
-					</ul>
-				</nav>
-			</div>
+	<div class="row mb-4 justify-content-center">
+		<div class="col-md-6 col-lg-5 mb-2">
+			<input type="text" id="searchInput" class="form-control" placeholder="Tìm theo tên, danh mục, thương hiệu..." />
+		</div>
+		<div class="col-md-3 col-lg-2 mb-2">
+			<select id="itemsPerPage" class="form-select">
+				<option value="10">Hiển thị 10</option>
+				<option value="20">Hiển thị 20</option>
+				<option value="all">Tất cả</option>
+			</select>
 		</div>
 	</div>
+	<div class="row product-grid" id="productContainer">
+		@foreach (var item in Model)
+		{
+			List<string> images = item.ImageUrl.Split('&').ToList();
+			<div class="col-lg-1-5 col-md-4 col-12 col-sm-6 product-item"
+				 data-name="@item.Name.ToLower()"
+				 data-category="@item.Category.ToLower()"
+				 data-brand="@item.Brand.ToLower()">
+				<div class="product-cart-wrap mb-30 h-100 d-flex flex-column justify-content-between">
+					<div class="product-img-action-wrap" style="height: 200px; overflow: hidden;">
+						<div class="product-img product-img-zoom d-flex align-items-center justify-content-center position-absolute"
+							 style="width: 200px; height: 200px; overflow: hidden; background-color: #fff;">
+							<a href="/Product/Detail/@item.ProductId" class="d-flex align-items-center justify-content-center w-100 h-100">
+								<img class="default-img" src="@images[0]" alt=""
+									 style="width: 200px; height: 200px; object-fit: contain; display: block; margin: auto;" />
+								<img class="hover-img" src="@images[1]" alt=""
+									 style="width: 200px; height: 200px; object-fit: contain; display: block; margin: auto;" />
+							</a>
+						</div>
+						<div class="product-action-1">
+							<a class="action-btn add-to-wishlist-btn" href="#" data-product-id="@item.ProductId"><i class="fi-rs-heart"></i></a>
+							<a class="action-btn add-to-cart-btn" href="#" data-product-id="@item.ProductId"><i class="fi-rs-shopping-cart"></i></a>
+							<a class="action-btn" href="/Product/Detail/@item.ProductId"><i class="fi-rs-eye"></i></a>
+						</div>
+						<div class="product-badges product-badges-position product-badges-mrg">
+							<span class="hot">Hot</span>
+						</div>
+					</div>
+					<div class="product-content-wrap p-2">
+						<div class="product-category">
+							<a href="#">@item.Category</a>
+						</div>
+						<h2 class="text-truncate" title="@item.Name">
+							<a href="/Product/Detail/@item.ProductId">@item.Name</a>
+						</h2>
+						<div><span class="font-small text-muted">By <a href="#">@item.Brand</a></span></div>
+						<div class="product-card-bottom d-flex justify-content-between align-items-center">
+							@{
+								int price = (int)item.Price;
+								int priceDiscount = price - (item.Discount.HasValue ? (price * item.Discount.Value / 100) : 0);
+							}
+							<div class="product-price">
+								<span>@priceDiscount.ToString("N0", new CultureInfo("vi-VN"))đ</span>
+								<span class="old-price">@item.Price.ToString("N0", new CultureInfo("vi-VN"))đ</span>
+							</div>
+							<div class="add-cart">
+								<a class="add add-to-cart-btn" href="#" data-product-id="@item.ProductId">
+									<i class="fi-rs-shopping-cart mr-5"></i>Add
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+	<div class="pagination-area mt-4 text-center" id="pagination"></div>
 </div>
+@section Scripts {
+	<script>
+		$(document).ready(function () {
+			function filterProducts() {
+				let keyword = $('#searchInput').val().toLowerCase();
+				$('.product-item').hide().filter(function () {
+					let name = $(this).data('name');
+					let category = $(this).data('category');
+					let brand = $(this).data('brand');
+					return name.includes(keyword) || category.includes(keyword) || brand.includes(keyword);
+				}).show();
+				paginateProducts();
+			}
+
+			function paginateProducts() {
+				let perPage = $('#itemsPerPage').val();
+				let items = $('.product-item:visible');
+				let total = items.length;
+				if (perPage === "all") {
+					items.show();
+					$('#pagination').html('');
+					return;
+				}
+				let limit = parseInt(perPage);
+				let pages = Math.ceil(total / limit);
+				let paginationHtml = '';
+				for (let i = 1; i <= pages; i++) {
+					paginationHtml += `<button class="btn btn-sm btn-outline-primary me-1 page-btn" data-page="${i}">${i}</button>`;
+				}
+				$('#pagination').html(paginationHtml);
+				items.hide().slice(0, limit).show();
+				$('.page-btn').click(function () {
+					let page = parseInt($(this).data('page'));
+					let start = (page - 1) * limit;
+					let end = start + limit;
+					items.hide().slice(start, end).show();
+				});
+			}
+
+			$('#searchInput, #itemsPerPage').on('input change', filterProducts);
+			filterProducts();
+		});
+	</script>
+}

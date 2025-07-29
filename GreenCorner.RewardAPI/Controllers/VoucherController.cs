@@ -1,5 +1,6 @@
 ﻿using GreenCorner.RewardAPI.Models.DTO;
 using GreenCorner.RewardAPI.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GreenCorner.RewardAPI.Controllers
@@ -18,6 +19,7 @@ namespace GreenCorner.RewardAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "ADMIN, EVENTSTAFF")]
         public async Task<ResponseDTO> GetAllVouchers()
         {
             try
@@ -103,7 +105,8 @@ namespace GreenCorner.RewardAPI.Controllers
             }
         }
 
-        [HttpGet("/getAllRewards")]
+        [HttpGet("getAllRewards")]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> GetAllRewards()
         {
             try

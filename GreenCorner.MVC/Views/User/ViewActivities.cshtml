@@ -1,5 +1,6 @@
 ﻿@{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Hoạt động người dùng";
 }
 @model GreenCorner.MVC.ViewModels.VolunteerEventListViewModel
 
@@ -36,29 +37,28 @@
                         <tbody>
                             @foreach (var item in Model.Participations)
                             {
-                                <tr>
+                                <tr class="event-row"
+                                    data-title="@item.Event.Title.ToLower()"
+                                    data-eventstatus="@item.Event.Status.ToLower()"
+                                    data-volunteerstatus="@item.Volunteer.Status.ToLower()">
                                     <td>@item.Event.Title</td>
                                     <td>@item.Event.StartDate?.ToString("dd/MM/yyyy")</td>
                                     <td>@item.Event.EndDate?.ToString("dd/MM/yyyy")</td>
                                     <td>
                                         @{
                                             var status = item.Event.Status;
-
                                             var eventBg = status switch
                                             {
-                                                "Approved" => "#28a745", // xanh lá
-                                                "Pending" => "#ffc107",  // vàng
-                                                "Removed" => "#dc3545",  // đỏ
-                                                _ => "#6c757d"           // xám
+                                                "Open" => "#28a745",
+                                                "Close" => "#ffc107",
+                                                _ => "#6c757d"
                                             };
-
                                             var eventColor = status == "Pending" ? "#212529" : "#fff";
-
                                             var statusText = status switch
                                             {
-                                                "Approved" => "Đã duyệt",
-                                                "Pending" => "Đang chờ duyệt",
-                                                "Removed" => "Đã bị hủy",
+                                                "Open" => "Đang mở",
+                                                "Close" => "Đã đóng",
+                                                "Is Going On" => "Đang diễn ra",
                                                 _ => "Không xác định"
                                             };
                                         }
@@ -66,29 +66,51 @@
                                             @statusText
                                         </span>
                                     </td>
-
+                                    <td>
+                                        @if (item.Event.Status == "Close")
+                                        {
+                                            <span class="badge bg-success">
+                                                <a asp-controller="Event" asp-action="RateEvent" asp-route-eventId="@item.Event.CleanEventId" class="text-white text-decoration-none">
+                                                    Rate Event
+                                                </a>
+                                            </span>
+                                            if (item.Volunteer.ApplicationType == "TeamLeader")
+                                            {
+                                                <span class="badge bg-success">
+                                                    <a asp-controller="Event" asp-action="LeaderReview" asp-route-eventId="@item.Event.CleanEventId" asp-route-leaderId="@item.TeamLeaderId" class="text-white text-decoration-none">
+                                                        Review Leader
+                                                    </a>
+                                                </span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary text-white">
+                                                Chưa thể đánh giá
+                                            </span>
+                                        }
+                                    </td>
                                     <td>@item.Volunteer.ApplicationType</td>
                                     <td>@item.Volunteer.Assignment</td>
                                     <td>@item.Volunteer.CarryItems</td>
                                     <td>
                                         @{
                                             var statusVL = item.Volunteer.Status;
-
                                             var volunteerBg = statusVL switch
                                             {
-                                                "Approved" => "#28a745",  // Xanh lá
-                                                "Pending" => "#ffc107",   // Vàng
-                                                "Rejected" => "#dc3545",  // Đỏ
-                                                _ => "#6c757d"            // Xám
+                                                "Approved" => "#28a745",
+                                                "Pending" => "#ffc107",
+                                                "Rejected" => "#dc3545",
+                                                "Participated" => "#17a2b8",
+                                                _ => "#6c757d"
                                             };
-
                                             var volunteerColor = statusVL == "Pending" ? "#212529" : "#fff";
-
                                             var statusTextVL = statusVL switch
                                             {
                                                 "Approved" => "Đã duyệt",
                                                 "Pending" => "Đang chờ duyệt",
                                                 "Rejected" => "Đã bị từ chối",
+                                                "Participated" => "Đã tham gia",
                                                 _ => "Không xác định"
                                             };
                                         }
@@ -98,7 +120,6 @@
                                     </td>
                                     <td>@item.Volunteer.CreatedAt?.ToString("dd/MM/yyyy")</td>
                                 </tr>
-
                             }
                         </tbody>
                     </table>

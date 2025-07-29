@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="EPPlus" Version="7.0.5" />
     <PackageReference Include="FluentAssertions" Version="8.3.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
@@ -20,8 +21,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GreenCorner.AuthAPI\GreenCorner.AuthAPI.csproj" />
+    <ProjectReference Include="..\GreenCorner.BlogAPI\GreenCorner.BlogAPI.csproj" />
     <ProjectReference Include="..\GreenCorner.EcommerceAPI\GreenCorner.EcommerceAPI.csproj" />
     <ProjectReference Include="..\GreenCorner.EventAPI\GreenCorner.EventAPI.csproj" />
+    <ProjectReference Include="..\GreenCorner.MVC\GreenCorner.MVC.csproj" />
+    <ProjectReference Include="..\GreenCorner.RewardAPI\GreenCorner.RewardAPI.csproj" />
   </ItemGroup>
 
   <ItemGroup>

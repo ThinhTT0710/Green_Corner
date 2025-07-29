@@ -1,6 +1,7 @@
 ﻿using GreenCorner.MVC.Models;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
+using GreenCorner.MVC.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,12 +12,18 @@ namespace GreenCorner.MVC.Controllers
     {
         private readonly IProductService _productService;
         private readonly IAdminService _adminService;
-		public ProductController(IProductService productService, IAdminService adminService)
-		{
-			_productService = productService;
-			_adminService = adminService;
-		}
-		public async Task<IActionResult> Index()
+        private readonly IWishListService _wishListService;
+        private readonly IOrderService _orderService;
+        private readonly IEventService _eventService;
+        public ProductController(IProductService productService, IAdminService adminService, IWishListService wishListService, IOrderService orderService, IEventService eventService)
+        {
+            _productService = productService;
+            _adminService = adminService;
+            _wishListService = wishListService;
+            _orderService = orderService;
+            _eventService = eventService;
+        }
+        public async Task<IActionResult> Index()
         {
             List<ProductDTO> listProduct = new();
             ResponseDTO? response = await _productService.GetAllProduct();
@@ -35,18 +42,59 @@ namespace GreenCorner.MVC.Controllers
 		{
             try
             {
-                ResponseDTO response = await _productService.GetByProductId(id);
+                var productResponse = await _productService.GetByProductId(id);
+                if (productResponse == null || !productResponse.IsSuccess)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                var product = JsonConvert.DeserializeObject<ProductDTO>(Convert.ToString(productResponse.Result));
+
+                var viewModel = new ProductDetailViewModel
+                {
+                    Product = product,
+                    IsInWishlist = false ,
+                    BestSellingProducts= new List<ProductDTO>(),
+                    Top3OpenEvents = new List<EventDTO>(),
+                };
+
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
+                    var wishlistResponse = await _wishListService.GetUserWishList(userId);
+                    if (wishlistResponse != null && wishlistResponse.IsSuccess)
+                    {
+                        var wishListItems = JsonConvert.DeserializeObject<List<WishListDTO>>(Convert.ToString(wishlistResponse.Result));
+                        if (wishListItems.Any(w => w.ProductId == id))
+                        {
+                            viewModel.IsInWishlist = true;
+                        }
+                    }
+                }
+
+                ResponseDTO? response = await _orderService.GetTopBestSelling();
                 if (response != null && response.IsSuccess)
                 {
-                    ProductDTO product = JsonConvert.DeserializeObject<ProductDTO>(response.Result.ToString());
-                    return View(product);
+                    viewModel.BestSellingProducts = JsonConvert.DeserializeObject<List<ProductDTO>>(response.Result.ToString());
                 }
                 else
                 {
-                    TempData["error"] = response?.Message;
-					return RedirectToAction("Index", "Product");
-				}
-			}
+                    TempData["error"] = response.Message == null ? "Error" : response.Message;
+                    return RedirectToAction("Error404", "Home");
+                }
+
+                ResponseDTO? responseOpenEvents = await _eventService.GetTop3OpenEventsAsync();
+                if (responseOpenEvents != null && responseOpenEvents.IsSuccess)
+                {
+                    viewModel.Top3OpenEvents = JsonConvert.DeserializeObject<List<EventDTO>>(responseOpenEvents.Result.ToString());
+                }
+                else
+                {
+                    TempData["error"] = responseOpenEvents?.Message ?? "L?i khi t?i s? ki?n ?ang m?.";
+                    return RedirectToAction("Error404", "Home");
+                }
+
+                return View(viewModel);
+            }
             catch(Exception ex)
             {
 				TempData["error"] = ex.Message;
@@ -86,7 +134,7 @@ namespace GreenCorner.MVC.Controllers
                 var response = await _productService.AddProduct(productDTO);
                 if (response != null && response.IsSuccess)
                 {
-                    TempData["success"] = "Product created successfully!";
+                    TempData["success"] = "Tạo sản phẩm thành công!";
 					ProductDTO product = JsonConvert.DeserializeObject<ProductDTO>(response.Result.ToString());
                     var StaffName = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Name).FirstOrDefault()?.Value;
                     var log = new SystemLogDTO()
@@ -99,7 +147,7 @@ namespace GreenCorner.MVC.Controllers
                         CreatedAt = DateTime.Now,
                     };
 					var logResponse = await _adminService.AddLogStaff(log);
-                    return RedirectToAction("ViewAllProduct", "SaleStaff");
+                    return RedirectToAction("ProductList", "SaleStaff");
                 }
 
                 TempData["error"] = response?.Message ?? "Có lỗi xảy ra.";
@@ -147,7 +195,7 @@ namespace GreenCorner.MVC.Controllers
 					CreatedAt = DateTime.Now,
 				};
 				var logResponse = await _adminService.AddLogStaff(log);
-                return RedirectToAction("ViewAllProduct", "SaleStaff");
+                return RedirectToAction("ProductList", "SaleStaff");
             }
             else
             {
@@ -226,7 +274,7 @@ namespace GreenCorner.MVC.Controllers
 					CreatedAt = DateTime.Now,
 				};
 				var logResponse = await _adminService.AddLogStaff(log);
-                return RedirectToAction("ViewAllProduct", "SaleStaff");
+                return RedirectToAction("ProductList", "SaleStaff");
             }
 
             TempData["error"] = response?.Message;
@@ -243,7 +291,7 @@ namespace GreenCorner.MVC.Controllers
                 var products = JsonConvert.DeserializeObject<List<ProductDTO>>(res.Result.ToString());
                 return Json(new { success = true, products = products });
             }
-            return Json(new { success = false, message = "No product found" });
+            return Json(new { success = false, message = "Không tìm thấy sản phẩm!" });
         }
     }
 }

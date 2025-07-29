@@ -11,7 +11,7 @@
     <meta property="og:url" content="" />
     <meta property="og:image" content="" />
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="~/admin/imgs/theme/favicon.svg" />
+    <link rel="shortcut icon" type="image/x-icon" href="~/imgs/theme/favicon.png" />
     <!-- Template CSS -->
     <script src="~/admin/js/vendors/color-modes.js"></script>
     <link href="~/admin/css/main.css?v=6.1" rel="stylesheet" type="text/css" />
@@ -24,7 +24,7 @@
     <div class="screen-overlay"></div>
     <aside class="navbar-aside" id="offcanvas_aside">
         <div class="aside-top">
-            <a href="index.html" class="brand-wrap">
+            <a href="~/Admin" class="brand-wrap">
                 <img src="~/imgs/theme/logo.png" class="logo" alt="Green Corner" />
             </a>
             <div>
@@ -35,9 +35,15 @@
         <nav>
             <ul class="menu-aside">
                 <li class="menu-item active">
-                    <a class="menu-link" href="index.html">
+                    <a class="menu-link" href="/Admin/Index">
                         <i class="icon material-icons md-home"></i>
                         <span class="text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-link" href="/Admin/Eventstatistic">
+                        <i class="icon material-icons md-leaderboard"></i>
+                        <span class="text">Thông kê sự kiện</span>
                     </a>
                 </li>
                 <li class="menu-item has-submenu">
@@ -97,7 +103,7 @@
 
                 <li class="menu-item">
                     <a class="menu-link" asp-controller="EventStaff" asp-action="ViewPendingPosts">
-                        <i class="icon material-icons md-monetization_on"></i>
+                        <i class="icon material-icons md-chat"></i>
                         <span class="text">Bài viết</span>
                     </a>
                 </li>
@@ -105,12 +111,6 @@
                     <a class="menu-link" asp-controller="Admin" asp-action="LogStaff">
                         <i class="icon material-icons md-person"></i>
                         <span class="text">Lịch sử hoạt động nhân viên</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a class="menu-link" asp-controller="Voucher" asp-action="Index">
-                        <i class="icon material-icons md-comment"></i>
-                        <span class="text">Mã giảm giá</span>
                     </a>
                 </li>
                 <li class="menu-item has-submenu">
@@ -136,24 +136,6 @@
 
             </ul>
             <hr />
-            <ul class="menu-aside">
-                <li class="menu-item has-submenu">
-                    <a class="menu-link" href="#">
-                        <i class="icon material-icons md-settings"></i>
-                        <span class="text">Settings</span>
-                    </a>
-                    <div class="submenu">
-                        <a href="page-settings-1.html">Setting sample 1</a>
-                        <a href="page-settings-2.html">Setting sample 2</a>
-                    </div>
-                </li>
-                <li class="menu-item">
-                    <a class="menu-link" href="page-blank.html">
-                        <i class="icon material-icons md-local_offer"></i>
-                        <span class="text"> Starter page </span>
-                    </a>
-                </li>
-            </ul>
             <br />
             <br />
         </nav>
@@ -166,30 +148,12 @@
                 <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"><i
                         class="material-icons md-apps"></i></button>
                 <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="requestfullscreen nav-link btn-icon"><i
-                                class="material-icons md-cast"></i></a>
-                    </li>
                     <li class="dropdown nav-item">
                         <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount"
                             aria-expanded="false"> <img class="img-xs rounded-circle"
                                 src="~/admin/imgs/people/avatar-2.png" alt="User" /></a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
-                            <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit
-                                Profile</a>
-                            <a class="dropdown-item" href="#"><i class="material-icons md-settings"></i>Account
-                                Settings</a>
-                            <a class="dropdown-item" href="#"><i
-                                    class="material-icons md-account_balance_wallet"></i>Wallet</a>
-                            <a class="dropdown-item" href="#"><i class="material-icons md-receipt"></i>Billing</a>
-                            <a class="dropdown-item" href="#"><i class="material-icons md-help_outline"></i>Help
-                                center</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-danger" href="#"><i
+                            <a class="dropdown-item text-danger" href="~/Auth/Logout"><i
                                     class="material-icons md-exit_to_app"></i>Logout</a>
                         </div>
                     </li>

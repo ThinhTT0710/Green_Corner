@@ -1,6 +1,7 @@
 ﻿using GreenCorner.RewardAPI.Models;
 using GreenCorner.RewardAPI.Models.DTO;
 using GreenCorner.RewardAPI.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GreenCorner.RewardAPI.Controllers
@@ -51,6 +52,7 @@ namespace GreenCorner.RewardAPI.Controllers
         }
 
         [HttpGet("userredemp")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<ResponseDTO> GetUserRewardRedemption()
         {
             try

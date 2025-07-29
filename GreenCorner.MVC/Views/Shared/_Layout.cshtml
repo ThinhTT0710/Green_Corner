@@ -12,7 +12,7 @@
     <meta property="og:url" content="" />
     <meta property="og:image" content="" />
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="~/imgs/theme/favicon.svg" asp-append-version="true" />
+    <link rel="shortcut icon" type="image/x-icon" href="~/imgs/theme/favicon.png" asp-append-version="true" />
     <!-- Template CSS -->
     <link rel="stylesheet" href="~/css/plugins/animate.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/main.css?v=6.1" asp-append-version="true" />
@@ -50,7 +50,7 @@
                                         <i class="fi-rs-marker mr-5"></i>Báo cáo
                                     </a>
                                 </div>
-                                @if (!User.Identity.IsAuthenticated)
+                                @if (User.Identity.IsAuthenticated)
                                 {
                                 <div class="header-action-icon-2" style="margin: 8px 8px 8px 0px;">
                                     <a class="nav-link position-relative" href="#" id="notificationDropdown"
@@ -117,8 +117,7 @@
                                             {
                                                 <li>
                                                     <a href="/User/Profile">
-                                                        <i class="fi fi-rs-user mr-10"></i>My
-                                                        Account
+                                                        <i class="fi fi-rs-user mr-10"></i>Hồ sơ
                                                     </a>
                                                 </li>
                                                 <li>
@@ -128,30 +127,16 @@
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <a href="page-account.html">
-                                                        <i class="fi fi-rs-label mr-10"></i>My
-                                                        Voucher
-                                                    </a>
-                                                </li>
-                                                <li>
                                                     <a href="/WishList"><i class="fi fi-rs-heart mr-10"></i>Yêu thích</a>
-                                                </li>
-                                                <li>
-                                                    <a href="page-account.html">
-                                                        <i class="fi fi-rs-settings-sliders mr-10"></i>Setting
-                                                    </a>
                                                 </li>
                                                 <li>
                                                     <a href="/Auth/Logout"><i class="fi fi-rs-sign-out mr-10"></i>Đăng xuất</a>
                                                 </li>
                                                 <li class="menu-item has-submenu">
-                                                    <a class="menu-link" href="#">
-                                                        <i class="fi fi-rs-comment-alt mr-10"></i> Góp ý & Báo cáo
-                                                    </a>
-                                                    <div class="submenu">
-                                                        <a href="/BlogPost/SubmitFeedback"><i class="fi fi-rs-bubble-dots mr-10"></i> Gửi phản hồi</a>
-                                                        <a href="/BlogPost/SubmitReport"><i class="fi fi-rs-warning mr-10"></i> Gửi báo cáo</a>
-                                                    </div>
+                                                    <a href="/BlogPost/SubmitFeedback"><i class="fi fi-rs-comment-alt mr-10"></i> Gửi phản hồi</a>
+                                                </li>
+                                                <li class="menu-item has-submenu">
+                                                    <a href="/BlogPost/SubmitReport"><i class="fi fi-rs-comment-alt mr-10"></i> Gửi báo cáo</a>
                                                 </li>
                                             }
                                         </ul>
@@ -176,16 +161,16 @@
                                 <i class="fi-rs-angle-down"></i>
                             </a>
                         </div>
+                     </div>
+                    <div class="header-nav d-none d-lg-flex">
                         <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block font-heading">
                             <nav>
                                 <ul>
-                                    <li class="hot-deals"><img src="~/imgs/theme/icons/icon-hot.svg"
-                                            alt="hot deals" /><a href="shop-grid-right.html">Deals</a></li>
                                     <li>
                                         <a class="active" href="/Home">Trang chủ</a>
                                     </li>
                                     <li>
-                                        <a href="page-about.html">Giới thiệu</a>
+                                        <a href="/Home/About">Giới thiệu</a>
                                     </li>
                                     <li>
                                         <a href="/Product">Cửa hàng</a>
@@ -200,7 +185,7 @@
                                         <a asp-controller="BlogPost" asp-action="Index">Blog</a>
                                     </li>
                                     <li>
-                                        <a href="page-contact.html">Liên hệ</a>
+                                        <a href="/BlogPost/SubmitFeedback"><i class="fi fi-rs-bubble-dots mr-10"></i> Liên Hệ</a>
                                     </li>
                                 </ul>
                             </nav>
@@ -228,7 +213,6 @@
                             <div class="header-action-icon-2">
                                 <a class="mini-cart-icon" href="#">
                                     <img alt="Nest" src="~/imgs/theme/icons/icon-cart.svg" />
-                                    <span class="pro-count white">2</span>
                                 </a>
                                 <div class="cart-dropdown-wrap cart-dropdown-hm2">
                                     <ul>
@@ -300,23 +284,26 @@
                     <!-- mobile menu start -->
                     <nav>
                         <ul class="mobile-menu font-heading">
-                            <li class="menu-item-has-children">
-                                <a href="index.html">Home</a>
+                            <li>
+                                <a class="active" href="/Home">Trang chủ</a>
                             </li>
-                            <li class="menu-item-has-children">
-                                <a href="shop-grid-right.html">shop</a>
+                            <li>
+                                <a href="/Home/About">Giới thiệu</a>
                             </li>
-                            <li class="menu-item-has-children">
-                                <a href="#">Vendors</a>
+                            <li>
+                                <a href="/Product">Cửa hàng</a>
                             </li>
-                            <li class="menu-item-has-children">
-                                <a href="#">Mega menu</a>
+                            <li>
+                                <a asp-controller="Event" asp-action="Index">Sự kiện</a>
                             </li>
-                            <li class="menu-item-has-children">
-                                <a href="blog-category-fullwidth.html">Blog</a>
+                            <li class="position-static">
+                                <a asp-controller="Reward" asp-action="Index">Đổi thưởng</a>
                             </li>
-                            <li class="menu-item-has-children">
-                                <a href="#">Pages</a>
+                            <li>
+                                <a asp-controller="BlogPost" asp-action="Index">Blog</a>
+                            </li>
+                            <li>
+                                <a href="/BlogPost/SubmitFeedback"><i class="fi fi-rs-bubble-dots mr-10"></i> Liên Hệ</a>
                             </li>
                         </ul>
                     </nav>
@@ -467,28 +454,31 @@
         <section class="section-padding footer-mid">
             <div class="container pt-15 pb-20">
                 <div class="row">
-                    <div class="col">
+                    <div class="col-lg-3">
                         <div class="widget-about font-md mb-md-3 mb-lg-3 mb-xl-0 wow animate__animated animate__fadeInUp"
                             data-wow-delay="0">
-                            <div class="logo mb-30">
+                            <div class="logo">
                                 <a href="/" class="mb-15"><img src="~/imgs/theme/logo.png" alt="logo" /></a>
                                 <p class="font-lg text-heading">Cửa hàng xanh kết hợp blog & sự kiện bảo vệ môi trường
                                 </p>
                             </div>
                             <ul class="contact-infor">
                                 <li><img src="~/imgs/theme/icons/icon-location.svg" alt="" /><strong>Địa chỉ:
-                                    </strong><span>123 Đường Môi Trường Xanh, Quận 1, TP. HCM</span></li>
+                                    </strong><span>600 Đường Nguyễn Văn Cừ (nối dài), P. An Bình, Q. Ninh Kiều, TP. Cần Thơ</span>
+                                </li>
                                 <li><img src="~/imgs/theme/icons/icon-contact.svg" alt="" /><strong>Điện thoại:
-                                    </strong><span>(+84) 909 123 456</span></li>
+                                    </strong><span>(+84) 945 583 554</span>
+                                </li>
                                 <li><img src="~/imgs/theme/icons/icon-email-2.svg" alt="" /><strong>Email:
-                                    </strong><span>lienhe@greencorner.vn</span></li>
+                                    </strong><span>greencorner.since2025@gmail.com</span>
+                                </li>
                                 <li><img src="~/imgs/theme/icons/icon-clock.svg" alt="" /><strong>Giờ làm việc:
                                     </strong><span>08:00 - 20:00, Thứ 2 - Thứ 7</span></li>
                             </ul>
                         </div>
                     </div>
 
-                    <div class="footer-link-widget col wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
+                    <div class="footer-link-widget col wow mt-4 animate__animated animate__fadeInUp" data-wow-delay=".1s">
                         <h4 class="widget-title">Về GreenCorner</h4>
                         <ul class="footer-list mb-sm-5 mb-md-0">
                             <li><a href="#">Giới thiệu</a></li>
@@ -500,7 +490,7 @@
                         </ul>
                     </div>
 
-                    <div class="footer-link-widget col wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+                    <div class="footer-link-widget col wow mt-4 animate__animated animate__fadeInUp" data-wow-delay=".2s">
                         <h4 class="widget-title">Tài khoản</h4>
                         <ul class="footer-list mb-sm-5 mb-md-0">
                             <li><a href="#">Đăng nhập</a></li>
@@ -511,7 +501,7 @@
                         </ul>
                     </div>
 
-                    <div class="footer-link-widget col wow animate__animated animate__fadeInUp" data-wow-delay=".3s">
+                    <div class="footer-link-widget col wow mt-4 animate__animated animate__fadeInUp" data-wow-delay=".3s">
                         <h4 class="widget-title">Cộng đồng</h4>
                         <ul class="footer-list mb-sm-5 mb-md-0">
                             <li><a href="#">Tham gia tình nguyện</a></li>
@@ -522,12 +512,12 @@
                         </ul>
                     </div>
 
-                    <div class="footer-link-widget col wow animate__animated animate__fadeInUp" data-wow-delay=".4s">
+                    <div class="footer-link-widget col wow mt-4 animate__animated animate__fadeInUp" data-wow-delay=".4s">
                         <h4 class="widget-title">Sản phẩm phổ biến</h4>
                         <ul class="footer-list mb-sm-5 mb-md-0">
-                            <li><a href="#">Túi sinh học</a></li>
-                            <li><a href="#">Bàn chải tre</a></li>
-                            <li><a href="#">Bình nước inox</a></li>
+                            <li><a href="#">Ống hút tự nhiên</a></li>
+                            <li><a href="#">Dung dịch diệt khuẩn</a></li>
+                            <li><a href="#">Bộ bát đĩa hữu cơ</a></li>
                             <li><a href="#">Thực phẩm hữu cơ</a></li>
                             <li><a href="#">Sản phẩm tái chế</a></li>
                             <li><a href="#">Đồ dùng không nhựa</a></li>
@@ -547,14 +537,20 @@
                     <p class="font-sm mb-0">&copy; 2025, <strong class="text-brand">GreenCorner</strong> - Website vì
                         môi trường<br />Đã đăng ký bản quyền</p>
                 </div>
-                <div class="col-xl-4 col-lg-6 text-center d-none d-xl-block">
-                    <div class="hotline d-lg-inline-flex mr-30">
+                <div class="col-xl-4 col-lg-6 d-flex justify-content-center gap-3 d-none d-xl-flex">
+                    <div class="hotline d-flex align-items-center" style="width: 240px;">
                         <img src="~/imgs/theme/icons/phone-call.svg" alt="hotline" />
-                        <p>1900 1234<span>08:00 AM - 22:00 PM</span></p>
+                        <div style="margin-left: 10px;">
+                            <p style="font-weight: bold; color: #3bb77e; margin: 0;">0945 583 554</p>
+                            <span style="font-size: 14px;">08:00 AM - 22:00 PM</span>
+                        </div>
                     </div>
-                    <div class="hotline d-lg-inline-flex">
+                    <div class="hotline d-flex align-items-center" style="width: 240px;">
                         <img src="~/imgs/theme/icons/phone-call.svg" alt="hotline" />
-                        <p>1900 5678<span>Hỗ trợ 24/7</span></p>
+                        <div style="margin-left: 10px;">
+                            <p style="font-weight: bold; color: #3bb77e; margin: 0;">0945 583 554</p>
+                            <span style="font-size: 14px;">Hỗ trợ 24/7</span>
+                        </div>
                     </div>
                 </div>
                 <div class="col-xl-4 col-lg-6 col-md-6 text-end d-none d-md-block">

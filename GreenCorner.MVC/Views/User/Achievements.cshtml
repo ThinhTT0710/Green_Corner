@@ -2,8 +2,13 @@
 
 @{
     var totalPoints = Model.Participations.Sum(p => p.Event.PointsAward ?? 0);
+    ViewData["Title"] = "Thành tích";
 }
-
+<div class="mb-3">
+    <a asp-controller="User" asp-action="Profile" class="btn btn-outline-secondary">
+        ← Quay lại trang cá nhân
+    </a>
+</div>
 <div class="invoice invoice-content invoice-5">
     <div class="back-top-home hover-up mt-30 ml-30">
         <a class="hover-up" asp-action="Index" asp-controller="Home"><i class="fi-rs-home mr-5"></i> Trang chủ</a>
@@ -18,7 +23,7 @@
                                 <div class="col-md-6">
                                     <div class="logo d-flex align-items-center">
                                         <a href="/" class="mr-20">
-                                            <img src="~/assets/imgs/theme/favicon.svg" alt="logo" />
+                                            <img src="~/imgs/theme/favicon.png" alt="logo" />
                                         </a>
                                         <div class="text">
                                             <strong class="text-brand">GreenCorner</strong><br />
@@ -98,14 +103,6 @@
                                 <p class="mb-0 text-muted"><strong>Chú ý:</strong> Đây là bảng thống kê thành tích cá nhân được tạo từ hệ thống.</p>
                             </div>
                         </div>
-                    </div>
-                    <div class="invoice-btn-section clearfix d-print-none">
-                        <a href="javascript:window.print()" class="btn btn-lg btn-custom btn-print hover-up">
-                            <img src="~/assets/imgs/theme/icons/icon-print.svg" alt="" /> In báo cáo
-                        </a>
-                        <a id="invoice_download_btn" class="btn btn-lg btn-custom btn-download hover-up">
-                            <img src="~/assets/imgs/theme/icons/icon-download.svg" alt="" /> Tải xuống
-                        </a>
                     </div>
                 </div>
             </div>

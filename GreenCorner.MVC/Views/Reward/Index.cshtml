@@ -50,14 +50,17 @@
             <div class="row voucher-grid" id="voucherContainer">
                 @foreach (var item in Model)
                 {
-                    var isVoucherValid = item.ExpirationDate != null && item.ExpirationDate >= DateTime.Now;
+                    var isVoucherValid = item.ExpirationDate != null
+                    && item.ExpirationDate >= DateTime.Now
+                    && item.IsActive;
 
                     <div class="col-lg-3 col-md-6 col-sm-6 voucher-item"
                          data-title="@item.Title.ToLower()"
                          data-address="@(item.Address?.ToLower() ?? "")"
-                         data-expiration="@item.ExpirationDate?.ToString("yyyy-MM-dd")"
+                             data-expiration="@item.ExpirationDate?.ToString("HH:mm dd-MM-yyyy")"
                          data-points="@item.PointsRequired">
-                        <div class="vendor-wrap mb-40">
+                        <div class="vendor-wrap mb-40 h-100 d-flex flex-column justify-content-between">
+                            <!-- Hình -->
                             <div class="vendor-img text-center p-3">
                                 <a asp-action="ViewDetailVoucher" asp-route-voucherId="@item.VoucherId">
                                     <div class="d-flex rounded-3 overflow-hidden shadow-sm border" style="height: 120px;">
@@ -67,7 +70,8 @@
                                             <i class="bi bi-gift-fill text-white opacity-25" style="font-size: 18px;"></i>
                                         </div>
                                         <div class="d-flex flex-column justify-content-center px-3 w-100 py-2" style="background-color: #3BB77E;">
-                                            <div class="fw-bold text-dark bg-white px-4 py-2 rounded-pill text-uppercase shadow-sm text-center" style="font-size: 16px;">
+                                            <div class="fw-bold text-dark bg-white px-4 py-2 rounded-pill text-uppercase shadow-sm text-center"
+                                                 style="font-size: 16px; white-space: normal;">
                                                 @item.Title
                                             </div>
                                         </div>
@@ -75,30 +79,32 @@
                                 </a>
                             </div>
 
-                            <div class="vendor-content-wrap">
-                                <div class="mb-20">
-                                    <h4 class="mb-5">
-                                        <a asp-action="ViewDetailVoucher" asp-route-voucherId="@item.VoucherId">@item.Title</a>
-                                    </h4>
-                                    <p class="font-sm text-muted">
-                                        @(string.IsNullOrEmpty(item.Description)
-                                            ? ""
-                                            : (item.Description.Length > 100
-                                            ? item.Description.Substring(0, 100) + "..."
-                                            : item.Description))
-                                    </p>
-                                </div>
-                                <div class="mb-10">
-                                    <span class="font-small d-block"><strong>Điểm:</strong> @item.PointsRequired</span>
-                                    <span class="font-small d-block expiration"><strong>HSD:</strong> @item.ExpirationDate?.ToString("dd/MM/yyyy")</span>
-                                    <span class="font-small d-block text-truncate address"><i class="bi bi-geo-alt-fill me-1"></i>@(item.Address ?? "Không có địa chỉ")</span>
-                                    <span class="font-small d-block"><i class="bi bi-box-seam me-1"></i>Còn lại: <strong>@item.Quantity</strong></span>
+                            <!-- Nội dung -->
+                            <div class="vendor-content-wrap flex-grow-1 d-flex flex-column justify-content-between" style="min-height: 180px;">
+                                <div>
+                                    <div class="mb-20">
+                                        <p class="font-sm text-muted" style="white-space: normal;">
+                                            @(string.IsNullOrEmpty(item.Description)
+                                                ? ""
+                                                : (item.Description.Length > 100
+                                                ? item.Description.Substring(0, 100) + "..."
+                                                : item.Description))
+                                        </p>
+                                    </div>
+                                    <div class="mb-10">
+                                        <span class="font-small d-block"><strong>Điểm:</strong> @item.PointsRequired</span>
+                                        <span class="font-small d-block expiration"><strong>HSD:</strong> @item.ExpirationDate?.ToString("dd/MM/yyyy")</span>
+                                        <span class="font-small d-block text-truncate address" title="@item.Address">
+                                            <i class="bi bi-geo-alt-fill me-1"></i>@(item.Address ?? "Không có địa chỉ")
+                                        </span>
+                                        <span class="font-small d-block"><i class="bi bi-box-seam me-1"></i>Còn lại: <strong>@item.Quantity</strong></span>
+                                    </div>
                                 </div>
 
                                 @if (isVoucherValid)
                                 {
                                     <button type="button"
-                                            class="btn btn-lg btn-success w-100 mb-2"
+                                            class="btn btn-lg btn-success w-100 mt-auto"
                                             data-bs-toggle="modal"
                                             data-bs-target="#confirmRedeemModal-@item.VoucherId">
                                         Đổi @item.PointsRequired điểm
@@ -133,6 +139,7 @@
                         </div>
                     }
                 }
+
             </div>
 
             <!-- Phân trang -->

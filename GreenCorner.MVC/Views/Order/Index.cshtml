@@ -43,52 +43,59 @@ else
                 <div class="row">
                     <h4 class="mb-30">Thông tin nhận hàng</h4>
                     <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
                         <div class="row">
                             <div class="form-group col-lg-12">
-                                <input asp-for="Order.Name" type="text" required="" placeholder="Họ và tên*">
+                                <input asp-for="Order.Name" class="form-control" type="text" placeholder="Họ và tên*" />
+                                <span asp-validation-for="Order.Name" class="text-danger"></span>
                             </div>
                         </div>
+
                         <div class="row">
                             <div class="form-group col-lg-12">
-                                <input asp-for="Order.Email" required="" type="text" placeholder="Địa chỉ Email *">
+                                <input asp-for="Order.Email" class="form-control" type="text" placeholder="Địa chỉ Email *" />
+                                <span asp-validation-for="Order.Email" class="text-danger"></span>
                             </div>
                         </div>
+
                         <div class="row">
                             <div class="form-group col-lg-12">
-                                <input asp-for="Order.PhoneNumber" required="" type="text" placeholder="Số điện thoại *">
+                                <input asp-for="Order.PhoneNumber" class="form-control" type="text" placeholder="Số điện thoại *" />
+                                <span asp-validation-for="Order.PhoneNumber" class="text-danger"></span>
                             </div>
                         </div>
+
                         <div class="row">
                             <div class="form-group col-lg-12">
-                                <input asp-for="Order.ShippingAddress" type="text" required=""
-                                    placeholder="Địa chỉ nhận hàng *">
+                                <input asp-for="Order.ShippingAddress" class="form-control" type="text" placeholder="Địa chỉ nhận hàng *" />
+                                <span asp-validation-for="Order.ShippingAddress" class="text-danger"></span>
                             </div>
                         </div>
+
                         <div class="form-group mb-30">
-                            <textarea rows="5" asp-for="Order.Note" placeholder="Ghi chú cho đơn hàng"></textarea>
+                            <textarea rows="5" asp-for="Order.Note" class="form-control" placeholder="Ghi chú cho đơn hàng"></textarea>
+                            <span asp-validation-for="Order.Note" class="text-danger"></span>
                         </div>
+
                         <div class="payment ml-30">
                             <h4 class="mb-30">Phương thức thanh toán</h4>
                             <div class="payment_option">
                                 <div class="custome-radio">
-                                    <input class="form-check-input" asp-for="Order.PaymentMethod"
-                                        value="Thanh toán khi nhận hàng" type="radio" id="exampleRadios3" checked="">
-                                    <label class="form-check-label" for="exampleRadios3" data-bs-toggle="collapse"
-                                        data-target="#bankTranfer" aria-controls="bankTranfer">Thanh toán khi nhận
-                                        hàng</label>
+                                    <input class="form-check-input" asp-for="Order.PaymentMethod" value="Thanh toán khi nhận hàng" type="radio" id="exampleRadios3" />
+                                    <label class="form-check-label" for="exampleRadios3">Thanh toán khi nhận hàng</label>
                                 </div>
                                 <div class="custome-radio">
-                                    <input class="form-check-input" type="radio" asp-for="Order.PaymentMethod"
-                                        value="Chuyển khoản ngân hàng" id="exampleRadios4">
-                                    <label class="form-check-label" for="exampleRadios4" data-bs-toggle="collapse"
-                                        data-target="#checkPayment" aria-controls="checkPayment">Chuyển khoản ngân
-                                        hàng</label>
+                                    <input class="form-check-input" asp-for="Order.PaymentMethod" value="Chuyển khoản ngân hàng" type="radio" id="exampleRadios4" />
+                                    <label class="form-check-label" for="exampleRadios4">Chuyển khoản ngân hàng</label>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-fill-out btn-block mt-30 float-end">Đặt hàng<i
-                                    class="fi-rs-sign-out ml-15"></i></button>
+                            <span asp-validation-for="Order.PaymentMethod" class="text-danger"></span>
+
+                            <button type="submit" class="btn btn-fill-out btn-block mt-30 float-end">Đặt hàng<i class="fi-rs-sign-out ml-15"></i></button>
                         </div>
                     </form>
+
                 </div>
             </div>
             <div class="col-lg-6">

@@ -49,7 +49,7 @@ namespace GreenCorner.MVC.Controllers
                 }
                 else
                 {
-                    TempData["error"] = response.Message;
+                    TempData["error"] = "Đăng nhập thất bại, Vui lòng thử lại!";
                 }
             }
             return View(loginRequest);
@@ -307,7 +307,7 @@ namespace GreenCorner.MVC.Controllers
 		{
 			if (!User.Identity.IsAuthenticated)
 			{
-				TempData["loginError"] = "You need to log in to view your profile.";
+				TempData["loginError"] = "Vui lòng đăng nhập!";
 				return RedirectToAction("Login", "Auth");
 			}
 
@@ -342,7 +342,7 @@ namespace GreenCorner.MVC.Controllers
 				ResponseDTO response = await _authService.CreateStaff(staffDTO);
 				if (response != null && response.IsSuccess)
 				{
-					TempData["success"] = "Create Staff successfully!";
+					TempData["success"] = "Tạo nhân viên thành công!";
 					return RedirectToAction(nameof(GetStaffList));
 				}
 				else
@@ -408,7 +408,7 @@ namespace GreenCorner.MVC.Controllers
             if (response != null && response.IsSuccess)
             {
                 
-                TempData["success"] = "Staff updated successfully!";
+                TempData["success"] = "Cập nhật thông tin nhân viên thành công!";
                 return RedirectToAction(nameof(GetStaffList));
             }
             else
@@ -422,7 +422,7 @@ namespace GreenCorner.MVC.Controllers
             ResponseDTO response = await _authService.BlockStaffAccount(staffID);
             if (response != null && response.IsSuccess)
             {
-                TempData["success"] = "Block account successfully.";
+                TempData["success"] = "Đã khóa tài khoản thành công.";
                 return RedirectToAction(nameof(GetStaffList));
             }
             else
@@ -437,7 +437,7 @@ namespace GreenCorner.MVC.Controllers
 			ResponseDTO response = await _authService.UnBlockStaffAccount(staffID);
 			if (response != null && response.IsSuccess)
 			{
-                TempData["success"] = "Unblock account successfully.";
+                TempData["success"] = "Đã mở khóa tài khoản thành công.";
                 return RedirectToAction(nameof(GetStaffList));
 			}
 			else

@@ -1,158 +1,200 @@
 ﻿@model IEnumerable<EventDTO>
 @{
+    ViewData["Title"] = "Sự kiện";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 <section class="content-main">
     <div class="content-header">
-        <h2 class="content-title">Danh sách sự kiện</h2>
+        <div>
+            <h2 class="content-title">Danh sách sự kiện</h2>
+        </div>
+        <div>
+            <a asp-action="CreateCleanupEvent" class="btn btn-primary btn-sm rounded"><i class="bi bi-plus-square"></i> Tạo sự kiện mới</a>
+        </div>
     </div>
-	<div class="card mb-4">
+
+    <div class="card mb-4">
         <header class="card-header">
-            <div class="row gx-3">
+            <div class="row gx-3 align-items-center">
                 <div class="col-lg-4 col-md-6 me-auto">
                     <input type="text" id="searchInput" placeholder="Tìm kiếm..." class="form-control" />
                 </div>
-				
-                <div class="col-lg-2 col-md-3 col-6">
+                <div class="col-lg-2 col-md-3">
                     <select id="statusFilter" class="form-select">
-                         <option value="">Trạng thái</option>
-    <option value="Open">Đang mở</option>
-    <option value="Close">Đã đóng</option>
-    <option value="Is Going On">Đang hoạt động</option>
+                        <option value="">Trạng thái</option>
+                        <option value="Open">Đang mở</option>
+                        <option value="Close">Đã đóng</option>
+                        <option value="Is Going On">Đang hoạt động</option>
                     </select>
                 </div>
-                <div class="col-lg-2 col-md-3 col-6">
-			<a asp-action="CreateCleanupEvent" class="btn btn-outline-primary"><i class="bi bi-plus-square"></i> Tạo sự kiện mới</a>
-		 </div>
+                <div class="col-lg-2 col-md-3">
+                    <select id="itemsPerPageFilter" class="form-select">
+                        <option value="10">Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
+                        <option value="30">Hiển thị 30</option>
+                    </select>
+                </div>
             </div>
         </header>
-        <!-- card-header end// -->
-        <div class="card-body">
-            <div class="table-responsive">
-		<table class="table table-hover" id="eventTable">
-			<thead>
-				<tr>
-					<th>Tiêu đề</th>
-					<th>Mô tả</th>
-					<th>Ngày bắt đầu</th>
-					<th>Ngày kết thúc</th>
-					<th>Số lượng tnv tối đa</th>
-					<th>Tình trạng</th>
-					<th>Cập nhật</th>
-					<th class="text-end"></th>
-				</tr>
-			</thead>
-			
-			<tbody>
-				@foreach (var item in Model)
-				{
-				<tr data-status="@item.Status.ToLower()">
-					<td width="40%">
-						  <div class="info pl-3">
-						<h6 class="mb-0 title">@item.Title</h6>
-						</div>
-					</td>
-					<td>
-						@item.Description
-					</td>
-					<td>
-						@item.StartDate
-					</td>
-					<td>
-						@item.EndDate
-					</td>
-					<td>
-						@item.MaxParticipants
-					</td>
-					
-									@{
-										if (@item.Status == "Open")
-										{
-											<td>
-						Đang mở
-										</td>
-									}else if (item.Status == "Close")
-									{
-										<td>
-											Đã đóng
-										</td>
-									}
-									else
-									{
-										<td>
-											Đang diễn ra
-										</td>
-									}
-								}
-					
-					<td class="text-end">
-									<a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="UpdateCleanupEvent" asp-route-eventId="@item.CleanEventId">
-									Cập nhật thông tin
-							</a>
-									<a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="UpdateCleanupEventStatus" asp-route-eventId="@item.CleanEventId">
-									Cập nhật tình trạng
-							</a>
-							@{if(@item.Status=="Open"){
-											<a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="CloseCleanupEvent" asp-route-eventId="@item.CleanEventId">
-										Đóng sự kiện
-													</a>
-												}else if (item.Status == "Close")
-												{
-											<a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="OpenCleanupEvent" asp-route-eventId="@item.CleanEventId">
-										Mở sự kiện
-													</a>
-												}
-											}
-							
-					</td>
-				</tr>
-				}
-			</tbody>
-		</table
-	</div>
+
+        <div class="card-body" id="eventListContainer">
+            <!-- Tên các cột -->
+            <div class="row fw-bold text-muted border-bottom pb-2 mb-2">
+                <div class="col-lg-4 col-sm-4 col-8">Tiêu đề</div>
+                <div class="col-lg-2 col-sm-2 col-4">Ngày bắt đầu</div>
+                <div class="col-lg-2 col-sm-2 col-4">Ngày kết thúc</div>
+                <div class="col-lg-1 col-sm-2 col-4">TNV tối đa</div>
+                <div class="col-lg-1 col-sm-2 col-4">Trạng thái</div>
+                <div class="col-lg-2 col-sm-2 col-4 text-end">Thao tác</div>
+            </div>
+
+            @foreach (var item in Model)
+            {
+                <article class="itemlist">
+                    <div class="row align-items-center border-bottom py-2" data-status="@item.Status.ToLower()">
+                        <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                            <div class="info">
+                                <h6 class="mb-0">@item.Title</h6>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-sm-2 col-4">@item.StartDate</div>
+                        <div class="col-lg-2 col-sm-2 col-4">@item.EndDate</div>
+                        <div class="col-lg-1 col-sm-2 col-4">@item.MaxParticipants</div>
+                        <div class="col-lg-1 col-sm-2 col-4">
+                            @{
+                                var label = item.Status switch
+                                {
+                                    "Open" => "Đang mở",
+                                    "Close" => "Đã đóng",
+                                    _ => "Đang diễn ra"
+                                };
+                            }
+                            <span class="badge bg-secondary">@label</span>
+                        </div>
+                        <div class="col-lg-2 col-sm-2 col-4 text-end">
+                            <div class="dropdown">
+                                <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm">
+                                    <i class="material-icons md-more_horiz"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" asp-action="UpdateCleanupEvent" asp-route-eventId="@item.CleanEventId">Cập nhật thông tin</a>
+                                    <a class="dropdown-item" asp-action="UpdateCleanupEventStatus" asp-route-eventId="@item.CleanEventId">Cập nhật tình trạng</a>
+                                    @if (item.Status == "Open")
+                                    {
+                                        <a class="dropdown-item text-danger" asp-action="CloseCleanupEvent" asp-route-eventId="@item.CleanEventId">Đóng sự kiện</a>
+                                    }
+                                    else if (item.Status == "Close")
+                                    {
+                                        <a class="dropdown-item" asp-action="OpenCleanupEvent" asp-route-eventId="@item.CleanEventId">Mở sự kiện</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            }
+
+            <div id="noResultMessage" class="text-center text-muted my-4 d-none">Không tìm thấy sự kiện phù hợp.</div>
         </div>
     </div>
-	<div class="pagination-area mt-15 mb-50">
+
+    <div class="pagination-area mt-30 mb-50">
         <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-start">
-                <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                <li class="page-item"><a class="page-link" href="#">02</a></li>
-                <li class="page-item"><a class="page-link" href="#">03</a></li>
-                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                <li class="page-item"><a class="page-link" href="#">16</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
-                </li>
-            </ul>
+            <ul class="pagination justify-content-start" id="pagination"></ul>
         </nav>
     </div>
 </section>
 @section Scripts {
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const searchInput = document.getElementById("searchInput");
-        const statusSelect = document.getElementById("statusFilter");
-        const rows = document.querySelectorAll("#eventTable tbody tr");
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const statusFilter = document.getElementById("statusFilter");
+            const itemsPerPageFilter = document.getElementById("itemsPerPageFilter");
+            const eventContainer = document.getElementById("eventListContainer");
+            const paginationContainer = document.getElementById("pagination");
+            const noResultMessage = document.getElementById("noResultMessage");
 
-        function filterTable() {
-            const searchValue = searchInput.value.toLowerCase();
-            const selectedStatus = statusSelect.value.toLowerCase();
+            const allEvents = Array.from(eventContainer.getElementsByClassName("itemlist"));
+            let filteredEvents = [...allEvents];
+            let currentPage = 1;
 
-            rows.forEach(row => {
-                const title = row.querySelector("td h6.title")?.textContent.toLowerCase() || "";
-                const rowStatus = row.getAttribute("data-status");
+            function updateDisplay() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedStatus = statusFilter.value.toLowerCase();
 
-                const matchTitle = title.includes(searchValue);
-                const matchStatus = !selectedStatus || rowStatus === selectedStatus;
+                filteredEvents = allEvents.filter(event => {
+                    const title = event.querySelector(".col-name h6").innerText.toLowerCase();
+                    const status = event.querySelector("[data-status]").getAttribute("data-status");
 
-                row.style.display = (matchTitle && matchStatus) ? "" : "none";
+                    const matchesSearch = title.includes(searchTerm);
+                    const matchesStatus = !selectedStatus || status === selectedStatus;
+
+                    return matchesSearch && matchesStatus;
+                });
+
+                if (filteredEvents.length === 0) {
+                    renderEvents();
+                    paginationContainer.innerHTML = "";
+                    noResultMessage.classList.remove("d-none");
+                    return;
+                }
+
+                noResultMessage.classList.add("d-none");
+                renderPagination();
+                renderEvents();
+            }
+
+            function renderEvents() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const paginatedEvents = filteredEvents.slice(startIndex, endIndex);
+
+                const currentArticles = eventContainer.querySelectorAll('article.itemlist');
+                currentArticles.forEach(article => article.remove());
+
+                paginatedEvents.forEach(event => eventContainer.appendChild(event));
+            }
+
+            function renderPagination() {
+                const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+                const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
+                paginationContainer.innerHTML = "";
+
+                if (totalPages <= 1) return;
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const li = document.createElement("li");
+                    li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                    li.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+                    paginationContainer.appendChild(li);
+                }
+            }
+
+            function triggerFilter() {
+                currentPage = 1;
+                updateDisplay();
+            }
+
+            searchInput.addEventListener("input", triggerFilter);
+            statusFilter.addEventListener("change", triggerFilter);
+            itemsPerPageFilter.addEventListener("change", triggerFilter);
+
+            paginationContainer.addEventListener("click", function (e) {
+                e.preventDefault();
+                const target = e.target.closest("a.page-link");
+                if (target) {
+                    const page = parseInt(target.dataset.page, 10);
+                    if (!isNaN(page)) {
+                        currentPage = page;
+                        renderEvents();
+                        renderPagination();
+                    }
+                }
             });
-        }
 
-        searchInput.addEventListener("keyup", filterTable);
-        statusSelect.addEventListener("change", filterTable);
-    });
-
-</script>
+            updateDisplay();
+        });
+    </script>
 }
-
