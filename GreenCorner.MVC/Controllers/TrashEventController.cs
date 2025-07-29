@@ -158,35 +158,20 @@ namespace GreenCorner.MVC.Controllers
         }
 
 
+        [HttpGet]
         public async Task<IActionResult> DeleteTrashEvent(int trashReportId)
         {
-            ResponseDTO response = await _trashEventService.GetByTrashEventId(trashReportId);
-            if (response != null && response.IsSuccess)
-            {
-                TrashEventDTO trashEventDTO = JsonConvert.DeserializeObject<TrashEventDTO>(response.Result.ToString());
-                return View(trashEventDTO);
-            }
-            else
-            {
-                TempData["error"] = response?.Message;
-            }
-            return NotFound();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> DeleteTrashEvent(TrashEventDTO trashEventDTO)
-        {
-            ResponseDTO response = await _trashEventService.DeleteTrashEvent(trashEventDTO.TrashReportId);
+            ResponseDTO response = await _trashEventService.DeleteTrashEvent(trashReportId);
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Sự kiện Thùng rác đã được xóa thành công!";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("ReportHistory", "User");
             }
             else
             {
                 TempData["error"] = response?.Message;
             }
-            return View(trashEventDTO);
+            return RedirectToAction("ReportHistory", "User");
         }
 
         public async Task<IActionResult> UpdateTrashEvent(int trashReportId)

@@ -1,125 +1,163 @@
-﻿@model List<GreenCorner.MVC.ViewModels.RewardPointWithUserViewModel>
+﻿@model List<RewardPointWithUserViewModel>
 @{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     ViewData["Title"] = "Danh sách điểm thưởng";
 }
 
+
 <section class="content-main">
     <div class="content-header">
-        <div>
-            <h2 class="content-title card-title">Danh sách điểm thưởng</h2>
-        </div>
+        <h2 class="content-title">Danh sách điểm thưởng người dùng</h2>
     </div>
-
     <div class="card mb-4">
         <header class="card-header">
             <div class="row gx-3">
                 <div class="col-lg-4 col-md-6 me-auto">
                     <input type="text" placeholder="Tìm kiếm..." class="form-control" id="searchInput" />
                 </div>
-                <div class="col-lg-2 col-6 col-md-3">
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select" id="statusFilter">
+                        <option disable selected>Trạng thái</option>
+                        <option>Hoạt động</option>
+                        <option>Bị chặn</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
                     <select class="form-select" id="itemsPerPageFilter">
                         <option value="10" selected>Hiển thị 10</option>
                         <option value="20">Hiển thị 20</option>
-                        <option value="50">Hiển thị 50</option>
+                        <option value="30">Hiển thị 30</option>
+                        <option value="40">Hiển thị 40</option>
                     </select>
                 </div>
             </div>
         </header>
+        <!-- card-header end// -->
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Họ và tên</th>
+                            <th>Email</th>
+                            <th>Trạng thái</th>
+                            <th>Số điện thoại</th>
+                            <th>Tổng điểm</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td width="40%">
+                                    <a asp-controller="Admin" asp-action="UserDetail" asp-route-userId="@item.User.ID" class="itemside">
+                                        <div class="left">
+                                            <img src="@item.User.Avatar" class="img-sm img-avatar" alt="Userpic" />
+                                        </div>
+                                        <div class="info pl-3">
+                                            <h6 class="mb-0 title">@item.User.FullName</h6>
+                                            <small class="text-muted">#@item.User.ID</small>
+                                        </div>
+                                    </a>
+                                </td>
+                                <td>@item.User.Email</td>
+                                @if (!item.User.IsBan)
+                                {
+                                    <td><span class="badge rounded-pill badge-soft-success">Hoạt động</span></td>
+                                }
+                                else
+                                {
+                                    <td><span class="badge rounded-pill badge-soft-danger">Bị khóa</span></td>
+                                }
+                                <td>@item.User.PhoneNumber</td>
+                                <td class="text-success">@item.Reward.TotalPoints</td>
+                            </tr>
+                        }
 
-        <div class="card-body" id="rewardListContainer">
-            <!-- Dòng tiêu đề -->
-            <div class="row fw-bold mb-2 px-2 text-muted small">
-                <div class="col-lg-5 col-sm-5 col-6">Họ tên</div>
-                <div class="col-lg-5 col-sm-5 col-6">Email</div>
-                <div class="col-lg-2 col-sm-2 col-6 text-end">Tổng điểm</div>
+                    </tbody>
+                </table>
+                <div id="noResultMessage" class="text-center text-muted my-4 d-none">
+                    Không tìm thấy người dùng nào phù hợp.
+                </div>
             </div>
-
-            @foreach (var item in Model)
-            {
-                <article class="itemlist reward-item border-top py-2"
-                         data-name="@item.User?.FullName?.ToLower()"
-                         data-email="@item.User?.Email?.ToLower()">
-                    <div class="row align-items-center">
-                        <div class="col-lg-5 col-sm-5 col-6">
-                            <h6 class="mb-0">@item.User?.FullName</h6>
-                        </div>
-                        <div class="col-lg-5 col-sm-5 col-6">
-                            <span>@item.User?.Email</span>
-                        </div>
-                        <div class="col-lg-2 col-sm-2 col-6 text-end">
-                            <span>@item.Reward.TotalPoints</span>
-                        </div>
-                    </div>
-                </article>
-            }
-
-            <div id="noResultMessage" class="text-center text-muted my-4 d-none">Không tìm thấy kết quả phù hợp.</div>
         </div>
     </div>
-
-    <div class="pagination-area mt-30 mb-50">
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-start" id="pagination"></ul>
+    <div class="pagination-area mt-15 mb-50">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start" id="pagination">
+            </ul>
         </nav>
     </div>
 </section>
-
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const searchInput = document.getElementById("searchInput");
+            const statusFilter = document.getElementById("statusFilter");
             const itemsPerPageFilter = document.getElementById("itemsPerPageFilter");
-            const rewardContainer = document.getElementById("rewardListContainer");
+            const tableBody = document.getElementById("userTableBody");
             const paginationContainer = document.getElementById("pagination");
-            const allItems = Array.from(rewardContainer.getElementsByClassName("reward-item"));
             const noResultMessage = document.getElementById("noResultMessage");
+
+            const allRows = Array.from(tableBody.getElementsByTagName("tr"));
+            let filteredRows = [...allRows];
             let currentPage = 1;
-            let filteredItems = [...allItems];
 
             function updateDisplay() {
                 const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
                 const searchTerm = searchInput.value.toLowerCase();
+                const selectedStatus = statusFilter.value.toLowerCase();
 
-                filteredItems = allItems.filter(item => {
-                    const name = item.dataset.name || "";
-                    const email = item.dataset.email || "";
+                filteredRows = allRows.filter(row => {
+                    const fullNameAndId = row.cells[0].innerText.toLowerCase();
+                    const email = row.cells[1].innerText.toLowerCase();
+                    const statusText = row.cells[2].innerText.toLowerCase();
+                    const phone = row.cells[3].innerText.toLowerCase();
+                    const points = row.cells[4].innerText.toLowerCase(); // THÊM: Lấy dữ liệu cột điểm
 
-                    return name.includes(searchTerm) || email.includes(searchTerm);
+                    const matchesSearch =
+                        fullNameAndId.includes(searchTerm) ||
+                        email.includes(searchTerm) ||
+                        phone.includes(searchTerm) ||
+                        points.includes(searchTerm); // SỬA: Thêm điều kiện tìm kiếm cho điểm
+
+                    const matchesStatus = (selectedStatus === "trạng thái" || statusText === selectedStatus);
+
+                    return matchesSearch && matchesStatus;
                 });
 
-                if (filteredItems.length === 0) {
-                    rewardContainer.querySelectorAll("article.itemlist").forEach(item => item.remove());
-                    noResultMessage.classList.remove("d-none");
+                if (filteredRows.length === 0) {
+                    tableBody.innerHTML = "";
                     paginationContainer.innerHTML = "";
+                    noResultMessage.classList.remove("d-none");
                     return;
                 }
 
                 noResultMessage.classList.add("d-none");
                 renderPagination();
-                renderRewardItems();
+                renderTableRows();
             }
 
-            function renderRewardItems() {
+            function renderTableRows() {
                 const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
-                const start = (currentPage - 1) * itemsPerPage;
-                const end = start + itemsPerPage;
-                const paginated = filteredItems.slice(start, end);
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const paginatedRows = filteredRows.slice(startIndex, endIndex);
 
-                rewardContainer.querySelectorAll("article.itemlist").forEach(item => item.remove());
-                paginated.forEach(item => rewardContainer.appendChild(item));
+                tableBody.innerHTML = "";
+                paginatedRows.forEach(row => tableBody.appendChild(row));
             }
 
             function renderPagination() {
                 const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
-                const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+                const totalPages = Math.ceil(filteredRows.length / itemsPerPage);
                 paginationContainer.innerHTML = "";
 
                 if (totalPages <= 1) return;
 
                 const prevLi = document.createElement("li");
                 prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-                prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}"><i class="material-icons md-chevron_left"></i></a>`;
+                prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}" style="padding: 6px;"><i class="material-icons md-chevron_left"></i></a>`;
                 paginationContainer.appendChild(prevLi);
 
                 for (let i = 1; i <= totalPages; i++) {
@@ -131,7 +169,7 @@
 
                 const nextLi = document.createElement("li");
                 nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
-                nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}"><i class="material-icons md-chevron_right"></i></a>`;
+                nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}" style="padding: 6px;"><i class="material-icons md-chevron_right"></i></a>`;
                 paginationContainer.appendChild(nextLi);
             }
 
@@ -141,6 +179,7 @@
             }
 
             searchInput.addEventListener("input", triggerFilter);
+            statusFilter.addEventListener("change", triggerFilter);
             itemsPerPageFilter.addEventListener("change", triggerFilter);
 
             paginationContainer.addEventListener("click", function (e) {
@@ -150,7 +189,7 @@
                     const page = parseInt(target.dataset.page, 10);
                     if (!isNaN(page)) {
                         currentPage = page;
-                        renderRewardItems();
+                        renderTableRows();
                         renderPagination();
                     }
                 }

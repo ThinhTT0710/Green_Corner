@@ -254,7 +254,8 @@ namespace GreenCorner.MVC.Controllers
                 {
                     TempData["error"] = response?.Message;
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("History", "Order");
+
             }
             catch (Exception ex)
             {

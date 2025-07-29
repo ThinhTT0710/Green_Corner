@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Sự kiện";
 }
-<div class="card shadow border-0 mt-4">
+<div class="card shadow border-0 mt-4" style="padding: 30px;">
     <div class="row">
         <h2 class="content-title card-title">Volunteer List</h2>
     </div>
@@ -127,6 +127,7 @@
                 </tbody>
             </table>
         </div>
+        <a class="btn" asp-action="GetOpenEventsByTeamLeader" asp-controller="Event">Trở về</a>
     </div>
 </div>
 

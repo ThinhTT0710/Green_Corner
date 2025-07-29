@@ -9,8 +9,6 @@
         });
     </script>
 
-    @TempData.Remove("success")
-    ;
 }
 @if (TempData["error"] != null)
 {
@@ -21,11 +19,7 @@
             title: "@TempData["error"]",
         });
     </script>
-
-    @TempData.Remove("error")
-    ;
 }
-@* notification for login error *@
 @if (TempData["loginError"] != null)
 {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -41,7 +35,4 @@
             }
         });
     </script>
-
-    @TempData.Remove("loginError")
-    ;
 }
