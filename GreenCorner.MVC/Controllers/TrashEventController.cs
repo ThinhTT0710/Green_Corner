@@ -28,7 +28,6 @@ namespace GreenCorner.MVC.Controllers
             _pointTransactionService = pointTransactionService;
         }
 
-        
         public async Task<IActionResult> Index()
         {
             List<TrashReportListViewModel> viewModelList = new();
@@ -258,7 +257,6 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "ADMIN,EVENTSTAFF")]
         public async Task<IActionResult> ApproveTrashEvent(int trashReportId)
         {
             if (!User.Identity.IsAuthenticated)
@@ -333,7 +331,6 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "ADMIN,EVENTSTAFF")]
         public async Task<IActionResult> RejectrashEvent(int trashReportId)
         {
             if (!User.Identity.IsAuthenticated)

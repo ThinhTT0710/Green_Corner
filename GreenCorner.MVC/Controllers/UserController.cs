@@ -74,7 +74,6 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> UpdateProfile()
         {
             if (!User.Identity.IsAuthenticated)
@@ -99,7 +98,6 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> UpdateProfile(UserDTO user)
         {
             var files = Request.Form.Files;
@@ -142,14 +140,12 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> ChangePassword()
         {
             return View();
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordRequestDTO changePasswordRequest)
         {
             if (ModelState.IsValid)

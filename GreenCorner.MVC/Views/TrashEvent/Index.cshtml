@@ -15,21 +15,22 @@
         <header class="card-header">
             <div class="row gx-3">
                 <div class="col-lg-4 col-md-6 me-auto">
-                    <input type="text" placeholder="Tìm kiếm..." class="form-control" />
+                    <input type="text" placeholder="Tìm kiếm..." class="form-control" id="searchInput" />
                 </div>
-                <div class="col-lg-2 col-6 col-md-3">
-                    <select class="form-select">
+                <div class="col-lg-2 col-6 col-md-3"  >
+                    <select class="form-select" id="statusFilter">
                         <option>Status</option>
-                        <option>Active</option>
-                        <option>Disabled</option>
-                        <option>Show all</option>
+                        <option>Chờ xác nhận</option>
+                        <option>Đã xác nhận</option>
+                        <option>Đã từ chối</option>
                     </select>
                 </div>
-                <div class="col-lg-2 col-6 col-md-3">
-                    <select class="form-select">
-                        <option>Show 20</option>
-                        <option>Show 30</option>
-                        <option>Show 40</option>
+                <div class="col-lg-2 col-6 col-md-3"  >
+                    <select class="form-select" id="itemsPerPageFilter">
+                        <option value="10" selected>Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
+                        <option value="30">Hiển thị 30</option>
+                        <option value="40">Hiển thị 40</option>
                     </select>
                 </div>
             </div>
@@ -50,7 +51,7 @@
                             <th scope="col" class="text-end">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="trashEventTableBody">
                         @foreach (var item in Model)
                         {
                             <tr>
@@ -100,13 +101,134 @@
                         }
                     </tbody>
                 </table>
+                <div id="noResultMessage" class="text-center text-muted my-4 d-none">
+                    Không tìm thấy báo cáo rác nào phù hợp.
+                </div>
             </div>
         </div>
     </div>
     <div class="pagination-area mt-15 mb-50">
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-start">
+        <nav aria-label="Page navigation example" >
+            <ul class="pagination justify-content-start" id="pagination">
             </ul>
         </nav>
     </div>
 </section>
+
+section Scripts {
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const statusFilter = document.getElementById("statusFilter");
+        const itemsPerPageFilter = document.getElementById("itemsPerPageFilter");
+
+        const tableBody = document.getElementById("trashEventTableBody");
+        const paginationContainer = document.getElementById("pagination");
+        const noResultMessage = document.getElementById("noResultMessage");
+
+        const allRows = Array.from(tableBody.getElementsByTagName("tr"));
+        let filteredRows = [...allRows];
+        let currentPage = 1;
+
+        function updateDisplay() {
+            const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedStatus = statusFilter.value.toLowerCase();
+
+            filteredRows = allRows.filter(row => {
+                const id = row.cells[0].innerText.toLowerCase();
+                const reporter = row.cells[1].innerText.toLowerCase();
+                const email = row.cells[2].innerText.toLowerCase();
+                const address = row.cells[3].innerText.toLowerCase();
+                const description = row.cells[4].innerText.toLowerCase();
+                const statusText = row.cells[5].innerText.toLowerCase();
+                const date = row.cells[6].innerText.toLowerCase();
+
+                const matchesSearch =
+                    id.includes(searchTerm) ||
+                    reporter.includes(searchTerm) ||
+                    email.includes(searchTerm) ||
+                    address.includes(searchTerm) ||
+                    description.includes(searchTerm) ||
+                    statusText.includes(searchTerm) ||
+                    date.includes(searchTerm);
+
+                const matchesStatus = (selectedStatus === "status" || statusText === selectedStatus);
+
+                return matchesSearch && matchesStatus;
+            });
+
+            if (filteredRows.length === 0) {
+                tableBody.innerHTML = "";
+                paginationContainer.innerHTML = "";
+                noResultMessage.classList.remove("d-none");
+                return;
+            }
+
+            noResultMessage.classList.add("d-none");
+            renderPagination();
+            renderTableRows();
+        }
+
+        function renderTableRows() {
+            const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedRows = filteredRows.slice(startIndex, endIndex);
+
+            tableBody.innerHTML = "";
+            paginatedRows.forEach(row => tableBody.appendChild(row));
+        }
+
+        function renderPagination() {
+            const itemsPerPage = parseInt(itemsPerPageFilter.value, 10);
+            const totalPages = Math.ceil(filteredRows.length / itemsPerPage);
+            paginationContainer.innerHTML = "";
+
+            if (totalPages <= 1) return;
+
+            const prevLi = document.createElement("li");
+            prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}" style="padding: 6px;"><i class="material-icons md-chevron_left"></i></a>`;
+            paginationContainer.appendChild(prevLi);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageLi = document.createElement("li");
+                pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                pageLi.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+                paginationContainer.appendChild(pageLi);
+            }
+
+            const nextLi = document.createElement("li");
+            nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}" style="padding: 6px;"><i class="material-icons md-chevron_right"></i></a>`;
+            paginationContainer.appendChild(nextLi);
+        }
+
+
+        function triggerFilter() {
+            currentPage = 1;
+            updateDisplay();
+        }
+
+        searchInput.addEventListener("input", triggerFilter);
+        statusFilter.addEventListener("change", triggerFilter);
+        itemsPerPageFilter.addEventListener("change", triggerFilter);
+
+        paginationContainer.addEventListener("click", function (e) {
+            e.preventDefault();
+            const target = e.target.closest("a.page-link");
+            if (target && !target.parentElement.classList.contains('disabled')) {
+                const page = parseInt(target.dataset.page, 10);
+                if (!isNaN(page)) {
+                    currentPage = page;
+                    renderTableRows();
+                    renderPagination();
+                }
+            }
+        });
+
+        updateDisplay();
+    });
+</script>
+}

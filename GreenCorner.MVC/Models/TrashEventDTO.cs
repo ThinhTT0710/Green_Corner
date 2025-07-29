@@ -10,14 +10,11 @@ public partial class TrashEventDTO
 
     [Required(ErrorMessage = "Người gửi báo cáo không được để trống.")]
     public string UserId { get; set; } = null!;
-
-    [Required(ErrorMessage = "Vị trí là bắt buộc.")]
+    [Required(ErrorMessage = "Vui lòng cung cấp tọa độ.")]
     public string? Location { get; set; }
-
-    [Required(ErrorMessage = "Địa chỉ là bắt buộc.")]
+    [Required(ErrorMessage = "Vui lòng nhập địa chỉ.")]
     public string? Address { get; set; }
-
-    [Required(ErrorMessage = "Mô tả là bắt buộc.")]
+    [Required(ErrorMessage = "Vui lòng nhập mô tả chi tiết.")]
     public string? Description { get; set; }
 
     [Url(ErrorMessage = "Đường dẫn hình ảnh không hợp lệ.")]

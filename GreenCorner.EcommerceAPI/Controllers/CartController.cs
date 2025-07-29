@@ -1,5 +1,6 @@
-﻿using GreenCorner.EcommerceAPI.Models.DTO;
+﻿    using GreenCorner.EcommerceAPI.Models.DTO;
 using GreenCorner.EcommerceAPI.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -53,6 +54,7 @@ namespace GreenCorner.EcommerceAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> AddToCart([FromBody] CartDTO cartDTO)
         {
             try
@@ -74,6 +76,7 @@ namespace GreenCorner.EcommerceAPI.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> UpdateCart([FromBody] CartDTO cartDTO)
         {
             try
@@ -97,6 +100,7 @@ namespace GreenCorner.EcommerceAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> DeleteCart(int id)
         {
             try
@@ -113,7 +117,8 @@ namespace GreenCorner.EcommerceAPI.Controllers
         }
 
 		[HttpDelete("delete-user-cart/{userId}")]
-		public async Task<ResponseDTO> DeleteUserCart(string userId)
+        [Authorize(Roles = "CUSTOMER")]
+        public async Task<ResponseDTO> DeleteUserCart(string userId)
 		{
 			try
 			{
@@ -129,6 +134,7 @@ namespace GreenCorner.EcommerceAPI.Controllers
 		}
 
 		[HttpGet("get-user-cart/{userId}")]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> GetUserCart(string userId)
         {
             try

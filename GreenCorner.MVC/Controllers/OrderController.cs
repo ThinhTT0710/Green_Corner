@@ -262,7 +262,6 @@ namespace GreenCorner.MVC.Controllers
             }
         }
 
-        [Authorize(Roles = "ADMIN,SALESTAFF")]
         public async Task<IActionResult> ListOrder()
         {
             List<OrderDTO> orders = new();
@@ -283,8 +282,6 @@ namespace GreenCorner.MVC.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = "ADMIN,SALESTAFF")]
-
         public async Task<IActionResult> OrderDetail(int id)
         {
             ResponseDTO? response = await _orderService.GetOrderByID(id);
@@ -303,7 +300,6 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "ADMIN,SALESTAFF")]
         public async Task<IActionResult> UpdateOrderStatus(OrderDTO order)
         {
             try

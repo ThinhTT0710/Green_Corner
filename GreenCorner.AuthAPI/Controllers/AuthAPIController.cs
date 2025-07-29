@@ -24,12 +24,6 @@ namespace GreenCorner.AuthAPI.Controllers
             _emailService = emailService;
         }
 
-        [HttpGet("ping")]
-        public IActionResult Ping()
-        {
-            return Ok("pong from AuthAPI");
-        }
-
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterationRequestDTO registerRequest) 
         {
@@ -50,6 +44,7 @@ namespace GreenCorner.AuthAPI.Controllers
             _response.Message = "Tạo tài khoản thành công, vui lòng kiểm tra email.";
             return Ok(_response);
         }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginRequest)
         {

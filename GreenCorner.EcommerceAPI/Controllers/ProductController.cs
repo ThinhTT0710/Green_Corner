@@ -76,6 +76,7 @@ namespace GreenCorner.EcommerceAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "ADMIN,SALESTAFF")]
         public async Task<ResponseDTO> CreateProduct([FromBody] ProductDTO product)
         {
             try
@@ -93,6 +94,7 @@ namespace GreenCorner.EcommerceAPI.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "ADMIN,SALESTAFF")]
         public async Task<ResponseDTO> UpdateProduct([FromBody] ProductDTO productDto)
         {
             try
@@ -108,6 +110,7 @@ namespace GreenCorner.EcommerceAPI.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "ADMIN,SALESTAFF")]
         public async Task<ResponseDTO> DeleteProduct(int id)
         {
             try

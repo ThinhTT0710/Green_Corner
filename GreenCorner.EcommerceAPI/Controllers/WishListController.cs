@@ -1,5 +1,6 @@
 ﻿    using GreenCorner.EcommerceAPI.Models.DTO;
 using GreenCorner.EcommerceAPI.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,7 @@ namespace GreenCorner.EcommerceAPI.Controllers
             this._responseDTO = new ResponseDTO();
         }
         [HttpGet]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> GetWishList()
         {
             try
@@ -34,6 +36,7 @@ namespace GreenCorner.EcommerceAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> GetWishListById(int id)
         {
             try
@@ -51,6 +54,7 @@ namespace GreenCorner.EcommerceAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> AddToWishList([FromBody] WishListDTO wishListDTO)
         {
             try
@@ -66,6 +70,7 @@ namespace GreenCorner.EcommerceAPI.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> UpdateWishList([FromBody] WishListDTO wishListDTO)
         {
             try
@@ -82,6 +87,7 @@ namespace GreenCorner.EcommerceAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> DeleteWishList(int id)
         {
             try
@@ -115,6 +121,7 @@ namespace GreenCorner.EcommerceAPI.Controllers
 
 
         [HttpGet("get-user-wishlist/{userId}")]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> GetUserWishList(string userId)
         {
             try

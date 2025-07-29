@@ -30,7 +30,8 @@ namespace GreenCorner.AuthAPI.Controllers
         }
         
 		[HttpGet]
-		public async Task<ResponseDTO> GetStaffs()
+        [Authorize(Roles = "ADMIN")]
+        public async Task<ResponseDTO> GetStaffs()
 		{
 			try
 			{
@@ -46,7 +47,8 @@ namespace GreenCorner.AuthAPI.Controllers
 			}
 		}
 		[HttpGet("{id}")]
-		public async Task<ResponseDTO> GetStaffById(string id)
+        [Authorize(Roles = "ADMIN")]
+        public async Task<ResponseDTO> GetStaffById(string id)
 		{
 			try
 			{
@@ -62,7 +64,8 @@ namespace GreenCorner.AuthAPI.Controllers
 			}
 		}
 		[HttpPost]
-		public async Task<IActionResult> CreateStaff([FromBody] StaffDTO staff)
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> CreateStaff([FromBody] StaffDTO staff)
         {
             try
             {
@@ -92,6 +95,7 @@ namespace GreenCorner.AuthAPI.Controllers
 		}
 
         [HttpPut("update-staff")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<ResponseDTO> UpdateStaff([FromBody] StaffDTO staff)
         {
             try
@@ -110,7 +114,7 @@ namespace GreenCorner.AuthAPI.Controllers
 
 
         [HttpGet("block-staff/{id}")]
-		//[Authorize(Roles = "ADMIN,STAFF")]
+		[Authorize(Roles = "ADMIN")]
 		public async Task<ResponseDTO> BlockStaffAccount(string id)
 		{
 			try
@@ -135,7 +139,7 @@ namespace GreenCorner.AuthAPI.Controllers
 		}
 
 		[HttpGet("unblock-staff/{id}")]
-		//[Authorize(Roles = "ADMIN,STAFF")]
+		[Authorize(Roles = "ADMIN")]
 		public async Task<ResponseDTO> UnBlockStaffAccount(string id)
 		{
 			try
@@ -160,7 +164,8 @@ namespace GreenCorner.AuthAPI.Controllers
 		}
 
 		[HttpGet("get-all-log")]
-		public async Task<ResponseDTO> GetAllLogs()
+        [Authorize(Roles = "ADMIN")]
+        public async Task<ResponseDTO> GetAllLogs()
 		{
 			try
 			{
