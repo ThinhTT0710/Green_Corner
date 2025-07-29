@@ -207,7 +207,7 @@ $(document).ready(function () {
                     timer: response.isSuccess ? 1500 : undefined
                 }).then(() => {
                     if (!response.isSuccess && response.message === "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.") {
-                        window.location.href = "/Identity/Account/Login";
+                        window.location.href = "/Auth/Login";
                     }
                 });
             },

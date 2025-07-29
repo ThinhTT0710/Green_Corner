@@ -24,8 +24,6 @@ namespace GreenCorner.MVC.Models
         [Range(1, 1000, ErrorMessage = "Số người tham gia tối đa phải từ 1 đến 1000.")]
         public int? MaxParticipants { get; set; }
 
-        [Required(ErrorMessage = "Trạng thái sự kiện là bắt buộc.")]
-        [StringLength(50, ErrorMessage = "Trạng thái không được vượt quá 50 ký tự.")]
         public string? Status { get; set; }
 
         [DataType(DataType.DateTime)]

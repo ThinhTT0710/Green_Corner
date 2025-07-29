@@ -59,14 +59,16 @@ namespace GreenCorner.RewardAPI.Repositories
 
         public async Task DeleteVoucher(int voucherId)
         {
-            var product = await _context.Vouchers.FindAsync(voucherId);
-            if (product == null)
+            var voucher = await _context.Vouchers.FindAsync(voucherId);
+            if (voucher == null)
             {
                 throw new KeyNotFoundException($"Voucher with ID {voucherId} not found.");
             }
-            //product.IsDeleted = true;
-            _context.Vouchers.Remove(product);
-            await _context.SaveChangesAsync();
+
+            voucher.IsActive = false; // Cập nhật trạng thái không còn hiệu lực
+
+            _context.Vouchers.Update(voucher); // Cập nhật lại vào DbContext
+            await _context.SaveChangesAsync(); // Lưu thay đổi
         }
 
         public async Task<IEnumerable<Voucher>> GetTop10ValidVouchersAsync()

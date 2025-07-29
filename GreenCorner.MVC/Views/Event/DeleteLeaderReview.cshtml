@@ -3,7 +3,7 @@
     ViewData["Title"] = "Đánh giá sự kiện";
 }
 <div class="comment-form">
-    <h3 class="mb-15">Delete Leader Review</h3>
+    <h3 class="mb-15">Xóa đánh giá đội trưởng</h3>
     <div class="row">
         <div class="col-lg-9 col-md-12">
             <form asp-controller="Event" asp-action="DeleteLeaderReview" enctype="multipart/form-data">
@@ -16,7 +16,7 @@
                     </div>
                     <div class="col-12">
                         <div class="form-group">
-                            <input asp-for="LeaderId" disabled class="form-control" placeholder="LeaderId" />
+                            <input asp-for="LeaderId" disabled class="form-control" placeholder="LeaderId" hidden />
                         </div>
                     </div>
                     <div class="col-12">
@@ -35,12 +35,12 @@
                     </div>
                     <div class="col-12">
                         <div class="form-group">
-                            <input asp-for="Comment" disabled class="form-control" placeholder="Comment" />
+                            <input asp-for="Comment" disabled class="form-control" placeholder="Nội dung" />
                         </div>
                     </div>
                     <div class="col-12">
                         <div class="form-group">
-                            <input asp-for="CreatedAt" disabled class="form-control" placeholder="Date" />
+                            <input asp-for="CreatedAt" disabled class="form-control" placeholder="Ngày" />
                         </div>
                     </div>
 

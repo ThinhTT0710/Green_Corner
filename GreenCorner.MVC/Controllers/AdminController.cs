@@ -312,7 +312,7 @@ namespace GreenCorner.MVC.Controllers
 				var response = await _userService.BanUser(userId);
 				if (response != null && response.IsSuccess)
 				{
-					TempData["success"] = "Chặn user thành công";
+					TempData["success"] = "Chặn người dùng thành công";
 				}
 				else
 				{
@@ -334,7 +334,7 @@ namespace GreenCorner.MVC.Controllers
 				var response = await _userService.UnBanUser(userId);
 				if (response != null && response.IsSuccess)
 				{
-					TempData["success"] = "Mở chặn user thành công";
+					TempData["success"] = "Mở chặn người dùng thành công";
 				}
 				else
 				{
