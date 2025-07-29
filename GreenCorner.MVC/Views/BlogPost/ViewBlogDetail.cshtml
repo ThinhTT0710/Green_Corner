@@ -4,6 +4,7 @@
     ViewData["Title"] = "Chi tiết bài viết";
     var blog = Model.Blog;
     var author = Model.Author;
+    var userId = ViewBag.UserId as string;
 }
 
 <main class="main">
@@ -130,6 +131,14 @@
                                                                 @report.Reason
                                                             </p>
                                                         </div>
+                                                        @if (!string.IsNullOrEmpty(userId) && report.UserId == userId)
+                                                        {
+                                                            <div class="mt-3 text-end">
+                                                                <a asp-action="EditReport" asp-route-id="@report.BlogReportId" class="btn btn-sm btn-outline-primary">
+                                                                    <i class="fas fa-edit me-1"></i>Chỉnh sửa
+                                                                </a>
+                                                            </div>
+                                                        }
                                                     </div>
                                                 }
                                             </div>

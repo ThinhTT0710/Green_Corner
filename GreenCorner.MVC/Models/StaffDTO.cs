@@ -15,7 +15,7 @@ public class StaffDTO
         [Required(ErrorMessage = "Địa chỉ không được để trống.")]
         public string Address { get; set; }
 
-        [Url(ErrorMessage = "Đường dẫn avatar không hợp lệ.")]
+        
         public string? Avatar { get; set; }
 
         [Required(ErrorMessage = "Số điện thoại là bắt buộc.")]

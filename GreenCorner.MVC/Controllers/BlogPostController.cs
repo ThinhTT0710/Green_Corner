@@ -194,6 +194,7 @@ namespace GreenCorner.MVC.Controllers
                 {
                     ViewBag.IsFavorited = false;
                 }
+                ViewBag.UserId = userId;
             }
             else
             {

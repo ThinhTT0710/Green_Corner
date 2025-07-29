@@ -315,7 +315,7 @@ namespace GreenCorner.MVC.Controllers
 
             if (file != null && file.Length > 0)
             {
-                string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/admin/imgs/avatar-staff");
+                string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/admin/imgs/avatars");
 
                 if (!Directory.Exists(uploadPath))
                 {

@@ -3,7 +3,7 @@
     ViewData["Title"] = "Đánh giá sự kiện";
 }
     <div class="comment-form">
-        <h3 class="mb-15">Rate Event</h3>
+        <h3 class="mb-15">Đánh giá sự kiện</h3>
         <div class="row">
             <div class="col-lg-9 col-md-12">
                 <form asp-controller="Event" asp-action="RateEvent" enctype="multipart/form-data">
@@ -24,13 +24,13 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                            <input required asp-for="Comment" class="form-control" placeholder="Comment" />
+                            <input required asp-for="Comment" class="form-control" placeholder="Nội dung" />
                             <span asp-validation-for="Comment" class="text-danger"></span>
                         </div>
                         </div>
                     </div>
                     <div class="form-group">
-                    <a asp-controller="User" asp-action="ViewParticipatedActivities" class="button button-contactForm ">Back to List</a>
+                    <a asp-controller="User" asp-action="ViewParticipatedActivities" class="button button-contactForm ">Quay lại sự kiện</a>
                         <button type="submit" class="button button-contactForm">Đánh giá</button>
                     </div>
                 </form>

@@ -3,7 +3,7 @@
     ViewData["Title"] = "Đánh giá sự kiện";
 }
 <div class="comment-form">
-<h3 class="mb-15">Edit Event Review</h3>
+<h3 class="mb-15">Cập nhật đánh giá sự kiện</h3>
 <div class="row">
     <div class="col-lg-9 col-md-12">
 <form asp-controller="Event" asp-action="EditEventReview" enctype="multipart/form-data">
@@ -29,7 +29,7 @@
         </div>
         <div class="col-12">
             <div class="form-group">
-                <input required asp-validation-for="Comment" asp-for="Comment" class="form-control" placeholder="Comment" />
+                <input required asp-validation-for="Comment" asp-for="Comment" class="form-control" placeholder="Nội dung" />
                             <span asp-validation-for="Comment" class="text-danger"></span>
                         </div>
         </div>

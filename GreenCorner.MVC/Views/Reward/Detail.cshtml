@@ -1,7 +1,7 @@
 ﻿@model VoucherDTO
 
 @{
-    ViewData["Title"] = "Chi tiết Reward";
+    ViewData["Title"] = "Thông tin chi tiết";
     var isVoucherValid = Model.ExpirationDate != null
                          && Model.ExpirationDate >= DateTime.Now
                          && Model.IsActive;

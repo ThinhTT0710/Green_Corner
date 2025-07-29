@@ -11,7 +11,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="content-header">
-                    <h2 class="content-title">Create Staff</h2>
+                    <h2 class="content-title">Tạo nhân viên</h2>
                     <div>
                         <button class="btn btn-light rounded font-sm mr-5 text-body hover-up"><a asp-controller="Auth" asp-action="GetStaffList">Quay lại danh sách</a></button>
                         <button type="submit" class="btn btn-md rounded font-sm hover-up">Tạo </button>
@@ -21,7 +21,7 @@
             <div class="col-lg-9">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h4>Basic</h4>
+                        <h4>Thông tin</h4>
                     </div>
                     <div class="card-body">
                         <form>
@@ -60,8 +60,8 @@
                                 <div class="col-lg-4">
                                     <label class="form-label">Vai trò</label>
                                     <select class="form-select" name="Role" asp-for="Role">
-                                        <option>Event Staff</option>
-                                        <option>Sale Staff</option>
+                                        <option value="EVENTSTAFF">Nhân viên sự kiện</option>
+                                        <option value="SALESTAFF">Nhân viên bán hàng</option>
                                     </select>
                                     <span asp-validation-for="Role" class="text-danger"></span>
                                 </div>
@@ -74,7 +74,7 @@
             <div class="col-lg-3">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h4>Avatar</h4>
+                        <h4>Ảnh đại diện</h4>
                     </div>
                     <div class="card-body">
                         <div class="input-upload">
