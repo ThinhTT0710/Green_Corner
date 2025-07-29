@@ -68,7 +68,7 @@ namespace GreenCorner.RewardAPI.Repositories
 		public async Task TransactionPoints(string userId, int points, string type, int? eventId = null)
 		{
 			if (type != "Thưởng" && type != "Đổi")
-				throw new ArgumentException("Type must be 'Kiếm' or 'Đổi'.");
+				throw new ArgumentException("Type must be 'Thưởng' or 'Đổi'.");
 
 			var rewardPoint = await _context.RewardPoints.FirstOrDefaultAsync(rp => rp.UserId == userId);
 
@@ -79,8 +79,9 @@ namespace GreenCorner.RewardAPI.Repositories
 					UserId = userId,
 					TotalPoints = 0
 				};
-				_context.RewardPoints.Add(rewardPoint);
-			}
+                await _context.RewardPoints.AddAsync(rewardPoint);
+                await _context.SaveChangesAsync();
+            }
 
 			if (type == "Thưởng")
 			{

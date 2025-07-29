@@ -9,16 +9,16 @@
     <input hidden asp-for="ID" />
     <section class="content-main">
         <div class="row">
-            <div class="col-9">
+            <div class="col-12">
                 <div class="content-header">
                     <h2 class="content-title">Create Staff</h2>
                     <div>
-                        <button class="btn btn-light rounded font-sm mr-5 text-body hover-up"><a asp-controller="Auth" asp-action="GetStaffList">Back to List</a></button>
-                        <button type="submit" class="btn btn-md rounded font-sm hover-up">Create</button>
+                        <button class="btn btn-light rounded font-sm mr-5 text-body hover-up"><a asp-controller="Auth" asp-action="GetStaffList">Quay lại danh sách</a></button>
+                        <button type="submit" class="btn btn-md rounded font-sm hover-up">Tạo </button>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">
+            <div class="col-lg-9">
                 <div class="card mb-4">
                     <div class="card-header">
                         <h4>Basic</h4>
@@ -26,7 +26,7 @@
                     <div class="card-body">
                         <form>
                             <div class="mb-4">
-                                <label for="product_name" class="form-label">FullName</label>
+                                <label for="product_name" class="form-label">Tên </label>
                                 <input required type="text" placeholder="Type here" class="form-control" asp-validation-for="FullName" asp-for="FullName" />
                                 <span asp-validation-for="FullName" class="text-danger"></span>
                             </div>
@@ -36,14 +36,14 @@
                                 <span asp-validation-for="Email" class="text-danger"></span>
                             </div>
                             <div class="mb-4">
-                                <label class="form-label">Address</label>
+                                <label class="form-label">Địa chỉ</label>
                                 <textarea required asp-validation-for="Address" asp-for="Address" placeholder="Type here" class="form-control" rows="4"></textarea>
                                 <span asp-validation-for="Address" class="text-danger"></span>
                             </div>
                             <div class="row">
                                 <div class="col-lg-4">
                                     <div class="mb-4">
-                                        <label class="form-label">Phone Number</label>
+                                        <label class="form-label">Số điện thoại</label>
                                         <div class="row gx-2">
                                             <input required asp-validation-for="PhoneNumber" asp-for="PhoneNumber" type="text" class="form-control" />
                                             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
@@ -52,13 +52,13 @@
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="mb-4">
-                                        <label class="form-label">Password</label>
+                                        <label class="form-label">Mật khẩu</label>
                                         <input  required asp-validation-for="Password" asp-for="Password" type="password" placeholder="Password" class="form-control" />
                                         <span asp-validation-for="Password" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
-                                    <label class="form-label">Role:</label>
+                                    <label class="form-label">Vai trò</label>
                                     <select class="form-select" name="Role" asp-for="Role">
                                         <option>Event Staff</option>
                                         <option>Sale Staff</option>

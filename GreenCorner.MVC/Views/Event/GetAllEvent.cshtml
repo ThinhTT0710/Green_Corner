@@ -78,7 +78,7 @@
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
                                     <a class="dropdown-item" asp-action="UpdateCleanupEvent" asp-route-eventId="@item.CleanEventId">Cập nhật thông tin</a>
-                                    <a class="dropdown-item" asp-action="UpdateCleanupEventStatus" asp-route-eventId="@item.CleanEventId">Cập nhật tình trạng</a>
+                                    <a class="dropdown-item" asp-action="UpdateCleanupEventStatus" asp-route-eventId="@item.CleanEventId">Cập nhật trạng thái</a>
                                     @if (item.Status == "Open")
                                     {
                                         <a class="dropdown-item text-danger" asp-action="CloseCleanupEvent" asp-route-eventId="@item.CleanEventId">Đóng sự kiện</a>

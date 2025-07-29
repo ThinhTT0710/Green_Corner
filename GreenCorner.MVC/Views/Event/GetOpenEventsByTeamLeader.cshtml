@@ -6,7 +6,7 @@
 <div class="page-content pt-50">
     <div class="container">
         <div class="archive-header-2 text-center">
-            <h1 class="display-2 mb-50">Event Of You</h1>
+            <h1 class="display-2 mb-50">Sự kiện bạn là đội trưởng</h1>
             <div class="row">
                 <div class="col-lg-5 mx-auto">
                     <div class="sidebar-widget-2 widget_search mb-50">
@@ -38,7 +38,10 @@
                         </div>
                         <div class="vendor-content-wrap">
                             <div class="mb-30">
-                                <h4 class="mb-5"><a href="vendor-details-1.html">@item.Title</a></h4>
+                                <h4 class="mb-5">
+                                    <a asp-action="GetEventById" asp-route-eventId="@item.CleanEventId">@item.Title</a>
+                                </h4>
+
                                 <div class="vendor-info d-flex justify-content-between align-items-end mt-30">
                                     <ul class="contact-infor text-muted">
                                         <li><strong>Description: </strong> <span>@item.Description</span></li>
@@ -50,7 +53,7 @@
                                     <a asp-action="ViewEventVolunteerList"
                                        asp-route-eventId="@item.CleanEventId"
                                        class="btn btn-sm btn-outline-primary">
-                                        Xem Danh Sách TNV <i class="fi-rs-arrow-small-right ms-1"></i>
+                                        Tình nguyện viên <i class="fi-rs-arrow-small-right ms-1"></i>
                                     </a>
 
                                     <a asp-action="ViewEventVolunteerListCheck"

@@ -106,7 +106,6 @@ namespace GreenCorner.RewardAPI.Controllers
         }
 
         [HttpGet("getAllRewards")]
-        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> GetAllRewards()
         {
             try

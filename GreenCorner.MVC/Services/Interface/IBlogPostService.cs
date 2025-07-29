@@ -12,5 +12,6 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> DeleteBlog(int id);
         Task<ResponseDTO?> BlogApproval(int id);
         Task<ResponseDTO?> GetBlogCreate(string userId);
+        Task<ResponseDTO?> BlogReject(int id);
     }
 }

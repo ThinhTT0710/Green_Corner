@@ -108,7 +108,7 @@
                                                 {
                                                     "Published" => "Đã đăng",
                                                     "Pending" => "Đang chờ duyệt",
-                                                    "Removed" => "Đã gỡ",
+                                                    "Rejected" => "Không được duyệt",
                                                     _ => "Không xác định"
                                                 };
 
@@ -116,7 +116,7 @@
                                                 {
                                                     "Published" => "text-success",
                                                     "Pending" => "text-warning",
-                                                    "Removed" => "text-danger",
+                                                    "Rejected" => "text-danger",
                                                     _ => "text-muted"
                                                 };
                                             }
@@ -148,7 +148,7 @@
                                                     <a asp-controller="BlogPost" asp-action="UpdateBlog" asp-route-blogId="@blog.BlogId" class="btn btn-sm btn-outline-success">Sửa</a>
                                                     <a asp-action="DeleteBlog" asp-route-id="@blog.BlogId" class="btn btn-sm btn-outline-danger">Xoá</a>
                                                 }
-                                                else if (blog.Status == "Published")
+                                                else if (blog.Status == "Published" || blog.Status == "Rejected")
                                                 {
                                                     <a asp-action="DeleteBlog" asp-route-id="@blog.BlogId" class="btn btn-sm btn-outline-danger">Xoá</a>
                                                 }

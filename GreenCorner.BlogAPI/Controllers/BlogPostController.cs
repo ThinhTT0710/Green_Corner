@@ -152,5 +152,21 @@ namespace GreenCorner.BlogAPI.Controllers
                 return _responseDTO;
             }
         }
+
+        [HttpPost("blogreject")]
+        public async Task<ResponseDTO> BlogReject(int id)
+        {
+            try
+            {
+                await _blogPostService.BlogReject(id);
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = "Từ chối thất bại!";
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
     }
 }

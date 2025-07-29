@@ -21,16 +21,24 @@
                     <h3>@Model.User.FullName</h3>
                 </div>
                 <div class="col-xl-4 text-md-end">
-                    @if (!Model.User.IsBan)
-                    {
-                        <a href="#" class="btn btn-primary"> Hoạt động </a>
-                    }
-                    else
-                    {
-                        <a href="#" class="btn btn-danger">
-                            Bị khóa <i class="material-icons md-launch"></i>
-                        </a>
-                            }
+                        @if (!Model.User.IsBan)
+                        {
+                            <a href="#" class="btn btn-primary mb-2">Hoạt động</a>
+                            <a class="btn btn-danger mb-2"
+                               asp-controller="Admin" asp-action="BlockUser" asp-route-userId="@Model.User.ID">
+                                Chặn
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="#" class="btn btn-danger mb-2">
+                                Bị khóa <i class="material-icons md-launch"></i>
+                            </a>
+                            <a class="btn btn-primary mb-2"
+                               asp-controller="Admin" asp-action="UnblockUser" asp-route-userId="@Model.User.ID">
+                                Mở chặn
+                            </a>
+                        }
                 </div>
             </div>
             <hr class="my-4" />
