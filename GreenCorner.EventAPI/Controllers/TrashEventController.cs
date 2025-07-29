@@ -1,6 +1,7 @@
 ﻿
 using GreenCorner.EventAPI.Models.DTO;
 using GreenCorner.EventAPI.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,7 @@ namespace GreenCorner.EventAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "ADMIN,EVENTSTAFF")]
         public async Task<ResponseDTO> GetTrashEvents()
         {
             try
@@ -37,6 +39,7 @@ namespace GreenCorner.EventAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "ADMIN,EVENTSTAFF")]
         public async Task<ResponseDTO> GetTrashEventById(int id)
         {
             try
@@ -54,6 +57,7 @@ namespace GreenCorner.EventAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> CreateTrashEvent([FromBody] TrashEventDTO trashEventDTO)
         {
             try
@@ -70,6 +74,7 @@ namespace GreenCorner.EventAPI.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> UpdateTrashEvent([FromBody] TrashEventDTO trashEventDTO)
         {
             try
@@ -85,6 +90,7 @@ namespace GreenCorner.EventAPI.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "ADMIN,EVENTSTAFF")]
         public async Task<ResponseDTO> DeleteTrashEvent(int id)
         {
             try
@@ -101,6 +107,7 @@ namespace GreenCorner.EventAPI.Controllers
         }
 
         [HttpPut("approve/{id}")]
+        [Authorize(Roles = "ADMIN,EVENTSTAFF")]
         public async Task<ResponseDTO> ApproveTrashEvent(int id)
         {
             try
@@ -118,7 +125,8 @@ namespace GreenCorner.EventAPI.Controllers
         }
 
 		[HttpPut("reject/{id}")]
-		public async Task<ResponseDTO> RejectTrashEvent(int id)
+        [Authorize(Roles = "ADMIN,EVENTSTAFF")]
+        public async Task<ResponseDTO> RejectTrashEvent(int id)
 		{
 			try
 			{
@@ -135,6 +143,7 @@ namespace GreenCorner.EventAPI.Controllers
 		}
 
         [HttpGet("get-by-user/{userId}")]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<ResponseDTO> GetUserReport(string userId)
         {
             try

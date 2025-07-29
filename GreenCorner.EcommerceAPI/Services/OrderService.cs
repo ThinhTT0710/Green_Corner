@@ -135,7 +135,7 @@ namespace GreenCorner.EcommerceAPI.Services
             {
                 throw new Exception($"Không tìm thấy đơn hàng");
             }
-            if (orderList.Status.Equals("Đã xác nhận"))
+            if ((orderList.Status.Equals("Chờ xác nhận") || orderList.Status.Equals("Đã thanh toán")) && newStatus.Equals("Đã xác nhận"))
             {
                 foreach (var item in orderList.OrderDetailsDTO)
                 {

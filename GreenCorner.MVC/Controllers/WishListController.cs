@@ -87,7 +87,6 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "CUSTOMER")]
         public async Task<IActionResult> Remove(int wishListId)
         {
             try
