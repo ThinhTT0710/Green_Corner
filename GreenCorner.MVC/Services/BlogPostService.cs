@@ -1,7 +1,9 @@
 ﻿using GreenCorner.MVC.Models;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
+using System;
 using System.Reflection.Metadata;
+using static GreenCorner.MVC.Utility.SD;
 
 namespace GreenCorner.MVC.Services
 {
@@ -29,6 +31,15 @@ namespace GreenCorner.MVC.Services
             {
                 APIType = SD.APIType.POST,
                 Url = SD.BlogAPIBase + "/api/BlogPost/blogapproval?id=" + id
+            });
+        }
+
+        public async Task<ResponseDTO?> BlogReject(int id)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.POST,
+                Url = SD.BlogAPIBase + "/api/BlogPost/blogreject?id=" + id
             });
         }
 

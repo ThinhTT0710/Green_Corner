@@ -73,11 +73,11 @@
 							</a>
 							@{if(@item.IsBan){
 											<a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="UnBlockStaff" asp-route-staffID="@item.ID">
-										UnBlock Account
+										Bỏ chặn
 							</a>
 							}else{
 											<a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="BlockStaff" asp-route-staffID="@item.ID">
-									Block Account
+									Chặn
 							</a>
 							}
 							}

@@ -93,12 +93,17 @@
                                     </div>
 
                                     <div class="d-flex justify-content-center gap-1">
-                                        <form asp-controller="EventStaff" asp-action="BlogApprove" asp-route-id="@blog.Blog.BlogId" method="post" style="display:inline;">
-                                            <button type="submit" class="btn btn-sm btn-success rounded"
-                                                    onclick="return confirm('Bạn có chắc muốn phê duyệt bài viết này không?')">
-                                                <i class="material-icons md-check_circle"></i> Phê duyệt
-                                            </button>
-                                        </form>
+                                        <!-- Nút Phê duyệt -->
+                                        <button type="button" class="btn btn-sm btn-success rounded btn-confirm-action"
+                                                data-id="@blog.Blog.BlogId" data-action="approve">
+                                            <i class="material-icons md-check_circle"></i> Phê duyệt
+                                        </button>
+
+                                        <!-- Nút Từ chối -->
+                                        <button type="button" class="btn btn-sm btn-danger rounded btn-confirm-action"
+                                                data-id="@blog.Blog.BlogId" data-action="reject">
+                                            <i class="material-icons md-cancel"></i> Từ chối
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -115,6 +120,27 @@
         </nav>
     </div>
 </section>
+<!-- Modal xác nhận -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="confirmForm" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmModalLabel">Xác nhận hành động</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body">
+          <p id="modalMessage">Bạn có chắc chắn muốn thực hiện hành động này?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" style="border-radius: 10px;" data-bs-dismiss="modal">Hủy</button>
+          <button type="submit" class="btn btn-primary" style="font-weight: 500;font-size: 14px;padding: 10px 40px; border-radius: 10px;">Xác nhận</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 
 @section Scripts {
     <script>
@@ -211,6 +237,28 @@
             });
 
             updateDisplay();
+        });
+
+
+        // === SCRIPT XỬ LÝ MỞ MODAL ===
+        document.addEventListener("DOMContentLoaded", function () {
+            const confirmModalEl = document.getElementById("confirmModal");
+            const modal = new bootstrap.Modal(confirmModalEl);
+            const confirmForm = document.getElementById("confirmForm");
+            const modalMessage = document.getElementById("modalMessage");
+
+            document.querySelectorAll(".btn-confirm-action").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const blogId = btn.dataset.id;
+                    const action = btn.dataset.action;
+
+                    const isApprove = action === "approve";
+                    confirmForm.action = `/EventStaff/${isApprove ? "BlogApprove" : "BlogReject"}/${blogId}`;
+                    modalMessage.textContent = `Bạn có chắc muốn ${isApprove ? "phê duyệt" : "từ chối"} bài viết này không?`;
+
+                    modal.show();
+                });
+            });
         });
     </script>
 }

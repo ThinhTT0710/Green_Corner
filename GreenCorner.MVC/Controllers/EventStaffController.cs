@@ -120,6 +120,23 @@ namespace GreenCorner.MVC.Controllers
             return RedirectToAction("ViewPendingPosts");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> BlogReject(int id)
+        {
+            ResponseDTO? response = await _blogPostService.BlogReject(id);
+
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = "Từ chối bài viết thành công.";
+            }
+            else
+            {
+                TempData["error"] = response?.Message ?? "Từ chối thất bại.";
+            }
+
+            return RedirectToAction("ViewPendingPosts");
+        }
+
         public async Task<IActionResult> ViewVolunteerRegistrations()
         {
             var response = await _volunteerService.GetAllVolunteerRegistrations();

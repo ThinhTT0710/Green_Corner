@@ -60,9 +60,9 @@
                         {
                             <span class="badge bg-warning text-dark">Chờ duyệt</span>
                         }
-                        else if (Model.Blog.Status == "Removed")
+                        else if (Model.Blog.Status == "Từ chối")
                         {
-                            <span class="badge bg-secondary">Đã xóa</span>
+                            <span class="badge bg-secondary">Từ chối</span>
                         }
                         else if (Model.Blog.Status == "Published")
                         {
@@ -94,19 +94,69 @@
                 <div class="card mb-4">
                     <div class="d-flex card-body text-center gap-3">
                         <a asp-action="ViewPendingPosts" class="btn btn-light rounded font-sm text-body hover-up">← Quay lại</a>
-                        <form asp-controller="EventStaff" asp-action="BlogApprove" asp-route-id="@Model.Blog.BlogId" method="post">
-                            <button type="submit" class="btn btn-success"
-                                    onclick="return confirm('Bạn có chắc muốn phê duyệt bài viết này không?')">
-                                Phê duyệt bài viết
-                            </button>
-                        </form>
+
+                        <button type="button"
+                                class="btn btn-success btn-confirm-action"
+                                data-id="@Model.Blog.BlogId"
+                                data-action="approve">
+                            Phê duyệt
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-danger btn-confirm-action"
+                                data-id="@Model.Blog.BlogId"
+                                data-action="reject">
+                            Từ chối
+                        </button>
                     </div>
                 </div>
             }
         </div>
     </div>
 </section>
+<!-- Modal xác nhận -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="confirmForm" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Xác nhận hành động</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalMessage">Bạn có chắc chắn muốn thực hiện hành động này?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Xác nhận</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+            // Bootstrap Modal instance
+        const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+        const confirmForm = document.getElementById('confirmForm');
+        const modalMessage = document.getElementById('modalMessage');
+        const confirmButtons = document.querySelectorAll('.btn-confirm-action');
+
+        confirmButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const blogId = btn.dataset.id;
+                const action = btn.dataset.action;
+
+                const isApprove = action === 'approve';
+                const actionText = isApprove ? 'phê duyệt' : 'từ chối';
+
+                confirmForm.action = `/EventStaff/${isApprove ? 'BlogApprove' : 'BlogReject'}/${blogId}`;
+                modalMessage.textContent = `Bạn có chắc muốn ${actionText} bài viết này không?`;
+
+                modal.show();
+            });
+        });
+    </script>
 }

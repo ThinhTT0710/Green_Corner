@@ -579,6 +579,10 @@ namespace GreenCorner.MVC.Controllers
         public async Task<IActionResult> SubmitFeedback(FeedbackDTO feedback)
         {
             var userid = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+            if(userid == null){
+                TempData["error"] = "Vui lòng đăng nhập";
+                return RedirectToAction("Login", "Auth");
+            }
             feedback.UserId = userid;
 
             feedback.CreatedAt = DateTime.Now;
@@ -648,6 +652,11 @@ namespace GreenCorner.MVC.Controllers
         public async Task<IActionResult> SubmitReport(ReportDTO report)
         {
             var userid = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+            if (userid == null)
+            {
+                TempData["error"] = "Vui lòng đăng nhập";
+                return RedirectToAction("Login", "Auth");
+            }
             // Gán UserId từ thông tin đăng nhập
             report.LeaderId = userid;
 

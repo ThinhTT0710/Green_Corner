@@ -45,13 +45,14 @@
                                 }
                                 </td>
                                 <td class="text-end">
-                                    <a class="btn btn-outline-danger btn-sm"
-                                       asp-action="KickVolunteer"
-                                       asp-route-userId="@item.Volunteer.UserId"
-                                       asp-route-eventId="@item.Volunteer.CleanEventId"
-                                       onclick="return confirm('Bạn có chắc chắn muốn loại tình nguyện viên này khỏi sự kiện?');">
-                                        Kick
-                                    </a>
+                                <button type="button"
+                                        class="btn btn-outline-danger btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#kickModal-@item.Volunteer.UserId">
+                                    Loại
+                                </button>
+                                @if (item.Volunteer.AttendanceStatus == "Present")
+                                {
                                 <!-- Nút mở modal -->
                                 <button type="button"
                                         class="btn btn-outline-success btn-sm"
@@ -59,9 +60,11 @@
                                         data-bs-target="#confirmModal-@item.Volunteer.UserId">
                                     Thưởng Điểm
                                 </button>
-
+                                }
                                 </td>
                             </tr>
+                        @if (item.Volunteer.AttendanceStatus == "Present")
+                        {
                         <!-- Modal xác nhận thưởng điểm -->
                         <div class="modal fade" id="confirmModal-@item.Volunteer.UserId" tabindex="-1" aria-labelledby="modalLabel-@item.Volunteer.UserId" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -83,13 +86,43 @@
                                             <input type="hidden" name="userId" value="@item.Volunteer.UserId" />
                                             <input type="hidden" name="points" value="@calculatedPoints" />
                                             <input type="hidden" name="eventId" value="@item.Volunteer.CleanEventId" />
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                            <button type="submit" class="btn btn-success">Xác nhận</button>
+                                            <button type="button" class="btn btn-secondary" style="border-radius: 10px;" data-bs-dismiss="modal">
+                                                Hủy
+                                            </button>
+                                            <button type="submit" class="btn btn-success" style="font-weight: 700;font-size: 14px;padding: 12px 30px;">
+                                                Xác nhận
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
+                        }
+                        <!-- Modal xác nhận loại tình nguyện viên -->
+                        <div class="modal fade" id="kickModal-@item.Volunteer.UserId" tabindex="-1" aria-labelledby="kickModalLabel-@item.Volunteer.UserId" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <form asp-action="KickVolunteer"
+                                          asp-controller="Admin"
+                                          method="post">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="kickModalLabel-@item.Volunteer.UserId">Xác nhận loại tình nguyện viên</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Bạn có chắc chắn muốn <strong>loại</strong> tình nguyện viên <strong>@item.User.FullName</strong> khỏi sự kiện?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <input type="hidden" name="userId" value="@item.Volunteer.UserId" />
+                                            <input type="hidden" name="eventId" value="@item.Volunteer.CleanEventId" />
+                                            <button type="button" class="btn btn-secondary" style="border-radius: 10px;" data-bs-dismiss="modal">Hủy</button>
+                                            <button type="submit" class="btn btn-danger" style="font-weight: 700;font-size: 14px;padding: 12px 30px;">Xác nhận loại</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
                     }
                 </tbody>
             </table>

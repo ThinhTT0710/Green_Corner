@@ -29,6 +29,11 @@ namespace GreenCorner.BlogAPI.Services
             await _blogPostRepository.BlogApproval(id);
         }
 
+        public async Task BlogReject(int id)
+        {
+            await _blogPostRepository.BlogReject(id);
+        }
+
         public async Task DeleteBlog(int id)
         {
             await _blogPostRepository.DeleteBlog(id);

@@ -75,14 +75,30 @@
                                         <span class="@statusClass fw-semibold">@statusDisplay</span>
                                     </td>
                                     <td class="text-end">
-                                        <a asp-action="ViewVolunteerRegistrationDetail" asp-route-id="@item.Volunteer.VolunteerId" class="btn btn-sm btn-info me-1">Chi tiết</a>
-                                        <form asp-action="ApproveVolunteer" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
-                                            <button type="submit" class="btn btn-sm btn-success me-1">Phê duyệt</button>
-                                        </form>
-                                        <form asp-action="RejectVolunteer" asp-route-id="@item.Volunteer.VolunteerId" method="post" style="display:inline;">
-                                            <button type="submit" class="btn btn-sm btn-danger">Từ chối</button>
-                                        </form>
+                                        <div class="dropdown">
+                                            <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm">
+                                                <i class="material-icons md-more_horiz"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <a class="dropdown-item" asp-action="ViewVolunteerRegistrationDetail" asp-route-id="@item.Volunteer.VolunteerId">
+                                                    <i class="bi bi-eye me-2"></i> Chi tiết
+                                                </a>
+
+                                                <form asp-action="ApproveVolunteer" asp-route-id="@item.Volunteer.VolunteerId" method="post" class="dropdown-item m-0 p-0">
+                                                    <button type="submit" class="dropdown-item text-success">
+                                                        <i class="bi bi-check-circle me-2"></i> Phê duyệt
+                                                    </button>
+                                                </form>
+
+                                                <form asp-action="RejectVolunteer" asp-route-id="@item.Volunteer.VolunteerId" method="post" class="dropdown-item m-0 p-0">
+                                                    <button type="submit" class="dropdown-item text-danger">
+                                                        <i class="bi bi-x-circle me-2"></i> Từ chối
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
                                     </td>
+
                                 </tr>
                             }
                         }

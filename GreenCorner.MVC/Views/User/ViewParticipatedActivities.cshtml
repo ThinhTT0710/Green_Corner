@@ -81,7 +81,11 @@
                                     data-title="@item.Event.Title.ToLower()"
                                     data-eventstatus="@item.Event.Status.ToLower()"
                                     data-volunteerstatus="@item.Volunteer.Status.ToLower()">
-                                    <td>@item.Event.Title</td>
+                                    <td>
+                                        <a asp-controller="Event" asp-action="GetEventById" asp-route-eventId="@item.Event.CleanEventId">
+                                            @item.Event.Title
+                                        </a>
+                                    </td>
                                     <td>@item.Event.StartDate?.ToString("dd/MM/yyyy")</td>
                                     <td>@item.Event.EndDate?.ToString("dd/MM/yyyy")</td>
                                     <td>
@@ -111,17 +115,14 @@
                                         {
                                             <span class="badge bg-success">
                                                 <a asp-controller="Event" asp-action="RateEvent" asp-route-eventId="@item.Event.CleanEventId" class="text-white text-decoration-none">
-                                                    Rate Event
+                                                    Đánh giá sự kiện
                                                 </a>
                                             </span>
-                                            if (item.Volunteer.ApplicationType == "TeamLeader")
-                                            {
                                                 <span class="badge bg-success">
-                                                    <a asp-controller="Event" asp-action="LeaderReview" asp-route-eventId="@item.Event.CleanEventId" asp-route-leaderId="@item.TeamLeaderId" class="text-white text-decoration-none">
-                                                        Review Leader
+                                                    <a asp-controller="Event" asp-action="LeaderReview" asp-route-eventId="@item.Event.CleanEventId" asp-route-userId="@item.TeamLeaderId" class="text-white text-decoration-none">
+                                                        Đánh giá đội trưởng
                                                     </a>
                                                 </span>
-                                            }
                                         }
                                         else
                                         {

@@ -118,8 +118,15 @@
 
             @if (!string.IsNullOrEmpty(approvedRole))
             {
+                var roleName = approvedRole switch
+                {
+                    "Volunteer" => "Tình nguyện viên",
+                    "TeamLeader" => "Đội trưởng",
+                    _ => approvedRole
+                };
+
                 <div class="alert alert-success text-center">
-                    Bạn đã được phê duyệt làm: <strong>@approvedRole</strong>
+                    Bạn đã được phê duyệt làm: <strong>@roleName</strong>
                 </div>
             }
 
@@ -180,7 +187,7 @@
                                    asp-action="RegisterVolunteer"
                                    asp-route-eventId="@Model.CleanEventId"
                                    class="btn btn-success w-100 mb-2">
-                                    Đăng ký Volunteer
+                                    Đăng ký Tình nguyện viên
                                 </a>
 
                                 @if (!hasApprovedTeamLeader)
@@ -189,13 +196,13 @@
                                        asp-action="RegisterTeamLeader"
                                        asp-route-eventId="@Model.CleanEventId"
                                        class="btn btn-warning w-100">
-                                        Đăng ký Team Leader
+                                        Đăng ký Đội trưởng
                                     </a>
                                 }
                                 else
                                 {
                                     <button class="btn btn-secondary w-100" disabled>
-                                        Đã có Team Leader được duyệt
+                                        Đã có Đội trưởng được duyệt
                                     </button>
                                 }
                             }
@@ -205,15 +212,34 @@
                                    asp-action="UpdateRegister"
                                    asp-route-eventId="@Model.CleanEventId"
                                    class="btn btn-info w-100 mb-2">
-                                    Cập nhật đăng ký Volunteer
+                                    Cập nhật đăng ký Tình nguyện viên
                                 </a>
-                                <form asp-controller="Event" asp-action="UnregisterVolunteer" method="post">
-                                    <input type="hidden" name="eventId" value="@Model.CleanEventId" />
-                                    <button type="submit" class="btn btn-outline-danger w-100"
-                                            onclick="return confirm('Bạn có chắc chắn muốn hủy đăng ký Volunteer không?');">
-                                        Hủy đăng ký Volunteer
-                                    </button>
-                                </form>
+                                <button type="button" class="btn btn-outline-danger w-100"
+                                        data-bs-toggle="modal" data-bs-target="#unregisterVolunteerModal">
+                                    Hủy đăng ký Tình nguyện viên
+                                </button>
+                                <!-- Modal xác nhận hủy đăng ký Tình nguyện viên -->
+                                <div class="modal fade" id="unregisterVolunteerModal" tabindex="-1" aria-labelledby="unregisterVolunteerModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="unregisterVolunteerModalLabel">Xác nhận hủy đăng ký</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Bạn có chắc chắn muốn hủy đăng ký Tình nguyện viên không?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <form asp-controller="Event" asp-action="UnregisterVolunteer" method="post">
+                                                    <input type="hidden" name="eventId" value="@Model.CleanEventId" />
+                                                    <button type="submit" class="btn btn-danger">Hủy đăng ký</button>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             }
                             else if (isTeamLeader)
                             {
@@ -221,15 +247,35 @@
                                    asp-action="UpdateRegister"
                                    asp-route-eventId="@Model.CleanEventId"
                                    class="btn btn-info w-100 mb-2">
-                                    Cập nhật đăng ký Team Leader
+                                    Cập nhật đăng ký Đội trưởng
                                 </a>
-                                <form asp-controller="Event" asp-action="UnregisterTeamLeader" method="post">
-                                    <input type="hidden" name="eventId" value="@Model.CleanEventId" />
-                                    <button type="submit" class="btn btn-outline-warning w-100"
-                                            onclick="return confirm('Bạn có chắc chắn muốn hủy đăng ký Team Leader không?');">
-                                        Hủy đăng ký Team Leader
-                                    </button>
-                                </form>
+                                <button type="button" class="btn btn-outline-warning w-100"
+                                        data-bs-toggle="modal" data-bs-target="#unregisterTeamLeaderModal">
+                                    Hủy đăng ký Đội trưởng
+                                </button>
+
+                                <!-- Modal xác nhận hủy đăng ký Đội trưởng -->
+                                <div class="modal fade" id="unregisterTeamLeaderModal" tabindex="-1" aria-labelledby="unregisterTeamLeaderModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="unregisterTeamLeaderModalLabel">Xác nhận hủy đăng ký</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Bạn có chắc chắn muốn hủy đăng ký Đội trưởng không?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <form asp-controller="Event" asp-action="UnregisterTeamLeader" method="post">
+                                                    <input type="hidden" name="eventId" value="@Model.CleanEventId" />
+                                                    <button type="submit" class="btn btn-warning">Hủy đăng ký</button>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             }
                         }
                     }

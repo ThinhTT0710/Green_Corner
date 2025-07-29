@@ -35,6 +35,19 @@ namespace GreenCorner.BlogAPI.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task BlogReject(int id)
+        {
+            var blog = await _context.BlogPosts.FindAsync(id);
+            if (blog == null)
+            {
+                throw new KeyNotFoundException($"Blog with ID {id} not found.");
+            }
+
+            blog.Status = "Rejected";
+            _context.BlogPosts.Update(blog);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task DeleteBlog(int id)
         {
             var product = await _context.BlogPosts.FindAsync(id);
