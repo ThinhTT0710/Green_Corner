@@ -49,7 +49,7 @@ namespace GreenCorner.MVC.Controllers
                 }
                 else
                 {
-                    TempData["error"] = "Đăng nhập thất bại, Vui lòng thử lại!";
+                    TempData["error"] = response.Message;
                 }
             }
             return View(loginRequest);
@@ -311,7 +311,7 @@ namespace GreenCorner.MVC.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            var file = Request.Form.Files.FirstOrDefault(); // Lấy file đầu tiên
+            var file = Request.Form.Files.FirstOrDefault(); 
 
             if (file != null && file.Length > 0)
             {
@@ -322,17 +322,14 @@ namespace GreenCorner.MVC.Controllers
                     Directory.CreateDirectory(uploadPath);
                 }
 
-                // Tạo tên file duy nhất
                 string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                 string filePath = Path.Combine(uploadPath, fileName);
 
-                // Lưu file
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await file.CopyToAsync(stream);
                 }
 
-                // Gán tên file vào thuộc tính
                 staffDTO.Avatar = fileName;
             }
             var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
@@ -373,7 +370,7 @@ namespace GreenCorner.MVC.Controllers
 
             ResponseDTO? existingResponse = await _authService.GetStaffById(staffDTO.ID);
             StaffDTO existingStaff = JsonConvert.DeserializeObject<StaffDTO>(existingResponse.Result.ToString());
-            var file = Request.Form.Files.FirstOrDefault(); // Lấy file đầu tiên
+            var file = Request.Form.Files.FirstOrDefault(); 
             staffDTO.Avatar = existingStaff.Avatar;
             staffDTO.Password = existingStaff.Password;
             staffDTO.Role = existingStaff.Role;
@@ -386,11 +383,9 @@ namespace GreenCorner.MVC.Controllers
                     Directory.CreateDirectory(uploadPath);
                 }
 
-                // Tạo tên file duy nhất
                 string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                 string filePath = Path.Combine(uploadPath, fileName);
 
-                // Lưu file
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await file.CopyToAsync(stream);
@@ -399,7 +394,6 @@ namespace GreenCorner.MVC.Controllers
                 {
                     existingStaff.Avatar = fileName;
                 }
-                // Gán tên file vào thuộc tính
                 staffDTO.Avatar = existingStaff.Avatar;
             }
 

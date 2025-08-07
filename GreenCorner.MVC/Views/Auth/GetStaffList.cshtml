@@ -72,13 +72,13 @@
                                     <a asp-action="UpdateStaff" asp-route-userId="@item.ID" class="btn btn-sm btn-brand rounded font-sm mt-15">Cập nhật</a>
                                     @if (!item.IsBan)
                                     {
-                                        <a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-controller="Admin" asp-action="BlockUser" asp-route-userId="@item.ID">
+                                        <a class="btn btn-sm btn-brand rounded font-sm mt-15 block-btn" asp-controller="Auth" asp-action="BlockStaff" asp-route-staffID="@item.ID">
                                             Chặn
                                         </a>
                                     }
                                     else
                                     {
-                                        <a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="UnblockUser" asp-controller="Admin" asp-route-userId="@item.ID">
+                                        <a class="btn btn-sm btn-danger rounded font-sm mt-15 unblock-btn" asp-action="UnBlockStaff" asp-controller="Auth" asp-route-staffID="@item.ID">
                                             Mở chặn
                                         </a>
                                     }
@@ -103,6 +103,53 @@
 </section>
 
 @section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.block-btn').forEach(button => {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    const href = this.getAttribute('href');
+
+                    Swal.fire({
+                        title: 'Bạn chắc chắn không?',
+                        text: "Bạn có muốn chặn người dùng này không?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Chặn',
+                        cancelButtonText: 'Hủy bỏ'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = href;
+                        }
+                    });
+                });
+            });
+            document.querySelectorAll('.unblock-btn').forEach(button => {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    const href = this.getAttribute('href');
+
+                    Swal.fire({
+                        title: 'Bạn chắc chắn không?',
+                        text: "Bạn có muốn mở chặn cho người dùng này không?",
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3BB77E',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Mở chặn',
+                        cancelButtonText: 'Hủy bỏ'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = href;
+                        }
+                    });
+                });
+            });
+
+        });
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const searchInput = document.getElementById("searchInput");
