@@ -1,18 +1,46 @@
 ﻿@{
-    ViewData["Title"] = "Quản lí tài khoản";
+    ViewData["Title"] = "Gửi lại email xác nhận";
 }
-<form asp-action="ResendConfirmEmail" method="post">
-    <div class="container border p-4">
-        <div class="row text-center">
-            <h1>Resend Confirm Email</h1>
+<div class="page-header breadcrumb-wrap">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/Home" rel="nofollow"><i class="fi-rs-home mr-5"></i>Trang chủ</a>
+            <span></span> Gửi lại Emai xác nhận
         </div>
+    </div>
+</div>
+<div class="page-content pt-30 pb-30">
+    <div class="container">
         <div class="row">
-            <div class="col-12 col-md-6 offset-md-3 pb-2">
-                <input type="email" name="email-forgot" id="email-forgot" class="form-control" placeholder="Email" />
-            </div>
-            <div class="col-12 col-md-6 offset-md-3 pb-2">
-                <button type="submit" class="form-control btn btn-success" value="Submit"> Send Email</button>
+            <div class="col-xl-4 col-lg-6 col-md-12 m-auto">
+                <div class="login_wrap widget-taber-content background-white">
+                    <div class="padding_eight_all bg-white">
+                        <div class="heading_s1">
+                            <img class="border-radius-15" src="~/imgs/page/forgot_password.svg" alt="" />
+                            <h2 class="mb-15 mt-15">Gửi lại Emai xác nhận?</h2>
+                            <p class="mb-30">
+                                Bạn lỡ xóa hoặc email xác nhận hết hạn. Đừng lo, chúng tôi sẽ giúp bạn! Hãy nhập địa chỉ email
+                                để gửi lại email xác nhận.
+                            </p>
+                        </div>
+                        <form asp-action="ResendConfirmEmail" method="post">
+                            <div class="form-group">
+                                <input type="email" name="email-forgot" id="email-forgot"
+                                       placeholder="Địa chỉ Email *" />
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-heading btn-block hover-up">
+                                    Gửi
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

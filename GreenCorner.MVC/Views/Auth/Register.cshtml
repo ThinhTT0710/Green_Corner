@@ -43,6 +43,14 @@
                                         <input asp-for="Password" type="password" placeholder="Mật khẩu" />
                                         <span asp-validation-for="Password" class="text-danger"></span>
                                     </div>
+                                    <div class="login_footer form-group mb-10">
+                                        <div class="chek-form">
+                                            <div class="custome-checkbox">
+                                            </div>
+                                        </div>
+                                        <a class="text-muted" asp-controller="Auth"
+                                           asp-action="ResendConfirmEmail">Gửi lại Email xác nhận?</a>
+                                    </div>
                                     <div class="form-group mb-30">
                                         <button type="submit"
                                             class="btn btn-fill-out btn-block hover-up font-weight-bold">Đăng
