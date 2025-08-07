@@ -146,14 +146,37 @@
 																		   asp-route-trashReportId="@item.TrashReportId">
 																			Cập nhật
 																		</a>
-																		<a class="btn-small d-block" asp-action="DeleteTrashEvent"
-																		   asp-controller="TrashEvent"
-																		   asp-route-trashReportId="@item.TrashReportId">
+																		<a class="btn-small d-block"
+																		   data-bs-toggle="modal"
+																		   data-bs-target="#deleteModal-@item.TrashReportId">
 																			Xóa
 																		</a>
 																	}
 																</td>
 															</tr>
+
+															<div class="modal fade" id="deleteModal-@item.TrashReportId" tabindex="-1" aria-labelledby="deleteModalLabel-@item.TrashReportId" aria-hidden="true">
+																<div class="modal-dialog modal-dialog-centered">
+																	<div class="modal-content">
+																		<form asp-action="DeleteTrashEvent"
+																			  asp-controller="TrashEvent"
+																			  method="post">
+																			<div class="modal-header">
+																				<h5 class="modal-title" id="deleteModalLabel-@item.TrashReportId">Xác nhận xóa báo cáo</h5>
+																				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+																			</div>
+																			<div class="modal-body">
+																				Bạn có chắc chắn muốn <strong>xóa</strong> báo cáo #<strong>@item.TrashReportId</strong> không? Hành động này không thể hoàn tác.
+																			</div>
+																			<div class="modal-footer">
+																				<input type="hidden" name="trashReportId" value="@item.TrashReportId" />
+																				<button type="button" class="btn btn-secondary" style="border-radius: 10px;" data-bs-dismiss="modal">Hủy</button>
+																				<button type="submit" class="btn btn-danger" style="font-weight: 700;font-size: 14px;padding: 12px 30px;">Xác nhận xóa</button>
+																			</div>
+																		</form>
+																	</div>
+																</div>
+															</div>
 														}
 													</tbody>
 												</table>

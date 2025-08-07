@@ -65,7 +65,6 @@
                             </tr>
                         @if (item.Volunteer.AttendanceStatus == "Present")
                         {
-                        <!-- Modal xác nhận thưởng điểm -->
                         <div class="modal fade" id="confirmModal-@item.Volunteer.UserId" tabindex="-1" aria-labelledby="modalLabel-@item.Volunteer.UserId" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
@@ -98,7 +97,6 @@
                             </div>
                         </div>
                         }
-                        <!-- Modal xác nhận loại tình nguyện viên -->
                         <div class="modal fade" id="kickModal-@item.Volunteer.UserId" tabindex="-1" aria-labelledby="kickModalLabel-@item.Volunteer.UserId" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
