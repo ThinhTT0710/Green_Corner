@@ -233,7 +233,7 @@ namespace GreenCorner.EventAPI.Repositories
             var record = await _context.Volunteers
             .FirstOrDefaultAsync(v =>
                 v.CleanEventId == eventId &&
-                v.ApplicationType == "TeamLeader");
+                v.ApplicationType == "TeamLeader" && v.Status == "Approved");
 
             return record == null ? null : record.UserId;
         }

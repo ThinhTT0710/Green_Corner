@@ -1,4 +1,4 @@
-﻿using GreenCorner.MVC.Models;
+﻿    using GreenCorner.MVC.Models;
 using GreenCorner.MVC.Models.Notification;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
@@ -43,23 +43,35 @@ namespace GreenCorner.MVC.Controllers
             List<GetAllEventViewModel> viewModelList = new();
             List<EventDTO> listEvent = new();
             ResponseDTO? response = await _eventService.GetAllEvent();
+
             if (response != null && response.IsSuccess)
             {
                 listEvent = JsonConvert.DeserializeObject<List<EventDTO>>(response.Result.ToString());
+
                 foreach (var events in listEvent)
                 {
-                    ResponseDTO? eventResponse = await _eventService.GetParticipationInfoAsync(events.CleanEventId);
-
+                    // 1. Lấy thông tin tham gia
+                    ResponseDTO? participationResponse = await _eventService.GetParticipationInfoAsync(events.CleanEventId);
                     ParticipationInfoResponse participation = new();
-                    if (eventResponse != null && eventResponse.IsSuccess)
+                    if (participationResponse != null && participationResponse.IsSuccess)
                     {
-                        participation = JsonConvert.DeserializeObject<ParticipationInfoResponse>(eventResponse.Result.ToString());
+                        participation = JsonConvert.DeserializeObject<ParticipationInfoResponse>(participationResponse.Result.ToString());
                     }
 
+                    // 2. Lấy team leader của sự kiện này
+                    string? leaderId = null;
+                    ResponseDTO? teamLeaderResponse = await _volunteerService.GetTeamLeaderByEventId(events.CleanEventId);
+                    if (teamLeaderResponse != null && teamLeaderResponse.IsSuccess)
+                    {
+                        leaderId = Convert.ToString(teamLeaderResponse.Result);
+                    }
+
+                    // 3. Thêm vào ViewModel
                     viewModelList.Add(new GetAllEventViewModel
                     {
                         Event = events,
-                        Participation = participation
+                        Participation = participation,
+                        TeamLeaderId = leaderId
                     });
                 }
             }
@@ -67,8 +79,10 @@ namespace GreenCorner.MVC.Controllers
             {
                 TempData["error"] = response?.Message;
             }
+
             return View(viewModelList);
         }
+
         public async Task<IActionResult> GetEventById(int eventId)
         {
             ResponseDTO response = await _eventService.GetByEventId(eventId);
@@ -948,5 +962,86 @@ namespace GreenCorner.MVC.Controllers
 
             return RedirectToAction(nameof(GetEventById), new { eventId });
         }
+
+        public async Task<IActionResult> ViewLeaderReviewInEvent(string leaderId, int eventId)
+        {
+            List<LeaderReviewWithUserViewModel> viewModels = new();
+
+            ResponseDTO? response = await _eventService.GetLeaderReviewsByEvent(leaderId, eventId);
+
+            if (response != null && response.IsSuccess && response.Result != null)
+            {
+                var reviews = JsonConvert.DeserializeObject<List<LeaderReviewDTO>>(response.Result.ToString());
+
+                foreach (var review in reviews)
+                {
+                    UserDTO? reviewer = null;
+                    UserDTO? leader = null;
+
+                    // Lấy thông tin người đánh giá
+                    var reviewerResponse = await _userService.GetUserById(review.ReviewerId ?? "");
+                    if (reviewerResponse != null && reviewerResponse.IsSuccess && reviewerResponse.Result != null)
+                    {
+                        reviewer = JsonConvert.DeserializeObject<UserDTO>(reviewerResponse.Result.ToString());
+                    }
+
+                    // Lấy thông tin đội trưởng
+                    var leaderResponse = await _userService.GetUserById(review.LeaderId ?? "");
+                    if (leaderResponse != null && leaderResponse.IsSuccess && leaderResponse.Result != null)
+                    {
+                        leader = JsonConvert.DeserializeObject<UserDTO>(leaderResponse.Result.ToString());
+                    }
+
+                    viewModels.Add(new LeaderReviewWithUserViewModel
+                    {
+                        Review = review,
+                        Reviewer = reviewer,
+                        Leader = leader
+                    });
+                }
+            }
+            else
+            {
+                TempData["error"] = response?.Message ?? "Không thể lấy đánh giá của đội trưởng.";
+            }
+
+            return View(viewModels);
+        }
+
+        public async Task<IActionResult> ViewEventReviewsInEvent(int eventId)
+        {
+            List<EventReviewWithUserViewModel> viewModels = new();
+
+            ResponseDTO? response = await _eventService.GetEventReviewsByEventId(eventId);
+
+            if (response != null && response.IsSuccess && response.Result != null)
+            {
+                var reviews = JsonConvert.DeserializeObject<List<EventReviewDTO>>(response.Result.ToString());
+
+                foreach (var review in reviews)
+                {
+                    UserDTO? reviewer = null;
+
+                    var reviewerResponse = await _userService.GetUserById(review.UserId ?? "");
+                    if (reviewerResponse != null && reviewerResponse.IsSuccess && reviewerResponse.Result != null)
+                    {
+                        reviewer = JsonConvert.DeserializeObject<UserDTO>(reviewerResponse.Result.ToString());
+                    }
+
+                    viewModels.Add(new EventReviewWithUserViewModel
+                    {
+                        Review = review,
+                        Reviewer = reviewer
+                    });
+                }
+            }
+            else
+            {
+                TempData["error"] = response?.Message ?? "Không thể lấy đánh giá sự kiện.";
+            }
+
+            return View(viewModels);
+        }
+
     }
 }

@@ -97,6 +97,9 @@ namespace GreenCorner.MVC.Controllers
                 {
                     return Json(new { isSuccess = false, message = "Vui lòng đăng nhập để thực hiện hành động này." });
                 }
+
+                var response = await _wishListService.DeleteByUserId(userID, productId);
+
                 if (response != null && response.IsSuccess)
                 {
                     return Json(new { isSuccess = true, message = "Sản phẩm đã được xóa khỏi danh sách yêu thích." });

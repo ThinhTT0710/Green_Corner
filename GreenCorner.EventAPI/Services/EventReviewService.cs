@@ -46,5 +46,10 @@ namespace GreenCorner.EventAPI.Services
             var eventReview = await _eventReviewRepository.GetEventReviewById(id);
             return _mapper.Map<EventReviewDTO>(eventReview);
         }
+        public async Task<IEnumerable<EventReviewDTO>> GetEventReviewsByEventIdAsync(int eventId)
+        {
+            var reviews = await _eventReviewRepository.GetEventReviewsByEventIdAsync(eventId);
+            return _mapper.Map<IEnumerable<EventReviewDTO>>(reviews);
+        }
     }
 }

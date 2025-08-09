@@ -5,7 +5,12 @@
 }﻿
 <section class="content-main">
     <div class="content-header">
-        <h2 class="content-title">Danh sách nhân viên</h2>
+        <div>
+            <h2 class="content-title">Danh sách nhân viên</h2>
+        </div>
+        <div>
+            <a asp-action="CreateStaff" class="btn btn-md rounded font-sm"><i class="bi bi-plus-square"></i> Tạo nhân viên mới</a>
+        </div>
     </div>
     <div class="card mb-4">
         <header class="card-header">
@@ -72,13 +77,13 @@
                                     <a asp-action="UpdateStaff" asp-route-userId="@item.ID" class="btn btn-sm btn-brand rounded font-sm mt-15">Cập nhật</a>
                                     @if (!item.IsBan)
                                     {
-                                        <a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-controller="Admin" asp-action="BlockUser" asp-route-userId="@item.ID">
+                                        <a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="BlockStaff" asp-route-staffID="@item.ID">
                                             Chặn
                                         </a>
                                     }
                                     else
                                     {
-                                        <a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="UnblockUser" asp-controller="Admin" asp-route-userId="@item.ID">
+                                        <a class="btn btn-sm btn-brand rounded font-sm mt-15" asp-action="UnBlockStaff" asp-route-staffID="@item.ID">
                                             Mở chặn
                                         </a>
                                     }

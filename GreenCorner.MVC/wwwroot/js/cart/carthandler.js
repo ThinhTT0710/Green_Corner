@@ -269,10 +269,10 @@ $(document).ready(function () {
                 text: "Sản phẩm này sẽ bị xóa khỏi danh sách yêu thích của bạn!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
+                confirmButtonColor: '#3BB77E',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Có, xóa nó đi!',
-                cancelButtonText: 'Không, hủy bỏ!'
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Hủy'
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({

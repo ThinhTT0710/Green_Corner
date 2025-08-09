@@ -33,5 +33,7 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> DeleteVolunteersByEventId(int eventId);
         Task<ResponseDTO?> UpdateVolunteerStatusToParticipated(int eventId);
         Task<ResponseDTO?> GetTop3OpenEventsAsync();
+        Task<ResponseDTO?> GetLeaderReviewsByEvent(string leaderId, int eventId);
+        Task<ResponseDTO?> GetEventReviewsByEventId(int eventId);
     }
 }

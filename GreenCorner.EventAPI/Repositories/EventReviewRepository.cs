@@ -52,5 +52,11 @@ namespace GreenCorner.EventAPI.Repositories
                 .FirstOrDefaultAsync(p => p.EventReviewId == id)
                 ?? throw new KeyNotFoundException($"Event review with ID {id} not found.");
         }
+        public async Task<IEnumerable<EventReview>> GetEventReviewsByEventIdAsync(int eventId)
+        {
+            return await _context.EventReviews
+                .Where(r => r.CleanEventId == eventId)
+                .ToListAsync();
+        }
     }
 }
