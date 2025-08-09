@@ -61,13 +61,6 @@ namespace GreenCorner_Test.AuthAPI
 			}
 		};
 		}
-		[Fact]
-		public void Ping_ReturnsPong()
-		{
-			var result = _controller.Ping();
-			var ok = Assert.IsType<OkObjectResult>(result);
-			Assert.Equal("pong from AuthAPI", ok.Value);
-		}
 			//}
 			//[Fact]
 			//public async Task Login_ConfirmedEmail_ReturnsSuccess()

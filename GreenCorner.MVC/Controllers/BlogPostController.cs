@@ -649,7 +649,6 @@ namespace GreenCorner.MVC.Controllersde
             return RedirectToAction("Index", "Home");
         }
 
-        //ReportLeader
         [HttpGet]
         public IActionResult SubmitReport()
         {
