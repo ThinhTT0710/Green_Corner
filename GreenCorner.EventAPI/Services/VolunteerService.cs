@@ -21,7 +21,17 @@ namespace GreenCorner.EventAPI.Services
             var volunteers = await _volunteerRepository.GetAllVolunteers();
             return _mapper.Map<List<VolunteerDTO>>(volunteers);
         }
+        public async Task<VolunteerDTO?> GetVolunteerDetailsAsync(int eventId, string userId)
+        {
+            var volunteer = await _volunteerRepository.GetVolunteerByEventAndUserAsync(eventId, userId);
 
+            if (volunteer == null)
+            {
+                return null;
+            }
+
+            return _mapper.Map<VolunteerDTO>(volunteer);
+        }
         public async Task ApproveTeamLeaderRegistration(int id)
         {
             await _volunteerRepository.ApproveTeamLeaderRegistration(id);

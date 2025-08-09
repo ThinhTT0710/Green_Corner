@@ -34,7 +34,31 @@ namespace GreenCorner.EventAPI.Controllers
                 return _responseDTO;
             }
         }
-        [HttpPost("register")]
+
+        [HttpGet("details-by-user")]
+        public async Task<ResponseDTO> GetDetailsByUser(int eventId, string userId)
+        {
+            try
+            {
+                var volunteerDetails = await _volunteerService.GetVolunteerDetailsAsync(eventId, userId);
+                if (volunteerDetails == null)
+                {
+                    _responseDTO.IsSuccess = false;
+                    _responseDTO.Message = "Không tìm thấy thông tin đăng ký.";
+                    return _responseDTO;
+                }
+
+                _responseDTO.Result = volunteerDetails;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = "Lấy chi tiết đăng ký thất bại!";
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+            [HttpPost("register")]
         public async Task<ResponseDTO> RegisterVolunteer([FromBody] VolunteerDTO volunteerDto)
         {
             try
