@@ -110,7 +110,7 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-bold">Điểm thưởng</label>
-                            <div class="fs-5 badge bg-success px-3 py-2">@Model.PointsAward điểm</div>
+                            <div class="fs-5 badge bg-success px-3 py-2" style="background-color: #3BB77E !important;">@Model.PointsAward điểm</div>
                         </div>
                     </div>
                 </div>
@@ -158,12 +158,11 @@
                                class="btn btn-sm btn-outline-success">
                                 Điểm Danh <i class="fi-rs-arrow-small-right ms-1"></i>
                             </a>
-                            <a asp-controller="BlogPost"
-                               asp-action="SubmitReport"
-                               asp-route-title="@Model.Title"
-                               class="btn btn-sm btn-outline-danger">
+                              <button type="button" class="btn btn-sm btn-outline-danger" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#submitReportModal">
                                 Gửi Báo cáo <i class="fi fi-rs-warning ms-1"></i>
-                            </a>
+                            </button>
                         </div>
                         <a asp-controller="Event"
                            asp-action="GetOpenEventsByTeamLeader"
@@ -185,21 +184,20 @@
                         {
                             if (!isVolunteer && !isTeamLeader)
                             {
-                                <a asp-controller="Event"
-                                   asp-action="RegisterVolunteer"
-                                   asp-route-eventId="@Model.CleanEventId"
-                                   class="btn btn-success w-100 mb-2">
-                                    Đăng ký Tình nguyện viên
-                                </a>
+                               <button type="button" class="btn btn-success w-100 mb-2 btn-action-register" data-bs-toggle="modal"
+                                    data-bs-target="#volunteerRegisterModal"
+                                    data-role="Volunteer"
+                                    data-action="create"> Đăng ký Tình nguyện viên
+                                </button>
 
                                 @if (!hasApprovedTeamLeader)
                                 {
-                                    <a asp-controller="Event"
-                                       asp-action="RegisterTeamLeader"
-                                       asp-route-eventId="@Model.CleanEventId"
-                                       class="btn btn-warning w-100">
-                                        Đăng ký Đội trưởng
-                                    </a>
+                                    <button type="button" class="btn btn-warning w-100 btn-action-register"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#volunteerRegisterModal" 
+                                            data-role="TeamLeader"
+                                            data-action="create"> Đăng ký Đội trưởng
+                                    </button>
                                 }
                                 else
                                 {
@@ -210,17 +208,21 @@
                             }
                             else if (isVolunteer)
                             {
-                                <a asp-controller="Event"
-                                   asp-action="UpdateRegister"
-                                   asp-route-eventId="@Model.CleanEventId"
-                                   class="btn btn-info w-100 mb-2">
+                                var currentReg = ViewBag.CurrentRegistration as VolunteerDTO;
+                                <button type="button" class="btn btn-info w-100 mb-2 btn-action-register"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#volunteerRegisterModal"
+                                        data-action="update"
+                                        data-role="Volunteer"
+                                        data-volunteerid="@(currentReg?.VolunteerId ?? 0)"
+                                        data-assignment="@currentReg?.Assignment"
+                                        data-carryitems="@currentReg?.CarryItems">
                                     Cập nhật đăng ký Tình nguyện viên
-                                </a>
+                                </button>
                                 <button type="button" class="btn btn-outline-danger w-100"
                                         data-bs-toggle="modal" data-bs-target="#unregisterVolunteerModal">
                                     Hủy đăng ký Tình nguyện viên
                                 </button>
-                                <!-- Modal xác nhận hủy đăng ký Tình nguyện viên -->
                                 <div class="modal fade" id="unregisterVolunteerModal" tabindex="-1" aria-labelledby="unregisterVolunteerModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
@@ -245,18 +247,22 @@
                             }
                             else if (isTeamLeader)
                             {
-                                <a asp-controller="Event"
-                                   asp-action="UpdateRegister"
-                                   asp-route-eventId="@Model.CleanEventId"
-                                   class="btn btn-info w-100 mb-2">
+                                var currentReg = ViewBag.CurrentRegistration as VolunteerDTO;
+                                <button type="button" class="btn btn-info w-100 mb-2 btn-action-register"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#volunteerRegisterModal"
+                                        data-action="update"
+                                        data-role="TeamLeader"
+                                        data-volunteerid="@(currentReg?.VolunteerId ?? 0)"
+                                        data-assignment="@currentReg?.Assignment"
+                                        data-carryitems="@currentReg?.CarryItems">
                                     Cập nhật đăng ký Đội trưởng
-                                </a>
+                                </button>
                                 <button type="button" class="btn btn-outline-warning w-100"
                                         data-bs-toggle="modal" data-bs-target="#unregisterTeamLeaderModal">
                                     Hủy đăng ký Đội trưởng
                                 </button>
 
-                                <!-- Modal xác nhận hủy đăng ký Đội trưởng -->
                                 <div class="modal fade" id="unregisterTeamLeaderModal" tabindex="-1" aria-labelledby="unregisterTeamLeaderModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
@@ -309,7 +315,208 @@
         </div>
     </div>
 </section>
+<div class="modal fade" id="submitReportModal" tabindex="-1" aria-labelledby="submitReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <form id="submitReportForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="submitReportModalLabel">Gửi Báo cáo sau sự kiện</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="CleanEventId" value="@Model.CleanEventId" />
 
+                    <div class="mb-3">
+                        <label for="reportContent" class="form-label fw-bold">Nội dung báo cáo</label>
+                        <textarea class="form-control" id="reportContent" name="ReportContent" rows="8" 
+                                  placeholder="Vui lòng mô tả chi tiết về quá trình diễn ra sự kiện, kết quả đạt được, các vấn đề phát sinh (nếu có) và các đề xuất cải thiện..."></textarea>
+                        <div id="report-content-error" class="text-danger mt-1"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-danger">Gửi Báo cáo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="volunteerRegisterModal" tabindex="-1" aria-labelledby="volunteerRegisterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <form id="volunteerRegisterForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="volunteerRegisterModalLabel">Đăng ký tham gia sự kiện</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="CleanEventId" value="@Model.CleanEventId" />
+                    <input type="hidden" name="ApplicationType" value="" />
+                    <input type="hidden" id="volunteerId" name="VolunteerId" value="0" />
+                    <div class="mb-4 assignment-field">
+                        <label for="Assignment" class="form-label fw-bold">Chọn nhiệm vụ mong muốn</label>
+                        <select id="Assignment" name="Assignment" class="form-select">
+                            <option value="">-- Vui lòng chọn một nhiệm vụ --</option>
+                            @if (ViewBag.Assignments != null)
+                            {
+                                foreach (var assignment in ViewBag.Assignments)
+                                {
+                                    <option value="@assignment">@assignment</option>
+                                }
+                            }
+                        </select>
+                        <div id="assignment-error" class="text-danger mt-1"></div>
+                    </div>
+
+                    <div class="mb-4 carry-items-field">
+                        <label for="CarryItems" class="form-label fw-bold">Vật dụng bạn sẽ mang theo (tùy chọn)</label>
+                        <input type="text" id="CarryItems" name="CarryItems" class="form-control" placeholder="Ví dụ: Găng tay, kẹp rác, túi đựng rác cá nhân..." />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 10px;">Hủy</button>
+                    <button type="submit" class="btn btn-primary" style=" font-weight: 700; font-size: 14px; padding: 12px 30px;">Xác nhận đăng ký</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            var originalAssignmentOptions = $('#Assignment').html();
+
+            $('.btn-action-register').on('click', function () {
+                var button = $(this);
+                var action = button.data('action') || 'create'; 
+                var role = button.data('role');  
+                
+                var modal = $('#volunteerRegisterModal');
+                var form = modal.find('#volunteerRegisterForm');
+                var assignmentSelect = modal.find('#Assignment');
+
+                form.trigger('reset');
+                modal.find('#assignment-error').text('');
+                
+                modal.find('input[name="ApplicationType"]').val(role);
+                modal.find('input[name="VolunteerId"]').val('0');
+
+                if (role === 'TeamLeader') {
+                    assignmentSelect.html('<option value="Đội trưởng" selected>Đội trưởng</option>');
+                } else {
+                    assignmentSelect.html(originalAssignmentOptions);
+                }
+                if (action === 'update') {
+                    modal.find('.modal-title').text('Cập nhật đăng ký');
+                    modal.find('button[type="submit"]').text('Cập nhật');
+
+                    modal.find('input[name="VolunteerId"]').val(button.data('volunteerid'));
+                    assignmentSelect.val(button.data('assignment'));
+                    modal.find('#CarryItems').val(button.data('carryitems'));
+                } 
+                else { 
+                    modal.find('.modal-title').text('Đăng ký tham gia sự kiện');
+                    modal.find('button[type="submit"]').text('Xác nhận đăng ký');
+                }
+            });
+
+            $('#volunteerRegisterForm').submit(function (e) {
+                e.preventDefault();
+
+                var form = $(this);
+                var formData = form.serialize();
+                var role = form.find('input[name="ApplicationType"]').val();
+
+                $('#assignment-error').text('');
+
+                if (role === 'Volunteer') {
+                    if (!form.find('#Assignment').val()) {
+                        $('#assignment-error').text('Vui lòng chọn một nhiệm vụ.');
+                        return;
+                    }
+                }
+                
+                $.ajax({
+                    url: '@Url.Action("ProcessRegistration", "Event")', 
+                    method: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        $('#volunteerRegisterModal').modal('hide'); 
+                        if (response.isSuccess) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công!',
+                                text: response.message,
+                            }).then(() => {
+                                location.reload(); 
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Thất bại',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function () {
+                        $('#volunteerRegisterModal').modal('hide');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: 'Không thể gửi yêu cầu. Vui lòng thử lại sau.'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        $('#submitReportForm').submit(function (e) {
+        e.preventDefault();
+
+        var content = $('#reportContent').val();
+        var errorDiv = $('#report-content-error');
+        errorDiv.text(''); // Xóa lỗi cũ
+
+        if (!content || content.trim() === '') {
+            errorDiv.text('Vui lòng nhập nội dung báo cáo.');
+            return;
+        }
+
+        var formData = $(this).serialize();
+
+        $.ajax({
+            url: '@Url.Action("ProcessEventReport", "BlogPost")', // Action mới cho AJAX
+            method: 'POST',
+            data: formData,
+            success: function (response) {
+                $('#submitReportModal').modal('hide');
+                if (response.isSuccess) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Gửi thành công!',
+                        text: response.message || 'Cảm ơn bạn đã gửi báo cáo.',
+                    });
+                    // Không cần reload trang ở đây để tránh làm mất ngữ cảnh
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Thất bại',
+                        text: response.message || 'Gửi báo cáo thất bại.'
+                    });
+                }
+            },
+            error: function () {
+                $('#submitReportModal').modal('hide');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể kết nối đến máy chủ.'
+                });
+            }
+        });
+    });
+    </script>
 }

@@ -158,13 +158,13 @@ namespace GreenCorner.MVC.Controllers
         }
 
 
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> DeleteTrashEvent(int trashReportId)
         {
             ResponseDTO response = await _trashEventService.DeleteTrashEvent(trashReportId);
             if (response != null && response.IsSuccess)
             {
-                TempData["success"] = "Sự kiện Thùng rác đã được xóa thành công!";
+                TempData["success"] = "Sự kiện rác đã được xóa thành công!";
                 return RedirectToAction("ReportHistory", "User");
             }
             else

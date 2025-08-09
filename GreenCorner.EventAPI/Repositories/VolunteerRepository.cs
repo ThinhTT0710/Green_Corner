@@ -18,6 +18,11 @@ namespace GreenCorner.EventAPI.Repositories
         {
             return await _context.Volunteers.ToListAsync();
         }
+        public async Task<Volunteer?> GetVolunteerByEventAndUserAsync(int eventId, string userId)
+        {
+            return await _context.Volunteers
+                .FirstOrDefaultAsync(v => v.CleanEventId == eventId && v.UserId == userId);
+        }
 
         public async Task<bool> IsVolunteer(int eventId, string userId)
         {

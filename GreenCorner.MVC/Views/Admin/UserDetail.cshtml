@@ -24,7 +24,7 @@
                         @if (!Model.User.IsBan)
                         {
                             <a href="#" class="btn btn-primary mb-2">Hoạt động</a>
-                            <a class="btn btn-danger mb-2"
+                            <a class="btn btn-danger mb-2 block-btn"
                                asp-controller="Admin" asp-action="BlockUser" asp-route-userId="@Model.User.ID">
                                 Chặn
                             </a>
@@ -34,7 +34,7 @@
                             <a href="#" class="btn btn-danger mb-2">
                                 Bị khóa <i class="material-icons md-launch"></i>
                             </a>
-                            <a class="btn btn-primary mb-2"
+                            <a class="btn btn-primary mb-2 unblock-btn"
                                asp-controller="Admin" asp-action="UnblockUser" asp-route-userId="@Model.User.ID">
                                 Mở chặn
                             </a>
@@ -281,3 +281,52 @@
         </div>
     }
 </section>
+@section Scripts{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.block-btn').forEach(button => {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    const href = this.getAttribute('href');
+
+                    Swal.fire({
+                        title: 'Bạn chắc chắn không?',
+                        text: "Bạn có muốn chặn người dùng này không?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Chặn',
+                        cancelButtonText: 'Hủy bỏ'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = href;
+                        }
+                    });
+                });
+            });
+            document.querySelectorAll('.unblock-btn').forEach(button => {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    const href = this.getAttribute('href');
+
+                    Swal.fire({
+                        title: 'Bạn chắc chắn không?',
+                        text: "Bạn có muốn mở chặn cho người dùng này không?",
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3BB77E',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Mở chặn',
+                        cancelButtonText: 'Hủy bỏ'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = href;
+                        }
+                    });
+                });
+            });
+
+        });
+    </script>
+}

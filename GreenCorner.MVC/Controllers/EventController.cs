@@ -99,7 +99,6 @@ namespace GreenCorner.MVC.Controllers
 
                 if (!string.IsNullOrEmpty(userId))
                 {
-                    // Gọi các API kiểm tra trạng thái
                     var volunteerResponse = await _volunteerService.IsVolunteer(eventId, userId);
                     var teamLeaderResponse = await _volunteerService.IsTeamLeader(eventId, userId);
                     var roleResponse = await _volunteerService.GetApprovedRoleAsync(eventId, userId);
@@ -118,7 +117,6 @@ namespace GreenCorner.MVC.Controllers
                         hasApprovedTeamLeader = h;
                 }
 
-                // Gọi API lấy thông tin tham gia
                 var participationResponse = await _eventService.GetParticipationInfoAsync(eventId);
                 int current = 0, max = 0;
                 if (participationResponse?.IsSuccess == true && participationResponse.Result != null)
@@ -129,7 +127,6 @@ namespace GreenCorner.MVC.Controllers
                     max = info.Max;
                 }
 
-                // Gọi API kiểm tra đầy
                 var isFullResponse = await _eventService.CheckEventIsFullAsync(eventId);
                 bool isFull = false;
                 if (isFullResponse?.IsSuccess == true && isFullResponse.Result != null)
@@ -139,7 +136,15 @@ namespace GreenCorner.MVC.Controllers
                     isFull = info!.IsFull;
                 }
 
-                // Truyền ViewBag cho view
+                var assignments = new List<string>
+                {
+                    "Thu gom rác",
+                    "Phân loại rác",
+                    "Hướng dẫn và điều phối",
+                    "Hậu cần",
+                    "Truyền thông"
+                };
+                ViewBag.Assignments = assignments;
                 ViewBag.IsVolunteer = isVolunteer;
                 ViewBag.IsTeamLeader = isTeamLeader;
                 ViewBag.ApprovedRole = approvedRole;
@@ -149,6 +154,14 @@ namespace GreenCorner.MVC.Controllers
                 ViewBag.ParticipantMax = max;
                 ViewBag.IsFull = isFull;
 
+                if (!string.IsNullOrEmpty(userId) && (isVolunteer || isTeamLeader))
+                {
+                    var registrationDetailsResponse = await _volunteerService.GetVolunteerDetailsAsync(eventId, userId);
+                    if (registrationDetailsResponse?.IsSuccess == true && registrationDetailsResponse.Result != null)
+                    {
+                        ViewBag.CurrentRegistration = JsonConvert.DeserializeObject<VolunteerDTO>(registrationDetailsResponse.Result.ToString());
+                    }
+                }
 
                 return View(eventDTO);
             }
@@ -157,37 +170,45 @@ namespace GreenCorner.MVC.Controllers
             return NotFound();
         }
 
-        public async Task<IActionResult> RateEvent(int eventId)
-        {
-            ViewBag.EventId = eventId;
-            return View();
-        }
-
         [HttpPost]
-        public async Task<IActionResult> RateEvent(EventReviewDTO eventReviewDTO)
+        public async Task<IActionResult> RateEvent([FromForm] EventReviewDTO eventReviewDTO)
         {
             if (!User.Identity.IsAuthenticated)
             {
-                TempData["loginError"] = "Bạn cần đăng nhập để xem hồ sơ của bạn.";
-                return RedirectToAction("Login", "Auth");
+                return Json(new { isSuccess = false, message = "Bạn cần đăng nhập để đánh giá." });
             }
-            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
+
+            var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
             eventReviewDTO.UserId = userId;
             eventReviewDTO.CreatedAt = DateTime.Now;
+
+            if (eventReviewDTO.Rating == null || eventReviewDTO.Rating < 1 || eventReviewDTO.Rating > 5)
+            {
+                ModelState.AddModelError("Rating", "Vui lòng chọn từ 1 đến 5 sao.");
+            }
+
+
             if (ModelState.IsValid)
             {
                 ResponseDTO response = await _eventService.RateEvent(eventReviewDTO);
                 if (response != null && response.IsSuccess)
                 {
-                    TempData["success"] = "Đánh giá sự kiện thành công!";
-                    return RedirectToAction("ViewParticipatedActivities", "User");
+                    return Json(new { isSuccess = true });
                 }
                 else
                 {
-                    TempData["error"] = response?.Message;
+                    return Json(new { isSuccess = false, message = response?.Message ?? "Không thể lưu đánh giá." });
                 }
             }
-            return View(eventReviewDTO);
+
+            var errors = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value.Errors.First().ErrorMessage
+                );
+
+            return Json(new { isSuccess = false, errors = errors });
         }
         public async Task<IActionResult> EventReviewHistory()
         {
@@ -280,31 +301,38 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> LeaderReview(LeaderReviewDTO leaderReviewDTO)
+        public async Task<IActionResult> LeaderReview([FromForm] LeaderReviewDTO leaderReviewDTO)
         {
             if (!User.Identity.IsAuthenticated)
             {
-                TempData["loginError"] = "Bạn cần đăng nhập để xem hồ sơ của bạn.";
-                return RedirectToAction("Login", "Auth");
+                return Json(new { isSuccess = false, message = "Bạn cần đăng nhập để đánh giá." });
             }
 
-            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
-            leaderReviewDTO.CreatedAt = DateTime.Now;
+            var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
             leaderReviewDTO.ReviewerId = userId;
+            leaderReviewDTO.CreatedAt = DateTime.Now;
+
             if (ModelState.IsValid)
             {
                 ResponseDTO response = await _eventService.LeaderReview(leaderReviewDTO);
                 if (response != null && response.IsSuccess)
                 {
-                    TempData["success"] = "Đánh giá đội trưởng thành công!";
-                    return RedirectToAction("ViewParticipatedActivities", "User");
+                    return Json(new { isSuccess = true });
                 }
                 else
                 {
-                    TempData["error"] = response?.Message;
+                    return Json(new { isSuccess = false, message = response?.Message ?? "Không thể lưu đánh giá." });
                 }
             }
-            return View(leaderReviewDTO);
+
+            var errors = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value.Errors.First().ErrorMessage
+                );
+
+            return Json(new { isSuccess = false, errors = errors });
         }
         public async Task<IActionResult> LeaderReviewHistory()
         {
@@ -457,7 +485,6 @@ namespace GreenCorner.MVC.Controllers
 		}
 
 
-		//Dangky Volunteer
 		[HttpGet]
         public IActionResult RegisterVolunteer(int eventId)
         {
@@ -475,6 +502,45 @@ namespace GreenCorner.MVC.Controllers
             };
 
             return View(dto);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ProcessRegistration([FromForm] VolunteerDTO dto)
+        {
+            var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { isSuccess = false, message = "Bạn cần đăng nhập để thực hiện chức năng này." });
+            }
+
+            dto.UserId = userId;
+            ModelState.Remove(nameof(dto.UserId));
+
+            if (!ModelState.IsValid)
+            {
+                var error = ModelState.Values.SelectMany(v => v.Errors).FirstOrDefault();
+                return Json(new { isSuccess = false, message = error?.ErrorMessage ?? "Dữ liệu gửi lên không hợp lệ." });
+            }
+
+            ResponseDTO response;
+
+            if (dto.VolunteerId > 0)
+            {
+                response = await _volunteerService.UpdateRegister(dto);
+            }
+            else
+            {
+                dto.Status = "Pending";
+                dto.CreatedAt = DateTime.Now;
+                response = await _volunteerService.RegisterVolunteer(dto);
+            }
+
+            if (response != null && response.IsSuccess)
+            {
+                return Json(new { isSuccess = true, message = response.Message });
+            }
+
+            return Json(new { isSuccess = false, message = response?.Message ?? "Thao tác thất bại." });
         }
         [HttpPost]
         public async Task<IActionResult> RegisterVolunteer(VolunteerDTO dto)
@@ -497,7 +563,6 @@ namespace GreenCorner.MVC.Controllers
             return RedirectToAction("GetEventById", "Event", new { eventId = dto.CleanEventId });
         }
 
-        //Dangky TeamLeader
         [HttpGet]
         public IActionResult RegisterTeamLeader(int eventId)
         {

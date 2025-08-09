@@ -113,22 +113,25 @@
                                     <td>
                                         @if (item.Event.Status == "Close")
                                         {
-                                            <span class="badge bg-success">
-                                                <a asp-controller="Event" asp-action="RateEvent" asp-route-eventId="@item.Event.CleanEventId" class="text-white text-decoration-none">
-                                                    Đánh giá sự kiện
-                                                </a>
-                                            </span>
+                                           <button type="button"
+                                                    class="btn btn-success btn-sm btn-rate-event"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#rateEventModal"
+                                                    data-event-id="@item.Event.CleanEventId">
+                                                Đánh giá sự kiện
+                                            </button>
                                             @if (item.Volunteer.ApplicationType != "TeamLeader" && item.Volunteer.Status == "Approved")
                                             {
-                                                <span class="badge bg-success">
-                                                    <a asp-controller="Event" asp-action="LeaderReview"
-                                                       asp-route-eventId="@item.Event.CleanEventId"
-                                                       asp-route-userId="@item.TeamLeaderId"
-                                                       class="text-white text-decoration-none">
-                                                        Đánh giá đội trưởng
-                                                    </a>
-                                                </span>
+                                               <button type="button"
+                                                    class="btn btn-info btn-sm btn-review-leader"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#leaderReviewModal"
+                                                    data-event-id="@item.Event.CleanEventId"
+                                                    data-leader-id="@item.TeamLeaderId">
+                                                Đánh giá đội trưởng
+                                            </button>
                                             }
+
                                         }
                                         else
                                         {
@@ -188,7 +191,91 @@
         </div>
     </div>
 </section>
+<div class="modal fade" id="rateEventModal" tabindex="-1" aria-labelledby="rateEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="rateEventForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rateEventModalLabel">Đánh giá sự kiện</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="rateEventId" name="CleanEventId" />
 
+                    <div class="mb-3">
+                        <label class="form-label">Xếp hạng của bạn:</label>
+                        <div>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <input required type="radio" asp-for="@(new EventReviewDTO().Rating)" id="event-star-@i" name="Rating" value="@i" style="display: none;" />
+
+                                <label for="event-star-@i" class="star-label"
+                                       style="font-size: 28px; color: gray; cursor: pointer;"
+                                       onmouseover="highlightStars(@i, '#rateEventModal', 'event')"
+                                       onmouseout="resetStars('#rateEventModal', 'event')"
+                                       onclick="selectStar(@i, '#rateEventModal', 'event')">&#9733;</label>
+                            }
+                        </div>
+                        <div id="rating-error" class="text-danger"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="rateComment" class="form-label">Nội dung đánh giá:</label>
+                        <textarea class="form-control" name="Comment" id="rateComment" rows="4" placeholder="Chia sẻ cảm nhận của bạn về sự kiện..."></textarea>
+                        <div id="comment-error" class="text-danger"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 10px;">Hủy</button>
+                    <button type="submit" class="btn btn-primary" style=" font-weight: 700; font-size: 14px; padding: 12px 30px;">Gửi đánh giá</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="leaderReviewModal" tabindex="-1" aria-labelledby="leaderReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="leaderReviewForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="leaderReviewModalLabel">Đánh giá Đội trưởng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="leaderReviewEventId" name="CleanEventId" />
+                    <input type="hidden" id="leaderReviewLeaderId" name="LeaderId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Xếp hạng đội trưởng:</label>
+                        <div>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <input required type="radio" asp-for="@(new LeaderReviewDTO().Rating)" id="leader-star-@i" name="Rating" value="@i" style="display: none;" />
+
+                                <label for="leader-star-@i" class="star-label"
+                                       style="font-size: 28px; color: gray; cursor: pointer;"
+                                       onmouseover="highlightStars(@i, '#leaderReviewModal', 'leader')"
+                                       onmouseout="resetStars('#leaderReviewModal', 'leader')"
+                                       onclick="selectStar(@i, '#leaderReviewModal', 'leader')">&#9733;</label>
+                            }
+                        </div>
+                        <div id="leader-rating-error" class="text-danger"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="leaderReviewComment" class="form-label">Nội dung đánh giá:</label>
+                        <textarea class="form-control" name="Comment" id="leaderReviewComment" rows="4" placeholder="Chia sẻ cảm nhận của bạn về đội trưởng..."></textarea>
+                        <div id="leader-comment-error" class="text-danger"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -257,6 +344,112 @@
             itemsPerPageSelect.addEventListener("change", filterAndPaginate);
 
             filterAndPaginate();
+        });
+    </script>
+    <script>
+        let selectedRatings = {
+            '#rateEventModal': 0,
+            '#leaderReviewModal': 0
+        };
+
+        function highlightStars(rating, modalId, prefix) {
+            for (let i = 1; i <= 5; i++) {
+                const forId = `${prefix}-star-${i}`;
+                const label = document.querySelector(`${modalId} label[for='${forId}']`);
+                if (label) {
+                    label.style.color = i <= rating ? 'orange' : 'gray';
+                }
+            }
+        }
+
+        function resetStars(modalId, prefix) {
+            const currentRating = selectedRatings[modalId];
+            for (let i = 1; i <= 5; i++) {
+                const forId = `${prefix}-star-${i}`;
+                const label = document.querySelector(`${modalId} label[for='${forId}']`);
+                if (label) {
+                    label.style.color = i <= currentRating ? 'orange' : 'gray';
+                }
+            }
+        }
+
+        function selectStar(rating, modalId, prefix) {
+            selectedRatings[modalId] = rating;
+            if (rating > 0) {
+                const inputId = `${prefix}-star-${rating}`;
+                document.querySelector(`${modalId} input[id='${inputId}']`).checked = true;
+            }
+            resetStars(modalId, prefix);
+        }
+
+        $(document).ready(function () {
+            $('.btn-rate-event').click(function () {
+                var eventId = $(this).data('event-id');
+                $('#rateEventId').val(eventId);
+                $('#rateEventForm')[0].reset();
+                selectStar(0, '#rateEventModal', 'event'); 
+                $('#rateEventForm .text-danger').text('');
+            });
+
+            $('#rateEventForm').submit(function (e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+                $('#rating-error, #comment-error').text('');
+                $.ajax({
+                    url: '@Url.Action("RateEvent", "Event")',
+                    method: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        if (response.isSuccess) {
+                            $('#rateEventModal').modal('hide');
+                            Swal.fire({ icon: 'success', title: 'Thành công!', text: 'Cảm ơn bạn đã gửi đánh giá.' }).then(() => { location.reload(); });
+                        } else {
+                            if (response.errors) {
+                                if (response.errors.Rating) { $('#rating-error').text(response.errors.Rating); }
+                                if (response.errors.Comment) { $('#comment-error').text(response.errors.Comment); }
+                            } else {
+                                Swal.fire({ icon: 'error', title: 'Thất bại', text: response.message || 'Đã có lỗi xảy ra.' });
+                            }
+                        }
+                    },
+                    error: function () { Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Không thể gửi đánh giá. Vui lòng thử lại.' }); }
+                });
+            });
+
+            $('.btn-review-leader').click(function () {
+                var eventId = $(this).data('event-id');
+                var leaderId = $(this).data('leader-id');
+                $('#leaderReviewEventId').val(eventId);
+                $('#leaderReviewLeaderId').val(leaderId);
+                $('#leaderReviewForm')[0].reset();
+                selectStar(0, '#leaderReviewModal', 'leader');
+                $('#leaderReviewForm .text-danger').text('');
+            });
+
+            $('#leaderReviewForm').submit(function (e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+                $('#leader-rating-error, #leader-comment-error').text('');
+                $.ajax({
+                    url: '@Url.Action("LeaderReview", "Event")',
+                    method: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        if (response.isSuccess) {
+                            $('#leaderReviewModal').modal('hide');
+                            Swal.fire({ icon: 'success', title: 'Thành công!', text: 'Cảm ơn bạn đã đánh giá đội trưởng.' }).then(() => { location.reload(); });
+                        } else {
+                            if (response.errors) {
+                                if (response.errors.Rating) { $('#leader-rating-error').text(response.errors.Rating); }
+                                if (response.errors.Comment) { $('#leader-comment-error').text(response.errors.Comment); }
+                            } else {
+                                Swal.fire({ icon: 'error', title: 'Thất bại', text: response.message || 'Đã có lỗi xảy ra.' });
+                            }
+                        }
+                    },
+                    error: function () { Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Không thể gửi đánh giá. Vui lòng thử lại.' }); }
+                });
+            });
         });
     </script>
 }

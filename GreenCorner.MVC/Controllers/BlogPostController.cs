@@ -9,7 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Reflection.Metadata;
 using System.Security.Claims;
 
-namespace GreenCorner.MVC.Controllers
+namespace GreenCorner.MVC.Controllersde
 {
     public class BlogPostController : Controller
     {
@@ -458,7 +458,7 @@ namespace GreenCorner.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateReport(BlogReportDTO reportDTO)
+        public async Task<IActionResult> CreateReport([FromForm] BlogReportDTO reportDTO)
         {
             var userId = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
             if (string.IsNullOrEmpty(userId))
@@ -467,21 +467,30 @@ namespace GreenCorner.MVC.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            reportDTO.UserId = userId;
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                ResponseDTO? response = await _blogReportService.CreateReportAsync(reportDTO);
-                if (response != null && response.IsSuccess)
-                {
-                    TempData["success"] = "Đã gửi báo cáo bài viết thành công!";
-                    return RedirectToAction("ViewBlogReports", "BlogPost", new { blogId = reportDTO.BlogId });
-                }
-                else
-                {
-                    TempData["error"] = response?.Message ?? "Không thể gửi báo cáo.";
-                }
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value.Errors.First().ErrorMessage
+                    );
+
+                return Json(new { isSuccess = false, errors });
             }
-            return View(reportDTO);
+
+            var response = await _blogReportService.CreateReportAsync(reportDTO);
+
+            if (response != null && response.IsSuccess)
+            {
+                return Json(new { isSuccess = true });
+            }
+
+            return Json(new
+            {
+                isSuccess = false,
+                message = response?.Message ?? "Có lỗi xảy ra khi gửi báo cáo."
+            });
         }
 
         [HttpGet]
@@ -507,21 +516,20 @@ namespace GreenCorner.MVC.Controllers
         {
             if (string.IsNullOrWhiteSpace(model.Reason))
             {
-                TempData["error"] = "Lý do báo cáo không được để trống.";
-                return RedirectToAction("ViewBlogReports", "BlogPost", new { blogId = model.BlogId });
+                return Json(new { isSuccess = false, errors = new { Reason = "Lý do báo cáo không được để trống." } });
             }
 
-            ResponseDTO? response = await _blogReportService.EditReportAsync(model.BlogReportId, model.Reason);
+            var response = await _blogReportService.EditReportAsync(model.BlogReportId, model.Reason);
             if (response != null && response.IsSuccess)
             {
-                TempData["success"] = "Cập nhật lý do báo cáo thành công!";
-                return RedirectToAction("ViewBlogReports", "BlogPost", new { blogId = model.BlogId });
+                return Json(new { isSuccess = true });
             }
-            else
+
+            return Json(new
             {
-                TempData["error"] = response?.Message ?? "Không thể cập nhật lý do.";
-                return RedirectToAction("ViewBlogReports", "BlogPost", new { blogId = model.BlogId });
-            }
+                isSuccess = false,
+                message = response?.Message ?? "Không thể cập nhật lý do."
+            });
         }
 
         public async Task<IActionResult> ViewBlogReports(int blogId)
@@ -641,7 +649,6 @@ namespace GreenCorner.MVC.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        //ReportLeader
         [HttpGet]
         public IActionResult SubmitReport(string? title)
         {

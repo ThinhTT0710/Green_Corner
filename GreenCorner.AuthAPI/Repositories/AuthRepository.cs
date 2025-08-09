@@ -234,7 +234,7 @@ namespace GreenCorner.AuthAPI.Repositories
 			{
 				DateTime lockUntil = user.LockoutEnd.Value.DateTime;
 				var remaining = lockUntil - DateTime.Now;
-				throw new Exception($"Your account is locked for {remaining.Days} days {remaining.Hours} hours {remaining.Minutes} minutes");
+				throw new Exception($"Tài khoản của bạn đã bị khóa trong {remaining.Days} ngày {remaining.Hours} giờ {remaining.Minutes} phút");
 			}
 		}
 

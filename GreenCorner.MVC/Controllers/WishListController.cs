@@ -86,7 +86,6 @@ namespace GreenCorner.MVC.Controllers
             }
         }
 
-
         [HttpPost]
         public async Task<IActionResult> Remove(int productId)
         {
@@ -114,6 +113,7 @@ namespace GreenCorner.MVC.Controllers
                 return Json(new { isSuccess = false, message = $"Lỗi hệ thống: {ex.Message}" });
             }
         }
+
 
         [HttpGet]
         public async Task<IActionResult> RemoveItem(int wishListId)
