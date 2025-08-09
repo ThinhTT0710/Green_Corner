@@ -1,57 +1,245 @@
-﻿@model IEnumerable<LeaderReviewDTO>
+﻿@model IEnumerable<LeaderReviewHistoryViewModel>
 @{
-    ViewData["Title"] = "Đánh giá sự kiện";
+    ViewData["Title"] = "Lịch sử đánh giá đội trưởng";
 }
-<div class="card shadow border-0 mt-4">
-    <div class="row">
-        <h2 class="content-title card-title">Leader Reviews</h2>
+<div class="card shadow border-0 mt-4 mx-2">
+    <div class="card-header text-white" style="background-color: #3BB77E;">
+        <h4 class="mb-0 text-white">Lịch sử đánh giá đội trưởng</h4>
     </div>
     <div class="card-body p-4">
         <div class="table-responsive">
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>Mã sự kiện</th>
-                        <th>Mã đội trưởng</th>
+                        <th>Sự kiện</th>
+                        <th>Đội trưởng</th>
                         <th>Đánh giá</th>
                         <th>Nội dung</th>
                         <th>Ngày</th>
-                        <th class="text-end">Thao tác</th>
+                        <th>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>@item.CleanEventId</td>
-                            <td>@item.LeaderId</td>
                             <td>
-                                <ul class="rating-stars">
-                                    @{
-                                        @for (int i = 1; i <= 5; i++)
-                                        {
-                                            <span style="font-size: 24px; color:@(i <= item.Rating ? "orange" : "lightgray");">&#9733;</span>
-                                        }
-                                    }
-                                </ul>
+                                <strong>@item.Event?.Title</strong><br />
+                                <small>@item.Event?.StartDate?.ToString("dd/MM/yyyy")</small>
                             </td>
-                            <td>@item.Comment</td>
-                            <td>@item.CreatedAt</td>
-                            <td class="text-end d-flex justify-content-end gap-3">
-                                <div class="dropdown">
-                                    <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                    <div class="dropdown-menu">
-                                        <a class="dropdown-item" asp-action="EditLeaderReview" asp-route-leaderReviewId="@item.LeaderReviewId">Chỉnh sửa</a>
-                                        <a class="dropdown-item text-danger" asp-action="DeleteLeaderReview" asp-route-leaderReviewId="@item.LeaderReviewId">Xóa</a>
-                                    </div>
+                            <td>@item.Leader?.FullName</td>
+                            <td>
+                                <div class="rating-stars-display">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <span style="font-size: 24px; color:@(i <= item.LeaderReview.Rating ? "#ffc107" : "#e0e0e0");">&#9733;</span>
+                                    }
                                 </div>
-                                <!-- dropdown //end -->
+                            </td>
+                            <td>@item.LeaderReview.Comment</td>
+                            <td>@item.LeaderReview.CreatedAt?.ToString("dd/MM/yyyy")</td>
+                            <td class="text-nowrap">
+                                <button type="button" class="btn btn-primary btn-sm edit-leader-review-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editLeaderReviewModal"
+                                        data-review-id="@item.LeaderReview.LeaderReviewId"
+                                        data-event-title="@item.Event?.Title"
+                                        data-leader-name="@item.Leader?.FullName"
+                                        data-rating="@item.LeaderReview.Rating"
+                                        data-comment="@item.LeaderReview.Comment"
+                                        data-leader-id="@item.LeaderReview.LeaderId"
+                                        data-clean-event-id="@item.LeaderReview.CleanEventId"
+                                        data-reviewer-id="@item.LeaderReview.ReviewerId"
+                                        data-created-at="@item.LeaderReview.CreatedAt?.ToString("o")">
+                                    <i class="fi-rs-pencil"></i> Sửa
+                                </button>
+
+                                <button type="button" class="btn btn-outline-danger btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteLeaderReviewModal-@item.LeaderReview.LeaderReviewId">
+                                    <i class="fi-rs-trash"></i> Xóa
+                                </button>
                             </td>
                         </tr>
+                        <div class="modal fade" id="deleteLeaderReviewModal-@item.LeaderReview.LeaderReviewId" tabindex="-1" aria-labelledby="deleteModalLabel-@item.LeaderReview.LeaderReviewId" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <form asp-action="DeleteLeaderReview" asp-controller="Event" method="post">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel-@item.LeaderReview.LeaderReviewId">Xác nhận xóa Đánh giá</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Bạn có chắc chắn muốn <strong>xóa</strong> đánh giá cho đội trưởng <strong>@item.Leader?.FullName</strong> tại sự kiện <strong>@item.Event?.Title</strong> không?
+                                            <p class="text-danger mt-2">Hành động này không thể hoàn tác.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <input type="hidden" name="leaderReviewId" value="@item.LeaderReview.LeaderReviewId" />
+                                            <button type="button" class="btn btn-secondary" style="border-radius: 10px;" data-bs-dismiss="modal">Hủy</button>
+                                            <button type="submit" class="btn btn-danger" style="font-weight: 700; font-size: 14px; padding: 12px 30px;">Xác nhận xóa</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     }
                 </tbody>
             </table>
         </div>
-
     </div>
 </div>
+
+<div class="modal fade" id="editLeaderReviewModal" tabindex="-1" aria-labelledby="editLeaderReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content shadow-sm">
+            <form id="editLeaderReviewForm">
+                <div class="modal-header text-white" style="background-color: #3BB77E;">
+                    <h5 class="modal-title" id="editLeaderReviewModalLabel" style="color: white;">Cập nhật đánh giá Đội trưởng</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" id="edit-leaderReviewId" name="LeaderReviewId" />
+                    <input type="hidden" id="edit-leaderId" name="LeaderId" />
+                    <input type="hidden" id="edit-cleanEventId" name="CleanEventId" />
+                    <input type="hidden" id="edit-reviewerId" name="ReviewerId" />
+                    <input type="hidden" id="edit-createdAt" name="CreatedAt" />
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Sự kiện</label>
+                            <div id="display-event-title" class="form-control bg-light"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Đội trưởng</label>
+                            <div id="display-leader-name" class="form-control bg-light"></div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Xếp hạng của bạn</label>
+                            <div class="rating-stars-edit">
+                                <input type="radio" name="Rating" id="leader-rate-5" value="5"><label for="leader-rate-5">★</label>
+                                <input type="radio" name="Rating" id="leader-rate-4" value="4"><label for="leader-rate-4">★</label>
+                                <input type="radio" name="Rating" id="leader-rate-3" value="3"><label for="leader-rate-3">★</label>
+                                <input type="radio" name="Rating" id="leader-rate-2" value="2"><label for="leader-rate-2">★</label>
+                                <input type="radio" name="Rating" id="leader-rate-1" value="1"><label for="leader-rate-1">★</label>
+                            </div>
+                            <div id="edit-rating-error" class="text-danger mt-1"></div>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="edit-leader-comment" class="form-label fw-bold">Bình luận của bạn</label>
+                            <textarea class="form-control" id="edit-leader-comment" name="Comment" rows="5" required placeholder="Chia sẻ nhận xét của bạn về đội trưởng..."></textarea>
+                            <div id="edit-comment-error" class="text-danger mt-1"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 10px;">Hủy</button>
+                    <button type="submit" class="btn btn-primary" style=" font-weight: 700; font-size: 14px; padding: 12px 30px;">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rating-stars-edit {
+        display: inline-block;
+        direction: rtl;
+    }
+
+        .rating-stars-edit input[type="radio"] {
+            display: none;
+        }
+
+        .rating-stars-edit label {
+            font-size: 2.5rem;
+            color: #e0e0e0;
+            cursor: pointer;
+            padding: 0 2px;
+            transition: color 0.2s;
+        }
+
+            .rating-stars-edit input[type="radio"]:checked ~ label,
+            .rating-stars-edit label:hover,
+            .rating-stars-edit label:hover ~ label {
+                color: #ffc107;
+            }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+
+            $('.edit-leader-review-btn').on('click', function () {
+                var button = $(this);
+                var modal = $('#editLeaderReviewModal');
+
+                modal.find('#edit-leaderReviewId').val(button.data('review-id'));
+                modal.find('#edit-leaderId').val(button.data('leader-id'));
+                modal.find('#edit-cleanEventId').val(button.data('clean-event-id'));
+                modal.find('#edit-reviewerId').val(button.data('reviewer-id'));
+                modal.find('#edit-createdAt').val(button.data('created-at'));
+                modal.find('#edit-leader-comment').val(button.data('comment'));
+
+                modal.find('#display-event-title').text(button.data('event-title'));
+                modal.find('#display-leader-name').text(button.data('leader-name'));
+
+                var rating = button.data('rating');
+                if (rating > 0) {
+                    modal.find('input[name="Rating"][value="' + rating + '"]').prop('checked', true);
+                } else {
+                     modal.find('input[name="Rating"]').prop('checked', false);
+                }
+
+                modal.find('.text-danger').text('');
+            });
+
+            $('#editLeaderReviewForm').submit(function (e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+
+                $.ajax({
+                    url: '@Url.Action("UpdateLeaderReview", "Event")',
+                    method: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        if (response.isSuccess) {
+                            $('#editLeaderReviewModal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công!',
+                                text: response.message,
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                             if (response.errors) {
+                                $('#edit-rating-error').text(response.errors.Rating || '');
+                                $('#edit-comment-error').text(response.errors.Comment || '');
+                            } else {
+                                $('#editLeaderReviewModal').modal('hide');
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Thất bại',
+                                    text: response.message
+                                });
+                            }
+                        }
+                    },
+                    error: function () {
+                        $('#editLeaderReviewModal').modal('hide');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: 'Không thể gửi yêu cầu. Vui lòng thử lại.'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}
