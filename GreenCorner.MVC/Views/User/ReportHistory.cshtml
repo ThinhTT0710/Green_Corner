@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<TrashEventDTO>
 @{
 	ViewData["Title"] = "Lịch sử báo cáo";
+	int index = 1;
 }
 <div class="page-header breadcrumb-wrap">
 	<div class="container">
@@ -133,7 +134,7 @@
 														@foreach (var item in Model)
 														{
 															<tr>
-																<td>@item.TrashReportId</td>
+																<td>@index</td>
 																<td>@item.Address</td>
 																<td>@item.Description</td>
 																<td>@item.Status</td>
@@ -151,6 +152,7 @@
 																		   data-bs-target="#deleteModal-@item.TrashReportId">
 																			Xóa
 																		</a>
+																		index++;
 																	}
 																</td>
 															</tr>
