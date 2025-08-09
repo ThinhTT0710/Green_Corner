@@ -6,5 +6,6 @@ namespace GreenCorner.MVC.ViewModels
     {
         public EventDTO Event { get; set; }
         public ParticipationInfoResponse Participation { get; set; }
+        public string? TeamLeaderId { get; set; }
     }
 }

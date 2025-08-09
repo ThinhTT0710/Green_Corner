@@ -94,5 +94,23 @@ namespace GreenCorner.EventAPI.Controllers
                 return _responseDTO;
             }
         }
+
+        [HttpGet]
+        public async Task<ResponseDTO> GetReviewsByLeaderInEvent([FromQuery] string leaderId, [FromQuery] int eventId)
+        {
+            try
+            {
+                var reviews = await _leaderReviewService.GetReviewsByLeaderInEvent(leaderId, eventId);
+                _responseDTO.Result = reviews;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = "Không thể lấy đánh giá của đội trưởng trong sự kiện!";
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
+
     }
 }

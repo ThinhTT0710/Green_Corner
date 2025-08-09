@@ -93,5 +93,22 @@ namespace GreenCorner.EventAPI.Controllers
                 return _responseDTO;
             }
         }
+
+        [HttpGet("get-reviews-by-event/{eventId}")]
+        public async Task<ResponseDTO> GetEventReviewsByEventId(int eventId)
+        {
+            try
+            {
+                var reviews = await _eventReviewService.GetEventReviewsByEventIdAsync(eventId);
+                _responseDTO.Result = reviews;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = "Lấy danh sách đánh giá của sự kiện thất bại!";
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
+        }
     }
 }

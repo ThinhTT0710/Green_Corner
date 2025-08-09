@@ -1,0 +1,176 @@
+﻿@model IEnumerable<GreenCorner.MVC.ViewModels.LeaderReviewWithUserViewModel>
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Đánh giá đội trưởng";
+}
+
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Đánh giá đội trưởng";
+}
+
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title mb-4">@ViewData["Title"]</h2>
+            <p>Danh sách đánh giá của đội trưởng trong sự kiện.</p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" id="searchInput" placeholder="Tìm theo người đánh giá hoặc bình luận..." class="form-control" />
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select" id="ratingFilter">
+                        <option value="">Tất cả điểm</option>
+                        <option value="5">5 sao</option>
+                        <option value="4">4 sao</option>
+                        <option value="3">3 sao</option>
+                        <option value="2">2 sao</option>
+                        <option value="1">1 sao</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select" id="itemsPerPage">
+                        <option value="10">Hiển thị 10</option>
+                        <option value="20">Hiển thị 20</option>
+                        <option value="50">Hiển thị 50</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="reviewTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Người đánh giá</th>
+                            <th>Đội trưởng</th>
+                            <th>Điểm</th>
+                            <th>Bình luận</th>
+                            <th>Ngày tạo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reviewBody">
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center">Không có đánh giá nào</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            int index = 1;
+                            foreach (var item in Model)
+                            {
+                                var reviewerName = item.Reviewer?.FullName ?? item.Review.ReviewerId;
+                                var leaderName = item.Leader?.FullName ?? item.Review.LeaderId;
+                                <tr class="review-row"
+                                    data-reviewer="@reviewerName?.ToLower()"
+                                    data-comment="@item.Review.Comment?.ToLower()"
+                                    data-rating="@item.Review.Rating">
+                                    <td>@index</td>
+                                    <td>@reviewerName</td>
+                                    <td>@leaderName</td>
+                                    <td>@item.Review.Rating</td>
+                                    <td>@item.Review.Comment</td>
+                                    <td>@item.Review.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                                </tr>
+                                index++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination-area mt-3">
+                <nav>
+                    <ul class="pagination justify-content-start" id="pagination"></ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const ratingFilter = document.getElementById("ratingFilter");
+            const itemsPerPage = document.getElementById("itemsPerPage");
+            const reviewBody = document.getElementById("reviewBody");
+            const pagination = document.getElementById("pagination");
+
+            const allRows = Array.from(document.querySelectorAll(".review-row"));
+            let currentPage = 1;
+
+            function filterRows() {
+                const keyword = searchInput.value.toLowerCase();
+                const selectedRating = ratingFilter.value;
+
+                return allRows.filter(row => {
+                    const reviewer = row.dataset.reviewer || "";
+                    const comment = row.dataset.comment || "";
+                    const rating = row.dataset.rating || "";
+
+                    const matchesText = reviewer.includes(keyword) || comment.includes(keyword);
+                    const matchesRating = selectedRating === "" || rating === selectedRating;
+
+                    return matchesText && matchesRating;
+                });
+            }
+
+            function renderTable() {
+                const perPage = parseInt(itemsPerPage.value);
+                const filtered = filterRows();
+                const totalPages = Math.ceil(filtered.length / perPage);
+
+                const start = (currentPage - 1) * perPage;
+                const end = start + perPage;
+
+                reviewBody.innerHTML = "";
+                filtered.slice(start, end).forEach(row => reviewBody.appendChild(row));
+
+                renderPagination(totalPages);
+            }
+
+            function renderPagination(totalPages) {
+                pagination.innerHTML = "";
+
+                if (totalPages <= 1) return;
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const li = document.createElement("li");
+                    li.className = `page-item ${i === currentPage ? "active" : ""}`;
+                    li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                    li.addEventListener("click", e => {
+                        e.preventDefault();
+                        currentPage = i;
+                        renderTable();
+                    });
+                    pagination.appendChild(li);
+                }
+            }
+
+            [searchInput, ratingFilter].forEach(el => {
+                el.addEventListener("input", () => {
+                    currentPage = 1;
+                    renderTable();
+                });
+            });
+
+            itemsPerPage.addEventListener("change", () => {
+                currentPage = 1;
+                renderTable();
+            });
+
+            renderTable();
+        });
+    </script>
+}

@@ -91,7 +91,7 @@ namespace GreenCorner.MVC.Controllers
             var check = await _pointTransactionService.HasReceivedReward(userId, eventId);
             if (check != null && check.IsSuccess && (bool)(check.Result ?? false))
             {
-                TempData["error"] = "Bạn đã nhận điểm cho sự kiện này rồi.";
+                TempData["error"] = "Tình nguyện viên đã nhận điểm cho sự kiện này rồi.";
                 return RedirectToAction("ViewEventVolunteerList", "Event", new { eventId = eventId });
 
             }

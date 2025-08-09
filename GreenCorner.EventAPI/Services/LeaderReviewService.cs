@@ -45,5 +45,12 @@ namespace GreenCorner.EventAPI.Services
             var leaderReviews = await _leaderReviewRepository.ViewLeaderReviewHistory(reviewerID);
             return _mapper.Map<List<LeaderReviewDTO>>(leaderReviews);
         }
+
+        public async Task<IEnumerable<LeaderReviewDTO>> GetReviewsByLeaderInEvent(string leaderId, int eventId)
+        {
+            var leaderReviews = await _leaderReviewRepository.GetReviewsByLeaderInEvent(leaderId, eventId);
+            return _mapper.Map<IEnumerable<LeaderReviewDTO>>(leaderReviews);
+        }
+
     }
 }
