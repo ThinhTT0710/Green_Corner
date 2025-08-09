@@ -10,5 +10,6 @@ namespace GreenCorner.EventAPI.Services.Interface
         Task EditEventReview(EventReviewDTO eventReview);
         Task DeleteEventReview(int id);
         Task<IEnumerable<EventReviewDTO>> ViewEventReviewHistory(String userID);
+        Task<IEnumerable<EventReviewDTO>> GetEventReviewsByEventIdAsync(int eventId);
     }
 }

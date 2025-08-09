@@ -57,7 +57,7 @@
                             <th>Ngày kết thúc</th>
                             <th>Trạng thái sự kiện</th>
                             <th>Đánh giá sự kiện</th>
-                            <th>Loại đơn</th>
+                            <th>Vai trò</th>
                             <th>Phân công</th>
                             <th>Vật dụng mang theo</th>
                             <th>Trạng thái đăng ký</th>
@@ -113,14 +113,16 @@
                                     <td>
                                         @if (item.Event.Status == "Close")
                                         {
-                                            <button type="button"
+                                           <button type="button"
                                                     class="btn btn-success btn-sm btn-rate-event"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#rateEventModal"
                                                     data-event-id="@item.Event.CleanEventId">
                                                 Đánh giá sự kiện
                                             </button>
-                                            <button type="button"
+                                            @if (item.Volunteer.ApplicationType != "TeamLeader" && item.Volunteer.Status == "Approved")
+                                            {
+                                               <button type="button"
                                                     class="btn btn-info btn-sm btn-review-leader"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#leaderReviewModal"
@@ -128,6 +130,8 @@
                                                     data-leader-id="@item.TeamLeaderId">
                                                 Đánh giá đội trưởng
                                             </button>
+                                            }
+
                                         }
                                         else
                                         {
@@ -136,7 +140,18 @@
                                             </span>
                                         }
                                     </td>
-                                    <td>@item.Volunteer.ApplicationType</td>
+                                    <td>
+                                        @{
+                                            var applicationType = item.Volunteer.ApplicationType;
+                                            var applicationText = applicationType switch
+                                            {
+                                                "Volunteer" => "Tình nguyện viên",
+                                                "TeamLeader" => "Đội trưởng",
+                                                _ => "Không xác định"
+                                            };
+                                        }
+                                        @applicationText
+                                    </td>
                                     <td>@item.Volunteer.Assignment</td>
                                     <td>@item.Volunteer.CarryItems</td>
                                     <td>
