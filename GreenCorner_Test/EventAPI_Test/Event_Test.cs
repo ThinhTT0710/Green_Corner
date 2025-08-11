@@ -59,6 +59,7 @@ namespace GreenCorner_Test.EventAPI_Test
             Assert.True(result.IsSuccess);
             Assert.Equal(eventDto, result.Result);
         }
+        
 
         [Fact]
         public async Task CreateCleanupEvent_ValidDto_ReturnsSuccess()
@@ -196,7 +197,56 @@ namespace GreenCorner_Test.EventAPI_Test
 
             Assert.True(result.IsSuccess);
         }
+        [Fact]
+        public async Task UpdateVolunteerStatusToParticipated_ValidId_ReturnsSuccess_2()
+        {
+            _mockService.Setup(x => x.UpdateVolunteerStatusToParticipated(33)).Returns(Task.CompletedTask);
 
+            var result = await _controller.UpdateVolunteerStatusToParticipated(33);
+
+            Assert.True(result.IsSuccess);
+        }
+        [Fact]
+        public async Task GetEventById_InValidId_ReturnsEvent_2()
+        {
+            var eventDto = new EventDTO { CleanEventId = 1 };
+            _mockService.Setup(x => x.GetByEventId(1)).ReturnsAsync(eventDto);
+
+            var result = await _controller.GetEventById(1);
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(eventDto, result.Result);
+        }
+        [Fact]
+        public async Task GetParticipationInfo_ValidId()
+        {
+            _mockService.Setup(x => x.GetEventParticipationInfoAsync(10)).ReturnsAsync((25, 100));
+
+            var result = await _controller.GetParticipationInfo(10);
+
+            Assert.True(result.IsSuccess);
+
+            var json = JsonConvert.SerializeObject(result.Result);
+            var parsed = JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
+
+            Assert.Equal(25, parsed["Current"]);
+            Assert.Equal(100, parsed["Max"]);
+        }
+
+        [Fact]
+        public async Task IsEventFull_ReturnsValidNoti()
+        {
+            _mockService.Setup(x => x.IsEventFullAsync(11)).ReturnsAsync(true);
+
+            var result = await _controller.IsEventFull(11);
+
+            Assert.True(result.IsSuccess);
+
+            var json = JsonConvert.SerializeObject(result.Result);
+            var parsed = JsonConvert.DeserializeObject<Dictionary<string, bool>>(json);
+
+            Assert.True(parsed["IsFull"]);
+        }
 
 
     }

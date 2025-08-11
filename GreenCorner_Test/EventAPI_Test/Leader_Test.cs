@@ -19,32 +19,6 @@ namespace GreenCorner_Test.EventAPI_Test
         {
             _controller = new LeaderController(_mockService.Object);
         }
-    //    [Fact]
-    //    public async Task ViewVolunteerList_GivenValidEventId_ReturnsSuccessfulResponseWithVolunteerList()
-    //    {
-    //        // Arrange
-    //        int eventId = 1;
-    //        var expectedVolunteers = new List<VolunteerDTO>
-    //{
-    //    new VolunteerDTO { UserId = "user1" },
-    //    new VolunteerDTO { UserId = "user2" }
-    //};
-
-    //        _mockService.Setup(service => service.ViewVolunteerList(eventId))
-    //        .Returns(Task.FromResult(expectedVolunteers));
-
-    //        // Act
-    //        var response = await _controller.ViewVolunteerList(eventId);
-
-    //        // Assert
-    //        Assert.True(response.IsSuccess);
-    //        var actual = Assert.IsType<List<VolunteerDTO>>(response.Result);
-    //        Assert.Equal(expectedVolunteers.Count, actual.Count);
-    //        Assert.Equal(expectedVolunteers[0].UserId, actual[0].UserId);
-    //        Assert.Equal(expectedVolunteers[1].UserId, actual[1].UserId);
-    //    }
-
-
         [Fact]
         public async Task AttendanceCheck_ValidParams_ReturnsSuccess()
         {
@@ -85,6 +59,17 @@ namespace GreenCorner_Test.EventAPI_Test
             var result = await _controller.KickVolunteer("u1", 200);
 
             Assert.True(result.IsSuccess);
+        }
+        [Fact]
+        public async Task GetEventByLeader_ValidUser_ReturnsListOfEvents_2()
+        {
+            var mockEvents = new List<EventDTO> { new EventDTO { Title = "Clean Up" } };
+            _mockService.Setup(s => s.GetOpenEventsByTeamLeader("leader1")).ReturnsAsync(mockEvents);
+
+            var result = await _controller.GetEventByLeader("leader1");
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(mockEvents, result.Result);
         }
     }
 }

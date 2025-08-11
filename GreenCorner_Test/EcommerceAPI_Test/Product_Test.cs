@@ -83,17 +83,6 @@ namespace GreenCorner_Test.EcommerceAPI_Test
 			Assert.NotNull(result.Result);
 		}
 
-		/*[Fact]
-		public async Task CreateProduct_ShouldReturnSuccess()
-		{
-			var productDTO = _mockProducts.First();
-			_mockService.Setup(s => s.AddProduct(productDTO)).Returns(Task.CompletedTask);
-
-			var result = await _controller.CreateProduct(productDTO);
-
-			Assert.True(result.IsSuccess);
-		}*/
-
 		[Fact]
 		public async Task UpdateProduct_ShouldReturnSuccess()
 		{
@@ -114,5 +103,15 @@ namespace GreenCorner_Test.EcommerceAPI_Test
 
 			Assert.True(result.IsSuccess);
 		}
-	}
+        [Fact]
+        public async Task GetProductById_ShouldReturnProductValid()
+        {
+            _mockService.Setup(s => s.GetByProductId(1))
+                .ReturnsAsync(_mockProducts.Find(p => p.ProductId == 1));
+
+            var result = await _controller.GetProductById(1);
+
+            Assert.NotNull(result.Result);
+        }
+    }
 }

@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace GreenCorner_Test.Selenium_Test
 {
-    public class RewardTests : IClassFixture<SeleniumFixture>
+    public class SaleStaffTests : IClassFixture<SeleniumFixture>
     {
         private readonly SeleniumFixture _fixture;
 
-        public RewardTests(SeleniumFixture fixture)
+        public SaleStaffTests(SeleniumFixture fixture)
         {
             _fixture = fixture;
         }
@@ -39,22 +39,42 @@ namespace GreenCorner_Test.Selenium_Test
             _fixture.WaitForPageToLoad();
         }
         [Fact]
-        public void Index()
+        public void ProductList()
         {
             // Arrange
-            LoginUser("qgbeo711@gmail.com", "Nam@12345");
-            _fixture.NavigateToUrl("/Reward");
+            LoginUser("nampdce172019@fpt.edu.vn", "Nam@123");
+            _fixture.NavigateToUrl("/SaleStaff/ProductList");
+            _fixture.WaitForPageToLoad();
+            var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
+            header.Text.Should().Be("Danh sách sản phẩm");
+        }
+        [Fact]
+        public void ProductDetails()
+        {
+            // Arrange
+            LoginUser("nampdce172019@fpt.edu.vn", "Nam@123");
+            _fixture.NavigateToUrl("/SaleStaff/ProductDetails?productId=3");
+            _fixture.WaitForPageToLoad();
+            var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
+            header.Text.Should().Be("Chi tiết sản phẩm");
+        }
+        [Fact]
+        public void OrderDetails()
+        {
+            // Arrange
+            LoginUser("nampdce172019@fpt.edu.vn", "Nam@123");
+            _fixture.NavigateToUrl("/SaleStaff/OrderDetails?id=1");
             _fixture.WaitForPageToLoad();
         }
         [Fact]
-        public void ViewDetailVoucher()
+        public void ProductList_ReturnFullProduct()
         {
             // Arrange
-            LoginUser("qgbeo711@gmail.com", "Nam@12345");
-            _fixture.NavigateToUrl("/Reward/ViewDetailVoucher?voucherId=1");
+            LoginUser("nampdce172019@fpt.edu.vn", "Nam@123");
+            _fixture.NavigateToUrl("/SaleStaff/ProductList");
             _fixture.WaitForPageToLoad();
             var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
-            header.Text.Should().Be("Thông tin chi tiết");
+            header.Text.Should().Be("Danh sách sản phẩm");
         }
     }
 }

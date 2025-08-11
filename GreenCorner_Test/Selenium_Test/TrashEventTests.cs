@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace GreenCorner_Test.Selenium_Test
 {
-    public class RewardTests : IClassFixture<SeleniumFixture>
+    public class TrashEventTests : IClassFixture<SeleniumFixture>
     {
         private readonly SeleniumFixture _fixture;
 
-        public RewardTests(SeleniumFixture fixture)
+        public TrashEventTests(SeleniumFixture fixture)
         {
             _fixture = fixture;
         }
@@ -42,19 +42,45 @@ namespace GreenCorner_Test.Selenium_Test
         public void Index()
         {
             // Arrange
-            LoginUser("qgbeo711@gmail.com", "Nam@12345");
-            _fixture.NavigateToUrl("/Reward");
+            LoginUser("nampdce172019@fpt.edu.vn", "Nam@123");
+            _fixture.NavigateToUrl("/TrashEvent");
             _fixture.WaitForPageToLoad();
+            var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
+            header.Text.Should().Be("Danh sách báo cáo");
         }
         [Fact]
-        public void ViewDetailVoucher()
+        public void Detail()
+        {
+            // Arrange
+            LoginUser("nampdce172019@fpt.edu.vn", "Nam@123");
+            _fixture.NavigateToUrl("/TrashEvent/Detail?trashReportId=1");
+            _fixture.WaitForPageToLoad();
+            var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
+            header.Text.Contains("Chi tiết báo cáo");
+        }
+        [Fact]
+        public void ReportTrashEvent()
         {
             // Arrange
             LoginUser("qgbeo711@gmail.com", "Nam@12345");
-            _fixture.NavigateToUrl("/Reward/ViewDetailVoucher?voucherId=1");
+            _fixture.NavigateToUrl("/TrashEvent/ReportTrashEvent");
             _fixture.WaitForPageToLoad();
-            var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
-            header.Text.Should().Be("Thông tin chi tiết");
+        }
+        [Fact]
+        public void UpdateTrashEvent()
+        {
+            // Arrange
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
+            _fixture.NavigateToUrl("/TrashEvent/UpdateTrashEvent?trashReportId=1");
+            _fixture.WaitForPageToLoad();
+        }
+        [Fact]
+        public void DeleteTrashEvent()
+        {
+            // Arrange
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
+            _fixture.NavigateToUrl("/TrashEvent/DeleteTrashEvent?trashReportId=1");
+            _fixture.WaitForPageToLoad();
         }
     }
 }

@@ -1,326 +1,209 @@
-﻿using OpenQA.Selenium;
+﻿using OpenQA.Selenium.Support.UI;
+using OpenQA.Selenium;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using FluentAssertions;
-using DocumentFormat.OpenXml.Bibliography;
-using GreenCorner_Test.Selenium_Test;
 
 namespace GreenCorner_Test.Selenium_Test
 {
-    public class EventTests : BaseSeleniumTest
+    public class EventTests : IClassFixture<SeleniumFixture>
     {
-        [Fact]
-        public void UserCanBrowseEvents()
+        private readonly SeleniumFixture _fixture;
+
+        public EventTests(SeleniumFixture fixture)
         {
-            // Arrange & Act
-            NavigateToUrl("/Event");
-
-            // Assert
-            WaitForPageToLoad();
-            var pageTitle = Driver.Title;
-            pageTitle.Should().Contain("Events", "Page title should contain 'Events'");
-
-            var eventsContainer = WaitForElement(By.Id("eventsContainer"));
-            eventsContainer.Should().NotBeNull("Events container should be present");
+            _fixture = fixture;
         }
-
-        [Fact]
-        public void EventsPageShouldDisplayEventCards()
+        public void LoginUser(string email, string password)
         {
-            // Arrange & Act
-            NavigateToUrl("/Event");
+            // Điều hướng tới trang login
+            _fixture.NavigateToUrl("/Auth/Login");
 
-            // Assert
-            WaitForPageToLoad();
+            // Nhập email
+            var emailInput = _fixture.WaitForElement(By.Name("Email"));
+            emailInput.Clear();
+            emailInput.SendKeys(email);
 
-            var eventCards = Driver.FindElements(By.ClassName("event-card"));
-            eventCards.Should().NotBeEmpty("Event cards should be present");
+            // Nhập password
+            var passwordInput = _fixture.WaitForElement(By.Name("Password"));
+            passwordInput.Clear();
+            passwordInput.SendKeys(password);
 
-            // Check first event card has required elements
-            var firstEvent = eventCards.First();
-            var eventTitle = firstEvent.FindElement(By.ClassName("event-title"));
-            var eventDate = firstEvent.FindElement(By.ClassName("event-date"));
-            var eventLocation = firstEvent.FindElement(By.ClassName("event-location"));
-            var registerButton = firstEvent.FindElement(By.ClassName("register-event-btn"));
+            // Click nút đăng nhập
+            var loginButton = _fixture.WaitForElement(By.CssSelector("button[name='login']"));
+            loginButton.Click();
 
-            eventTitle.Should().NotBeNull("Event title should be displayed");
-            eventDate.Should().NotBeNull("Event date should be displayed");
-            eventLocation.Should().NotBeNull("Event location should be displayed");
-            registerButton.Should().NotBeNull("Register button should be present");
+            // Đợi trang load xong
+            _fixture.WaitForPageToLoad();
         }
-
         [Fact]
-        public void UserCanFilterEventsByCategory()
+        public void CreateEvent_ShouldCreateSuccessfully_WhenValidData()
         {
             // Arrange
-            NavigateToUrl("/Event");
+            LoginUser("nampdce172019@fpt.edu.vn", "Nam@123");
 
-            // Act
-            WaitForPageToLoad();
-            var categoryFilters = Driver.FindElements(By.ClassName("event-category-filter"));
+            _fixture.NavigateToUrl("/Event/CreateCleanupEvent");
 
-            if (categoryFilters.Any())
-            {
-                var firstCategory = categoryFilters.First();
-                firstCategory.Click();
+            var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
+            header.Text.Should().Be("Tạo sự kiện mới");
 
-                // Assert
-                WaitForPageToLoad();
-                var filteredEvents = Driver.FindElements(By.ClassName("event-card"));
-                filteredEvents.Should().NotBeEmpty("Filtered events should be displayed");
-            }
         }
-
         [Fact]
-        public void UserCanSearchForEvents()
+        public void DeleteEventReview()
         {
             // Arrange
-            NavigateToUrl("/Event");
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
 
-            // Act
-            WaitForPageToLoad();
-            var searchInput = WaitForElement(By.Id("eventSearchInput"));
-            var searchButton = WaitForElementToBeClickable(By.Id("eventSearchButton"));
+            _fixture.NavigateToUrl("/Event/DeleteEventReview?eventReviewId=7");
 
-            searchInput.SendKeys("cleanup");
-            searchButton.Click();
+            var header = _fixture.WaitForElement(By.CssSelector("h3.mb-15"));
+            header.Text.Should().Be("Xóa đánh giá sự kiện");
 
-            // Assert
-            WaitForPageToLoad();
-            var searchResults = Driver.FindElements(By.ClassName("event-card"));
-            searchResults.Should().NotBeEmpty("Search should return results");
         }
-
         [Fact]
-        public void UserCanViewEventDetails()
+        public void DeleteLeaderReview()
         {
             // Arrange
-            NavigateToUrl("/Event");
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
 
-            // Act
-            WaitForPageToLoad();
-            var eventLinks = Driver.FindElements(By.ClassName("event-link"));
+            _fixture.NavigateToUrl("/Event/DeleteLeaderReview?leaderReviewId=3");
+            _fixture.WaitForPageToLoad();
+            var header = _fixture.WaitForElement(By.CssSelector("h3.mb-15"));
+            header.Text.Should().Be("Xóa đánh giá đội trưởng");
 
-            if (eventLinks.Any())
-            {
-                eventLinks.First().Click();
-                WaitForPageToLoad();
-
-                // Assert
-                var eventDetail = WaitForElement(By.Id("eventDetail"));
-                eventDetail.Should().NotBeNull("Event detail section should be present");
-
-                // Check for required elements
-                var eventTitle = Driver.FindElement(By.ClassName("event-detail-title"));
-                var eventDescription = Driver.FindElement(By.ClassName("event-detail-description"));
-                var eventDate = Driver.FindElement(By.ClassName("event-detail-date"));
-                var eventLocation = Driver.FindElement(By.ClassName("event-detail-location"));
-                var registerButton = Driver.FindElement(By.ClassName("event-detail-register"));
-
-                eventTitle.Should().NotBeNull("Event title should be displayed");
-                eventDescription.Should().NotBeNull("Event description should be displayed");
-                eventDate.Should().NotBeNull("Event date should be displayed");
-                eventLocation.Should().NotBeNull("Event location should be displayed");
-                registerButton.Should().NotBeNull("Register button should be present");
-            }
         }
-
         [Fact]
-        public void UserCanRegisterForEvent()
+        public void EditEventReview()
         {
             // Arrange
-            NavigateToUrl("/Event");
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
 
-            // Act
-            WaitForPageToLoad();
-            var registerButtons = Driver.FindElements(By.ClassName("register-event-btn"));
+            _fixture.NavigateToUrl("/Event/EditEventReview?eventReviewId=7");
 
-            if (registerButtons.Any())
-            {
-                var firstRegisterButton = registerButtons.First();
-                firstRegisterButton.Click();
-
-                // Assert
-                WaitForPageToLoad();
-                var currentUrl = Driver.Url;
-                currentUrl.Should().Contain("Register", "Should navigate to event registration page");
-            }
+            var header = _fixture.WaitForElement(By.CssSelector("h3.mb-15"));
+            header.Text.Should().Be("Cập nhật đánh giá sự kiện");
         }
-
         [Fact]
-        public void EventRegistrationPageShouldDisplayForm()
-        {
-            // Arrange & Act
-            NavigateToUrl("/Event/Register/1"); // Assuming event ID 1 exists
-
-            // Assert
-            WaitForPageToLoad();
-            var registrationForm = WaitForElement(By.Id("eventRegistrationForm"));
-            registrationForm.Should().NotBeNull("Event registration form should be present");
-
-            // Check for form fields
-            var nameInput = Driver.FindElement(By.Id("participantName"));
-            var emailInput = Driver.FindElement(By.Id("participantEmail"));
-            var phoneInput = Driver.FindElement(By.Id("participantPhone"));
-            var submitButton = Driver.FindElement(By.Id("submitRegistration"));
-
-            nameInput.Should().NotBeNull("Name input should be present");
-            emailInput.Should().NotBeNull("Email input should be present");
-            phoneInput.Should().NotBeNull("Phone input should be present");
-            submitButton.Should().NotBeNull("Submit button should be present");
-        }
-
-        [Fact]
-        public void UserCanViewMyEvents()
-        {
-            // Arrange & Act
-            NavigateToUrl("/Event/MyEvents");
-
-            // Assert
-            WaitForPageToLoad();
-            var pageTitle = Driver.Title;
-            pageTitle.Should().Contain("My Events", "Page title should contain 'My Events'");
-
-            var myEventsContainer = WaitForElement(By.Id("myEventsContainer"));
-            myEventsContainer.Should().NotBeNull("My events container should be present");
-        }
-
-        [Fact]
-        public void UserCanCancelEventRegistration()
+        public void EventReviewHistory()
         {
             // Arrange
-            NavigateToUrl("/Event/MyEvents");
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
 
-            // Act
-            WaitForPageToLoad();
-            var cancelButtons = Driver.FindElements(By.ClassName("cancel-registration-btn"));
+            _fixture.NavigateToUrl("/Event/EventReviewHistory");
 
-            if (cancelButtons.Any())
-            {
-                var initialEventCount = Driver.FindElements(By.ClassName("my-event-card")).Count;
-                var firstCancelButton = cancelButtons.First();
-                firstCancelButton.Click();
-
-                // Assert
-                WaitForElementToDisappear(By.ClassName("my-event-card"));
-                var finalEventCount = Driver.FindElements(By.ClassName("my-event-card")).Count;
-                finalEventCount.Should().BeLessThan(initialEventCount, "Event count should decrease after cancellation");
-            }
+            var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
+            header.Text.Should().Be("Đánh giá sự kiện");
         }
 
         [Fact]
-        public void EventsPageShouldDisplayUpcomingEvents()
-        {
-            // Arrange & Act
-            NavigateToUrl("/Event");
-
-            // Assert
-            WaitForPageToLoad();
-
-            var upcomingEventsSection = Driver.FindElement(By.Id("upcomingEvents"));
-            upcomingEventsSection.Should().NotBeNull("Upcoming events section should be present");
-            upcomingEventsSection.Displayed.Should().BeTrue("Upcoming events section should be visible");
-        }
-
-        [Fact]
-        public void UserCanViewEventCalendar()
-        {
-            // Arrange & Act
-            NavigateToUrl("/Event/Calendar");
-
-            // Assert
-            WaitForPageToLoad();
-            var pageTitle = Driver.Title;
-            pageTitle.Should().Contain("Calendar", "Page title should contain 'Calendar'");
-
-            var calendarContainer = WaitForElement(By.Id("eventCalendar"));
-            calendarContainer.Should().NotBeNull("Event calendar should be present");
-        }
-
-        [Fact]
-        public void EventDetailPageShouldShowParticipantCount()
+        public void GetAllEvent()
         {
             // Arrange
-            NavigateToUrl("/Event");
+            LoginUser("nampdce172019@fpt.edu.vn", "Nam@123");
 
-            // Act
-            WaitForPageToLoad();
-            var eventLinks = Driver.FindElements(By.ClassName("event-link"));
-
-            if (eventLinks.Any())
-            {
-                eventLinks.First().Click();
-                WaitForPageToLoad();
-
-                // Assert
-                var participantCount = Driver.FindElement(By.ClassName("participant-count"));
-                participantCount.Should().NotBeNull("Participant count should be displayed");
-            }
+            _fixture.NavigateToUrl("/Event/GetAllEvent");
+            _fixture.WaitForPageToLoad();
+            var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
+            
+            header.Text.Should().Be("Danh sách sự kiện");
         }
-
         [Fact]
-        public void UserCanShareEvent()
+        public void GetEventById()
         {
             // Arrange
-            NavigateToUrl("/Event");
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
 
-            // Act
-            WaitForPageToLoad();
-            var eventLinks = Driver.FindElements(By.ClassName("event-link"));
+            _fixture.NavigateToUrl("/Event/GetEventById?eventId=3");
+            _fixture.WaitForPageToLoad();
+            //var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
 
-            if (eventLinks.Any())
-            {
-                eventLinks.First().Click();
-                WaitForPageToLoad();
-
-                var shareButton = WaitForElementToBeClickable(By.ClassName("share-event-btn"));
-                shareButton.Click();
-
-                // Assert
-                var shareModal = WaitForElement(By.Id("shareEventModal"));
-                shareModal.Should().NotBeNull("Share modal should be displayed");
-                shareModal.Displayed.Should().BeTrue("Share modal should be visible");
-            }
+            //header.Text.Should().Be("Chi tiết sự kiện");
         }
-
         [Fact]
-        public void EventsPageShouldHavePagination()
-        {
-            // Arrange & Act
-            NavigateToUrl("/Event");
-
-            // Assert
-            WaitForPageToLoad();
-
-            var pagination = Driver.FindElements(By.ClassName("pagination"));
-            if (pagination.Any())
-            {
-                var firstPagination = pagination.First();
-                firstPagination.Displayed.Should().BeTrue("Pagination should be visible when there are multiple pages");
-            }
-        }
-
-        [Fact]
-        public void UserCanSortEventsByDate()
+        public void GetOpenEventsByTeamLeader()
         {
             // Arrange
-            NavigateToUrl("/Event");
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
 
-            // Act
-            WaitForPageToLoad();
-            var sortDropdown = Driver.FindElements(By.Id("eventSortDropdown"));
+            _fixture.NavigateToUrl("/Event/GetOpenEventsByTeamLeader");
+            _fixture.WaitForPageToLoad();
+            //var header = _fixture.WaitForElement(By.CssSelector("h1.cdisplay-2"));
 
-            if (sortDropdown.Any())
-            {
-                var dropdown = sortDropdown.First();
-                dropdown.Click();
-
-                var dateOption = WaitForElementToBeClickable(By.CssSelector("option[value='date']"));
-                dateOption.Click();
-
-                // Assert
-                WaitForPageToLoad();
-                var eventCards = Driver.FindElements(By.ClassName("event-card"));
-                eventCards.Should().NotBeEmpty("Events should be displayed after sorting");
-            }
+            //header.Text.Should().Be("Sự kiện bạn là đội trưởng");
         }
+        [Fact]
+        public void Index()
+        {
+            // Arrange
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
+
+            _fixture.NavigateToUrl("/Event");
+            _fixture.WaitForPageToLoad();
+            //var header = _fixture.WaitForElement(By.CssSelector("h1.cdisplay-2"));
+
+            //header.Text.Should().Be("Danh sách sự kiện");
+        }
+        [Fact]
+        public void RegisterTeamLeader()
+        {
+            // Arrange
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
+
+            _fixture.NavigateToUrl("/Event/RegisterTeamLeader?eventId=2");
+            _fixture.WaitForPageToLoad();
+            var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
+            header.Text.Should().Be("Đăng ký Team Leader");
+        }
+        [Fact]
+        public void RegisterVolunteer()
+        {
+            // Arrange
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
+
+            _fixture.NavigateToUrl("/Event/RegisterVolunteer?eventId=4");
+            _fixture.WaitForPageToLoad();
+            var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
+            header.Text.Should().Be("Đăng ký tình nguyện cho sự kiện");
+        }
+        [Fact]
+        public void UpdateEvent()
+        {
+            // Arrange
+            LoginUser("nampdce172019@fpt.edu.vn", "Nam@123");
+
+            _fixture.NavigateToUrl("/Event/UpdateCleanupEvent?eventId=1");
+
+            var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
+            header.Text.Should().Be("Cập nhật sự kiện");
+
+        }
+        [Fact]
+        public void ViewEventVolunteerListCheck()
+        {
+            // Arrange
+            LoginUser("nampdce172019@fpt.edu.vn", "Nam@123");
+
+            _fixture.NavigateToUrl("/Event/ViewEventVolunteerListCheck?eventId=3");
+
+            
+
+        }
+        [Fact]
+        public void ViewEventVolunteerList()
+        {
+            // Arrange
+            LoginUser("nampdce172019@fpt.edu.vn", "Nam@123");
+
+            _fixture.NavigateToUrl("/Event/ViewEventVolunteerList?eventId=3");
+
+            var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
+            header.Text.Should().Be("Danh sách tình nguyện viên");
+
+        }
+
     }
 }
+

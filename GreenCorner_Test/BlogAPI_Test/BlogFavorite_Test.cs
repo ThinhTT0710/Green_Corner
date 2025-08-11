@@ -32,6 +32,22 @@ namespace GreenCorner_Test.BlogAPI_Test
             Assert.Equal("", result.Message);
         }
 
+        [Fact]
+        public async Task GetFavoritesByUser_ValidUserId_ReturnFavoriteList()
+        {
+            var favorites = new List<BlogFavoriteDTO>
+        {
+            new BlogFavoriteDTO { BlogId = 1, UserId = "user1" }
+        };
+
+            _mockService.Setup(x => x.GetFavoritesByUserAsync("abc")).ReturnsAsync(favorites);
+
+            var result = await _controller.GetFavoritesByUser("abc");
+
+            Assert.True(result.IsSuccess);
+            var blogs = Assert.IsType<List<BlogFavoriteDTO>>(result.Result);
+            Assert.Single(blogs);
+        }
 
         [Fact]
         public async Task RemoveFavorite_ValidBlogIdAndUserId_ReturnsSuccess()

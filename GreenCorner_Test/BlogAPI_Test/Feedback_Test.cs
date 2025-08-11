@@ -73,6 +73,23 @@ namespace GreenCorner_Test.BlogAPI_Test
             Assert.Equal("Lấy danh sách phản hồi thất bại!", result.Message);
 
         }
+        [Fact]
+        public async Task GetAllFeedback_ReturnsListSuccessfullyWithUser()
+        {
+            var feedbacks = new List<FeedbackDTO>
+        {
+            new FeedbackDTO { Content = "Hay!", UserId = "u1" },
+            new FeedbackDTO { Content = "Chưa tốt", UserId = "u2" }
+        };
+
+            _mockService.Setup(s => s.GetAllFeedback()).ReturnsAsync(feedbacks);
+
+            var result = await _controller.GetAllFeedback();
+
+            Assert.True(result.IsSuccess);
+            var list = Assert.IsType<List<FeedbackDTO>>(result.Result);
+            Assert.Equal(2, list.Count);
+        }
 
     }
 }

@@ -61,25 +61,6 @@ namespace GreenCorner_Test.AuthAPI
 			}
 		};
 		}
-			//}
-			//[Fact]
-			//public async Task Login_ConfirmedEmail_ReturnsSuccess()
-			//{
-			//    var request = new LoginRequestDTO { Email = "test@example.com" };
-			//    var user = new User { Email = request.Email };
-			//    var loginResponse = new LoginResponseDTO { User = user };
-
-			//    _mockAuthService.Setup(x => x.Login(request)).ReturnsAsync(loginResponse);
-			//    _mockUserManager.Setup(x => x.FindByEmailAsync(request.Email)).ReturnsAsync(user);
-			//    _mockUserManager.Setup(x => x.IsEmailConfirmedAsync(user)).ReturnsAsync(true);
-
-			//    var result = await _controller.Login(request);
-
-			//    var ok = Assert.IsType<OkObjectResult>(result);
-			//    var response = Assert.IsType<ResponseDTO>(ok.Value);
-			//    Assert.Equal(loginResponse, response.Result);
-			//}
-
 			[Fact]
 			public async Task Register_ShouldReturnSuccess()
 			{
@@ -111,7 +92,7 @@ namespace GreenCorner_Test.AuthAPI
 				var result = await _controller.Login(request) as BadRequestObjectResult;
 
 				Assert.NotNull(result);
-				Assert.Equal("Email or password is incorrect", ((ResponseDTO)result.Value).Message);
+				Assert.Equal("Email hoặc mật khẩu không đúng", ((ResponseDTO)result.Value).Message);
 			}
 
 			[Fact]
@@ -126,7 +107,7 @@ namespace GreenCorner_Test.AuthAPI
 				var result = await _controller.Login(request) as BadRequestObjectResult;
 
 				Assert.NotNull(result);
-				Assert.Equal("Please confirm your email before logging in.", ((ResponseDTO)result.Value).Message);
+				Assert.Equal("Vui lòng xác nhận email của bạn trước khi đăng nhập.", ((ResponseDTO)result.Value).Message);
 			}
 
 			[Fact]
@@ -139,26 +120,8 @@ namespace GreenCorner_Test.AuthAPI
 				var result = await _controller.ForgotPassword(request) as NotFoundObjectResult;
 
 				Assert.NotNull(result);
-				Assert.Equal("User not found.", ((ResponseDTO)result.Value).Message);
+				Assert.Equal("Không tìm thấy người dùng.", ((ResponseDTO)result.Value).Message);
 			}
-
-		//	[Fact]
-		//	public async Task ForgotPassword_ShouldSuccess()
-		//	{
-		//		var request = new ForgotPasswordRequestDTO { UserId = "1", Token = "validtoken", Password = "newpass123", ConfirmPassword = "newpass123" };
-
-		//		_mockUserManager.Setup(s => s.FindByIdAsync(request.UserId))
-		//.ReturnsAsync(new User { Id = request.UserId, Email = "test@example.com" });
-
-		//		_mockUserManager.Setup(s => s.ResetPasswordAsync(It.IsAny<User>(), request.Token, request.Password))
-		//			.ReturnsAsync(IdentityResult.Success);
-
-		//		var result = await _controller.ForgotPassword(request) as OkObjectResult;
-
-		//		Assert.NotNull(result);
-		//		Assert.Equal("Password reset successfully.", ((ResponseDTO)result.Value).Message);
-		//	}
-
 			[Fact]
 			public async Task Login_ShouldFail_WhenUserIsNull()
 			{
@@ -170,7 +133,7 @@ namespace GreenCorner_Test.AuthAPI
 				var badResult = Assert.IsType<BadRequestObjectResult>(result);
 				var response = Assert.IsType<ResponseDTO>(badResult.Value);
 				Assert.False(response.IsSuccess);
-				Assert.Equal("Email or password is incorrect", response.Message);
+				Assert.Equal("Email hoặc mật khẩu không đúng", response.Message);
 			}
 
 			[Fact]
@@ -191,7 +154,7 @@ namespace GreenCorner_Test.AuthAPI
 
 				var badResult = Assert.IsType<BadRequestObjectResult>(result);
 				var response = Assert.IsType<ResponseDTO>(badResult.Value);
-				Assert.Equal("Please confirm your email before logging in.", response.Message);
+				Assert.Equal("Vui lòng xác nhận email của bạn trước khi đăng nhập.", response.Message);
 			}
 
 			[Fact]
@@ -216,16 +179,6 @@ namespace GreenCorner_Test.AuthAPI
 				Assert.Equal(loginResponse, response.Result);
 				Assert.True(response.IsSuccess);
 			}
-
-			//[Fact]
-			//public async Task Login_ShouldReturnBadRequest_WhenAuthServiceThrows()
-			//{
-			//	var request = new LoginRequestDTO { Email = "abc@gmail.com", Password = "password" };
-			//	_mockAuthService.Setup(s => s.Login(request)).ThrowsAsync(new Exception("Unexpected error"));
-
-			//	await Assert.ThrowsAsync<Exception>(() => _controller.Login(request));
-			//}
-
 			[Fact]
 			public async Task GoogleLogin_ShouldFail_WhenLoginFails()
 			{
@@ -236,7 +189,7 @@ namespace GreenCorner_Test.AuthAPI
 
 				var badResult = Assert.IsType<BadRequestObjectResult>(result);
 				var response = Assert.IsType<ResponseDTO>(badResult.Value);
-				Assert.Equal("Google login failed.", response.Message);
+				Assert.Equal("Đăng nhập với Google không thành công. Vui lòng thử lại", response.Message);
 				Assert.False(response.IsSuccess);
 			}
 
@@ -260,15 +213,6 @@ namespace GreenCorner_Test.AuthAPI
 				Assert.Equal(loginResponse, response.Result);
 			}
 
-			//[Fact]
-			//public async Task GoogleLogin_ShouldThrow_WhenServiceFails()
-			//{
-			//	var request = new GoogleLoginRequestDTO { Email = "error@gmail.com" };
-			//	_mockAuthService.Setup(s => s.LoginWithGoogle(request)).ThrowsAsync(new Exception("Google error"));
-
-			//	await Assert.ThrowsAsync<Exception>(() => _controller.GoogleLogin(request));
-			//}
-
 			[Fact]
 			public async Task FacebookLogin_ShouldFail_WhenUserIsNull()
 			{
@@ -279,10 +223,22 @@ namespace GreenCorner_Test.AuthAPI
 
 				var badResult = Assert.IsType<BadRequestObjectResult>(result);
 				var response = Assert.IsType<ResponseDTO>(badResult.Value);
-				Assert.Equal("Facebook login failed.", response.Message);
+				Assert.Equal("Đăng nhập với Facebook không thành công. Vui lòng thử lại", response.Message);
 			}
+        [Fact]
+        public async Task FacebookLogin_ShouldFail_WhenUserIsInvalid()
+        {
+            var request = new FacebookLoginRequestDTO { Email = "fail@gmail.com" };
+            _mockAuthService.Setup(s => s.LoginWithFacebook(request)).ReturnsAsync(new LoginResponseDTO { User = null });
 
-			[Fact]
+            var result = await _controller.FacebookLogin(request);
+
+            var badResult = Assert.IsType<BadRequestObjectResult>(result);
+            var response = Assert.IsType<ResponseDTO>(badResult.Value);
+            Assert.Equal("Đăng nhập với Facebook không thành công. Vui lòng thử lại", response.Message);
+        }
+
+        [Fact]
 			public async Task FacebookLogin_ShouldSucceed()
 			{
 				var request = new FacebookLoginRequestDTO { Email = "valid@gmail.com" };
@@ -301,7 +257,26 @@ namespace GreenCorner_Test.AuthAPI
 				Assert.True(response.IsSuccess);
 				Assert.Equal(loginResponse, response.Result);
 			}
-			[Fact]
+        [Fact]
+        public async Task FacebookLogin_ShouldSucceedWithValidUser()
+        {
+            var request = new FacebookLoginRequestDTO { Email = "valid@gmail.com" };
+            var loginResponse = new LoginResponseDTO
+            {
+                User = new UserDTO { Email = request.Email },
+                Token = "fb-token"
+            };
+
+            _mockAuthService.Setup(s => s.LoginWithFacebook(request)).ReturnsAsync(loginResponse);
+
+            var result = await _controller.FacebookLogin(request);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var response = Assert.IsType<ResponseDTO>(okResult.Value);
+            Assert.True(response.IsSuccess);
+            Assert.Equal(loginResponse, response.Result);
+        }
+        [Fact]
 			public async Task ConfirmEmail_Valid_ReturnsSuccess()
 			{
 				var user = new User { Id = "1" };
@@ -312,7 +287,7 @@ namespace GreenCorner_Test.AuthAPI
 
 				var ok = Assert.IsType<OkObjectResult>(result);
 				var response = Assert.IsType<ResponseDTO>(ok.Value);
-				Assert.Equal("Email confirmed successfully.", response.Message);
+				Assert.Equal("Email đã được xác nhận thành công.", response.Message);
 			}
 			[Fact]
 			public async Task ResendConfirmEmail_ValidEmail_SendsEmail()
@@ -325,7 +300,7 @@ namespace GreenCorner_Test.AuthAPI
 				var result = await _controller.ResendConfirmEmail(user.Email);
 				var ok = Assert.IsType<OkObjectResult>(result);
 				var response = Assert.IsType<ResponseDTO>(ok.Value);
-				Assert.Equal("Email sent successfully, please check email.", response.Message);
+				Assert.Equal("Email đã được gửi thành công, vui lòng kiểm tra email.", response.Message);
 			}
 			[Fact]
 			public async Task AssignRole_ValidInput_ReturnsOk()

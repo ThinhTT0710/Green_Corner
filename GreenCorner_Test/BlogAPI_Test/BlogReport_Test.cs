@@ -78,6 +78,29 @@ namespace GreenCorner_Test.BlogAPI_Test
             Assert.True(result.IsSuccess);
             Assert.Equal(report, result.Result);
         }
+
+        [Fact]
+        public async Task GetReportsByBlogId_ValidId_ReturnsValidReport()
+        {
+            var reports = new List<BlogReportDTO> { new BlogReportDTO { BlogId = 1, Reason = "Test" } };
+            _mockService.Setup(x => x.GetReportsByBlogIdAsync(1)).ReturnsAsync(reports);
+
+            var result = await _controller.GetReportsByBlogId(1);
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(reports, result.Result);
+        }
+        [Fact]
+        public async Task EditReport_ValidIdAndReason_ReturnsNewReportAfterUpdate()
+        {
+            var updated = new BlogReportDTO { BlogReportId = 10, Reason = "Updated Reason" };
+            _mockService.Setup(x => x.EditReportAsync(10, "Updated Reason")).ReturnsAsync(updated);
+
+            var result = await _controller.EditReport(10, "Updated Reason");
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(updated, result.Result);
+        }
     }
 
 }

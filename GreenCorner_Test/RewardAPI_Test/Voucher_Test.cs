@@ -111,7 +111,28 @@ namespace GreenCorner_Test.RewardAPI_Test
             Assert.True(result.IsSuccess);
             Assert.Equal("Đổi voucher thành công!", result.Message);
         }
+        [Fact]
+        public async Task GetVoucherById_ReturnsValidVoucher()
+        {
+            var voucher = new VoucherDTO { VoucherId = 2, Title = "Free Coffee" };
+            _mockService.Setup(s => s.GetRewardDetail(2)).ReturnsAsync(voucher);
 
+            var result = await _controller.GetVoucherById(2);
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(voucher, result.Result);
+        }
+
+        [Fact]
+        public async Task CreateVoucher_ValidVoucher_ReturnsSuccessfully()
+        {
+            var dto = new VoucherDTO { VoucherId = 3 };
+            _mockService.Setup(s => s.CreateVoucher(dto)).Returns(Task.CompletedTask);
+
+            var result = await _controller.CreateVoucher(dto);
+
+            Assert.True(result.IsSuccess);
+        }
         [Fact]
         public async Task RedeemVoucher_Unavailable_ReturnsFailureMessage()
         {

@@ -89,5 +89,28 @@ namespace GreenCorner_Test.RewardAPI_Test
             Assert.False(result.IsSuccess);
             Assert.Equal("Already used", result.Message);
         }
+        [Fact]
+        public async Task GetUserRewardRedemption()
+        {
+            var ids = new List<string> { "userA", "userB" };
+            _mockService.Setup(s => s.GetDistinctUserIdsRedeemedAsync()).ReturnsAsync(ids);
+
+            var result = await _controller.GetUserRewardRedemption();
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(ids, result.Result);
+        }
+
+        [Fact]
+        public async Task MarkAsUsed_ValidId_ReturnsSuccessfully()
+        {
+            var updated = new UserVoucherRedemptionDTO { IsUsed = true };
+            _mockService.Setup(s => s.UpdateIsUsedAsync(1)).ReturnsAsync(updated);
+
+            var result = await _controller.MarkAsUsed(1);
+
+            Assert.Equal(updated, result.Result);
+            Assert.Equal("Sử dụng Voucher thành công.", result.Message);
+        }
     }
 }

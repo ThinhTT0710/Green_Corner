@@ -24,6 +24,7 @@
 
         // Timeouts
         public const int DefaultTimeout = 20;
+
         public const int ShortTimeout = 5;
         public const int LongTimeout = 30;
 
