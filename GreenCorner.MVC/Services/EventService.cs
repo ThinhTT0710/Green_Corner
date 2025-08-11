@@ -285,6 +285,5 @@ namespace GreenCorner.MVC.Services
                 Url = $"{SD.EventAPIBase}/api/EventReview/get-reviews-by-event/{eventId}"
             });
         }
-
     }
 }

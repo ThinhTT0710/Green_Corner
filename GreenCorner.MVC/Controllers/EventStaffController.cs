@@ -228,7 +228,7 @@ namespace GreenCorner.MVC.Controllers
                 TempData["error"] = response?.Message ?? "Phê duyệt thất bại.";
             }
 
-            return RedirectToAction("ViewVolunteerRegistrations");
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
         public async Task<IActionResult> ViewTeamLeaderRegistrations()
@@ -322,7 +322,7 @@ namespace GreenCorner.MVC.Controllers
                 TempData["error"] = response?.Message ?? "Phê duyệt thất bại.";
             }
 
-            return RedirectToAction("ViewTeamLeaderRegistrations");
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
         [HttpPost]
@@ -339,7 +339,7 @@ namespace GreenCorner.MVC.Controllers
                 TempData["error"] = response?.Message ?? "Từ chối thất bại.";
             }
 
-            return RedirectToAction("ViewVolunteerRegistrations");
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
         [HttpPost]
@@ -355,8 +355,7 @@ namespace GreenCorner.MVC.Controllers
             {
                 TempData["error"] = response?.Message ?? "Từ chối thất bại.";
             }
-
-            return RedirectToAction("ViewTeamLeaderRegistrations");
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
         public async Task<IActionResult> ViewUsersWithParticipation()

@@ -80,7 +80,7 @@
                                 }
                                 else if (item.Event.Status == "Close")
                                 {
-                                    <td><span class="badge rounded-pill badge-soft-danger">Đã đóng</span></td>
+                                    <td><span class="badge rounded-pill badge-soft-danger">Đã kết thúc</span></td>
                                 }
                                 else if (item.Event.Status == "OnGoing")
                                 {
@@ -100,7 +100,7 @@
                                         <div class="dropdown-menu dropdown-menu-end">
                                             <a class="dropdown-item" asp-action="UpdateCleanupEvent" asp-route-eventId="@item.Event.CleanEventId">Cập nhật thông tin</a>
                                             <a class="dropdown-item" asp-action="UpdateCleanupEventStatus" asp-route-eventId="@item.Event.CleanEventId">Cập nhật trạng thái</a>
-
+                                            <a class="dropdown-item" asp-action="EventDetail" asp-route-eventId="@item.Event.CleanEventId">Xen chi tiết</a>
                                             @if (item.Event.Status == "Open")
                                             {
                                                 <a class="dropdown-item text-danger" asp-action="CloseCleanupEvent" asp-route-eventId="@item.Event.CleanEventId">Đóng sự kiện</a>

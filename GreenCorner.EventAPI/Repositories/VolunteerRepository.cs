@@ -242,5 +242,12 @@ namespace GreenCorner.EventAPI.Repositories
 
             return record == null ? null : record.UserId;
         }
+
+        public async Task<IEnumerable<Volunteer>> GetAllVolunteersForEvent(int eventId)
+        {
+            return await _context.Volunteers
+                         .Where(e => e.CleanEventId == eventId)
+                         .ToListAsync();
+        }
     }
 }

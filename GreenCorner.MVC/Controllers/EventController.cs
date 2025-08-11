@@ -1,4 +1,5 @@
 ﻿    using GreenCorner.MVC.Models;
+using GreenCorner.MVC.Models.Chat;
 using GreenCorner.MVC.Models.Notification;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using static Microsoft.IO.RecyclableMemoryStreamManager;
 
 namespace GreenCorner.MVC.Controllers
 {
@@ -17,12 +19,14 @@ namespace GreenCorner.MVC.Controllers
         private readonly IVolunteerService _volunteerService;
         private readonly IUserService _userService;
         private readonly INotificationService _notificationService;
-        public EventController(IEventService eventService, INotificationService notificationService, IVolunteerService volunteerService, IUserService userService)
+        private readonly IChatService _chatService;
+        public EventController(IEventService eventService, INotificationService notificationService, IVolunteerService volunteerService, IUserService userService, IChatService chatService)
         {
             _eventService = eventService;
             _volunteerService = volunteerService;
             _userService = userService;
             _notificationService = notificationService;
+            _chatService = chatService;
         }
         public async Task<IActionResult> Index()
         {
@@ -50,7 +54,6 @@ namespace GreenCorner.MVC.Controllers
 
                 foreach (var events in listEvent)
                 {
-                    // 1. Lấy thông tin tham gia
                     ResponseDTO? participationResponse = await _eventService.GetParticipationInfoAsync(events.CleanEventId);
                     ParticipationInfoResponse participation = new();
                     if (participationResponse != null && participationResponse.IsSuccess)
@@ -58,7 +61,6 @@ namespace GreenCorner.MVC.Controllers
                         participation = JsonConvert.DeserializeObject<ParticipationInfoResponse>(participationResponse.Result.ToString());
                     }
 
-                    // 2. Lấy team leader của sự kiện này
                     string? leaderId = null;
                     ResponseDTO? teamLeaderResponse = await _volunteerService.GetTeamLeaderByEventId(events.CleanEventId);
                     if (teamLeaderResponse != null && teamLeaderResponse.IsSuccess)
@@ -66,7 +68,6 @@ namespace GreenCorner.MVC.Controllers
                         leaderId = Convert.ToString(teamLeaderResponse.Result);
                     }
 
-                    // 3. Thêm vào ViewModel
                     viewModelList.Add(new GetAllEventViewModel
                     {
                         Event = events,
@@ -81,6 +82,103 @@ namespace GreenCorner.MVC.Controllers
             }
 
             return View(viewModelList);
+        }
+
+        public async Task<IActionResult> EventDetail(int eventId) 
+        {
+            EventDetailViewModel viewModel = new();
+            ResponseDTO? response = await _eventService.GetByEventId(eventId);
+            if (response != null && response.IsSuccess)
+            {
+                viewModel.Event = JsonConvert.DeserializeObject<EventDTO>(response.Result.ToString());
+            }
+            else 
+            {
+                TempData["error"] = response?.Message;
+            }
+            ResponseDTO? participationResponse = await _eventService.GetParticipationInfoAsync(eventId);
+            if (participationResponse != null && participationResponse.IsSuccess)
+            {
+                viewModel.Participation = JsonConvert.DeserializeObject<ParticipationInfoResponse>(participationResponse.Result.ToString());
+            }
+            else
+            {
+                TempData["error"] = participationResponse?.Message;
+            }
+            ResponseDTO? teamLeaderResponse = await _volunteerService.GetTeamLeaderByEventId(eventId);
+            if (teamLeaderResponse != null && teamLeaderResponse.IsSuccess)
+            {
+                string? teamLeaderId = Convert.ToString(teamLeaderResponse.Result);
+                if (!string.IsNullOrEmpty(teamLeaderId))
+                {
+                    ResponseDTO? userResponse = await _userService.GetUserById(teamLeaderId);
+                    if (userResponse != null && userResponse.IsSuccess)
+                    {
+                        viewModel.TeamLeader = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
+                    }
+                }
+            }
+            else
+            {
+                TempData["error"] = teamLeaderResponse?.Message;
+            }
+            ResponseDTO? responseEventVolunteers = await _volunteerService.GetAllVolunteersForEvent(eventId);
+            if (responseEventVolunteers != null && responseEventVolunteers.IsSuccess && responseEventVolunteers.Result != null)
+            {
+                var volunteerList = JsonConvert.DeserializeObject<List<VolunteerDTO>>(responseEventVolunteers.Result.ToString());
+
+                foreach (var item in volunteerList)
+                {
+                    UserDTO? user = null;
+                    var userResponse = await _userService.GetUserById(item.UserId);
+                    if (userResponse != null && userResponse.IsSuccess && userResponse.Result != null)
+                    {
+                        user = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
+                    }
+
+                    if (user != null)
+                    {
+                        viewModel.Volunteers.Add(new EventVolunteerInfo
+                        {
+                            Volunteer = item,
+                            User = user
+                        });
+                    }
+                }
+            }
+            else
+            {
+                TempData["error"] = responseEventVolunteers?.Message;
+            }
+
+            if (User.Identity.IsAuthenticated)
+            {
+                var responseChat = await _chatService.GetChatMessagesAsync(eventId);
+                if (responseChat != null && responseChat.IsSuccess && responseChat.Result != null)
+                {
+                    viewModel.ChatMessages = JsonConvert.DeserializeObject<List<ChatMessageDTO>>(Convert.ToString(responseChat.Result)) ?? new List<ChatMessageDTO>();
+                }
+                var userID = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
+                var responseUser = await _userService.GetUserById(userID);
+                if(responseUser != null && responseUser.IsSuccess && responseUser.Result != null)
+                {
+                    var eventstaff = JsonConvert.DeserializeObject<UserDTO>(responseUser.Result.ToString());
+                    if (eventstaff != null)
+                    {
+                        ViewBag.EventId = eventId;
+                        ViewBag.SenderId = eventstaff.ID;
+                        ViewBag.SenderName = eventstaff.FullName;
+                        ViewBag.SenderAvatar = eventstaff.Avatar;
+                    }
+                }
+               
+            }
+            else
+            {
+                viewModel.ChatMessages = new List<ChatMessageDTO>();
+            }
+
+            return View(viewModel);
         }
 
         public async Task<IActionResult> GetEventById(int eventId)
@@ -1038,8 +1136,8 @@ namespace GreenCorner.MVC.Controllers
             ResponseDTO response = await _eventService.KickVolunteer(userId, eventId);
             if (response != null && response.IsSuccess)
             {
-                TempData["success"] = "Đã xóa thành viên khỏi danh sách tham gia.";
-                return RedirectToAction(nameof(ViewEventVolunteerList), new { eventId = eventId });
+                TempData["success"] = "Đã xóa thành viên khỏi danh sách tham gia."; 
+                return Redirect(Request.Headers["Referer"].ToString());
             }
             else
             {
