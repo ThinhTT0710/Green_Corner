@@ -650,10 +650,15 @@ namespace GreenCorner.MVC.Controllersde
         }
 
         [HttpGet]
-        public IActionResult SubmitReport()
+        public IActionResult SubmitReport(string? title)
         {
-            return View(); 
+            var report = new ReportDTO
+            {
+                Title = title // Gán tiêu đề sự kiện vào form báo cáo
+            };
+            return View(report);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -683,7 +688,7 @@ namespace GreenCorner.MVC.Controllersde
             }
             else
             {
-                TempData["error"] = response?.Message ?? "Gửi phản hồi thất bại.";
+                TempData["error"] = response?.Message ?? "Gửi báo cáo thất bại.";
                 return View(report);
             }
         }

@@ -65,17 +65,26 @@ namespace GreenCorner.EventAPI.Repositories
 
 		public async Task KickVolunteer(string userId, int eventId)
         {
-            var volunteers = await _context.EventVolunteers
-            .Where(e => e.CleanEventId == eventId)
-            .ToListAsync();
 
-            var volunteer = volunteers.FirstOrDefault(e => e.UserId == userId);
-            if (volunteer == null)
+            var eventVolunteer = await _context.EventVolunteers
+        .FirstOrDefaultAsync(e => e.CleanEventId == eventId && e.UserId == userId);
+
+            if (eventVolunteer == null)
             {
                 throw new KeyNotFoundException($"Event Volunteer with ID {userId} not found.");
             }
-            //product.IsDeleted = true;
-            _context.EventVolunteers.Remove(volunteer);
+
+            var volunteer = await _context.Volunteers
+                .FirstOrDefaultAsync(v => v.UserId == userId);
+
+            if (volunteer != null)
+            {
+                volunteer.Status = "Removed";
+                _context.Volunteers.Update(volunteer);
+                await _context.SaveChangesAsync();
+            }
+
+            _context.EventVolunteers.Remove(eventVolunteer);
             await _context.SaveChangesAsync();
         }
 

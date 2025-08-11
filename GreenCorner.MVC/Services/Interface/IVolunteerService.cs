@@ -26,6 +26,6 @@ namespace GreenCorner.MVC.Services.Interface
         Task<ResponseDTO?> GetUserWithParticipation();
         Task<ResponseDTO?> GetApprovedVolunteersByUserIdAsync(string userId);
         Task<ResponseDTO?> GetTeamLeaderByEventId(int eventId);
-
+        Task<ResponseDTO?> GetAllVolunteersForEvent(int eventId);
     }
 }

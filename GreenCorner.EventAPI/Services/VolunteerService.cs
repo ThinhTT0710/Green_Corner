@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using GreenCorner.EventAPI.Models;
 using GreenCorner.EventAPI.Models.DTO;
+using GreenCorner.EventAPI.Repositories;
 using GreenCorner.EventAPI.Repositories.Interface;
 using GreenCorner.EventAPI.Services.Interface;
 
@@ -177,5 +178,12 @@ namespace GreenCorner.EventAPI.Services
         {
             return await _volunteerRepository.GetTeamLeaderByEventId(eventId);
         }
+
+        public async Task<IEnumerable<VolunteerDTO>> GetAllVolunteersForEvent(int eventId)
+        {
+            var eventVolunteer = await _volunteerRepository.GetAllVolunteersForEvent(eventId);
+            return _mapper.Map<List<VolunteerDTO>>(eventVolunteer);
+        }
+
     }
 }

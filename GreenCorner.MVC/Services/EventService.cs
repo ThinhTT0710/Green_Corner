@@ -268,5 +268,22 @@ namespace GreenCorner.MVC.Services
               Url = SD.EventAPIBase + "/api/Event/top3event"
             });
         }
+        public async Task<ResponseDTO?> GetLeaderReviewsByEvent(string leaderId, int eventId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/LeaderReview?leaderId={leaderId}&eventId={eventId}"
+            });
+        }
+
+        public async Task<ResponseDTO?> GetEventReviewsByEventId(int eventId)
+        {
+            return await _baseService.SendAsync(new RequestDTO
+            {
+                APIType = SD.APIType.GET,
+                Url = $"{SD.EventAPIBase}/api/EventReview/get-reviews-by-event/{eventId}"
+            });
+        }
     }
 }

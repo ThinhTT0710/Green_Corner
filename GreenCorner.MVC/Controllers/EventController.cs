@@ -1,4 +1,5 @@
-﻿using GreenCorner.MVC.Models;
+﻿    using GreenCorner.MVC.Models;
+using GreenCorner.MVC.Models.Chat;
 using GreenCorner.MVC.Models.Notification;
 using GreenCorner.MVC.Services.Interface;
 using GreenCorner.MVC.Utility;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using static Microsoft.IO.RecyclableMemoryStreamManager;
 
 namespace GreenCorner.MVC.Controllers
 {
@@ -17,12 +19,14 @@ namespace GreenCorner.MVC.Controllers
         private readonly IVolunteerService _volunteerService;
         private readonly IUserService _userService;
         private readonly INotificationService _notificationService;
-        public EventController(IEventService eventService, INotificationService notificationService, IVolunteerService volunteerService, IUserService userService)
+        private readonly IChatService _chatService;
+        public EventController(IEventService eventService, INotificationService notificationService, IVolunteerService volunteerService, IUserService userService, IChatService chatService)
         {
             _eventService = eventService;
             _volunteerService = volunteerService;
             _userService = userService;
             _notificationService = notificationService;
+            _chatService = chatService;
         }
         public async Task<IActionResult> Index()
         {
@@ -43,23 +47,32 @@ namespace GreenCorner.MVC.Controllers
             List<GetAllEventViewModel> viewModelList = new();
             List<EventDTO> listEvent = new();
             ResponseDTO? response = await _eventService.GetAllEvent();
+
             if (response != null && response.IsSuccess)
             {
                 listEvent = JsonConvert.DeserializeObject<List<EventDTO>>(response.Result.ToString());
+
                 foreach (var events in listEvent)
                 {
-                    ResponseDTO? eventResponse = await _eventService.GetParticipationInfoAsync(events.CleanEventId);
-
+                    ResponseDTO? participationResponse = await _eventService.GetParticipationInfoAsync(events.CleanEventId);
                     ParticipationInfoResponse participation = new();
-                    if (eventResponse != null && eventResponse.IsSuccess)
+                    if (participationResponse != null && participationResponse.IsSuccess)
                     {
-                        participation = JsonConvert.DeserializeObject<ParticipationInfoResponse>(eventResponse.Result.ToString());
+                        participation = JsonConvert.DeserializeObject<ParticipationInfoResponse>(participationResponse.Result.ToString());
+                    }
+
+                    string? leaderId = null;
+                    ResponseDTO? teamLeaderResponse = await _volunteerService.GetTeamLeaderByEventId(events.CleanEventId);
+                    if (teamLeaderResponse != null && teamLeaderResponse.IsSuccess)
+                    {
+                        leaderId = Convert.ToString(teamLeaderResponse.Result);
                     }
 
                     viewModelList.Add(new GetAllEventViewModel
                     {
                         Event = events,
-                        Participation = participation
+                        Participation = participation,
+                        TeamLeaderId = leaderId
                     });
                 }
             }
@@ -67,8 +80,107 @@ namespace GreenCorner.MVC.Controllers
             {
                 TempData["error"] = response?.Message;
             }
+
             return View(viewModelList);
         }
+
+        public async Task<IActionResult> EventDetail(int eventId) 
+        {
+            EventDetailViewModel viewModel = new();
+            ResponseDTO? response = await _eventService.GetByEventId(eventId);
+            if (response != null && response.IsSuccess)
+            {
+                viewModel.Event = JsonConvert.DeserializeObject<EventDTO>(response.Result.ToString());
+            }
+            else 
+            {
+                TempData["error"] = response?.Message;
+            }
+            ResponseDTO? participationResponse = await _eventService.GetParticipationInfoAsync(eventId);
+            if (participationResponse != null && participationResponse.IsSuccess)
+            {
+                viewModel.Participation = JsonConvert.DeserializeObject<ParticipationInfoResponse>(participationResponse.Result.ToString());
+            }
+            else
+            {
+                TempData["error"] = participationResponse?.Message;
+            }
+            ResponseDTO? teamLeaderResponse = await _volunteerService.GetTeamLeaderByEventId(eventId);
+            if (teamLeaderResponse != null && teamLeaderResponse.IsSuccess)
+            {
+                string? teamLeaderId = Convert.ToString(teamLeaderResponse.Result);
+                if (!string.IsNullOrEmpty(teamLeaderId))
+                {
+                    ResponseDTO? userResponse = await _userService.GetUserById(teamLeaderId);
+                    if (userResponse != null && userResponse.IsSuccess)
+                    {
+                        viewModel.TeamLeader = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
+                    }
+                }
+            }
+            else
+            {
+                TempData["error"] = teamLeaderResponse?.Message;
+            }
+            ResponseDTO? responseEventVolunteers = await _volunteerService.GetAllVolunteersForEvent(eventId);
+            if (responseEventVolunteers != null && responseEventVolunteers.IsSuccess && responseEventVolunteers.Result != null)
+            {
+                var volunteerList = JsonConvert.DeserializeObject<List<VolunteerDTO>>(responseEventVolunteers.Result.ToString());
+
+                foreach (var item in volunteerList)
+                {
+                    UserDTO? user = null;
+                    var userResponse = await _userService.GetUserById(item.UserId);
+                    if (userResponse != null && userResponse.IsSuccess && userResponse.Result != null)
+                    {
+                        user = JsonConvert.DeserializeObject<UserDTO>(userResponse.Result.ToString());
+                    }
+
+                    if (user != null)
+                    {
+                        viewModel.Volunteers.Add(new EventVolunteerInfo
+                        {
+                            Volunteer = item,
+                            User = user
+                        });
+                    }
+                }
+            }
+            else
+            {
+                TempData["error"] = responseEventVolunteers?.Message;
+            }
+
+            if (User.Identity.IsAuthenticated)
+            {
+                var responseChat = await _chatService.GetChatMessagesAsync(eventId);
+                if (responseChat != null && responseChat.IsSuccess && responseChat.Result != null)
+                {
+                    viewModel.ChatMessages = JsonConvert.DeserializeObject<List<ChatMessageDTO>>(Convert.ToString(responseChat.Result)) ?? new List<ChatMessageDTO>();
+                }
+                var userID = User.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
+                var responseUser = await _userService.GetUserById(userID);
+                if(responseUser != null && responseUser.IsSuccess && responseUser.Result != null)
+                {
+                    var eventstaff = JsonConvert.DeserializeObject<UserDTO>(responseUser.Result.ToString());
+                    if (eventstaff != null)
+                    {
+                        ViewBag.EventId = eventId;
+                        ViewBag.SenderId = eventstaff.ID;
+                        ViewBag.SenderName = eventstaff.FullName;
+                        ViewBag.SenderAvatar = eventstaff.Avatar;
+                    }
+                }
+               
+            }
+            else
+            {
+                viewModel.ChatMessages = new List<ChatMessageDTO>();
+            }
+
+            return View(viewModel);
+        }
+
         public async Task<IActionResult> GetEventById(int eventId)
         {
             ResponseDTO response = await _eventService.GetByEventId(eventId);
@@ -196,59 +308,68 @@ namespace GreenCorner.MVC.Controllers
 
             return Json(new { isSuccess = false, errors = errors });
         }
+
         public async Task<IActionResult> EventReviewHistory()
         {
-            List<EventReviewDTO> listEventReview = new();
+            List<EventReviewHistoryViewModel> viewModel = new();
+
             if (!User.Identity.IsAuthenticated)
             {
                 TempData["loginError"] = "Bạn cần đăng nhập để xem hồ sơ của bạn.";
                 return RedirectToAction("Login", "Auth");
             }
 
-            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
-            ResponseDTO? response = await _eventService.ViewEventReviewHistory(userId);
+            var userId = User.Claims
+                .Where(u => u.Type == JwtRegisteredClaimNames.Sub)
+                .FirstOrDefault()?.Value;
+
+            var response = await _eventService.ViewEventReviewHistory(userId);
             if (response != null && response.IsSuccess)
             {
-                listEventReview = JsonConvert.DeserializeObject<List<EventReviewDTO>>(response.Result.ToString());
+                var listEventReview = JsonConvert
+                    .DeserializeObject<List<EventReviewDTO>>(response.Result.ToString());
+
+                foreach (var review in listEventReview)
+                {
+                    EventDTO? eventDTO = null;
+                    var eventResponse = await _eventService.GetByEventId(review.CleanEventId);
+                    if (eventResponse != null && eventResponse.IsSuccess)
+                    {
+                        eventDTO = JsonConvert
+                            .DeserializeObject<EventDTO>(eventResponse.Result.ToString());
+                    }
+
+                    viewModel.Add(new EventReviewHistoryViewModel
+                    {
+                        EventReview = review,
+                        Event = eventDTO
+                    });
+                }
             }
             else
             {
                 TempData["error"] = response?.Message;
             }
-            return View(listEventReview);
+
+            return View(viewModel);
         }
 
-        public async Task<IActionResult> DeleteEventReview(int eventReviewId)
-        {
-            ResponseDTO response = await _eventService.GetEventReviewById(eventReviewId);
-            if (response != null && response.IsSuccess)
-            {
-                EventReviewDTO eventReviewDTO = JsonConvert.DeserializeObject<EventReviewDTO>(response.Result.ToString());
-                return View(eventReviewDTO);
-            }
-            else
-            {
-                TempData["error"] = response?.Message;
-            }
-            return NotFound();
-        }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteEventReview(EventReviewDTO eventReviewDTO)
+        public async Task<IActionResult> DeleteEventReview(int eventReviewId)
         {
-            ResponseDTO response = await _eventService.DeleteEventReview(eventReviewDTO.EventReviewId);
+            ResponseDTO response = await _eventService.DeleteEventReview(eventReviewId);
+
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Xóa đánh giá sự kiện thành công!";
-                return RedirectToAction(nameof(EventReviewHistory));
             }
             else
             {
-                TempData["error"] = response?.Message;
+                TempData["error"] = response?.Message ?? "Có lỗi xảy ra khi xóa đánh giá.";
             }
-            return View(eventReviewDTO);
+            return RedirectToAction(nameof(EventReviewHistory));
         }
-
         public async Task<IActionResult> EditEventReview(int eventReviewId)
         {
             ResponseDTO response = await _eventService.GetEventReviewById(eventReviewId);
@@ -262,6 +383,34 @@ namespace GreenCorner.MVC.Controllers
                 TempData["error"] = response?.Message;
             }
             return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateEventReview([FromForm] EventReviewDTO eventReviewDTO)
+        {
+            eventReviewDTO.UpdatedAt = DateTime.Now;
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value.Errors.First().ErrorMessage
+                    );
+                return Json(new { isSuccess = false, message = "Dữ liệu không hợp lệ.", errors = errors });
+            }
+
+            ResponseDTO response = await _eventService.EditEventReview(eventReviewDTO);
+
+            if (response != null && response.IsSuccess)
+            {
+                return Json(new { isSuccess = true, message = "Cập nhật đánh giá thành công!", updatedReview = eventReviewDTO });
+            }
+            else
+            {
+                return Json(new { isSuccess = false, message = response?.Message ?? "Không thể cập nhật đánh giá." });
+            }
         }
 
         [HttpPost]
@@ -328,50 +477,65 @@ namespace GreenCorner.MVC.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault()?.Value;
-            List<LeaderReviewDTO> listLeaderReview = new();
-            ResponseDTO? response = await _eventService.ViewLeaderReviewHistory(userId);
+            var userId = User.Claims
+                .FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub)?.Value;
 
+            var viewModel = new List<LeaderReviewHistoryViewModel>();
+
+            var response = await _eventService.ViewLeaderReviewHistory(userId);
             if (response != null && response.IsSuccess)
             {
-                listLeaderReview = JsonConvert.DeserializeObject<List<LeaderReviewDTO>>(response.Result.ToString());
+                var listLeaderReview = JsonConvert
+                    .DeserializeObject<List<LeaderReviewDTO>>(response.Result.ToString());
+
+                foreach (var review in listLeaderReview)
+                {
+                    EventDTO? eventDTO = null;
+                    UserDTO? leaderDTO = null;
+
+                    var eventResponse = await _eventService.GetByEventId(review.CleanEventId);
+                    if (eventResponse != null && eventResponse.IsSuccess)
+                    {
+                        eventDTO = JsonConvert.DeserializeObject<EventDTO>(eventResponse.Result.ToString());
+                    }
+
+                    var leaderResponse = await _userService.GetUserById(review.LeaderId);
+                    if (leaderResponse != null && leaderResponse.IsSuccess)
+                    {
+                        leaderDTO = JsonConvert.DeserializeObject<UserDTO>(leaderResponse.Result.ToString());
+                    }
+
+                    viewModel.Add(new LeaderReviewHistoryViewModel
+                    {
+                        LeaderReview = review,
+                        Event = eventDTO,
+                        Leader = leaderDTO
+                    });
+                }
             }
             else
             {
                 TempData["error"] = response?.Message;
             }
-            return View(listLeaderReview);
-        }
 
-        public async Task<IActionResult> DeleteLeaderReview(int leaderReviewId)
-        {
-            ResponseDTO response = await _eventService.GetLeaderReviewById(leaderReviewId);
-            if (response != null && response.IsSuccess)
-            {
-                LeaderReviewDTO leaderReviewDTO = JsonConvert.DeserializeObject<LeaderReviewDTO>(response.Result.ToString());
-                return View(leaderReviewDTO);
-            }
-            else
-            {
-                TempData["error"] = response?.Message;
-            }
-            return NotFound();
+            return View(viewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteLeaderReview(LeaderReviewDTO leaderReviewDTO)
+        public async Task<IActionResult> DeleteLeaderReview(int leaderReviewId)
         {
-            ResponseDTO response = await _eventService.DeleteLeaderReview(leaderReviewDTO.LeaderReviewId);
+            ResponseDTO response = await _eventService.DeleteLeaderReview(leaderReviewId);
+
             if (response != null && response.IsSuccess)
             {
                 TempData["success"] = "Xóa đánh giá đội trưởng thành công!";
-                return RedirectToAction(nameof(LeaderReviewHistory));
             }
             else
             {
-                TempData["error"] = response?.Message;
+                TempData["error"] = response?.Message ?? "Có lỗi xảy ra khi xóa đánh giá.";
             }
-            return View(leaderReviewDTO);
+
+            return RedirectToAction(nameof(LeaderReviewHistory));
         }
 
         public async Task<IActionResult> EditLeaderReview(int leaderReviewId)
@@ -387,6 +551,35 @@ namespace GreenCorner.MVC.Controllers
                 TempData["error"] = response?.Message;
             }
             return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateLeaderReview([FromForm] LeaderReviewDTO leaderReviewDTO)
+        {
+            // Cập nhật thời gian chỉnh sửa
+            leaderReviewDTO.UpdatedAt = DateTime.Now;
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value.Errors.First().ErrorMessage
+                    );
+                return Json(new { isSuccess = false, message = "Dữ liệu không hợp lệ.", errors = errors });
+            }
+
+            ResponseDTO response = await _eventService.EditLeaderReview(leaderReviewDTO);
+
+            if (response != null && response.IsSuccess)
+            {
+                return Json(new { isSuccess = true, message = "Cập nhật đánh giá đội trưởng thành công!" });
+            }
+            else
+            {
+                return Json(new { isSuccess = false, message = response?.Message ?? "Không thể cập nhật đánh giá." });
+            }
         }
 
         [HttpPost]
@@ -943,8 +1136,8 @@ namespace GreenCorner.MVC.Controllers
             ResponseDTO response = await _eventService.KickVolunteer(userId, eventId);
             if (response != null && response.IsSuccess)
             {
-                TempData["success"] = "Đã xóa thành viên khỏi danh sách tham gia.";
-                return RedirectToAction(nameof(ViewEventVolunteerList), new { eventId = eventId });
+                TempData["success"] = "Đã xóa thành viên khỏi danh sách tham gia."; 
+                return Redirect(Request.Headers["Referer"].ToString());
             }
             else
             {
@@ -1013,5 +1206,86 @@ namespace GreenCorner.MVC.Controllers
 
             return RedirectToAction(nameof(GetEventById), new { eventId });
         }
+
+        public async Task<IActionResult> ViewLeaderReviewInEvent(string leaderId, int eventId)
+        {
+            List<LeaderReviewWithUserViewModel> viewModels = new();
+
+            ResponseDTO? response = await _eventService.GetLeaderReviewsByEvent(leaderId, eventId);
+
+            if (response != null && response.IsSuccess && response.Result != null)
+            {
+                var reviews = JsonConvert.DeserializeObject<List<LeaderReviewDTO>>(response.Result.ToString());
+
+                foreach (var review in reviews)
+                {
+                    UserDTO? reviewer = null;
+                    UserDTO? leader = null;
+
+                    // Lấy thông tin người đánh giá
+                    var reviewerResponse = await _userService.GetUserById(review.ReviewerId ?? "");
+                    if (reviewerResponse != null && reviewerResponse.IsSuccess && reviewerResponse.Result != null)
+                    {
+                        reviewer = JsonConvert.DeserializeObject<UserDTO>(reviewerResponse.Result.ToString());
+                    }
+
+                    // Lấy thông tin đội trưởng
+                    var leaderResponse = await _userService.GetUserById(review.LeaderId ?? "");
+                    if (leaderResponse != null && leaderResponse.IsSuccess && leaderResponse.Result != null)
+                    {
+                        leader = JsonConvert.DeserializeObject<UserDTO>(leaderResponse.Result.ToString());
+                    }
+
+                    viewModels.Add(new LeaderReviewWithUserViewModel
+                    {
+                        Review = review,
+                        Reviewer = reviewer,
+                        Leader = leader
+                    });
+                }
+            }
+            else
+            {
+                TempData["error"] = response?.Message ?? "Không thể lấy đánh giá của đội trưởng.";
+            }
+
+            return View(viewModels);
+        }
+
+        public async Task<IActionResult> ViewEventReviewsInEvent(int eventId)
+        {
+            List<EventReviewWithUserViewModel> viewModels = new();
+
+            ResponseDTO? response = await _eventService.GetEventReviewsByEventId(eventId);
+
+            if (response != null && response.IsSuccess && response.Result != null)
+            {
+                var reviews = JsonConvert.DeserializeObject<List<EventReviewDTO>>(response.Result.ToString());
+
+                foreach (var review in reviews)
+                {
+                    UserDTO? reviewer = null;
+
+                    var reviewerResponse = await _userService.GetUserById(review.UserId ?? "");
+                    if (reviewerResponse != null && reviewerResponse.IsSuccess && reviewerResponse.Result != null)
+                    {
+                        reviewer = JsonConvert.DeserializeObject<UserDTO>(reviewerResponse.Result.ToString());
+                    }
+
+                    viewModels.Add(new EventReviewWithUserViewModel
+                    {
+                        Review = review,
+                        Reviewer = reviewer
+                    });
+                }
+            }
+            else
+            {
+                TempData["error"] = response?.Message ?? "Không thể lấy đánh giá sự kiện.";
+            }
+
+            return View(viewModels);
+        }
+
     }
 }

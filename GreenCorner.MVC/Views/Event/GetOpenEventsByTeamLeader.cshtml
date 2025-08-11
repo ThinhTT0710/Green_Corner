@@ -86,6 +86,12 @@
                                        class="btn btn-sm btn-outline-success">
                                         Điểm Danh <i class="fi-rs-arrow-small-right ms-1"></i>
                                     </a>
+                                    <a asp-controller="BlogPost"
+                                       asp-action="SubmitReport"
+                                       asp-route-title="@item.Title"
+                                       class="btn btn-sm btn-outline-danger">
+                                        Gửi Báo cáo <i class="fi fi-rs-warning ms-1"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>

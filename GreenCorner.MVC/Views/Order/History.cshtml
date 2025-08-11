@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<OrderDTO>
 @{
 	ViewData["Title"] = "Đơn hàng";
+	int index = 1;
 }
 <div class="page-header breadcrumb-wrap">
 	<div class="container">
@@ -133,8 +134,8 @@
 												<tbody>
 													@foreach (var order in Model)
 													{
-														<tr>
-															<td>@order.OrderId</td>
+															<tr>
+															<td>@index</td>
 															<td>@order.CreatedAt.ToString("dd/MM/yyyy")</td>
 															<td>@order.PaymentMethod</td>
 															<td>@order.TotalMoney.ToString("N0", new CultureInfo("vi-VN"))đ
@@ -151,8 +152,9 @@
 																	</form>
 																}
 															</td>
-														</tr>
-													}
+															</tr>
+															index++;
+														}
 												</tbody>
 											</table>
 										</div>

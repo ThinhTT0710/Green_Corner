@@ -1,4 +1,5 @@
 ﻿using GreenCorner.EventAPI.Models.DTO;
+using GreenCorner.EventAPI.Services;
 using GreenCorner.EventAPI.Services.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -462,6 +463,23 @@ namespace GreenCorner.EventAPI.Controllers
                 _responseDTO.Message = "Lấy thông tin vai trò thất bại!";
             }
             return _responseDTO;
+        }
+
+        [HttpGet("get-event-volunteer/{id}")]
+        public async Task<ResponseDTO> GetEventVolunteer(int id)
+        {
+            try
+            {
+                var volunteerList = await _volunteerService.GetAllVolunteersForEvent(id);
+                _responseDTO.Result = volunteerList;
+                return _responseDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.Message = "Xem danh sách thành viên thất bại!";
+                _responseDTO.IsSuccess = false;
+                return _responseDTO;
+            }
         }
 
     }

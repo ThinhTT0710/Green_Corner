@@ -173,7 +173,7 @@ namespace GreenCorner.MVC.Controllers
         {
             await HttpContext.SignOutAsync();
             _tokenProvider.ClearToken();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Auth");
         }
 
         public IActionResult GoogleLogin()

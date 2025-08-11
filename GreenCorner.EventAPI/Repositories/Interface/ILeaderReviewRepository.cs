@@ -9,5 +9,6 @@ namespace GreenCorner.EventAPI.Repositories.Interface
         Task DeleteLeaderReview(int id);
 		Task<LeaderReview> GetLeaderReviewById(int id);
 		Task<IEnumerable<LeaderReview>> ViewLeaderReviewHistory(string reviewerID);
+        Task<IEnumerable<LeaderReview>> GetReviewsByLeaderInEvent(string leaderId, int eventId);
     }
 }
