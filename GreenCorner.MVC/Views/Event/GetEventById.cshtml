@@ -43,12 +43,14 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Trạng thái</label>
-                            <div class="form-control bg-light">
+                            <div class="form-control bg-light" id="eventStatusDisplay">
                                 @{
                                     string statusDisplay = Model.Status switch
                                     {
-                                        "Open" => "Đang mở",
-                                        "Close" => "Đã đóng",
+                                        "OnGoing" => "Đã bắt đầu",
+                                        "Complete" => "Đã hoàn thành",
+                                        "Close" => "Đã kết thúc",
+                                        "Open" => "Đang diễn ra",
                                         _ => "Không xác định"
                                     };
                                 }
@@ -145,21 +147,28 @@
                     <h5 class="mb-3">Thao tác đăng ký</h5>
                     @if (approvedRole == "TeamLeader")
                     {
-                        
-                        <div class="d-flex justify-content-start gap-2 mt-2">
+
+                        <div class="d-flex justify-content-center gap-2 mt-2">
                             <a asp-action="ViewEventVolunteerList"
                                asp-route-eventId="@Model.CleanEventId"
-                               class="btn btn-sm btn-outline-primary">
+                               class="btn btn-primary w-100 btn-outline-success">
                                 Tình nguyện viên <i class="fi-rs-arrow-small-right ms-1"></i>
                             </a>
 
                             <a asp-action="ViewEventVolunteerListCheck"
                                asp-route-eventId="@Model.CleanEventId"
-                               class="btn btn-sm btn-outline-success">
+                               class="btn btn-primary w-100 btn-outline-success">
                                 Điểm Danh <i class="fi-rs-arrow-small-right ms-1"></i>
                             </a>
-                              <button type="button" class="btn btn-sm btn-outline-danger" 
-                                    data-bs-toggle="modal" 
+                            </div>
+                        <div class="d-flex justify-content-center gap-2 mt-2">
+                            <button type="button" class="btn btn-primary w-100 btn-outline-success"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#updateStatusModal">
+                                Cập nhật trạng thái
+                            </button>
+                            <button type="button" class="btn btn-primary w-100 btn-outline-success"
+                                    data-bs-toggle="modal"
                                     data-bs-target="#submitReportModal">
                                 Gửi Báo cáo <i class="fi fi-rs-warning ms-1"></i>
                             </button>
@@ -167,7 +176,7 @@
                         <a asp-controller="Event"
                            asp-action="GetOpenEventsByTeamLeader"
                            asp-route-userId="@User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value"
-                           class="btn btn-primary w-100 mt-3">
+                           class="btn btn-primary w-100 mt-2">
                             Xem sự kiện đang phụ trách
                         </a>
                     }
@@ -381,6 +390,44 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="updateStatusForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateStatusModalLabel">Cập nhật trạng thái sự kiện</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" asp-for="CleanEventId" />
+                    <input type="hidden" asp-for="CreatedAt" />
+                    <input type="hidden" asp-for="EndDate" />
+                    <input type="hidden" asp-for="Title" />
+                    <input type="hidden" asp-for="Description" />
+                    <input type="hidden" asp-for="StartDate" />
+                    <input type="hidden" asp-for="MaxParticipants" />
+                    <input type="hidden" asp-for="PointsAward" />
+                    <input type="hidden" asp-for="Address" />
+                    <input type="hidden" asp-for="ImageUrl" />
+
+                    <div class="mb-3">
+                        <label asp-for="Status" class="form-label fw-bold">Chọn trạng thái mới</label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="OnGoing">Đã bắt đầu</option>
+                            <option value="Complete">Đã hoàn thành</option>
+                            <option value="Close">Kết thúc sự kiện</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 10px;">Hủy</button>
+                    <button type="submit" class="btn btn-success" style=" font-weight: 700; font-size: 14px; padding: 12px 30px;">Cập nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
@@ -478,7 +525,7 @@
 
         var content = $('#reportContent').val();
         var errorDiv = $('#report-content-error');
-        errorDiv.text(''); // Xóa lỗi cũ
+        errorDiv.text(''); 
 
         if (!content || content.trim() === '') {
             errorDiv.text('Vui lòng nhập nội dung báo cáo.');
@@ -488,7 +535,7 @@
         var formData = $(this).serialize();
 
         $.ajax({
-            url: '@Url.Action("ProcessEventReport", "BlogPost")', // Action mới cho AJAX
+            url: '@Url.Action("ProcessEventReport", "BlogPost")', 
             method: 'POST',
             data: formData,
             success: function (response) {
@@ -499,7 +546,6 @@
                         title: 'Gửi thành công!',
                         text: response.message || 'Cảm ơn bạn đã gửi báo cáo.',
                     });
-                    // Không cần reload trang ở đây để tránh làm mất ngữ cảnh
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -518,5 +564,129 @@
             }
         });
     });
+    </script>
+    <script>
+        $('#submitReportForm').submit(function (e) {
+            e.preventDefault();
+
+            var content = $('#reportContent').val();
+            var errorDiv = $('#report-content-error');
+            errorDiv.text('');
+
+            if (!content || content.trim() === '') {
+                errorDiv.text('Vui lòng nhập nội dung báo cáo.');
+                return;
+            }
+
+            var formData = $(this).serialize();
+
+            $.ajax({
+                url: '@Url.Action("ProcessEventReport", "BlogPost")',
+                method: 'POST',
+                data: formData,
+                success: function (response) {
+                    $('#submitReportModal').modal('hide');
+                    if (response.isSuccess) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Gửi thành công!',
+                            text: response.message || 'Cảm ơn bạn đã gửi báo cáo.',
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Thất bại',
+                            text: response.message || 'Gửi báo cáo thất bại.'
+                        });
+                    }
+                },
+                error: function () {
+                    $('#submitReportModal').modal('hide');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Không thể kết nối đến máy chủ.'
+                    });
+                }
+            });
+        });
+    </script>
+    <script>
+        let currentStatus = '@Model.Status';
+
+        $('#updateStatusModal').on('show.bs.modal', function () {
+            const statusSelect = $('#Status');
+            const submitButton = $('#updateStatusForm button[type="submit"]');
+
+            statusSelect.find('option').hide();
+            submitButton.prop('disabled', true);
+
+            switch (currentStatus) {
+                case 'Open':
+                    statusSelect.find('option[value="OnGoing"]').show().prop('selected', true);
+                    submitButton.prop('disabled', false);
+                    break;
+                case 'OnGoing':
+                    statusSelect.find('option[value="Complete"]').show().prop('selected', true);
+                    submitButton.prop('disabled', false);
+                    break;
+                case 'Complete':
+                    statusSelect.find('option[value="Close"]').show().prop('selected', true);
+                    submitButton.prop('disabled', false);
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        $('#updateStatusForm').submit(function (e) {
+            e.preventDefault();
+
+            var form = $(this);
+            var formData = form.serialize();
+
+            $.ajax({
+                url: '@Url.Action("ProcessEventStatusUpdate", "Event")',
+                method: 'POST',
+                data: formData,
+                success: function (response) {
+                    $('#updateStatusModal').modal('hide');
+
+                    if (response.isSuccess) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: response.message,
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Thất bại',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function () {
+                    $('#updateStatusModal').modal('hide');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.'
+                    });
+                }
+            });
+        });
+
+        $(document).on('hidden.bs.modal', '.modal', function () {
+            if ($('.modal-backdrop').length) {
+                $('.modal-backdrop').remove();
+            }
+            $('body').removeClass('modal-open').css({
+                'overflow': 'auto',
+                'padding-right': ''
+            });
+        });
     </script>
 }
