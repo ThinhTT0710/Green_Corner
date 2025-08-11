@@ -29,14 +29,18 @@
                             @{
                                 var label = item.Status switch
                                 {
-                                    "Open" => "Đang mở",
-                                    "Close" => "Đã đóng",
-                                    _ => "Đang diễn ra"
+                                    "OnGoing" => "Đã bắt đầu",
+                                    "Complete" => "Đã hoàn thành",
+                                    "Close" => "Đã kết thúc",
+                                    "Open" => "Đang diễn ra",
+                                    _ => "Không xác định"
                                 };
 
                                 var badgeClass = item.Status switch
                                 {
-                                    "Open" => "bg-success",
+                                    "Open" => "bg-brand",
+                                    "OnGoing" => "bg-brand",
+                                    "Complete" => "bg-brand",
                                     "Close" => "bg-danger",
                                     _ => "bg-warning"
                                 };

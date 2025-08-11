@@ -1222,14 +1222,12 @@ namespace GreenCorner.MVC.Controllers
                     UserDTO? reviewer = null;
                     UserDTO? leader = null;
 
-                    // Lấy thông tin người đánh giá
                     var reviewerResponse = await _userService.GetUserById(review.ReviewerId ?? "");
                     if (reviewerResponse != null && reviewerResponse.IsSuccess && reviewerResponse.Result != null)
                     {
                         reviewer = JsonConvert.DeserializeObject<UserDTO>(reviewerResponse.Result.ToString());
                     }
 
-                    // Lấy thông tin đội trưởng
                     var leaderResponse = await _userService.GetUserById(review.LeaderId ?? "");
                     if (leaderResponse != null && leaderResponse.IsSuccess && leaderResponse.Result != null)
                     {
@@ -1287,5 +1285,27 @@ namespace GreenCorner.MVC.Controllers
             return View(viewModels);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ProcessEventStatusUpdate(EventDTO eventDTO)
+        {
+            ResponseDTO response = await _eventService.UpdateCleanupEventStatus(eventDTO);
+
+            if (response != null && response.IsSuccess)
+            {
+                return Json(new
+                {
+                    isSuccess = true,
+                    message = "Cập nhật trạng thái sự kiện thành công!"
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = response?.Message ?? "Có lỗi xảy ra, vui lòng thử lại."
+                });
+            }
+        }
     }
 }

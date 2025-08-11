@@ -91,13 +91,12 @@ namespace GreenCorner.EventAPI.Repositories
         public async Task<IEnumerable<CleanupEvent>> GetOpenEventsByTeamLeader(string userId)
         {
             return await (from ev in _context.CleanupEvents
-                                join evv in _context.EventVolunteers
-                                    on ev.CleanEventId equals evv.CleanEventId
-                                where ev.Status == "Open"
-                                      && evv.IsTeamLeader == true
-                                      && evv.UserId == userId
-                                select ev)
-                                .ToListAsync();
+                          join evv in _context.EventVolunteers
+                            on ev.CleanEventId equals evv.CleanEventId
+                          where evv.IsTeamLeader == true
+                             && evv.UserId == userId
+                          select ev)
+            .ToListAsync();
         }
     }
 }

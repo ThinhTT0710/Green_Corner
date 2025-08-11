@@ -100,9 +100,10 @@
                                             var eventColor = status == "Pending" ? "#212529" : "#fff";
                                             var statusText = status switch
                                             {
-                                                "Open" => "Đang mở",
-                                                "Close" => "Đã đóng",
-                                                "Is Going On" => "Đang diễn ra",
+                                                "OnGoing" => "Đã bắt đầu",
+                                                "Complete" => "Đã hoàn thành",
+                                                "Close" => "Đã kết thúc",
+                                                "Open" => "Đang diễn ra",
                                                 _ => "Không xác định"
                                             };
                                         }
@@ -120,7 +121,7 @@
                                                     data-event-id="@item.Event.CleanEventId">
                                                 Đánh giá sự kiện
                                             </button>
-                                            @if (item.Volunteer.ApplicationType != "TeamLeader" && item.Volunteer.Status == "Approved")
+                                            @if (item.Volunteer.ApplicationType != "TeamLeader" && item.Volunteer.Status == "Participated")
                                             {
                                                <button type="button"
                                                     class="btn btn-info btn-sm btn-review-leader"
