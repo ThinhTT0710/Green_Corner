@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace GreenCorner_Test.Selenium_Test
 {
-    public class RewardTests : IClassFixture<SeleniumFixture>
+    public class WishlistTests : IClassFixture<SeleniumFixture>
     {
         private readonly SeleniumFixture _fixture;
 
-        public RewardTests(SeleniumFixture fixture)
+        public WishlistTests(SeleniumFixture fixture)
         {
             _fixture = fixture;
         }
@@ -43,18 +43,9 @@ namespace GreenCorner_Test.Selenium_Test
         {
             // Arrange
             LoginUser("qgbeo711@gmail.com", "Nam@12345");
-            _fixture.NavigateToUrl("/Reward");
+            _fixture.NavigateToUrl("/Wishlist");
             _fixture.WaitForPageToLoad();
         }
-        [Fact]
-        public void ViewDetailVoucher()
-        {
-            // Arrange
-            LoginUser("qgbeo711@gmail.com", "Nam@12345");
-            _fixture.NavigateToUrl("/Reward/ViewDetailVoucher?voucherId=1");
-            _fixture.WaitForPageToLoad();
-            var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
-            header.Text.Should().Be("Thông tin chi tiết");
-        }
+
     }
 }

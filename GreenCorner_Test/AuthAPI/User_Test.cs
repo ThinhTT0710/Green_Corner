@@ -69,7 +69,7 @@ namespace GreenCorner_Test.AuthAPI
 			var result = await _controller.GetUserByUserID("999");
 
 			Assert.False(result.IsSuccess);
-			Assert.Equal("User not found", result.Message);
+			Assert.Equal("Không tìm thấy người dùng", result.Message);
 		}
 
 		[Fact]
@@ -94,7 +94,7 @@ namespace GreenCorner_Test.AuthAPI
 			var result = await _controller.UpdateProfie(userDTO);
 
 			Assert.False(result.IsSuccess);
-			Assert.Equal("Phone number already exists", result.Message);
+			Assert.Equal("Số điện thoại đã tồn tại!", result.Message);
 		}
 
 		[Fact]
@@ -115,8 +115,26 @@ namespace GreenCorner_Test.AuthAPI
 			Assert.NotNull(result);
 			Assert.True(((ResponseDTO)result.Value).IsSuccess);
 		}
+        [Fact]
+        public async Task ChangePassword_ShouldReturnSuccessWithValidNewPassword()
+        {
+            var request = new ChangePasswordRequestDTO
+            {
+                Email = "john@example.com",
+                UserID = "1",
+                OldPassword = "oldpass123",
+                NewPassword = "newpass123"
+            };
 
-		[Fact]
+            _mockService.Setup(s => s.ChangePassword(request)).ReturnsAsync(true);
+
+            var result = await _controller.ChangePassword(request) as OkObjectResult;
+
+            Assert.NotNull(result);
+            Assert.True(((ResponseDTO)result.Value).IsSuccess);
+        }
+
+        [Fact]
 		public async Task ChangePassword_ShouldFail()
 		{
 			var request = new ChangePasswordRequestDTO
@@ -133,10 +151,21 @@ namespace GreenCorner_Test.AuthAPI
 
 			Assert.NotNull(result);
 			Assert.False(((ResponseDTO)result.Value).IsSuccess);
-			Assert.Equal("Change password failed. Please try again", ((ResponseDTO)result.Value).Message);
+			Assert.Equal("Thay đổi mật khẩu thất bại. Vui lòng thử lại!", ((ResponseDTO)result.Value).Message);
 		}
         [Fact]
         public async Task GetAllUser_ReturnsUsers()
+        {
+            var users = new List<UserDTO> { new UserDTO { ID = "1", FullName = "Test User" } };
+            _mockService.Setup(x => x.GetAllUser()).ReturnsAsync(users);
+
+            var result = await _controller.GetAllUser();
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(users, result.Result);
+        }
+        [Fact]
+        public async Task GetAllUser_ReturnsUsersList()
         {
             var users = new List<UserDTO> { new UserDTO { ID = "1", FullName = "Test User" } };
             _mockService.Setup(x => x.GetAllUser()).ReturnsAsync(users);
@@ -180,7 +209,7 @@ namespace GreenCorner_Test.AuthAPI
             var result = await _controller.BanUser("4");
 
             Assert.True(result.IsSuccess);
-            Assert.Equal("User has been locked for 30 days", result.Message);
+            Assert.Equal("Người dùng đã bị khóa tài khoản 30 ngày!", result.Message);
             Assert.Equal(user, result.Result);
         }
 
@@ -193,7 +222,7 @@ namespace GreenCorner_Test.AuthAPI
             var result = await _controller.UnBanUser("5");
 
             Assert.True(result.IsSuccess);
-            Assert.Equal("User has been unlocked", result.Message);
+            Assert.Equal("Người dùng đã được mở khóa tài khoản.", result.Message);
             Assert.Equal(user, result.Result);
         }
     }

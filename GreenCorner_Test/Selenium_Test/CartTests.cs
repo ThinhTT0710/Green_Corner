@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace GreenCorner_Test.Selenium_Test
 {
-    public class RewardTests : IClassFixture<SeleniumFixture>
+    public class CartTests : IClassFixture<SeleniumFixture>
     {
         private readonly SeleniumFixture _fixture;
 
-        public RewardTests(SeleniumFixture fixture)
+        public CartTests(SeleniumFixture fixture)
         {
             _fixture = fixture;
         }
@@ -39,22 +40,18 @@ namespace GreenCorner_Test.Selenium_Test
             _fixture.WaitForPageToLoad();
         }
         [Fact]
-        public void Index()
+        public void MyCartView_ShouldShowEmptyMessage_WhenCartIsEmpty()
         {
             // Arrange
             LoginUser("qgbeo711@gmail.com", "Nam@12345");
-            _fixture.NavigateToUrl("/Reward");
-            _fixture.WaitForPageToLoad();
+            _fixture.NavigateToUrl("/Cart");
+
+            // Act
+            var emptyMessage = _fixture.WaitForElement(By.CssSelector("h2.mb-20"));
+
+            // Assert
+            emptyMessage.Text.Should().Be("Giỏ hàng của bạn hiện đang trống");
         }
-        [Fact]
-        public void ViewDetailVoucher()
-        {
-            // Arrange
-            LoginUser("qgbeo711@gmail.com", "Nam@12345");
-            _fixture.NavigateToUrl("/Reward/ViewDetailVoucher?voucherId=1");
-            _fixture.WaitForPageToLoad();
-            var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
-            header.Text.Should().Be("Thông tin chi tiết");
-        }
+        
     }
 }

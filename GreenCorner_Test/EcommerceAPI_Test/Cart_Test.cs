@@ -119,5 +119,27 @@ namespace GreenCorner_Test.EcommerceAPI_Test
             Assert.True(result.IsSuccess);
             Assert.Equal(list, result.Result);
         }
+        [Fact]
+        public async Task AddToCart_InvalidQuantity_ReturnsFail()
+        {
+            var dto = new CartDTO { CartId = 4, Quantity = 0 };
+
+            var result = await _controller.AddToCart(dto);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal("Quantity must be greater than 0", result.Message);
+        }
+
+        [Fact]
+        public async Task UpdateCart_ValidQuantity_ReturnsSuccessfully()
+        {
+            var dto = new CartDTO { CartId = 5, Quantity = 2 };
+            _mockService.Setup(s => s.UpdateCart(dto)).Returns(Task.CompletedTask);
+
+            var result = await _controller.UpdateCart(dto);
+
+            Assert.True(result.IsSuccess);
+        }
+
     }
 }

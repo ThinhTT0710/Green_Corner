@@ -1,379 +1,269 @@
-﻿using OpenQA.Selenium;
+﻿using Xunit;
+using OpenQA.Selenium;
 using FluentAssertions;
-using DocumentFormat.OpenXml.Bibliography;
 using GreenCorner_Test.Selenium_Test;
+using Docker.DotNet.Models;
 using OpenQA.Selenium.Support.UI;
 
 namespace GreenCorner_Test.Selenium_Test
 {
-    public class BlogTests : BaseSeleniumTest
+    public class BlogTests : IClassFixture<SeleniumFixture>
     {
-        [Fact]
-        public void UserCanBrowseBlogPosts()
+        private readonly SeleniumFixture _fixture;
+
+        public BlogTests(SeleniumFixture fixture)
         {
-            // Arrange & Act
-            NavigateToUrl("/BlogPost");
+            _fixture = fixture;
+        }
+        public void LoginUser(string email, string password)
+        {
+            // Điều hướng tới trang login
+            _fixture.NavigateToUrl("/Auth/Login");
+
+            // Nhập email
+            var emailInput = _fixture.WaitForElement(By.Name("Email"));
+            emailInput.Clear();
+            emailInput.SendKeys(email);
+
+            // Nhập password
+            var passwordInput = _fixture.WaitForElement(By.Name("Password"));
+            passwordInput.Clear();
+            passwordInput.SendKeys(password);
+
+            // Click nút đăng nhập
+            var loginButton = _fixture.WaitForElement(By.CssSelector("button[name='login']"));
+            loginButton.Click();
+
+            // Đợi trang load xong
+            _fixture.WaitForPageToLoad();
+        }
+        [Fact]
+        public void CreateBlogPage_ShouldHaveCorrectTitle()
+        {
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
+
+            _fixture.NavigateToUrl("/BlogPost/CreateBlog");
+            _fixture.WaitForPageToLoad();
+
+            var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
+            header.Text.Should().Be("Tạo bài viết mới");
+        }
+        [Fact]
+        public void CreateReportPage_ShouldHaveCorrectTitle()
+        {
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
+            _fixture.NavigateToUrl("/BlogPost/CreateReport/1");
+            _fixture.WaitForPageToLoad();
+
+            var header = _fixture.WaitForElement(By.CssSelector("h2.mb-4"));
+            header.Text.Should().Be("Báo cáo bài viết");
+
+            var reasonTextarea = _fixture.WaitForElement(By.Name("Reason"));
+            reasonTextarea.Should().NotBeNull();
+
+            var submitButton = _fixture.WaitForElement(By.CssSelector("button.btn-danger"));
+            submitButton.Text.Should().Be("Gửi báo cáo");
+        }
+        [Fact]
+        public void DeleteBlogPage_ShouldDisplayBlogDetails()
+        {
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
+
+
+            // 2. Điều hướng đến trang xóa bài viết với BlogId giả sử là 1
+            _fixture.NavigateToUrl("/BlogPost/DeleteBlog/1");
+            _fixture.WaitForPageToLoad();
+
+            // 3. Kiểm tra tiêu đề trang
+            var pageTitle = _fixture.WaitForElement(By.CssSelector("h2.content-title")).Text;
+            Assert.Equal("Xóa bài viết", pageTitle);
+
+            // 4. Kiểm tra trường tiêu đề bài viết readonly
+            var titleInput = _fixture.WaitForElement(By.Id("Title"));
+            Assert.True(titleInput.GetAttribute("readonly") != null);
+
+            // 5. Kiểm tra nút Xóa và nút Hủy tồn tại
+            var deleteButton = _fixture.WaitForElement(By.CssSelector("button.btn-danger"));
+            var cancelButton = _fixture.WaitForElement(By.LinkText("Hủy"));
+            Assert.NotNull(deleteButton);
+            Assert.NotNull(cancelButton);
+        }
+        [Fact]
+        public void BlogListPage_ShouldDisplayCorrectUI()
+        {
+            // Đăng nhập trước (nếu trang yêu cầu)
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
+
+            // Điều hướng đến trang Góc chia sẻ
+            _fixture.NavigateToUrl("/BlogPost/Index");
+            _fixture.WaitForPageToLoad();
+
+            // 1. Kiểm tra tiêu đề
+            var header = _fixture.WaitForElement(By.CssSelector("h1.mb-15"));
+            header.Text.Should().Be("Góc chia sẻ");
+        }
+        [Fact]
+        public void MyFavoriteBlogs_ShouldDisplay_WhenUserHasFavorites()
+        {
+            // Arrange - login user có bài yêu thích
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
+
+            // Act
+            _fixture.NavigateToUrl("/BlogPost/MyFavoriteBlogs");
+            _fixture.WaitForPageToLoad();
+            // Assert - tiêu đề trang
+            var pageTitle = _fixture.Driver.FindElement(By.TagName("h1")).Text;
+            pageTitle.Should().Contain("Góc yêu thích");
+          
+        }
+        [Fact]
+        public void MyPendingBlogs_ShouldDisplay_WhenUserHasBlogs()
+        {
+            // Arrange
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
+
+            // Act
+            _fixture.NavigateToUrl("/BlogPost/MyPendingBlogs");
+            _fixture.WaitForPageToLoad();
+            // Assert - Tiêu đề trang
+            var title = _fixture.Driver.FindElement(By.TagName("h1")).Text;
+            title.Should().Contain("Bài viết của tôi");
+
+            // Có ít nhất 1 article
+            var articles = _fixture.Driver.FindElements(By.TagName("article"));
+            articles.Should().NotBeEmpty("Người dùng này có blog pending hoặc đã đăng");
+
+            var firstArticle = articles.First();
+
+            // Kiểm tra status text
+            var statusText = firstArticle.FindElement(By.CssSelector("h6")).Text;
+            statusText.Should().MatchRegex("(Đã đăng|Đang chờ duyệt|Không được duyệt)");
+
+            // Tiêu đề blog
+            var blogTitle = firstArticle.FindElement(By.CssSelector("h4.post-title a")).Text;
+            blogTitle.Should().NotBeNullOrWhiteSpace();
+
+            // Mô tả rút gọn
+            var description = firstArticle.FindElement(By.CssSelector(".font-xs.color-grey.mt-10.pb-10")).Text;
+            description.Should().NotBeNullOrWhiteSpace();
+
+            // Ngày đăng
+            var createdDate = firstArticle.FindElement(By.CssSelector(".entry-meta .post-on")).Text;
+            createdDate.Should().MatchRegex(@"\d{2}/\d{2}/\d{4}");
+
+            // Nếu Pending → có nút Sửa và Xoá
+            if (statusText.Contains("Đang chờ duyệt"))
+            {
+                var editBtn = firstArticle.FindElements(By.LinkText("Sửa"));
+                var deleteBtn = firstArticle.FindElements(By.LinkText("Xoá"));
+                editBtn.Should().NotBeEmpty();
+                deleteBtn.Should().NotBeEmpty();
+            }
+            else // Nếu Published/Rejected → chỉ có Xoá
+            {
+                var deleteBtn = firstArticle.FindElements(By.LinkText("Xoá"));
+                deleteBtn.Should().NotBeEmpty();
+            }
+        }
+        [Fact]
+        public void SubmitFeedback_ShouldSubmitSuccessfully_WhenValidData()
+        {
+            // Arrange
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
+
+            // Act
+            _fixture.NavigateToUrl("/BlogPost/SubmitFeedback");
+            _fixture.WaitForPageToLoad();
+           
+        }
+        [Fact]
+        public void SubmitReport_ShouldSubmitSuccessfully_WhenValidData()
+        {
+            // Arrange
+            LoginUser("qgbeo711@gmail.com", "Nam@12345"); // Đăng nhập với thông tin người dùng hợp lệ
+
+            // Act
+            _fixture.NavigateToUrl("/BlogPost/SubmitReport");
+            _fixture.WaitForPageToLoad();// Điều hướng đến trang gửi báo cáo
+            //var titleInput = _fixture.Driver.FindElement(By.Id("Title")).Text;
+            //titleInput.Should().Contain("Gửi báo cáo");
+
+        }
+        [Fact]
+        public void UpdateBlog_ShouldUpdateSuccessfully_WhenValidData()
+        {
+            // Arrange
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
+
+            _fixture.NavigateToUrl("/BlogPost/UpdateBlog?blogId=1"); // Điều hướng đến trang cập nhật bài viết
+            _fixture.WaitForPageToLoad();
+            var titleInput = _fixture.Driver.FindElement(By.ClassName("content-title")).Text;
+            titleInput.Should().Contain("Cập nhật bài viết");
+
+        }
+        [Fact]
+        public void ViewBlogDetail_ShouldDisplayCorrectContent_WhenBlogExists()
+        {
+            // Arrange - Đăng nhập người dùng hợp lệ
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
+
+            // Act - Điều hướng tới trang chi tiết bài viết (ví dụ BlogId = 1)
+            _fixture.NavigateToUrl("/BlogPost/ViewBlogDetail/1");
+            _fixture.WaitForPageToLoad();
+
+            // Assert - Tiêu đề bài viết hiển thị
+            var blogTitle = _fixture.Driver.FindElement(By.CssSelector("h2.mb-10")).Text;
+            blogTitle.Should().NotBeNullOrEmpty("Tiêu đề bài viết phải hiển thị");
+
+            // Assert - Tên tác giả hiển thị
+            var authorName = _fixture.Driver.FindElement(By.CssSelector(".post-by strong")).Text;
+            authorName.Should().NotBeNullOrEmpty("Tên tác giả phải hiển thị");
+
+            // Assert - Nội dung bài viết hiển thị
+            var blogContent = _fixture.Driver.FindElement(By.CssSelector(".single-excerpt")).Text;
+            blogContent.Should().NotBeNullOrEmpty("Nội dung bài viết phải hiển thị");
+
+            // Assert - Nút yêu thích hiển thị
+            var favoriteBtn = _fixture.Driver.FindElement(By.CssSelector(".btn-favorite"));
+            favoriteBtn.Should().NotBeNull("Nút yêu thích phải tồn tại");
+        }
+        [Fact]
+        public void ViewBlogDetail_ShouldSubmitReportSuccessfully_WhenValidReason()
+        {
+            // Arrange - Đăng nhập người dùng hợp lệ
+            LoginUser("qgbeo711@gmail.com", "Nam@12345");
+            _fixture.NavigateToUrl("/BlogPost/ViewBlogDetail/1");
+            _fixture.WaitForPageToLoad();
+            var titleInput = _fixture.Driver.FindElement(By.ClassName("mb-10")).Text;
+            titleInput.Should().Contain("Bài viết");
+            
+        }
+        [Fact]
+        public void ViewFeedbacks_ShouldFilterAndPaginateSuccessfully_WhenUsingSearchAndStatus()
+        {
+            // Arrange - Đăng nhập admin
+            LoginUser("nampdce172019@fpt.edu.vn", "Nam@123");
+
+            // Act - Điều hướng đến trang danh sách phản hồi
+            _fixture.NavigateToUrl("/BlogPost/ViewFeedbacks");
+
+            // Assert - Bảng phản hồi hiển thị
+            var header = _fixture.WaitForElement(By.CssSelector("h2.content-title"));
+            header.Text.Should().Be("Danh sách phản hồi");
+        }
+        [Fact]
+        public void VR001_ShouldDisplayReports_WhenDataExists()
+        {
+            // Arrange
+            LoginUser("admin@gmail.com", "123456Vn@");
+
+            // Act
+            _fixture.NavigateToUrl("/BlogPost/ViewReports");
 
             // Assert
-            WaitForPageToLoad();
-            var pageTitle = Driver.Title;
-            pageTitle.Should().Contain("Góc chia sẻ", "Page title should contain 'Blog'");
-
-            var blogContainer = WaitForElement(By.Id("blogContainer"));
-            blogContainer.Should().NotBeNull("Blog container should be present");
-        }
-
-        [Fact]
-        public void BlogPageShouldDisplayBlogItems()
-        {
-            // Arrange & Act
-            NavigateToUrl("/BlogPost");
-
-            // Assert
-            WaitForPageToLoad();
-
-            // Chờ blog-item xuất hiện tối đa 10 giây
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
-            var blogItems = wait.Until(d =>
-            {
-                var elements = d.FindElements(By.ClassName("blog-item"));
-                return elements.Count > 0 ? elements : null;
-            });
-
-            blogItems.Should().NotBeEmpty("Blog items should be present");
-
-            // Check first blog item has required elements
-            var firstBlog = blogItems.First();
-
-            var blogTitle = firstBlog.FindElement(By.ClassName("post-title"));
-            var blogExcerpt = firstBlog.FindElement(By.ClassName("post-exerpt"));
-            var blogDate = firstBlog.FindElement(By.ClassName("blog-date"));
-            var readMoreButton = firstBlog.FindElement(By.ClassName("btn"));
-
-            blogTitle.Should().NotBeNull("Blog title should be displayed");
-            blogExcerpt.Should().NotBeNull("Blog excerpt should be displayed");
-            blogDate.Should().NotBeNull("Blog date should be displayed");
-            readMoreButton.Should().NotBeNull("Read more button should be present");
+            var rows = _fixture.Driver.FindElements(By.CssSelector("table tbody tr"));
         }
 
 
-        [Fact]
-        public void UserCanReadBlogPost()
-        {
-            // Arrange
-            NavigateToUrl("/BlogPost");
-
-            // Act
-            WaitForPageToLoad();
-            var blogLinks = Driver.FindElements(By.ClassName("blog-link"));
-
-            if (blogLinks.Any())
-            {
-                blogLinks.First().Click();
-                WaitForPageToLoad();
-
-                // Assert
-                var blogDetail = WaitForElement(By.Id("blogDetail"));
-                blogDetail.Should().NotBeNull("Blog detail section should be present");
-
-                // Check for required elements
-                var blogTitle = Driver.FindElement(By.ClassName("blog-detail-title"));
-                var blogContent = Driver.FindElement(By.ClassName("blog-detail-content"));
-                var blogAuthor = Driver.FindElement(By.ClassName("blog-detail-author"));
-                var blogDate = Driver.FindElement(By.ClassName("blog-detail-date"));
-
-                blogTitle.Should().NotBeNull("Blog title should be displayed");
-                blogContent.Should().NotBeNull("Blog content should be displayed");
-                blogAuthor.Should().NotBeNull("Blog author should be displayed");
-                blogDate.Should().NotBeNull("Blog date should be displayed");
-            }
-        }
-
-        [Fact]
-        public void UserCanSearchForBlogPosts()
-        {
-            // Arrange
-            NavigateToUrl("/BlogPost");
-
-            // Act
-            WaitForPageToLoad();
-            var searchInput = WaitForElement(By.Id("blogSearchInput"));
-            var searchButton = WaitForElementToBeClickable(By.Id("blogSearchButton"));
-
-            searchInput.SendKeys("environment");
-            searchButton.Click();
-
-            // Assert
-            WaitForPageToLoad();
-            var searchResults = Driver.FindElements(By.ClassName("blog-card"));
-            searchResults.Should().NotBeEmpty("Search should return results");
-        }
-
-        [Fact]
-        public void UserCanFilterBlogPostsByCategory()
-        {
-            // Arrange
-            NavigateToUrl("/BlogPost");
-
-            // Act
-            WaitForPageToLoad();
-            var categoryFilters = Driver.FindElements(By.ClassName("blog-category-filter"));
-
-            if (categoryFilters.Any())
-            {
-                var firstCategory = categoryFilters.First();
-                firstCategory.Click();
-
-                // Assert
-                WaitForPageToLoad();
-                var filteredPosts = Driver.FindElements(By.ClassName("blog-card"));
-                filteredPosts.Should().NotBeEmpty("Filtered blog posts should be displayed");
-            }
-        }
-
-        [Fact]
-        public void UserCanLikeBlogPost()
-        {
-            // Arrange
-            NavigateToUrl("/BlogPost");
-
-            // Act
-            WaitForPageToLoad();
-            var blogLinks = Driver.FindElements(By.ClassName("blog-link"));
-
-            if (blogLinks.Any())
-            {
-                blogLinks.First().Click();
-                WaitForPageToLoad();
-
-                var likeButton = WaitForElementToBeClickable(By.ClassName("like-blog-btn"));
-                var initialLikeCount = likeButton.Text;
-                likeButton.Click();
-
-                // Assert
-                WaitForElement(By.ClassName("like-notification"));
-                var likeNotification = Driver.FindElement(By.ClassName("like-notification"));
-                likeNotification.Displayed.Should().BeTrue("Like notification should be displayed");
-            }
-        }
-
-        [Fact]
-        public void UserCanCommentOnBlogPost()
-        {
-            // Arrange
-            NavigateToUrl("/BlogPost");
-
-            // Act
-            WaitForPageToLoad();
-            var blogLinks = Driver.FindElements(By.ClassName("blog-link"));
-
-            if (blogLinks.Any())
-            {
-                blogLinks.First().Click();
-                WaitForPageToLoad();
-
-                var commentInput = WaitForElement(By.Id("commentInput"));
-                var submitCommentButton = WaitForElementToBeClickable(By.Id("submitComment"));
-
-                commentInput.SendKeys("Great article! Very informative.");
-                submitCommentButton.Click();
-
-                // Assert
-                WaitForElement(By.ClassName("comment-success"));
-                var commentSuccess = Driver.FindElement(By.ClassName("comment-success"));
-                commentSuccess.Displayed.Should().BeTrue("Comment success message should be displayed");
-            }
-        }
-
-        [Fact]
-        public void UserCanShareBlogPost()
-        {
-            // Arrange
-            NavigateToUrl("/BlogPost");
-
-            // Act
-            WaitForPageToLoad();
-            var blogLinks = Driver.FindElements(By.ClassName("blog-link"));
-
-            if (blogLinks.Any())
-            {
-                blogLinks.First().Click();
-                WaitForPageToLoad();
-
-                var shareButton = WaitForElementToBeClickable(By.ClassName("share-blog-btn"));
-                shareButton.Click();
-
-                // Assert
-                var shareModal = WaitForElement(By.Id("shareBlogModal"));
-                shareModal.Should().NotBeNull("Share modal should be displayed");
-                shareModal.Displayed.Should().BeTrue("Share modal should be visible");
-            }
-        }
-
-        [Fact]
-        public void BlogPageShouldDisplayFeaturedPosts()
-        {
-            // Arrange & Act
-            NavigateToUrl("/BlogPost");
-
-            // Assert
-            WaitForPageToLoad();
-
-            var featuredPostsSection = Driver.FindElement(By.Id("featuredPosts"));
-            featuredPostsSection.Should().NotBeNull("Featured posts section should be present");
-            featuredPostsSection.Displayed.Should().BeTrue("Featured posts section should be visible");
-        }
-
-        [Fact]
-        public void UserCanViewRelatedPosts()
-        {
-            // Arrange
-            NavigateToUrl("/BlogPost");
-
-            // Act
-            WaitForPageToLoad();
-            var blogLinks = Driver.FindElements(By.ClassName("blog-link"));
-
-            if (blogLinks.Any())
-            {
-                blogLinks.First().Click();
-                WaitForPageToLoad();
-
-                // Assert
-                var relatedPostsSection = Driver.FindElement(By.Id("relatedPosts"));
-                relatedPostsSection.Should().NotBeNull("Related posts section should be present");
-                relatedPostsSection.Displayed.Should().BeTrue("Related posts section should be visible");
-            }
-        }
-
-        [Fact]
-        public void BlogPageShouldHavePagination()
-        {
-            // Arrange & Act
-            NavigateToUrl("/BlogPost");
-
-            // Assert
-            WaitForPageToLoad();
-
-            var pagination = Driver.FindElements(By.ClassName("pagination"));
-            if (pagination.Any())
-            {
-                var firstPagination = pagination.First();
-                firstPagination.Displayed.Should().BeTrue("Pagination should be visible when there are multiple pages");
-            }
-        }
-
-        [Fact]
-        public void UserCanSortBlogPostsByDate()
-        {
-            // Arrange
-            NavigateToUrl("/BlogPost");
-
-            // Act
-            WaitForPageToLoad();
-            var sortDropdown = Driver.FindElements(By.Id("blogSortDropdown"));
-
-            if (sortDropdown.Any())
-            {
-                var dropdown = sortDropdown.First();
-                dropdown.Click();
-
-                var dateOption = WaitForElementToBeClickable(By.CssSelector("option[value='date']"));
-                dateOption.Click();
-
-                // Assert
-                WaitForPageToLoad();
-                var blogCards = Driver.FindElements(By.ClassName("blog-card"));
-                blogCards.Should().NotBeEmpty("Blog posts should be displayed after sorting");
-            }
-        }
-
-        [Fact]
-        public void UserCanViewBlogAuthorProfile()
-        {
-            // Arrange
-            NavigateToUrl("/BlogPost");
-
-            // Act
-            WaitForPageToLoad();
-            var blogLinks = Driver.FindElements(By.ClassName("blog-link"));
-
-            if (blogLinks.Any())
-            {
-                blogLinks.First().Click();
-                WaitForPageToLoad();
-
-                var authorLink = WaitForElementToBeClickable(By.ClassName("blog-author-link"));
-                authorLink.Click();
-
-                // Assert
-                WaitForPageToLoad();
-                var currentUrl = Driver.Url;
-                currentUrl.Should().Contain("Author", "Should navigate to author profile page");
-            }
-        }
-
-        [Fact]
-        public void BlogPostShouldDisplayReadingTime()
-        {
-            // Arrange
-            NavigateToUrl("/BlogPost");
-
-            // Act
-            WaitForPageToLoad();
-            var blogLinks = Driver.FindElements(By.ClassName("blog-link"));
-
-            if (blogLinks.Any())
-            {
-                blogLinks.First().Click();
-                WaitForPageToLoad();
-
-                // Assert
-                var readingTime = Driver.FindElement(By.ClassName("reading-time"));
-                readingTime.Should().NotBeNull("Reading time should be displayed");
-            }
-        }
-
-        [Fact]
-        public void UserCanSubscribeToBlog()
-        {
-            // Arrange
-            NavigateToUrl("/BlogPost");
-
-            // Act
-            WaitForPageToLoad();
-            var subscribeInput = WaitForElement(By.Id("subscribeEmail"));
-            var subscribeButton = WaitForElementToBeClickable(By.Id("subscribeButton"));
-
-            subscribeInput.SendKeys("test@example.com");
-            subscribeButton.Click();
-
-            // Assert
-            WaitForElement(By.ClassName("subscribe-success"));
-            var subscribeSuccess = Driver.FindElement(By.ClassName("subscribe-success"));
-            subscribeSuccess.Displayed.Should().BeTrue("Subscribe success message should be displayed");
-        }
-
-        [Fact]
-        public void BlogPageShouldDisplayTags()
-        {
-            // Arrange
-            NavigateToUrl("/BlogPost");
-
-            // Act
-            WaitForPageToLoad();
-            var blogLinks = Driver.FindElements(By.ClassName("blog-link"));
-
-            if (blogLinks.Any())
-            {
-                blogLinks.First().Click();
-                WaitForPageToLoad();
-
-                // Assert
-                var tagsSection = Driver.FindElement(By.ClassName("blog-tags"));
-                tagsSection.Should().NotBeNull("Blog tags should be displayed");
-                tagsSection.Displayed.Should().BeTrue("Blog tags should be visible");
-            }
-        }
     }
 }

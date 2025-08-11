@@ -219,20 +219,6 @@ namespace GreenCorner_Test.EventAPI_Test
         Assert.True(result.IsSuccess);
         Assert.Contains("Đã có trưởng nhóm", result.Message);
     }
-
-    //[Fact]
-    //public async Task GetUserParticipatedActivities_ReturnsUsers()
-    //{
-    //    var list = new List<UserDTO> { new UserDTO { ID = "u111", FullName = "Tester" } };
-    //    _mockService.Setup(s => s.GetUserWithParticipation()).ReturnsAsync(list);
-
-    //    var result = await _controller.GetUserParticipatedActivities();
-
-    //    Assert.True(result.IsSuccess);
-    //    var res = Assert.IsType<List<UserDTO>>(result.Result);
-    //    Assert.Single(res);
-    //}
-
     [Fact]
     public async Task GetApprovedVolunteers_ValidUser_ReturnsList()
     {
@@ -259,6 +245,39 @@ namespace GreenCorner_Test.EventAPI_Test
         Assert.Equal("Lấy leaderId thành công", result.Message);
     }
 
-}
+        [Fact]
+        public async Task IsVolunteer_Confirmed()
+        {
+            _mockService.Setup(s => s.IsVolunteer(1, "u1")).ReturnsAsync(true);
+
+            var result = await _controller.IsVolunteer(1, "u1");
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal("Bạn đã đăng ký, vui lòng đợi phê duyệt.", result.Message);
+        }
+
+        [Fact]
+        public async Task IsTeamLeader_NotRegistered_ReturnsFalseNoti()
+        {
+            _mockService.Setup(s => s.IsTeamLeader(2, "u2")).ReturnsAsync(false);
+
+            var result = await _controller.IsTeamLeader(2, "u2");
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal("Chưa đăng ký!", result.Message);
+        }
+
+        [Fact]
+        public async Task UpdateRegister_ValidDto_ReturnsSuccessully()
+        {
+            var dto = new VolunteerDTO { UserId = "u3" };
+            _mockService.Setup(s => s.UpdateRegister(dto)).Returns(Task.CompletedTask);
+
+            var result = await _controller.UpdateRegister(dto);
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal("Cập nhật đăng ký thành công.", result.Message);
+        }
+    }
 
 }

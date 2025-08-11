@@ -109,6 +109,16 @@ namespace GreenCorner_Test.BlogAPI_Test
             Assert.True(result.IsSuccess);
             Assert.Equal(blogs, result.Result);
         }
+        [Fact]
+        public async Task UpdateBlog_ValidDto_ReturnsSuccessfully()
+        {
+            var dto = new BlogPostDTO { BlogId = 5, Title = "Blog cập nhật" };
+            _mockService.Setup(s => s.UpdateBlog(dto)).Returns(Task.CompletedTask);
+
+            var result = await _controller.UpdateBlog(dto);
+
+            Assert.True(result.IsSuccess);
+        }
     }
 
 }

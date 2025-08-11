@@ -64,24 +64,6 @@ namespace GreenCorner_Test.AuthAPI
             Assert.True(result.IsSuccess);
             Assert.Equal(staff, result.Result);
         }
-        //[Fact]
-        //public async Task CreateStaff_ValidRequest_SendsEmailAndReturnsSuccess()
-        //{
-        //    var staff = new GreenCorner.AuthAPI.Models.DTO.StaffDTO { Email = "test@example.com", Password = "pass" };
-        //    var user = new GreenCorner.AuthAPI.Models.User { Id = "1", Email = staff.Email };
-
-        //    _mockAdminService.Setup(s => s.CreateStaff(staff)).ReturnsAsync(string.Empty);
-        //    _mockUserManager.Setup(m => m.FindByEmailAsync(staff.Email)).ReturnsAsync(user);
-        //    _mockUserManager.Setup(m => m.GenerateEmailConfirmationTokenAsync(user)).ReturnsAsync("token");
-        //    _mockEmailService.Setup(e => e.SendEmailAsync(staff.Email, It.IsAny<string>(), It.IsAny<string>()))
-        //        .Returns(Task.CompletedTask);
-
-        //    var result = await _controller.CreateStaff(staff);
-
-        //    var okResult = Assert.IsType<OkObjectResult>(result);
-        //    var response = Assert.IsType<ResponseDTO>(okResult.Value);
-        //    Assert.Equal("Account created successfully, please check email.", response.Message);
-        //}
         [Fact]
         public async Task UpdateStaff_ValidStaff_ReturnsSuccess()
         {
@@ -101,7 +83,7 @@ namespace GreenCorner_Test.AuthAPI
             var result = await _controller.BlockStaffAccount("1");
 
             Assert.True(result.IsSuccess);
-            Assert.Equal("Staff has been banned forever", result.Message);
+            Assert.Equal("Nhân viên đã bị khóa tài khoản vĩnh viễn.", result.Message);
             Assert.Equal(staff, result.Result);
         }
         [Fact]
@@ -113,7 +95,7 @@ namespace GreenCorner_Test.AuthAPI
             var result = await _controller.UnBlockStaffAccount("1");
 
             Assert.True(result.IsSuccess);
-            Assert.Equal("Staff has been unban", result.Message);
+            Assert.Equal("Nhân viên đã được mở khóa tài khoản.", result.Message);
             Assert.Equal(staff, result.Result);
         }
         [Fact]
@@ -136,6 +118,28 @@ namespace GreenCorner_Test.AuthAPI
             var result = await _controller.AddLogStaff(log);
 
             Assert.True(result.IsSuccess);
+        }
+        [Fact]
+        public async Task GetAllLogs_ReturnsLogList_2()
+        {
+            var logs = new List<GreenCorner.AuthAPI.Models.DTO.SystemLogDTO> { new GreenCorner.AuthAPI.Models.DTO.SystemLogDTO { Id = 1, ActionType = "LOGIN" } };
+            _mockAdminService.Setup(s => s.GetAllLogs()).ReturnsAsync(logs);
+
+            var result = await _controller.GetAllLogs();
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(logs, result.Result);
+        }
+        [Fact]
+        public async Task GetStaffById_ValidId_ReturnsStaff_2()
+        {
+            var staff = new GreenCorner.AuthAPI.Models.DTO.StaffDTO { ID = "1", FullName = "Tester" };
+            _mockAdminService.Setup(x => x.GetStaffById("1")).ReturnsAsync(staff);
+
+            var result = await _controller.GetStaffById("1");
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(staff, result.Result);
         }
     }
 

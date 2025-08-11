@@ -102,5 +102,16 @@ namespace GreenCorner_Test.EventAPI_Test
 
 			Assert.True(result.IsSuccess);
 		}
-	}
+
+        [Fact]
+        public async Task UpdateTrashEvent_ShouldReturnSuccess_2()
+        {
+            var trashEventDTO = _mockTrashEvents.First();
+            _mockService.Setup(s => s.UpdateTrashEvent(trashEventDTO)).Returns(Task.CompletedTask);
+
+            var result = await _controller.UpdateTrashEvent(trashEventDTO);
+
+            Assert.True(result.IsSuccess);
+        }
+    }
 }

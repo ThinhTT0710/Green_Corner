@@ -87,5 +87,27 @@ namespace GreenCorner_Test.EcommerceAPI_Test
             Assert.True(result.IsSuccess);
             Assert.Equal(items, result.Result);
         }
+        [Fact]
+        public async Task GetWishListById_ValidId_ReturnsItemOfWishList()
+        {
+            var item = new WishListDTO { WishListId = 2 };
+            _mockService.Setup(s => s.GetById(2)).ReturnsAsync(item);
+
+            var result = await _controller.GetWishListById(2);
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(item, result.Result);
+        }
+
+        [Fact]
+        public async Task AddToWishList_ValidInput_ReturnsSuccessully()
+        {
+            var dto = new WishListDTO { WishListId = 3, ProductId = 99 };
+            _mockService.Setup(s => s.Add(dto)).Returns(Task.CompletedTask);
+
+            var result = await _controller.AddToWishList(dto);
+
+            Assert.True(result.IsSuccess);
+        }
     }
 }

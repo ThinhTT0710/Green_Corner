@@ -72,5 +72,22 @@ namespace GreenCorner_Test.BlogAPI_Test
             Assert.False(result.IsSuccess);
             Assert.Equal("Không thể lấy danh sách báo cáo!", result.Message);
         }
+        [Fact]
+        public async Task GetAllReports_ReturnsListOfReportsWithUser()
+        {
+            var reports = new List<ReportDTO>
+        {
+            new ReportDTO { LeaderId = "u1", Content = "Spam" },
+            new ReportDTO { LeaderId = "u2", Content = "Vi phạm" }
+        };
+
+            _mockService.Setup(s => s.GetAllReports()).ReturnsAsync(reports);
+
+            var result = await _controller.GetAllReports();
+
+            Assert.True(result.IsSuccess);
+            var list = Assert.IsType<List<ReportDTO>>(result.Result);
+            Assert.Equal(2, list.Count);
+        }
     }
 }
